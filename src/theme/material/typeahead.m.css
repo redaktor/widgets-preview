@@ -1,0 +1,203 @@
+.root {
+	padding: 0;
+	margin-top: calc(var(--line) * -1);
+	margin-bottom: var(--line2);
+	height: var(--maxH);
+	outline: none;
+}
+.root.below.open,
+.root.below.hasHelperText {
+	margin-top: 0;
+	margin-bottom: var(--line);
+}
+.root.open.below:not(.hasHelperText) {
+	transform: translateY(calc(var(--line) * -1));
+}
+
+.hasHelperText { }
+.flat, .outlined, .filled, .shaped { }
+.disabled, .valid, .invalid { }
+
+.menuWrapper {
+	composes: uiVar from './_ui.m.css';
+	margin: 0;
+	padding: 0;
+	transform: translateX(-4px);
+}
+.js.menuWrapper.below {
+	margin-top: calc(var(--line) * -1 - var(--mt) + var(--ui-border-width-emphasized) * 2);
+}
+.js.menuWrapper.above.hasValue {
+	transform: translate(-4px, calc(var(--line2) - var(--mt) - var(--ui-border-width-emphasized)));
+}
+.js.animated.menuWrapper.above.opening {
+	transform: translate(-4px, calc(-100% + var(--line2)));
+}
+.js.animated.menuWrapper.above:not(.opening) {
+	transform: translate(-4px, var(--line));
+}
+
+.menuTransformer {
+	padding-left: 4px;
+	padding-right: 4px;
+	padding-bottom: 8px;
+}
+
+.menuTransformer::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 4px;
+	height: calc(100% - 8px);
+	width: calc(100% - 8px);
+	box-shadow: var(--ui-dp-4);
+}
+.animated .menuTransformer::after {
+	opacity: 0;
+}
+.input { }
+.input ~ .focusedWrapper {
+	position: absolute;
+}
+.animated .input ~ .focusedWrapper {
+	display: flex !important;
+}
+
+/* overrides TextInput root */
+.root .trigger { }
+
+/* overrides List root */
+.root .menu { }
+.trigger .menu,
+.js .menu {
+	min-width: 124px;
+	width: auto;
+	margin: 0;
+	padding-top: 0;
+	cursor: pointer;
+	background-color: transparent !important;
+}
+.below .menu,
+.below .menuTransformer::after,
+.below .menu .listItem:last-child,
+.below .menu .listItem:last-child::after {
+	border-radius: 0 0 var(--ui-border-radius-emphasized,4px) var(--ui-border-radius-emphasized,4px) !important;
+}
+.above .menu,
+.above .menuTransformer::after,
+.above .menu .listItem:first-child,
+.above .menu .listItem:first-child::after {
+	border-radius: var(--ui-border-radius-emphasized,4px) var(--ui-border-radius-emphasized,4px) 0 0 !important;
+}
+.menu.flex {
+	display: flex;
+}
+.menu:empty {
+	opacity: 0 !important;
+}
+
+.listItem {
+	z-index: 11;
+	padding-top: 0 !important;
+}
+
+/* manual animation for expanded with 'animated' property */
+.animated .listItem {
+	--bs: var(--ui-dp-lr-4);
+	box-shadow: var(--bs);
+}
+.animated.opening .listItem:nth-of-type(2n) { --close-deg: 90deg; filter: brightness(124%); }
+.animated.opening .listItem:nth-of-type(2n+1) { --close-deg: -90deg; filter: brightness(24%); }
+
+
+
+@keyframes opacIn {	0% { opacity: 0; } 100% { opacity: 1; } }
+.animated.opening .menuTransformer::after,
+.animated .input:focus ~ .focusedWrapper .menuTransformer::after {
+	animation: opacIn 0ms linear var(--ui-dpd-22) both;
+}
+@keyframes open {
+	0% {
+		transform: perspective(calc(var(--ui-default-input-width) * 0.618)) rotateX(var(--close-deg));
+		margin-top: calc(var(--line2) * -1);
+		margin-bottom: calc(var(--line) * -1);
+	}
+	100% {
+		transform: perspective(calc(var(--ui-default-input-width) * 0.618)) rotateX(0deg);
+		margin-top: 0px;
+		margin-bottom: 0px;
+	}
+}
+@keyframes opened {
+	0% { box-shadow: var(--bs); }
+	100% { box-shadow: none; }
+}
+@keyframes close {
+	0% {
+		transform: perspective(calc(var(--ui-default-input-width) * 0.618)) rotateX(0deg);
+		margin-top: 0px;
+		margin-bottom: 0px;
+	}
+	100% {
+		transform: perspective(calc(var(--ui-default-input-width) * 0.618)) rotateX(var(--close-deg));
+		margin-top: calc(var(--line2) * -1);
+		margin-bottom: calc(var(--line) * -1);
+	}
+}
+@keyframes closeRoot {
+	0% { z-index: 10; }
+	100% { z-index: 1; }
+}
+.animated .listItem {
+	transition: filter var(--ui-dpd-22) var(--ui-easing), background-color var(--ui-dpd-0) var(--ui-easing);
+	transform-origin: center;
+	will-change: transform, margin-top, margin-bottom, filter;
+}
+.animated.closing .listItem,
+.animated .input:not(:focus) ~ .focusedWrapper:not(:focus-within) .listItem {
+	transform: perspective(var(--ui-default-input-width)) rotateX(var(--close-deg));
+	margin-top: calc(var(--line2) * -1);
+	margin-bottom: calc(var(--line) * -1);
+  animation: close var(--ui-dpd-22) var(--ui-easing) both;
+}
+.first .listItem,
+.animated.first .input:not(:focus) ~ .focusedWrapper:not(:focus-within) .listItem {
+	animation: close 0ms linear both;
+}
+.animated.opening .listItem,
+.animated .input:focus ~ .focusedWrapper .listItem {
+	animation: open var(--ui-dpd-22) var(--ui-easing) both, opened 0ms linear var(--ui-dpd-22) both;
+}
+.js.animated.menuWrapper .listItem,
+.animated .input:focus ~ .focusedWrapper .listItem {
+	filter: brightness(100%);
+	z-index: 11;
+}
+.root:focus-within {
+	z-index: 11;
+}
+.animated:not(.js):not(:focus-within) {
+	z-index: 10;
+	animation: closeRoot 1ms linear var(--ui-dpd-22) both;
+}
+
+.label {
+	--triangleSize: calc(var(--size) * 0.618);
+	--triangleSizeH: calc(var(--triangleSize) / 2);
+	margin-left: calc(var(--plr) / -2) !important;
+}
+
+.label::before {
+	content: "";
+	width: 0;
+	height: 0;
+	border-left: var(--triangleSizeH) solid transparent;
+	border-right: var(--triangleSizeH) solid transparent;
+	border-top: var(--triangleSize) solid var(--label-color);
+	margin-right: var(--triangleSizeH);
+	display: inline-block;
+	transition: transform var(--ui-dpd-0) var(--ui-easing);
+}
+.above .label::before {
+	transform: rotate(180deg);
+}

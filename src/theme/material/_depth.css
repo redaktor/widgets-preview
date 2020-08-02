@@ -1,0 +1,64 @@
+@import url("./_custom_media.css");
+:root {
+  /*---   Shadows  ---*/
+  --sd1       : rgba(0, 0, 0, 0.2);
+  --sd2       : rgba(0, 0, 0, 0.14);
+  --sd3       : rgba(0, 0, 0, 0.12);
+  /*---   Depth  ---*/
+  --ui-dp-lr-2: 0 2px 2px var(--sd2), 0 3px 1px -2px var(--sd3);
+  --ui-dp-lr-4: 0 2px 4px -1px var(--sd1), 0 4px 5px var(--sd2);
+  --ui-dp-lr-6: 0 3px 5px -1px var(--sd1), 0 6px 10px var(--sd2);
+  --ui-dp-0: 0 0 0 0 var(--sd1), 0 0 0 0 var(--sd2), 0 0 0 0 var(--sd3);
+  --ui-dp-1: 0 2px 1px -1px var(--sd1), 0 1px 1px 0 var(--sd2), 0 1px 3px 0 var(--sd3);
+  --ui-dp-2: 0 1px 5px var(--sd1), 0 2px 2px var(--sd2), 0 3px 1px -2px var(--sd3);
+  --ui-dp-3: 0 1px 8px var(--sd1), 0 3px 4px var(--sd2), 0 3px 3px -2px var(--sd3);
+  --ui-dp-4: 0 2px 4px -1px var(--sd1), 0 4px 5px var(--sd2), 0 1px 10px var(--sd3);
+  --ui-dp-5: 0 3px 5px -1px var(--sd1), 0 5px 8px var(--sd2), 0 1px 14px var(--sd3);
+  --ui-dp-6: 0 3px 5px -1px var(--sd1), 0 6px 10px var(--sd2), 0 1px 18px var(--sd3);
+  --ui-dp-7: 0 4px 5px -2px var(--sd1), 0 7px 10px 1px var(--sd2), 0 2px 16px 1px var(--sd3);
+  --ui-dp-8: 0 5px 5px -3px var(--sd1), 0 8px 10px 1px var(--sd2), 0 3px 14px 2px var(--sd3);
+  --ui-dp-9: 0 5px 6px -3px var(--sd1), 0 9px 12px 1px var(--sd2), 0 3px 16px 2px var(--sd3);
+  --ui-dp-10: 0 6px 6px -3px var(--sd1), 0 10px 14px 1px var(--sd2), 0 4px 18px 3px var(--sd3);
+  --ui-dp-11: 0 6px 7px -4px var(--sd1), 0 11px 15px 1px var(--sd2), 0 4px 20px 3px var(--sd3);
+  --ui-dp-12: 0 7px 8px -4px var(--sd1), 0 12px 17px 2px var(--sd2), 0 5px 22px 4px var(--sd3);
+  --ui-dp-14: 0 7px 9px -4px var(--sd1), 0 14px 21px 2px var(--sd2), 0 5px 26px 4px var(--sd3);
+  --ui-dp-16: 0 8px 10px -5px var(--sd1), 0 16px 24px 2px var(--sd2), 0 6px 30px 5px var(--sd3);
+  --ui-dp-22: 0 10px 14px -6px var(--sd1), 0 22px 35px 3px var(--sd2), 0 8px 42px 7px var(--sd3);
+  --ui-dp-24: 0 11px 15px -7px var(--sd1), 0 24px 38px 3px var(--sd2), 0 9px 46px 8px var(--sd3);
+  /*--- Motion ---*/
+  --ui-easing: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ui-easing-enter: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ui-easing-leave: cubic-bezier(0.4, 0.0, 1, 1);
+  --ui-easing-pass: cubic-bezier(0.4, 0.0, 0.6, 1);
+  /* Viewport or Depth specific durations */
+  --ui-dpd-enter: 428ms;
+  --ui-dpd-leave: 376ms;
+  --ui-dpd-pass: 370ms;
+  --ui-dpd-animation: 800ms;
+  --ui-dpd-0: 160ms;
+  --ui-dpd-1: 320ms; --ui-dpd-2: 340ms; --ui-dpd-3: 356ms; --ui-dpd-4: 372ms;
+  --ui-dpd-5: 388ms; --ui-dpd-6: 404ms; --ui-dpd-7: 420ms; --ui-dpd-8: 436ms;
+  --ui-dpd-9: 452ms; --ui-dpd-10: 468ms; --ui-dpd-11: 484ms; --ui-dpd-12: 500ms;
+  --ui-dpd-14: 532ms; --ui-dpd-16: 564ms; --ui-dpd-22: 660ms; --ui-dpd-24: 692ms;
+}
+@media (--large-viewport) {
+  :root {
+    --ui-dpd-enter: 292ms;
+    --ui-dpd-leave: 260ms;
+    --ui-dpd-pass: 254ms;
+    --ui-dpd-animation: 780ms;
+  }
+}
+@media (--mobile-viewport) {
+  :root {
+    --ui-dpd-enter: 225ms;
+    --ui-dpd-leave: 200ms;
+    --ui-dpd-pass: 195ms;
+    --ui-dpd-animation: 760ms;
+    --ui-dpd-0: 120ms;
+    --ui-dpd-1: 240ms; --ui-dpd-2: 260ms; --ui-dpd-3: 265ms; --ui-dpd-4: 270ms; --ui-dpd-5: 275ms;
+    --ui-dpd-6: 280ms; --ui-dpd-7: 285ms; --ui-dpd-8: 290ms; --ui-dpd-9: 295ms; --ui-dpd-10: 300ms;
+    --ui-dpd-11: 305ms; --ui-dpd-12: 310ms; --ui-dpd-14: 320ms; --ui-dpd-16: 330ms; --ui-dpd-22: 360ms;
+    --ui-dpd-24: 380ms;
+  }
+}

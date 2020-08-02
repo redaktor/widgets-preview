@@ -1,0 +1,26 @@
+.root {
+	border-radius: 0 !important;
+}
+.cardSummary {
+	padding-left: 3.252vw;
+	padding-right: 3.252vw;
+}
+@media screen and (min-width: 508px) {
+	.cardSummary {
+		padding-left: 5.203vw;
+		padding-right: 5.203vw;
+	}
+}
+@media screen and (min-width: 720px) {
+	.cardSummary {
+		max-width: 60ch;
+		padding-left: 1.818181818vw;
+		padding-right: 1.818181818vw;
+	}
+}
+@media screen and (min-width: 1900px) {
+	.cardSummary {
+		padding-left: 1.123636363vw;
+		padding-right: 1.123636363vw;
+	}
+}

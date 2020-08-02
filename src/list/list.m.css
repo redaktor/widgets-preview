@@ -1,0 +1,12 @@
+.transformer {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	will-change: transform;
+	position: relative;
+	width: 100%;
+}
+
+.root {
+	overflow: auto;
+}

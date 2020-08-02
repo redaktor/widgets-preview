@@ -1,0 +1,351 @@
+/* The root class of TextInput */
+.root {
+	composes: ui ui-input ui-transition from './_ui.m.css';
+	--label-color: var(--text-muted);
+	--input-color: var(--text);
+	--input-radius: var(--ui-border-radius-emphasized,2px) var(--ui-border-radius-emphasized,2px) 0 0;
+	color: var(--input-color,inherit);
+	overflow: visible;
+	outline: none;
+	min-width: 0;
+}
+.root.raised, .root.shaped, .root.filled .input:focus {
+	--label-color: var(--text-inverse-muted);
+	--input-color: var(--text-inverse);
+}
+.raised .wrapper::before {
+	content: "";
+	position: absolute;
+	height: calc(100% - var(--line));
+	width: 100%;
+	top: var(--line);
+	border-radius: var(--input-radius);
+	pointer-events: none;
+}
+.raised .wrapper::before {
+	box-shadow: var(--ui-dp-2);
+}
+.root.responsive {
+	/*display: flex;*/
+	width: 100%;
+}
+/* The wrapper around the text input, label, leading, and trailing (not helper text) */
+.wrapper {
+	overflow: hidden;
+}
+/* Contains the input element */
+.inputWrapper { }
+.wrapper, .inputWrapper {
+	/*display: flex;*/
+	width: 100%;
+}
+.helperText {
+	position: absolute;
+	right: 0;
+}
+/* Added to the input */
+.input {
+	composes: input from './_typo.css';
+	display: inline-block;
+  min-width: 64px;
+  max-width: 99.99% !important;
+	min-height: 100%;
+	width: 99.99%;
+  transition: width 0.25s;
+	padding: var(--ptb) var(--plr) var(--ptb) var(--plr);
+	margin: 0;
+	border: none;
+}
+.input:focus {
+  outline: none;
+}
+.root .input {
+	color: var(--input-color,inherit);
+	background: none;
+}
+.animated { }
+.addonFilled { }
+/* The bottom line, animated as pseudoelement ::after */
+.border {
+	composes: input-box from './_ui.m.css';
+	z-index: -1;
+	transition: border-color var(--ui-dpd-8) var(--ui-easing);
+	line-height: 0;
+	cursor: text;
+	top: auto;
+	bottom: calc(var(--size) * var(--caph) - (var(--line) * 0.5));
+}
+.flat .border,
+.filled .border,
+.raised .border {
+	border-radius: 0;
+	border-top: 0;
+	border-left: 0;
+	border-right: 0;
+	border-bottom: var(--ui-border-width-emphasized) solid var(--ui-outline);
+}
+.raised .border,
+.raised:hover .border {
+	border-top: var(--ui-border-width-emphasized) solid var(--ui-bg-inverse-hover);
+}
+.raised .border,
+.shaped .border {
+	border-width: var(--ui-border-width);
+	border-radius: var(--input-radius);
+	background-color: var(--ui-bg-inverse);
+}
+.filled .border {
+	border-radius: var(--input-radius);
+	background-color: var(--ui-filled);
+}
+.outlined .border {
+	border: var(--ui-border-width-emphasized) solid var(--ui-outline);
+	background-color: var(--ui-bg-muted);
+}
+
+.root:not(.disabled):not(.invalid) .input:hover:not(:focus):not(:invalid) ~ .border {
+	border-color: var(--ui-border-hover);
+}
+.root:not(.disabled):not(.invalid).filled .input:hover:not(:focus):not(:invalid) ~ .border {
+	border-color: var(--ui-border);
+}
+.root:not(.disabled):not(.invalid).raised .input:hover:not(:focus):not(:invalid) ~ .border {
+	border-color: var(--ui-bg-inverse);
+}
+.raised:not(.disabled):not(.invalid) .input:focus:not(:invalid) ~ .border,
+.filled:not(.disabled):not(.invalid) .input:focus:not(:invalid) ~ .border,
+.shaped:not(.disabled):not(.invalid) .input:focus:not(:invalid) ~ .border {
+	background-color: var(--ui-bg-inverse-hover);
+}
+
+.border::after {
+	transform: scaleX(0);
+  pointer-events: none;
+	border-color: var(--ui-accent);
+	transition: transform var(--ui-dpd-6) var(--ui-easing) 0ms;
+}
+
+.root.flat .border::after,
+.root.outlined .border::after {
+	margin-top: var(--ui-border-width-emphasized);
+}
+
+.invalid .border::after,
+.root:not(.disabled) .input:invalid + .border::after {
+	transform: scaleX(1);
+	border-color: var(--ui-error);
+}
+.root:not(.disabled) .input:focus + .border::after {
+	transform: scaleX(1);
+}
+
+
+/* Added to a focused content */
+.focusedContent {
+	position: relative;
+	z-index: 11;
+	display: none;
+}
+.input:focus ~ .focusedContent {
+	display: flex;
+}
+
+.label {
+	--plr-inner: calc(var(--plr) * 0.382);
+	position: absolute;
+	left: 0;
+	display: inline-block;
+	padding: var(--ptb) var(--plr-inner) 0 var(--plr-inner);
+	margin-bottom: 0;
+	cursor: pointer;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 100%;
+	overflow: hidden;
+	color: var(--label-color);
+	background-color: transparent;
+	transform: translateX(var(--plr));
+	transform-origin: top left;
+	will-change: transform, top, line-height, color, background-color;
+	transition-property: transform, top, color, background-color;
+	transition-duration: var(--ui-dpd-0);
+	transition-timing-function: var(--ui-easing);
+}
+.flat .label {
+	transform: translateX(0);
+}
+.outlined .label,
+.raised .label {
+	--plr-inner: calc(var(--plr) * 0.382 + var(--ui-border-width));
+}
+
+/* sliding labels */
+.slideLabel .input:focus ~ .label,
+.slideLabel .input:not(:placeholder-shown) ~ .label {
+	--label-color: var(--ui-accent);
+	font-size: var(--small-size);
+	color: var(--label-color);
+	top: calc(var(--line) - var(--ptb));
+	line-height: 1;
+	overflow: visible;
+}
+
+.slideLabel.outlined .input:focus ~ .label,
+.slideLabel.outlined .input:not(:placeholder-shown) ~ .label {
+	transform: translateX(calc(var(--plr) * 0.618)) translateY(calc(var(--small-size) * -0.5));
+}
+.slideLabel:not(.outlined) .input:focus ~ .label,
+.slideLabel:not(.outlined) .input:not(:placeholder-shown) ~ .label {
+	transform: translateX(0) translateY(calc(var(--small-size) * -0.5 - var(--ui-border-radius-emphasized)));
+}
+.staticLabel { }
+
+.root:not(.flat) .label::after {
+	content: "";
+	display: inline-block;
+	position: absolute;
+	width: 100%;
+	left: 0;
+	background: var(--ui-bg-muted);
+	z-index: -1;
+}
+.slideLabel:not(.flat) .label::after {
+	will-change: transform;
+	transform: scaleY(0);
+}
+.root:not(.flat):not(.outlined) .label::after {
+	margin-top: calc((var(--small-size) - var(--size)) * 0.5);
+	height: calc(var(--size) + var(--ui-border-width));
+}
+.outlined .label::after {
+	margin-top: calc(var(--small-size) * 0.5 - 0.5px);
+	height: calc(var(--ui-border-width-emphasized) + 0.5px);
+}
+.shaped .label::after {
+	border-radius: 0 0 var(--ui-border-radius-emphasized) 0;
+}
+.slideLabel .input:focus ~ .label::after,
+.slideLabel .input:not(:placeholder-shown) ~ .label::after {
+	transform: scaleY(1);
+	transition: transform 16ms linear calc(var(--ui-dpd-0) * 0.6);
+}
+
+.slideLabel .input::placeholder,
+.slideLabel .prefix,
+.slideLabel .suffix {
+	transition: opacity var(--ui-dpd-1) var(--ui-easing);
+	opacity: 0;
+}
+.slideLabel .input:focus::placeholder,
+.slideLabel .input:focus ~ .prefix,
+.slideLabel .input:focus ~ .suffix,
+.slideLabel .input:not(:placeholder-shown) ~ .prefix,
+.slideLabel .input:not(:placeholder-shown) ~ .suffix {
+	opacity: 1;
+}
+
+.invalid .input:focus ~ label,
+.wrapper .input:invalid:focus ~ .label {
+	color: var(--ui-error);
+}
+
+.disabled .input:not(:invalid) ~ .border {
+	background-color: var(--ui-disabled) !important;
+}
+.disabled label {
+	color: var(--ui-disabled) !important;
+}
+
+.root div[pseudo="-webkit-textfield-decoration-container"] {
+	color: var(--ui-error, red);
+	text-align: right;
+}
+.invalid .input,
+.enabled .input:invalid {
+	caret-color: var(--ui-error, red);
+}
+
+/*
+.hasSchema .input:focus ~ .label {
+	color: var(--ui-bg);
+}
+.parentSchema .input:focus ~ .label {
+	color: var(--ui-accent);
+}
+
+.filled .border,
+.outlined .border {
+	content: "";
+	display: block;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+.filled .border {
+	height: calc(var(--ui-outer-h) - var(--input-border-distance) + var(--ui-lr));
+	border-radius: var(--ui-border-radius-emphasized) var(--ui-border-radius-emphasized) 0 0;
+	background: var(--input-fill);
+}
+.outlined .border {
+	height: calc(var(--size) * var(--lh) - (var(--line) - var(--size)));
+	border-radius: var(--ui-border-radius-emphasized);
+	border: var(--ui-border-width) solid var(--ui-outline);
+}
+.outlined .input:focus ~ .border {
+	border-width: var(--ui-border-width-emphasized);
+}
+.root:not(.responsive):not(.number)::after,
+.root:not(.responsive):not(.number) .wrapper {
+	width: var(--ui-default-input-width);
+}
+.outlined.invalid .border,
+.outlined:not(.disabled) .input:invalid ~ .border {
+	border-color: var(--ui-error);
+}
+*/
+
+.noLabel {
+}
+
+/* Added to a disabled TextInput */
+.disabled {
+}
+/* Added to a focused input */
+.focused {
+}
+/* Added to a read-only input */
+.readonly {
+}
+/* Added to a required input */
+.required {
+}
+/* Added when the contents of the TextInput are invalid */
+.invalid {
+}
+/* Contains leading content */
+.addonRoot {
+}
+/* Added at the root when there is leading content */
+.hasLeading {
+}
+
+/* Added at the root when there is trailing content */
+.hasTrailing {
+}
+
+/* Styles the helper text when the input is invalid */
+.invalid .helperText {
+	color: var(--ui-error, red);
+}
+
+/* Styles the input when the input is invalid */
+.invalid .input {
+	border-color: var(--ui-error, red);
+}
+
+/* Styles the input when the input is valid */
+.valid .input {
+	border-color: var(--success-color);
+}

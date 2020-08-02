@@ -1,0 +1,81 @@
+{% extends "_layout.html" %}
+{% set color = color|default('blue') %}
+{% set baseClass = baseClass|default('developers') %}
+{% set title = title|default('IndieAuth for Developers') %}
+
+{% block content %}
+<form class="ui labeled action input mailAuth mailAuth{{expRaw}}" method="POST" action="{{url}}">
+  <label class="mailMessage">{{messageForm}}<br>
+    ${for var }
+    <input class="mailCode" type="password" name="code" placeholder="{{codeName}}" autofocus="autofocus">
+  </label>
+  <input type="hidden" name="state" value="{{state}}">
+  <button class="mailSubmit" type="submit" class="ui green button">OK</button>
+  <label><br>
+    <span class="status">{{messageFormValid}}</span><br />
+    <span class="timer" data-exp="{{expRaw}}" id="timer"></span>
+  </label>
+</form>
+<script>
+var mailToken = {
+  form: document.querySelector('.mailAuth{{expRaw}}'),
+  input: document.querySelector('.mailAuth{{expRaw}} .mailCode'),
+  btn: document.querySelector('.mailAuth{{expRaw}}>.mailSubmit'),
+  init: function(){
+    if (!!document.querySelector('.mailAuth{{expRaw}}').mailProgress) { return; }
+    var o = {
+      warnPercent: 8,
+      timer: mailToken.form.querySelector('label>.timer')
+    };
+    o.sec = Math.floor((parseInt(o.timer.dataset.exp, 10) - Date.now())/1000);
+    mailToken.form.mailProgress = function(nowSec) {
+      var myTimer = setInterval(function() {
+        nowSec--;
+        o.timer.textContent = nowSec.toString() + '{{messageFormRemain}}';
+        if (nowSec === Math.ceil(o.sec*(o.warnPercent/100))) {
+          ['status','timer'].map(function(s){
+            mailToken.form.querySelector('label>.'+s).className += ' warning';
+          });
+        }
+        if ((nowSec < 2)) {
+          mailToken.invalidate();
+          clearInterval(myTimer);
+        }
+      }, 1000);
+    };
+    ((o.sec < 2) && mailToken.invalidate()) || mailToken.form.mailProgress(o.sec);
+  },
+  submit: function() {
+    try {
+      var parts = this.value.split('.');
+      if (parts.length === 3) {
+        var str = decodeURIComponent(atob(parts[1]).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        var res = JSON.parse(str);
+        if (res.hasOwnProperty('code') && typeof res.code === 'string') {
+          mailToken.invalidate(true);
+        }
+      }
+    } catch(e) {}
+  },
+  invalidate: function(isSuccess) {
+    mailToken.input.removeEventListener('focus', mailToken.init);
+    mailToken.input.removeEventListener('input', mailToken.submit);
+    mailToken.form.className += (isSuccess) ? 'submitted' : ' error';
+    if (!isSuccess) {
+      mailToken.form.setAttribute('action', ' ');
+      mailToken.form.textContent = '{{messageFormExpired}}';
+      return false;
+    }
+    mailToken.btn.style.display = 'none';
+    mailToken.form.querySelector('.mailMessage').style.display = 'none';
+    mailToken.form.querySelector('label>.status').textContent = '{{messageFormSubmitted}}';
+    setTimeout(function() { mailToken.form.submit(); }, 1);
+  }
+};
+mailToken.input.addEventListener('focus', mailToken.init, false);
+mailToken.input.addEventListener('input', mailToken.submit, false);
+mailToken.input.focus();
+</script>
+{% endblock %}

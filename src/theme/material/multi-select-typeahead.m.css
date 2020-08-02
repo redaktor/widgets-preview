@@ -1,0 +1,74 @@
+.root {
+	display: flex;
+	margin: 0;
+	padding: 0;
+}
+.focused { }
+
+.active {
+	min-height: calc(var(--maxH) + var(--line2));
+	height: auto !important;
+}
+.selectedIcon {
+	margin-right: 8px;
+}
+.root .inputWrapper { }
+.root .input { }
+
+
+.value {
+	composes: spaceEqual from './_ui.m.css';
+	cursor: default !important;
+}
+.valueInline {
+	margin-top: 0 !important;
+	margin-bottom: calc(var(--mt) + var(--uiMB) - var(--line2)) !important;
+	padding-bottom: 0 !important;
+}
+
+.root .label {
+	z-index: 1;
+}
+
+.root.hasValue {
+	height: auto;
+}
+
+.root.hasValue .inputWrapper {
+	height: auto;
+	margin-bottom: calc(var(--uiMB) - var(--line));
+}
+
+.root .wrapper {
+	height: auto;
+}
+
+.root .input {
+	height: auto;
+	/* padding-left: 16px; */
+}
+
+/*
+.root.hasValue.hasLabel .inputWrapper {
+	padding-top: var(--line);
+}
+*/
+/* safari_only */ /*
+@media not all and (min-resolution:.001dpcm) { @media {
+	.root.hasValue .input {
+		margin-top: var(--ptb);
+	}
+}}
+*/
+.root.hasValue .label {
+	top: calc(var(--line) + var(--ui-border-width-emphasized));
+}
+
+.values {
+	/* padding-left: 16px;
+	padding-top: 4px; */
+}
+.item {
+	padding-right: var(--line);
+}
+.selected { }

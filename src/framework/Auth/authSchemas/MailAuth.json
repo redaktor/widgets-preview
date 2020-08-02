@@ -1,0 +1,9 @@
+{
+	"id": "https://indieauth.com/MailAuth",
+	"title": "MailAuth",
+  "meta": {"client": "MailAuth"},
+	"allOf": [
+  	{ "$ref": "https://indieauth.com/IndieAuth#definitions/MailAuth" }
+	],
+	"required": ["email", "host", "port", "user", "pass"]
+}

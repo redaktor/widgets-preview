@@ -1,0 +1,9 @@
+{
+	"id": "https://indieauth.com/GPGAuth",
+	"title": "GPGAuth",
+  "meta": {"client": "GPGAuth"},
+	"allOf": [
+  	{ "$ref": "https://indieauth.com/IndieAuth#definitions/GPGAuth" }
+	],
+	"required": ["id"]
+}

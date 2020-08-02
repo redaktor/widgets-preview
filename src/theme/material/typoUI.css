@@ -1,0 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400;500&display=swap');
+
+/* 1.067 rythm for "Maven Pro": 11.5px / 1.826086956521739 */
+:root {
+  --lineHeight: 1.826086956521739;
+  --gridColor: rgba(255, 0, 0, 0.5);
+  font-family: "Maven Pro", Maven Pro;
+  font-size: 11.5px;
+  line-height: var(--lineHeight);
+  box-sizing: border-box;
+  /*
+  background: -webkit-linear-gradient(var(--gridColor), var(--gridColor) 1px, transparent 1px);
+  background: linear-gradient(var(--gridColor), var(--gridColor) 1px, transparent 1px);
+  */
+  background-size: 1px calc(1em * var(--lineHeight));
+  background-position: 0px -1px
+}
+body {
+  background: transparent;
+  color: #fff;
+}
+.flex {
+  width: 100%;
+  display: flex;
+  margin: 0;
+  padding: 0 0 30px 0;
+}
+.flex > div {
+  margin: 0;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+p {padding:0; margin: 0;}
+
+/* 12px */
+.xs {
+  font-size: 1.0434782608695652rem;
+  line-height: 1.75;
+  padding-top: 0.5em;
+  margin-bottom: 1.25em;
+  /* --capHeight: 0.75; */
+
+}
+
+
+/* 13px */
+.s {
+  font-size: 1.1304347826086956rem;
+  line-height: 1.6153846153846154;
+  padding-top: 0.46153846153846156em;
+  margin-bottom: 1.1538461538461537em;
+  /* --capHeight: 0.6923076923076923; */
+}
+/* 14px */
+.m {
+  font-size: 1.2173913043478262rem;
+  line-height: 1.5;
+  padding-top: 0.39285714285714285em;
+  margin-bottom: 1.1071428571428572em;
+  /* --capHeight: 0.7142857142857143; */
+}
+/* 15px */
+p, .l {
+  font-size: 1.3043478260869565rem;
+  line-height: 1.4;
+}
+p:not(.serif), .l:not(.serif) {
+  padding-top: 0.3333333333333333em;
+  margin-bottom: 1.0666666666666667em;
+  /* --capHeight: 0.7333333333333333; */
+}
+p.serif, .l.serif {
+  padding-top: 0.36666666666666664em;
+  margin-bottom: 1.0333333333333332em;
+  /* --capHeight: 0.6666666666666666; */
+}
+
+/* 16px */
+.xl {
+  font-size: 1.391304347826087rem;
+  line-height: 1.3125;
+  padding-top: 0.3125em;
+  margin-bottom: 1em;
+  /* --capHeight: 0.6875; */
+}
+/* 17px */
+h5, .h5, .xxl {
+  font-size: 1.4782608695652173rem;
+  line-height: 1.2352941176470589;
+  padding-top: 0.2647058823529412em;
+  margin-bottom: 0.9705882352941178em;
+  /* --capHeight: 0.7058823529411765; */
+}
+/* 18px */
+h4, .h4 {
+  font-size: 1.565217391304348rem;
+  line-height: 1.1666666666666667;
+}
+h4:not(.serif), .h4:not(.serif) {
+  padding-top: 0.22222222222222227em;
+  margin-bottom: 0.9444444444444444em;
+  /* --capHeight: 0.7222222222222222; */
+}
+h4.serif, .h4.serif {
+  padding-top: 0.25000000000000006em;
+  margin-bottom: 0.9166666666666667em;
+  /* --capHeight: 0.6666666666666666; */
+}
+
+/* 19px */
+h3, .h3 {
+  font-size: 1.6521739130434783rem;
+  line-height: 1.1052631578947367;
+  padding-top: 0.21052631578947362em;
+  margin-bottom: 0.894736842105263em;
+  /* --capHeight: 0.6842105263157895; */
+}
+
+/* 22px */
+.wide {
+  font-size: 1.9130434782608696rem;
+  line-height: 1.9090909090909087;
+  padding-top: 0.6136363636363635em;
+  margin-bottom: 1.2954545454545452em;
+  /* --capHeight: 0.6818181818181818; */
+}
+
+/* 29px */
+h2, .h2 {
+  font-size: 2.5217391304347827rem;
+  line-height: 1.4482758620689653;
+  padding-top: 0.3793103448275861em;
+  margin-bottom: 1.0689655172413792em;
+  /* --capHeight: 0.6896551724137931; */
+}
+/* 37px */
+h1, .h1 {
+  font-size: 3.217391304347826rem;
+  line-height: 1.135135135135135;
+}
+h1:not(.serif), .h1:not(.serif) {
+  padding-top: 0.21621621621621617em;
+  margin-bottom: 0.9189189189189189em;
+  /* --capHeight: 0.7027027027027027; */
+}
+h1.serif, .h1.serif {
+  padding-top: 0.22972972972972971em;
+  margin-bottom: 0.9054054054054054em;
+  /* --capHeight: 0.6756756756756757; */
+}
+
+/* 42px */
+.hero {
+  font-size: 3.652173913043478rem;
+  line-height: 1.4999999999999996;
+  padding-top: 0.40476190476190455em;
+  margin-bottom: 1.095238095238095em;
+  /* --capHeight: 0.6904761904761905; */
+}

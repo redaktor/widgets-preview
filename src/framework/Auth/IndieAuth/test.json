@@ -1,0 +1,88 @@
+{
+  "date": "2017-05-20T10:04:16.276Z",
+  "client_id": {
+    "statusCode": 200,
+    "data": {
+      "best": {
+        "title": "IndieAuth - Sign in with your domain name",
+        "icon": "https://indieauth.com/img/indieauth-logo-color.png",
+        "hCard": null,
+        "hXApp": {
+          "type": ["h-x-app"],
+          "properties": {
+            "name": ["IndieAuth.com"],
+            "logo": ["https://indieauth.com/img/indieauth-logo-color.png"]
+          },
+          "$ref": "/items/0",
+          "representative": true
+        }
+      },
+      "url": "https://indieauth.com/"
+    }
+  },
+  "me": {
+    "statusCode": 200,
+    "data": {
+      "best": {
+        "title": "Aaron Parecki",
+        "icon": "https://aaronparecki.com/images/profile.jpg",
+        "hCard": {
+          "type": ["h-card"],
+          "properties": {
+            "url": ["https://aaronparecki.com/", "https://w7apk.com"],
+            "uid": ["https://aaronparecki.com/"],
+            "photo": ["https://aaronparecki.com/images/profile.jpg"],
+            "note": ["Hi, I'm Aaron Parecki, co-founder of IndieWebCamp. I maintain oauth.net, write and consult about OAuth, and am the editor of the W3C Webmention and Micropub specifications, and co-editor of WebSub. I wrote 100 songs in 100 days! I've been tracking my location since 2008, and write down everything I eat and drink. I've spoken at conferences around the world about owning your data, OAuth, quantified self, and explained why R is a vowel."],
+            "name": ["Aaron Parecki"],
+            "org": [{
+              "value": "IndieWebCamp",
+              "type": ["h-card"],
+              "properties": {
+                "name": ["IndieWebCamp"],
+                "url": ["https://indieweb.org/"]
+              },
+              "$ref": "/items/5/properties/org/0"
+            }, {
+              "value": "oauth.net",
+              "type": ["h-card"],
+              "properties": {
+                "name": ["oauth.net"],
+                "url": ["https://oauth.net/"]
+              },
+              "$ref": "/items/5/properties/org/1"
+            }, {
+              "value": "IndieWebCamp",
+              "type": ["h-card"],
+              "properties": {
+                "photo": ["https://aaronparecki.com/images/indiewebcamp.png"],
+                "url": ["https://indieweb.org/"],
+                "name": ["IndieWebCamp"],
+                "role": ["Founder"]
+              },
+              "$ref": "/items/5/properties/org/2"
+            }, {
+              "value": "W3C",
+              "type": ["h-card"],
+              "properties": {
+                "photo": ["https://aaronparecki.com/images/w3c.png"],
+                "url": ["https://www.w3.org/"],
+                "name": ["W3C"],
+                "role": ["Editor"]
+              },
+              "$ref": "/items/5/properties/org/3"
+            }],
+            "bday": [""],
+            "callsign": ["W7APK"]
+          },
+          "$ref": "/items/5",
+          "representative": true
+        },
+        "hXApp": null,
+        "providers": {},
+        "providerCount": 0,
+        "verifyCount": 0
+      },
+      "url": "https://aaronparecki.com/"
+    }
+  }
+}

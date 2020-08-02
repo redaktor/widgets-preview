@@ -1,0 +1,193 @@
+.root {
+	--checkbox-ripple-alpha: 1;
+	--checkbox-ripple-size: 2;
+	--mark-width: var(--ui-border-width-emphasized, 2px);
+	composes: ui ui-transition from './_ui.m.css';
+	color: inherit;
+	padding-left: calc(var(--h) + var(--plr)) !important;
+}
+.box {
+	composes: box from './_ui.m.css';
+	display: inline-block;
+	width: var(--h);
+	height: var(--h);
+	margin-bottom: 0;
+	margin-right: var(--plr);
+	border-radius: var(--ui-border-radius-emphasized);
+	will-change: background-color,border;
+	transition: none;
+}
+.input {
+	composes: input from './_ui.m.css';
+	cursor: pointer;
+	top: calc(50% - var(--h) / 2) !important;
+	height: calc(var(--h) + var(--ui-border-width-emphasized, 2px)) !important;
+	opacity: 0;
+}
+.disabled { composes: disabled from './_ui.m.css'; }
+.flat { composes: flat from './_ui.m.css'; }
+.filled { composes: filled from './_ui.m.css'; }
+.raised { composes: raised from './_ui.m.css'; }
+.outlined { composes: outlined from './_ui.m.css'; }
+.shaped {
+	--mark-width: var(--ui-border-width, 1px);
+	composes: shaped from './_ui.m.css';
+}
+
+.box.checkmark, .box.dot {
+	position: absolute;
+	left: 0;
+	top: calc((var(--uiH) - var(--h)) / 2);
+}
+.box.dot {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+}
+.shaped.dot::before {
+	border: 0;
+}
+.animated:hover .box,
+.root:hover .box {
+	transition: background-color var(--ui-dpd-1) var(--ui-easing),
+		border-color var(--ui-dpd-1) var(--ui-easing);
+}
+
+.input:checked + .box,
+.input:checked + * .box {
+	background-color: var(--on);
+	color: var(--mark);
+}
+
+
+.box::before,
+.box::after {
+	content: "";
+	opacity: 0;
+	transform: scale(0, 0);
+	left: 0;
+	top: 0;
+}
+.flat.box::before,
+.filled.box::before,
+.shaped.box::before {
+	left: var(--mark-width);
+	top: var(--mark-width);
+}
+.raised.box::before {
+	left: 1.5px;
+	top: 1.5px;
+}
+.shaped.checkmark::before {
+	border-radius: var(--ui-border-radius);
+}
+.checkmark::before,
+.box::after {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+}
+.box::before {
+	will-change: opacity,transform;
+	opacity: 0;
+	transition: all var(--ui-dpd-16) var(--ui-easing);
+	pointer-events: none;
+}
+.box.checkmark::before {
+	--markH: calc(var(--h) * 0.618);
+	width: calc(var(--markH) / 2);
+	height: var(--markH);
+	border: var(--mark-width) solid var(--mark);
+	border-left: none;
+	border-top: none;
+	transform: translate(calc(var(--markH) / 2.5), var(--pt)) rotate(45deg) scale(0,0);
+}
+.box.dot::before {
+	--markH: calc(var(--h) * 0.382);
+	width: var(--markH);
+	height: var(--markH);
+	border-radius: 50%;
+	background-color: var(--mark);
+}
+.box::after {
+	background-color: var(--ui-accent);
+	border-radius: 50%;
+}
+.checked {
+}
+.input:checked + .checkmark::before {
+	opacity: 1;
+	transform: translate(calc(var(--markH) / 2.31), 0px) rotate(45deg) scale(1,1);
+}
+.input:checked + .dot::before {
+	opacity: 1;
+	transform: scale(1,1);
+}
+
+/* Animation */
+/* prevent ripple animation on page load */
+.animated:not(:hover):not(.disabled) .input + .box::after,
+.animated:not(:hover):not(.disabled) .input + * .box::after {
+	visibility: hidden;
+	transition: all 0.1s var(--ui-dpd-16);
+}
+/* switch on/off ripple animation */
+@keyframes ripple {
+  0% { opacity: var(--checkbox-ripple-alpha); transform: scale(1,1); }
+  100% { opacity: 0; transform: scale(var(--checkbox-ripple-size),var(--checkbox-ripple-size)); }
+}
+.animated:not(.disabled) .input:checked + .box::after,
+.animated:not(.disabled) .input:checked + * .box::after {
+	background-color: var(--ui-accent);
+	animation: ripple var(--ui-dpd-16) var(--ui-easing) 0s 1 normal none;
+}
+@keyframes rippleOff {
+  0% { opacity: var(--checkbox-ripple-alpha); transform: scale(1,1); }
+  100% { opacity: 0; transform: scale(var(--checkbox-ripple-size),var(--checkbox-ripple-size)); }
+}
+.animated:not(.disabled) .input:not(:checked) + .box::after,
+.animated:not(.disabled) .input:not(:checked) + * .box::after {
+	background-color: var(--ui-off);
+	animation: rippleOff var(--ui-dpd-16) var(--ui-easing) 0s 1 normal none;
+}
+
+/* invalid styles */
+.invalid .inner::after {
+	border-color: var(--ui-error);
+}
+.invalid .box::after {
+	color: var(--ui-error);
+}
+/* valid style */
+.valid .inner::after {
+	border-color: var(--ui-success);
+}
+.valid .box::after {
+	color: var(--ui-success);
+}
+
+.animated, .focused, .required, .disabled, .readonly {
+
+}
+
+
+/*
+.box::after {
+	content: '';
+	opacity: 0;
+	display: inline-block;
+	width: calc(var(--size) * 0.5);
+	height: var(--size);
+	border: 2px solid var(--ui-border);
+	border-left: none;
+	border-top: none;
+	transform-origin: 0px 0px;
+	transform: translate(var(--size), 0px) rotate(45deg);
+	box-sizing: border-box;
+	pointer-events: none;
+}
+.checked .box::after {
+	opacity: 1;
+}
+*/

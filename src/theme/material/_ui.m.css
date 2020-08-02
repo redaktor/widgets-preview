@@ -1,0 +1,465 @@
+
+@import url("./_depth.css");
+/* @import url("./_typo.css"); */
+
+/*--------------------------------------------------------------
+  Globals
+--------------------------------------------------------------*/
+
+:root {
+	--pi: 3.14159265359;
+	--transparent: transparent;
+	--ui-font-weight: 400;
+  --ui-font-weight-bold: 700;
+	--ui-default-input-width: 200px; /* if neither responsive or width is given */
+	/* Border */
+	--ui-border-width: 1px;
+	--ui-border-width-emphasized: 2px;
+	--ui-border-radius: 2px;
+	--ui-border-radius-emphasized: 4px;
+  /* Spacing */
+	--grid-base: 8px;
+	--spacing: calc(var(--line) / 1.618);
+	--spacing-large: var(--line);
+	--touch-target-min: 40px;
+	/* Z-index levels */
+	--zindex-base: 0;
+	--zindex-tooltip: 100;
+	--zindex-dropdown: 200;
+	--zindex-fixed: 300;
+	--zindex-dialog: 400;
+	--zindex-alert: 500;
+	/* nojs */
+	--redaktor-btn-x: 50%;
+	--redaktor-btn-y: 50%;
+	--redaktor-btn-w: 50px;
+  /*-------------------
+          Grid
+  --------------------*/
+  --columnCount: 16;
+
+  /*-------------------
+          Paths
+  --------------------*/
+  /* For source only. Deprecated. Were modified in gulp for dist FIXME*/
+  --imagePath : '../../themes/redaktor-default/assets/images';
+  --fontPath   : '../../themes/redaktor-default/assets/fonts';
+}
+
+.flex {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+}
+.flexRow {
+	display: flex;
+	justify-content: space-around;
+	flex-direction: row;
+}
+
+.heroBaseline {
+  margin-top: calc(var(--base-size) * 1.5);
+}
+
+.xs {composes: xs from './_typo.css'; }
+.s { composes: s from './_typo.css'; }
+.m { composes: m from './_typo.css'; }
+.l { composes: l from './_typo.css'; }
+.xl {composes: xl from './_typo.css'; }
+.xxl{composes: xxl from './_typo.css'; }
+.xs {
+	--pm: 1.5px;
+	--h: var(--line);
+	--fullH: var(--line);
+	--maxH: var(--line2);
+}
+.s, .m, .l, .xl, .xxl {
+	--fullH: var(--line2);
+}
+.s {
+	--pm: 3.5px;
+	--h: calc(var(--line) * 1.25);
+	--maxH: var(--line2);
+}
+.m {
+	--pm: -7.5px;
+	--h: calc(var(--line) * 1.5);
+	--maxH: var(--line3);
+}
+.l {
+	--pm: -4.5px;
+	--h: calc(var(--line) * 1.618);
+	--maxH: var(--line3);
+}
+.xl {
+	--pm: 0px;
+	--h: calc(var(--line) * 2);
+	--maxH: var(--line3);
+}
+.xxl {
+	--pm: 3.5px;
+	--h: calc(var(--line) * 2.25);
+	--maxH: var(--line4);
+}
+.xs > .xs { --pm: -1.5px; }
+.xxl > .l { --pm: -0.5px }
+
+
+.ui, .uiVar {
+  --hc: calc(var(--caph) * var(--size));
+  --ht: calc(var(--size) * var(--lh));
+  --above: calc(var(--ht) - var(--hc));
+  --mlr: calc(var(--size, 4px) * 0.382);
+  --ml: calc(var(--size, 4px) * 0.618);
+  --mt: calc(var(--pm) * -1);
+  --plr: calc(var(--size) * 0.618);
+  --uiMB: calc(var(--mb, 16px) - var(--above) + var(--pt) - var(--pm));
+	--uiH: calc(var(--ht) + var(--pt) * 2);
+	--pulse: var(--ui-accent);
+}
+.ui {
+	--m: calc((var(--fullH) - var(--h)) / 2);
+	background-color: var(--transparent);
+	color: var(--text,inherit);
+	font-family: var(--font-sans);
+	height: var(--h);
+  margin-bottom: calc(var(--m) + var(--pt));
+  margin-top: calc(var(--m) - var(--pt));
+	padding-top: 0;
+	vertical-align: baseline;
+	vertical-align: -webkit-baseline-middle;
+	position: relative;
+	display: inline-block;
+	border: none;
+  outline: none;
+}
+.uiInline,
+p:not(.ui) > .ui {
+	vertical-align: baseline;
+	margin-top: var(--line);
+	margin-bottom: var(--mb);
+}
+.ui.ui-input {
+	padding-top: var(--line);
+	padding-bottom: 0;
+}
+
+.ui.square {
+	width: var(--uiH) !important;
+}
+.ui.nextBaseline {
+  vertical-align: calc(var(--hc) * -1);
+}
+.spaceEqual {
+  margin-left: var(--mlr, 4px);
+  margin-right: var(--mlr, 4px);
+}
+.spaceLeft {
+  margin-left: var(--ml, 4px);
+  margin-right: 0;
+}
+.spaceRight {
+  margin-right: var(--ml, 4px);
+  margin-left: 0;
+}
+
+/* Addded to a disabled widget */
+.box {
+	--mark: var(--text);
+	--on: var(--ui-filled-on);
+}
+.disabled,
+.disabled:hover {
+	opacity: var(--disabledAlpha);
+	cursor: default;
+}
+.flat {
+	--pulse: var(--ui-flat-accent);
+	color: var(--text-flat);
+}
+.flat.box {
+	--mark: var(--text-flat-hover);
+	--on: var(--ui-flat-on);
+	background-color: var(--ui-flat-off);
+}
+.filled, .raised {
+	color: var(--text-filled);
+}
+.filled:not(.box), .raised:not(.box) {
+	background-color: var(--ui-filled);
+}
+.filled.box, .raised.box {
+	background-color: var(--ui-filled-off);
+}
+.raised {
+	box-shadow: var(--ui-dp-2);
+}
+.raised.box { /* TODO it is for dark where you can't see shadows */
+	border: 0.5px solid var(--m-600);
+  border-top-color: var(--m-400);
+  border-right-color: var(--m-400);
+	box-shadow: var(--ui-dp-2);
+}
+.shaped.box {
+	--on: var(--bg);
+	border: var(--ui-border-width) solid var(--ui-outline);
+	background-color: var(--ui-bg);
+	transition: all var(--ui-dpd-2) var(--ui-easing);
+}
+.outlined.box {
+	--mark: var(--ui-accent);
+	--on: transparent;
+	border: var(--ui-border-width-emphasized) solid var(--ui-outline);
+}
+
+.flat:not(.disabled):not(.noHover):hover {
+	color: var(--text-flat-hover);
+	background-color: var(--ui-flat-hover);
+}
+.filled:not(.disabled):not(.noHover):hover,
+.raised:not(.disabled):not(.noHover):hover {
+	color: var(--text-filled-hover);
+	background-color: var(--ui-filled-hover);
+}
+
+.ui:not(.disabled):not(.noHover):hover .box {
+	border-color: var(--ui-outline-hover);
+}
+.ui:not(.disabled):not(.noHover):hover .box:not(.outlined):not(.shaped) {
+	background-color: var(--ui-filled-hover);
+}
+.ui:not(.disabled):not(.noHover):hover .shaped.box {
+	background-color: var(--ui-bg);
+}
+
+.input-box,
+.input-box::after,
+.outlined:not(.box)::before,
+.shaped:not(.box)::before {
+	content: "";
+	position: absolute;
+	display: block;
+	width: 100%;
+	left: 0;
+	border-radius: inherit;
+}
+.input-box {
+	top: var(--line);
+	height: calc(100% - var(--line));
+}
+.input-box::after,
+.shaped:not(.box)::before {
+	top: 0;
+	height: 100%;
+}
+.outlined:not(.box)::before {
+	top: 0;
+	height: calc(100% - (var(--ui-border-width-emphasized) * 2));
+	width: calc(100% - (var(--ui-border-width-emphasized) * 2));
+}
+.outlined:not(.box),
+.shaped:not(.box) {
+	border-radius: var(--ui-border-radius-emphasized);
+}
+.input-box,
+.outlined:not(.box)::before,
+.shaped:not(.box)::before {
+	border-radius: var(--ui-border-radius-emphasized);
+	border: var(--ui-border-width-emphasized) solid var(--ui-outline);
+}
+.input-box::after {
+	border-radius: 0;
+	border-bottom: var(--ui-border-width-emphasized) solid var(--ui-outline);
+}
+.shaped::before {
+	border-width: var(--ui-border-width);
+}
+.outlined {
+	color: var(--text, inherit);
+}
+.outlined:not(.disabled):hover::before,
+.input-box:not(.filled):not(.disabled):hover::after {
+	border-color: var(--ui-outline-hover);
+}
+.input-box.filled:not(.disabled):hover::after {
+	border-color: var(--ui-bg-inverse);
+}
+.shaped {
+	color: var(--text-shaped, inherit);
+	background-color: var(--ui-bg);
+}
+.shaped:not(.disabled):not(.noHover):hover {
+	color: var(--text-shaped-hover);
+	background-color: var(--bg);
+}
+
+
+
+/* Typo */
+.strongTypo {
+	font-weight: var(--ui-font-weight-bold);
+}
+.muted {
+	color: var(--text-muted);
+}
+.accent {
+	color: var(--ui-accent);
+}
+.subtitle {
+	margin-top: calc(var(--line) * -1);
+}
+
+/* max. and min. bottom gap */
+.wide.spaced {
+  --top: calc((var(--line-h) - var(--cap-h)) / 2);
+  margin-bottom: calc(1em * (var(--line-h) - var(--top)));
+}
+.narrow.spaced {
+  --bottom: calc(var(--line) * var(--lines-below, 1));
+  margin-bottom: calc(var(--mb) - var(--bottom));
+}
+.helperText {
+	font-style: italic;
+}
+.invalid .helperText {
+	color: var(--ui-error);
+}
+.valid .helperText {
+	color: var(--ui-success);
+}
+
+/* Common ui classes */
+.running {}
+/*
+.root, .root *,
+.root::before, .root::after,
+.root *::before, .root *::after {
+	box-sizing: border-box;
+}
+*/
+.absolute, .absolute::before {
+	position: absolute;
+	display: block;
+	left: 0;
+	top: 0;
+}
+.absolute::before, .inner::before, .inner::after {
+	transition: transform var(--ui-dpd-1) var(--ui-easing);
+}
+.ui-border {
+  border: var(--ui-border-width) solid var(--ui-menu-border);
+}
+.ui-transition {
+	transition: all var(--ui-dpd-1) var(--ui-easing);
+	transform: translate3d(0, 0, 0);  /*force hardware acceleration in WebKit*/
+}
+
+.square.wrapper, .hasPrefix.wrapper { padding-left: 0; }
+.square.wrapper, .hasSuffix.wrapper { padding-right: 0; }
+.wrapper.hasPrefix .inner { padding-left: var(--plr); }
+.wrapper.hasSuffix .inner { padding-right: var(--plr); }
+
+.prefix,
+.suffix {
+	height: 100%;
+	margin: 0;
+}
+.prefix,
+.suffix {
+	text-align: center;
+	padding-right: var(--spacing);
+	padding-left: var(--spacing);
+}
+
+.input {
+	/* composes: input from './_typo.css'; */
+	appearance: none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	outline: none;
+	border: none;
+	border-radius: 0;
+	flex: 1 1 auto;
+	z-index: var(--zindex-fixed);
+}
+/*
+.inner::before, .inner::after {
+	position: absolute;
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+}
+*/
+.ui-box {
+	--t: calc(var(--line) + var(--pt) - var(--ui-border-width));
+	--b: calc(var(--line) - var(--pt) - var(--ui-border-width));
+	--lr: calc(var(--line) / 1.618);
+	padding: var(--t) var(--lr) var(--b) var(--lr);
+	margin: 0;
+}
+
+/* FIXME ::
+.ui-input { /*text-input.m.css:48
+	--tb: calc(var(--line) - var(--pt));
+	--lr: calc(var(--line) / 1.618);
+	padding: var(--tb) var(--lr) var(--tb) var(--lr);
+	transition: all var(--ui-dpd-1) var(--ui-easing);
+	font-family: inherit;
+  font-size: inherit;
+	line-height: inherit;
+  min-width: calc(var(--grid-base) * 32);
+  width: 100%;
+	outline: none;
+	border-radius: 0;
+}
+.ui-typo-wrapper { /*checkbox.m.css:82
+	display: block;
+	position: absolute;
+	top: var(--pt);
+	left: 0;
+}
+.ui-typo-wrapper::before {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	text-align: center;
+}
+.ui-typo-box { /*checkbox.m.css:66 - button.m.css:44
+	padding-top: var(--pt);
+	margin-bottom: var(--mb);
+}
+.ui-typo-box-large { /*button:48
+  composes: sans h5 from "./_typo.css";
+	--t: calc(var(--line) - var(--ui-border-width));
+	--b: calc(var(--line) - var(--pt) - var(--ui-border-width));
+	--lr: calc(var(--line) / 1.618);
+	margin-top: var(--pt);
+  margin-bottom: var(--line);
+	padding: var(--t) var(--lr) var(--b) var(--lr);
+}
+.ui-typo-meta {
+  composes: p from "./_typo.css";
+  color: var(--text-muted);
+}
+
+.ui-typo-small {
+  composes: sans small from "./_typo.css";
+	font-weight: var(--ui-font-weight);
+}
+.ui-typo {
+  composes: sans p from "./_typo.css";
+	font-weight: var(--ui-font-weight);
+}
+.ui-typo-large {
+  composes: sans h5 from "./_typo.css";
+	font-weight: var(--ui-font-weight);
+}
+*/
+/* TODO <-- */

@@ -1,0 +1,174 @@
+/* 1.414 rythm for "Georgia": 10px / 1.52 */
+:root {
+  --_lineHeight: 1.52;
+  --gridColor: rgba(255, 0, 0, 0.24);
+  font-family: "Georgia", Georgia;
+  font-size: 10px;
+  line-height: var(--_lineHeight);
+  box-sizing: border-box;
+  background: -webkit-linear-gradient(var(--gridColor), var(--gridColor) 1px, transparent 1px);
+  background: linear-gradient(var(--gridColor), var(--gridColor) 1px, transparent 1px);
+  background-size: 1px calc(1em * var(--_lineHeight));
+  background-position: 0px 14px;
+}
+
+body {
+  -webkit-font-smoothing: subpixel-antialiased;
+  -webkit-font-feature-settings: 'kern' 1,'onum' 1,'liga' 1;
+  -ms-font-feature-settings: 'kern' 1,'onum' 1,'liga' 1;
+  -o-font-feature-settings: 'kern' 1,'onum' 1,'liga' 1;
+  font-feature-settings: 'kern' 1,'onum' 1,'liga' 1;
+  text-rendering: optimizeLegibility;
+}
+@supports (font-variant-ligatures: common-ligatures) {
+    body {
+        font-feature-settings: normal;
+        font-variant-ligatures: common-ligatures;
+    }
+}
+
+/*
+RESET THE BROWSER STYLES,
+only necessary here
+*/
+*, *:before, *:after { box-sizing: inherit; }
+body, div, section, p, h1, h2, h3, h4, h5 {
+  margin: 0; padding: 0;
+}
+
+.container {
+  display: grid;
+	grid-gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+}
+.header {
+  font-variant-numeric: lining-nums;
+}
+.running {
+  font-variant-numeric: oldstyle-nums;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 10px */
+.s {
+  font-size: 1rem;
+  line-height: 1.52;
+  padding-top: 0.41000000000000003em;
+  margin-bottom: 1.1099999999999999em;
+}
+/* 14px */
+.m {
+  font-size: 1.4rem;
+  line-height: 1.0857142857142859;
+  padding-top: 0.15000000000000008em;
+  margin-bottom: 0.9357142857142857em;
+}
+/* 20px */
+.l {
+  font-size: 2rem;
+  line-height: 1.52;
+  padding-top: 0.385em;
+  margin-bottom: 1.135em;
+}
+/* 28px */
+.xl {
+  font-size: 2.8rem;
+  line-height: 1.0857142857142859;
+  padding-top: 0.18571428571428578em;
+  margin-bottom: 0.9000000000000001em;
+}
+/* 40px */
+.xxl {
+  font-size: 4rem;
+  line-height: 1.14;
+  padding-top: 0.20749999999999996em;
+  margin-bottom: 0.9324999999999999em;
+}
+/* 57px */
+.xxxl {
+  font-size: 5.7rem;
+  line-height: 1.0666666666666667;
+  padding-top: 0.17368421052631577em;
+  margin-bottom: 0.8929824561403509em;
+}
+
+
+.sans {
+  font-family: Maven Pro, Sans-Serif;
+  --_lineHeight: 1.38182;
+  line-height: var(--_lineHeight);
+}
+.info {
+  position: absolute;
+  height: 1.38182rem;
+  width: 200px;
+  background:red;
+}
+/* 11px */
+.sans.s {
+  --size: 1.1;
+  --mB: 1.0333em;
+  font-size: calc(1rem * var(--size));
+  line-height: 1.38182;
+  padding-top: 0.3em;
+  margin-bottom: var(--mB);
+}
+/* 16px */
+.sans.m {
+  --size: 1.6;
+  --mB: 1.3em;
+  font-size: calc(1rem * var(--size));
+  line-height: 1.9000025;
+  padding-top: 0.57500125em;
+  margin-bottom: var(--mB);
+}
+/* 22px */
+.sans.l {
+  --size: 2.2;
+  --mB: 1.0545463636363637em;
+  font-size: calc(1rem * var(--size));
+  line-height: 1.38182;
+  padding-top: 0.3272736363636364em;
+  margin-bottom: var(--mB);
+}
+/* 31px */
+.sans.xl {
+  --size: 3.1;
+  --mB: 1.08em;
+  font-size: calc(1rem * var(--size));
+  line-height: 1.4709696774193548;
+  padding-top: 0.36em;
+  margin-bottom: var(--mB);
+}
+/* 44px */
+.sans.xxl {
+  --size: 4.4;
+  --mB: 0.859em;
+  font-size: calc(1rem * var(--size));
+  line-height: 1.036365;
+  padding-top: 0.172em;
+  margin-bottom: var(--mB);
+}
+/* 62px */
+.sans.xxxl {
+  --size: 6.2;
+  --mB: .96em;
+  font-size: calc(1rem * var(--size));
+  line-height: 1.22;
+  padding-top: 0.24em;
+  margin-bottom: var(--mB);
+}
+
+/* minimal bottom gap */
+.sans.s.narrow,
+.sans.m.narrow,
+.sans.l.narrow {
+  margin-bottom: calc(var(--mB) - (1rem * var(--_lineHeight)) - 0.03em);
+}
+.sans.xl.narrow,
+.sans.xxl.narrow,
+.sans.xxxl.narrow {
+  margin-bottom: calc(var(--mB) - (2rem * var(--_lineHeight)) - 0.03em);
+}

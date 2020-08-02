@@ -1,0 +1,18 @@
+/*-------------------
+		 Breakpoints
+--------------------*/
+@custom-media --tv-viewport tv and (min-width: 1200px);
+@custom-media --huge-viewport all and (min-width: 1200px);
+@custom-media --large-viewport all and (max-width: 1199px);
+@custom-media --large-landscape (max-width: 1199px) and (orientation: landscape);
+@custom-media --large-portrait (max-width: 1199px) and (orientation: portrait);
+@custom-media --medium-viewport all and (max-width: 991px);
+@custom-media --medium-landscape (max-width: 991px) and (orientation: landscape);
+@custom-media --medium-portrait (max-width: 991px) and (orientation: portrait);
+@custom-media --small-viewport all and (max-width: 768px);
+@custom-media --small-landscape (max-width: 768px) and (orientation: landscape);
+@custom-media --small-portrait (max-width: 768px) and (orientation: portrait);
+@custom-media --mini-viewport all and (max-width: 575px);
+@custom-media --mini-landscape (max-width: 575px) and (orientation: landscape);
+@custom-media --mini-portrait (max-width: 575px) and (orientation: portrait);
+@custom-media --tiny-viewport all and (max-width: 480px);

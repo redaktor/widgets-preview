@@ -1,0 +1,12 @@
+.root {
+}
+.text {
+	margin: 0;
+	color: var(--text-muted);
+}
+.valid .text {
+	color: var(--ui-success);
+}
+.invalid .text {
+	color: var(--ui-error);
+}

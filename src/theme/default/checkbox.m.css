@@ -1,0 +1,44 @@
+.root {
+	position: relative;
+}
+.label {
+}
+.input {
+}
+.box {
+}
+.checkmark {
+}
+.dot {
+}
+.checked {
+}
+.disabled {
+}
+.focused {
+}
+.readonly {
+}
+.required {
+}
+.background {
+}
+.animated {
+
+}
+
+/* invalid style */
+.invalid .inner::before {
+	border-color: var(--error-color);
+}
+.invalid .inner::after {
+	background-color: var(--error-color);
+}
+
+/* valid style */
+.valid .inner::before {
+	border-color: var(--success-color);
+}
+.valid .inner::after {
+	background-color: var(--success-color);
+}

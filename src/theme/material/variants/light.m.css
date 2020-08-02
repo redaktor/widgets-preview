@@ -1,0 +1,89 @@
+:root,
+.root {
+  --disabledAlpha     : 0.72;
+  --pulseAlpha        : 0.64;
+  --surface           : #FFF;
+  --bg                : var(--m-50);
+
+  --text              : rgba(0, 0, 0, 0.92);
+  --text-flat         : var(--m-400);
+  --text-flat-hover   : var(--m-50);
+  --text-filled       : #f9f9f9;
+  --text-filled-hover : var(--full-white);
+  --text-colored      : #ff2800;
+  --text-shaped       : var(--m-a600);
+  --text-shaped-hover : var(--full-black);
+
+  --text-muted        : rgba(0, 0, 0, 0.56);
+  --text-disabled     : rgba(0, 0, 0, 0.28);
+  --text-selected     : #3c5768;
+  --text-icon         : var(--off-black);
+  --text-off          : var(--off-white);
+  --text-inverse 			: var(--full-white);
+  --highlight         : var(--full-white);
+  --highlight-muted   : var(--off-white);
+
+  --ui-status         : var(--m-300);
+  --ui-menu           : var(--m-100);
+  --ui-bg             : var(--full-white);
+  --ui-bg-inverse 		: rgba(0, 0, 0, 0.88);
+  --ui-hover          : hsla(var(--m-h), var(--m-s), var(--m-l), 0.24);
+	--ui-flat           : var(--m-600);
+	--ui-filled         : var(--m-700);
+  --ui-filled-hover   : var(--m-800);
+  --ui-border         : var(--m-800);
+  --ui-border-hover   : var(--m-900);
+  --ui-outline        : var(--m-600);
+  --ui-outline-hover  : var(--m-700);
+  --ui-focus          : #c30c70;
+  --ui-focus-alpha    : rgba(195,12,112,0.8);
+  --ui-accent         : #ff7a00;
+  --ui-flat-accent    : #ffa754;
+
+  --ui-on             : var(--m-500);
+  --ui-off            : rgba(0, 0, 0, 0.32);
+  --ui-disabled       : rgba(0, 0, 0, 0.12);
+  --ui-track          : rgba(0, 0, 0, 0.16);
+  --ui-opacity        : 0.16;
+  --ui-opacity-strong : 0.32;
+  --native-input      : var(--full-white);
+  --native-input-text : var(--full-black);
+  --ui-menu-border    : rgba(0, 0, 0, 0.16);
+  --ui-fill           : var(--m-100);
+  --ui-fill-text      : var(--full-black);
+  /*---   Emotive  ---*/
+  --ui-info           : #0d7ecc;
+  --ui-success        : #95cc0d;
+  --ui-warning        : #ffaf00;
+  --ui-error          : #dc0005;
+
+  /*---   Emotive defaults  ---*/
+  --ui-info           : #4197e7;
+  --ui-success        : #95cc0d;
+  --ui-warning        : #ffbb1d;
+  --ui-error          : #ff3a23;
+  --ui-public         : #95cc0d;
+  --ui-group          : #ff7a00;
+  --ui-private        : #eb2f59;
+  --ui-open           : rgba(192,192,0,0.618);
+  --ui-close          : rgba(200,31,88,0.618);
+}
+.ligh.primary,
+.light.secondary,
+.settings,
+.info,
+.warning,
+.error,
+.success,
+.neutral {
+  --ui-border         : var(--m-500);
+  --ui-outline        : var(--m-600);
+  --ui-bg             : var(--m-700);
+  --ui-fill           : var(--m-700);
+  --ui-fill-text      : var(--full-white);
+  --ui-hover-border   : var(--m-900);
+  --ui-hover          : var(--m-800);
+  --ui-accent         : var(--m-a400);
+  --ui-flat           : var(--m-100);
+  --ui-flat-accent    : var(--m-a200);
+}

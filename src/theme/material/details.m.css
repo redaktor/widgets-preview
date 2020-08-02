@@ -1,0 +1,82 @@
+.root {
+	display: flex;
+	padding: 0;
+	margin: 0;
+}
+.summary {
+	composes: l meta from './_typo.css';
+	outline: none;
+	text-decoration: none;
+	color: var(--text-muted);
+	padding: var(--pt) 1px 0 calc(1.818181818vw - 1.06em) !important;
+	margin-bottom: var(--mb, 16px);
+	/*margin-bottom: calc(var(--mb, 16px) - var(--line, 15px));*/
+  background-repeat: no-repeat;
+}
+.summary:hover {
+	cursor: pointer;
+}
+.summary:focus {
+	outline: none;
+	background-color: var(--ui-bg, #7a7a7a);
+}
+.summary + .content {
+	padding-top: 0 !important;
+}
+.animated {
+		--posY: calc(100% - 1px);
+		--fromColor: transparent;
+		--toColor: transparent;
+		--bgPos: calc(76px * -1) var(--posY), 100% var(--posY), 0px var(--posY);
+		--bgPosHover: calc(100% + 76px) var(--posY), 100% var(--posY), 0px var(--posY);
+		--bgSizeHover: 76px 2px, 0 2px, 100% 2px;
+		background-image: linear-gradient(var(--bg), var(--bg)),
+	    linear-gradient(var(--fromColor), var(--fromColor)),
+	    linear-gradient(var(--toColor), var(--toColor));
+	  background-size: 76px 2px, 100% 2px, 0 2px;
+	  background-position: var(--bgPos);
+	  transition: background-size var(--ui-dpd-0) linear, background-position var(--ui-dpd-0) linear;
+}
+.animated:hover {
+	--fromColor: var(--ui-close, red);
+	--toColor: var(--ui-open, green);
+	cursor: pointer;
+  background-size: var(--bgSizeHover);
+  background-position: var(--bgPosHover);
+	transition: background-size var(--ui-dpd-1) linear, background-position var(--ui-dpd-1) linear;
+}
+.root[open] .animated:hover {
+	--fromColor: var(--ui-open, green);
+	--toColor: var(--ui-close, red);
+}
+
+/*
+.summary:focus::before {
+	content: "";
+  width: 0;
+  height: 0;
+	position: absolute;
+	border-bottom: 10px solid transparent;
+  border-top: 10px solid transparent;
+  border-left: 16px solid var(--ui-focus-alpha);
+  top: 7px;
+  left: 7px;
+}
+.root[open] .summary:focus::before {
+	border-bottom: none;
+  border-top: 15px solid var(--ui-focus-alpha);
+  border-right: 9px solid transparent;
+  border-left: 9px solid transparent;
+  top: 12px;
+  left: 5px;
+}
+
+.summary:hover {
+	cursor: pointer;
+	background: linear-gradient(90deg, var(--ui-bg-muted) 0%, var(--ui-bg-muted) 24px,
+		var(--surface) 24px, var(--surface) 100%);
+}
+.summary:hover::marker {
+	color: var(--text);
+}
+*/

@@ -1,0 +1,10 @@
+{
+	"id": "https://indieauth.com/MailgunAuth",
+	"title": "MailgunAuth",
+  "meta": {"client": "MailAuth"},
+	"allOf": [
+  	{ "$ref": "https://indieauth.com/IndieAuth#definitions/MailAuth" },
+		{ "$ref": "https://indieauth.com/IndieAuth#definitions/Mailgun" }
+	],
+	"required": ["email", "apiKey"]
+}

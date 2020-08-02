@@ -1,0 +1,31 @@
+.root {
+	display: flex !important;
+	padding: 0 !important;
+	position: relative;
+	overflow: hidden;
+	max-height: var(--uiH);
+	width: var(--uiH);
+	text-align: center;
+	align-items: center;
+	justify-content: center;
+	user-select: none;
+	background-size: cover;
+	line-height: 1;
+	flex-shrink: 0;
+	font-weight: var(-ui-font-weight-semibold, 500);
+}
+.root::after {
+  content: "";
+  display: block;
+  padding-bottom: 100%;
+}
+
+.root.circle {
+	border-radius: 50%;
+}
+.root.square {
+	border-radius: 0;
+}
+.root.rounded {
+	border-radius: var(--ui-border-radius-emphasized);
+}

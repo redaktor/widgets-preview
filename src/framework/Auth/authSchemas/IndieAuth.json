@@ -1,0 +1,143 @@
+{
+	"id": "https://indieauth.com/IndieAuth",
+	"title": "IndieAuth",
+  "definitions": {
+    "debug": {
+      "description": "Explain errors in the console?",
+      "type": "boolean",
+      "default": false
+    },
+    "requestUrl": {
+      "description": "Get Request Token.",
+			"type": "string",
+      "format": "url"
+		},
+    "authUrl": {
+      "description": "Obtain User Authorization.",
+      "type": "string",
+      "format": "url"
+    },
+    "accessUrl": {
+      "description": "Exchange Details for Access Token.",
+      "type": "string",
+      "format": "url"
+    },
+    "callbackUrl": {
+      "description": "Redirect User to Consumer (us).",
+      "type": "string",
+      "format": "url"
+    },
+    "consumerKey": {
+      "description": "OAuth 1 API credentials: key",
+			"type": "string"
+		},
+		"consumerSecret": {
+      "description": "OAuth 1 API credentials: secret",
+			"type": "string"
+		},
+    "clientId": {
+      "description": "OAuth 2 API credentials: key",
+			"type": "string"
+		},
+		"clientSecret": {
+      "description": "OAuth 2 API credentials: secret",
+			"type": "string"
+		},
+    "user": {
+      "description": "Basic and Mail API credentials: key",
+			"type": "string"
+		},
+    "pass": {
+      "description": "Basic and Mail API credentials: secret",
+			"type": "string"
+		},
+    "apiKey": {
+      "description": "An additional API key to identify you",
+			"type": "string"
+		},
+    "domain": {
+      "description": "An additional domain to identify you",
+			"type": "string"
+		},
+    "email": {
+      "description": "Sender eMail Address",
+			"type": "string"
+		},
+    "displayEmail": {
+      "description": "Sender Title",
+			"type": "string"
+		},
+    "host": {
+      "description": "SMTP host",
+			"type": "string"
+		},
+    "port": {
+      "description": "SMTP port",
+			"type": "string",
+      "default": 587
+		},
+    "OAuth": {
+      "definitions": {
+        "basics": {
+          "type": "object",
+        	"properties": {
+            "debug": { "$ref": "#definitions/debug" },
+            "authUrl": { "$ref": "#definitions/authUrl" },
+            "accessUrl": { "$ref": "#definitions/accessUrl" },
+            "callbackUrl": { "$ref": "#definitions/callbackUrl" }
+        	}
+        },
+        "OAuth1": {
+          "type": "object",
+        	"properties": {
+            "consumerKey": { "$ref": "#definitions/consumerKey" },
+            "consumerSecret": { "$ref": "#definitions/consumerSecret" }
+        	}
+        },
+        "OAuth1_3legged": {
+          "type": "object",
+        	"properties": {
+            "requestUrl": { "$ref": "#definitions/requestUrl" }
+        	}
+        },
+        "OAuth2": {
+          "type": "object",
+        	"properties": {
+            "clientId": { "$ref": "#definitions/clientId" },
+            "clientSecret": { "$ref": "#definitions/clientSecret" }
+        	}
+        }
+      }
+    },
+    "MailAuth": {
+      "title": "MailAuth",
+      "type": "object",
+    	"properties": {
+        "debug": { "$ref": "#definitions/debug" },
+        "email": { "$ref": "#definitions/email" },
+				"displayEmail": { "$ref": "#definitions/displayEmail" },
+        "host": { "$ref": "#definitions/host" },
+        "port": { "$ref": "#definitions/port" },
+        "user": { "$ref": "#definitions/user" },
+        "pass": { "$ref": "#definitions/pass" },
+				"apiKey": { "$ref": "#definitions/apiKey" }
+    	}
+    },
+		"Mailgun": {
+      "title": "MailAuth with Mailgun",
+      "type": "object",
+    	"properties": {
+				"apiKey": { "$ref": "#definitions/apiKey" },
+				"domain": { "$ref": "#definitions/domain" }
+    	}
+    },
+    "GPGAuth": {
+      "title": "GPGAuth",
+      "type": "object",
+    	"properties": {
+        "debug": { "$ref": "#definitions/debug" },
+        "id": { "enum": [ "gpg" ] }
+    	}
+    }
+  }
+}

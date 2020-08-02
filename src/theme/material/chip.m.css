@@ -1,0 +1,49 @@
+
+.root,
+.root::before {
+	/* see button.m.css */
+	border-radius: calc(var(--ptb) * 2 + var(--size)) !important;
+}
+
+.iconWrapper,
+.closeIconWrapper {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	line-height: 1;
+	vertical-align: middle;
+}
+
+.iconWrapper:focus,
+.closeIconWrapper:focus {
+	outline: none !important;
+}
+.iconWrapper:focus > i,
+.closeIconWrapper:focus > i,
+.iconWrapper:hover > i,
+.closeIconWrapper:hover > i {
+	border-radius: 50%;
+	background-color: var(--ui-bg-inverse-muted);
+	color: var(--text-inverse);
+}
+
+.iconWrapper { }
+.closeIconWrapper {
+	--iplr: calc(var(--plr, 4px) / 2);
+	margin-left: var(--mlr, 4px);
+	padding-left: var(--iplr, 2px);
+	padding-right: var(--iplr, 2px);
+	padding-bottom: 0;
+	cursor: pointer;
+}
+.clickable {
+	cursor: pointer;
+}
+
+.label { }
+.disabled { }
+
+.root .icon {
+	margin: 0;
+	padding: 0;
+}

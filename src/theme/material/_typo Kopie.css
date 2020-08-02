@@ -1,0 +1,651 @@
+/*
+RESET THE BROWSER STYLES,
+only necessary here TODO FIXME
+*/
+html, body { height: 100%; }
+*, *:after, *:before {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  -webkit-box-sizing: inherit;
+  -moz-box-sizing: inherit;
+  box-sizing: inherit;
+}
+body, div, figure, section, p, h6, h5, h4, h3, h2, h1,
+small, p, ul, ol, li, b, big, i, small, tt, abbr, acronym, cite, code,
+dfn, em, kbd, strong, samp, var, a, bdo, br, img, map, object, q, script, span,
+pre, sub, sup, button, input, label, select, textarea {
+  margin: 0;
+  padding: 0;
+}
+/* maven-pro-regular - latin-ext_latin */
+@font-face {
+  font-family: 'Maven Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./fonts/maven-pro-v21-latin-ext_latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./fonts/maven-pro-v21-latin-ext_latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/maven-pro-v21-latin-ext_latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/maven-pro-v21-latin-ext_latin-regular.svg#MavenPro') format('svg'); /* Legacy iOS */
+}
+/* maven-pro-500 - latin-ext_latin */
+@font-face {
+  font-family: 'Maven Pro';
+  font-style: normal;
+  font-weight: 500;
+  src: url('./fonts/maven-pro-v21-latin-ext_latin-500.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./fonts/maven-pro-v21-latin-ext_latin-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/maven-pro-v21-latin-ext_latin-500.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-500.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-500.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/maven-pro-v21-latin-ext_latin-500.svg#MavenPro') format('svg'); /* Legacy iOS */
+}
+/* maven-pro-700 - latin-ext_latin */
+@font-face {
+  font-family: 'Maven Pro';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./fonts/maven-pro-v21-latin-ext_latin-700.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./fonts/maven-pro-v21-latin-ext_latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/maven-pro-v21-latin-ext_latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-700.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/maven-pro-v21-latin-ext_latin-700.svg#MavenPro') format('svg'); /* Legacy iOS */
+}
+
+
+/*--------------------------------------------------------------
+  Typography
+--------------------------------------------------------------*/
+/* 1.067 rythm for "Merriweather": 9px / 1.6666666666666667 */
+/* 1.067 rythm for "Maven Pro": 9px / 1.6666666666666667 */
+/*@import url('https://fonts.googleapis.com/css?family=Merriweather:300,300i,700|Maven+Pro:400,500,900');*/
+/* TYPO examples
+// https://codepen.io/sebilasse/pen/BdaPzN?editors=1010
+Maven Pro / Georgia               https://codepen.io/sebilasse/full/oENGev
+Merriweather Sans / Merriweather  https://codepen.io/sebilasse/pen/ddopBj
+*/
+
+:root {
+  --import-webfonts 	: true;
+  --font-name-sans    : 'Maven+Pro';
+  --font-name-serif   : 'Merriweather';
+  --font-variant-sans : '400,500,400i';
+  --font-variant-serif: '300,700,300i';
+  --font-sans         : 'Maven Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  --font-serif        : 'Merriweather', Georgia, 'Palatino', 'Palatino Linotype', 'Book Antiqua', serif;
+  --font-icon         : 'redaktor';
+  --google-Subset     : 'latin';
+  --google-Protocol   : 'https://';
+
+  --base-size         : 9px;
+  --base-line-start   : -1px;
+  /* derived, do not touch */
+  --lines-below: 1;
+  --small-size: 1.4444444444444444rem;
+  --small-running-size: 1;
+
+
+  /* P, UI-XL 17px */
+  --size: 1.8888888888888888rem;
+  --lh: 1.7647058823529413;
+  --pt: 0.5000000000000001em;
+  --mb: 1.2647058823529411em;
+  --caph: 0.7647058823529411;
+
+}
+
+html {
+  /* do not touch */
+  --line: calc(var(--base-size) * var(--base-line));
+  --line2: calc(var(--line) * 2);
+  --line3: calc(var(--line) * 3);
+  --line4: calc(var(--line) * 4);
+  --line5: calc(var(--line) * 5);
+  --lineHalf: calc(var(--line) / 2);
+  /*---   debug  ---*/
+  --color-baseline 	  : rgba(255, 0, 0, 0.1);
+  --color-baseline-xl : rgba(0, 255, 0, 1);
+  --color: rgba(0, 0, 0, 0.87);
+  --base-line: 1.6666666666666667;
+  font-size: var(--base-size);
+  line-height: var(--base-line);
+  color: var(--color);
+  box-sizing: border-box;
+}
+/* CHROME Subpixel rendering
+https://johnresig.com/blog/sub-pixel-problems-in-css/
+http://cruft.io/posts/percentage-calculations-in-ie/
+*/
+@media screen and (-webkit-min-device-pixel-ratio:0) and (min-resolution:.001dpcm) {
+  html {
+    --base-line: 1.6667;
+  }
+}
+
+body {
+  font-size: 1em;
+  font-display: optional;
+  -webkit-font-smoothing: subpixel-antialiased;
+  font-feature-settings: 'kern' 1,'onum' 1,'liga' 1;
+  text-rendering: optimizeLegibility;
+  background-clip: content-box;
+  /*border: rgb(248, 244, 243) solid var(--line);
+  border-image: none 1 stretch 100% 0;*/
+}
+@supports (font-variant-ligatures: common-ligatures) {
+  body {
+    font-feature-settings: normal;
+    font-variant-ligatures: common-ligatures;
+  }
+}
+/*--------------------------------------------------------------
+Typography
+--------------------------------------------------------------*/
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: baseline;
+}
+
+/* RYTHM AND SIZE */
+/* 1.067 rythm for "Merriweather": 9px / 1.6666666666666667 */
+:root {
+  --lineHeight: 1.6666666666666667; /*
+  --gridColor: rgba(255, 0, 0, 0.5);*/
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: var(--weight, 400);
+  line-height: var(--lineHeight);
+  box-sizing: border-box;
+}
+.sans {
+  --weight: 400;
+  --weight-semibold: 500;
+  --weight-bold: 700;
+}
+.serif, .p, .p-small {
+  --weight: 300;
+  --weight-semibold: 700;
+  --weight-bold: 700;
+  font-family: var(--font-serif);
+
+}
+
+/* UI-XS 12px */
+.xs {
+  --size: 1.3333333333333333rem;
+  --lh: 1.25;
+  --pt: 0.25em;
+  --mb: 1em;
+  --caph: 0.75;
+}
+/* UI-S 13px */
+.s, .responsive {
+  --size: 1.4444444444444444rem;
+  --lh: 1.153846153846154;
+  --pt: 0.23076923076923084em;
+  --mb: 0.9230769230769231em;
+  --caph: 0.6923076923076923;
+}
+/* UI-M 14px */
+.m_alt, .cardsSmall {
+  --size: 1.5555555555555556rem;
+  --lh: 1.0714285714285716;
+  --pt: 0.17857142857142866em;
+  --mb: 0.892857142857143em;
+  --caph: 0.7142857142857143;
+}
+/* 15px */
+.m {
+  --size: 1.6666666666666667rem;
+  --lh: 2;
+  --pt: 0.6333333333333333em;
+  --mb: 1.3666666666666667em;
+  --caph: 0.7333333333333333;
+}
+/* P-SMALL 16px */
+.sans.p-small {
+  --size: 1.7777777777777777rem;
+  --lh: 1.8750000000000002;
+  --pt: 0.5937500000000001em;
+  --mb: 1.28125em;
+  --caph: 0.6875;
+}
+/* UI-L 17px */
+.l {
+  --size: 1.8888888888888888rem;
+  --lh: 1.7647058823529413;
+  --pt: 0.5294117647058825em;
+  --mb: 1.2352941176470589em;
+  --caph: 0.7058823529411765;
+}
+/* UI-XL 18px */
+.xl {
+  --size: 2rem;
+  --lh: 1.6666666666666667;
+  --pt: 0.47222222222222227em;
+  --mb: 1.1944444444444444em;
+  --caph: 0.7222222222222222;
+}
+/* UI-XXL P 20px */
+.xxl, .sans.p {
+  --size: 2.2222222222222223rem;
+  --lh: 1.5;
+  --pt: 0.4em;
+  --mb: 1.1em;
+  --caph: 0.7;
+}
+/* H5 21px bold */
+h5, .h5 {
+  --size: 2.3333333333333335rem;
+  --lh: 1.4285714285714284;
+  --pt: 0.35714285714285704em;
+  --mb: 1.0714285714285714em;
+  --caph: 0.7142857142857143;
+}
+/* H4 22px */
+h4, .h4 {
+  --size: 2.4444444444444446rem;
+  --lh: 1.3636363636363635;
+  --pt: 0.3409090909090909em;
+  --mb: 1.0227272727272727em;
+  --caph: 0.6818181818181818;
+}
+/* H3 25px */
+h3, .text-2xl, .h3 {
+  --size: 2.7777777777777777rem;
+  --lh: 1.2000000000000002;
+  --pt: 0.26000000000000006em;
+  --mb: 0.9400000000000002em;
+  --caph: 0.68;
+}
+/* H2 29px */
+h2, .text-3xl, .text-4xl, .h2 {
+  --size: 3.2222222222222223rem;
+  --lh: 1.0344827586206897;
+  --pt: 0.1724137931034483em;
+  --mb: 0.8620689655172414em;
+  --caph: 0.6896551724137931;
+}
+/* H1 33px */
+h1, .h1 {
+  --size: 3.6666666666666665rem;
+  --lh: 1.3636363636363635;
+  --pt: 0.33333333333333326em;
+  --mb: 1.0303030303030303em;
+  --caph: 0.696969696969697;
+}
+/* HERO 35px */
+.hero {
+  --size: 3.888888888888889rem;
+  --lh: 1.2857142857142858;
+  --pt: 0.30000000000000004em;
+  --mb: 0.9857142857142858em;
+  --caph: 0.6857142857142857;
+}
+/* UI-XS 10px */
+.serif.xs {
+  --size: 1.1111111111111112rem;
+  --lh: 1.5;
+  --pt: 0.35em;
+  --mb: 1.15em;
+  --caph: 0.8;
+}
+/* SMALL, UI-S 12px */
+small, .small, .serif.s {
+  --size: 1.3333333333333333rem;
+  --lh: 1.25;
+  --pt: 0.25em;
+  --mb: 1em;
+  --caph: 0.75;
+}
+/* P-SMALL, UI-M 15px */
+.p-small, .serif.m, .cards {
+  --size: 1.6666666666666667rem;
+  --lh: 2;
+  --pt: 0.6em;
+  --mb: 1.4em;
+  --caph: 0.8;
+}
+/* UI-L 16px */
+.serif.l {
+  --size: 1.7777777777777777rem;
+  --lh: 1.8750000000000002;
+  --pt: 0.5625000000000001em;
+  --mb: 1.3125em;
+  --caph: 0.75;
+}
+/* P, UI-XL 17px
+small, p, ul, ol, b, big, i, small, tt, abbr, acronym, cite, code,
+dfn, em, kbd, strong, samp, var, a, bdo, br, img, map, object, q, script, span,
+pre, sub, sup, button, input, label, select, textarea, p, .p, .serif.xl {
+  --size: 1.8888888888888888rem;
+  --lh: 1.7647058823529413;
+  --pt: 0.5000000000000001em;
+  --mb: 1.2647058823529411em;
+  --caph: 0.7647058823529411;
+} */
+/* H5, UI-XXL 18px  bold */
+.serif.h5, .serif.xxl {
+  --size: 2rem;
+  --lh: 1.6666666666666667;
+  --pt: 0.4444444444444445em;
+  --mb: 1.2222222222222223em;
+  --caph: 0.7777777777777778;
+}
+/* H4 21px */
+.serif.h4 {
+  --size: 2.3333333333333335rem;
+  --lh: 1.4285714285714284;
+  --pt: 0.33333333333333326em;
+  --mb: 1.0952380952380951em;
+  --caph: 0.7619047619047619;
+}
+/* H3 22px */
+.serif.h3 {
+  --size: 2.4444444444444446rem;
+  --lh: 1.3636363636363635;
+  --pt: 0.2954545454545454em;
+  --mb: 1.0681818181818181em;
+  --caph: 0.7727272727272727;
+}
+/* H2 24px */
+.serif.h2 {
+  --size: 2.6666666666666665rem;
+  --lh: 1.25;
+  --pt: 0.22916666666666669em;
+  --mb: 1.0208333333333333em;
+  --caph: 0.7916666666666666;
+}
+/* H1 31px */
+.serif.h1 {
+  --size: 3.4444444444444446rem;
+  --lh: 1.4516129032258065;
+  --pt: 0.33870967741935487em;
+  --mb: 1.1129032258064515em;
+  --caph: 0.7741935483870968;
+}
+/* HERO 35px */
+.serif.hero {
+  --size: 3.888888888888889rem;
+  --lh: 1.2857142857142858;
+  --pt: 0.2571428571428572em;
+  --mb: 1.0285714285714287em;
+  --caph: 0.7714285714285715;
+}
+
+@media screen and (min-width: 1900px) {
+  .responsive { /* l */
+    --size: 1.8888888888888888rem;
+    --lh: 1.7647058823529413;
+    --pt: 0.5294117647058825em;
+    --mb: 1.2352941176470589em;
+    --caph: 0.7058823529411765;
+  }
+}
+
+
+@media screen and (min-width: 460px) {
+  .cards { /* l */
+    --size: 1.7777777777777777rem;
+    --lh: 1.8750000000000002;
+    --pt: 0.5625000000000001em;
+    --mb: 1.3125em;
+    --caph: 0.75;
+  }
+  .cardsSmall {
+    --size: 1.6666666666666667rem;
+    --lh: 2;
+    --pt: 0.6333333333333333em;
+    --mb: 1.3666666666666667em;
+    --caph: 0.7333333333333333;
+  }
+}
+@media screen and (min-width: 720px) {
+  .cards { /* p-small */
+    --size: 1.6666666666666667rem;
+    --lh: 2;
+    --pt: 0.6em;
+    --mb: 1.4em;
+    --caph: 0.8;
+  }
+  .cardsSmall {
+    --size: 1.5555555555555556rem;
+    --lh: 1.0714285714285716;
+    --pt: 0.17857142857142866em;
+    --mb: 0.892857142857143em;
+    --caph: 0.7142857142857143;
+  }
+}
+@media screen and (min-width: 1060px) {
+  .cards { /* l */
+    --size: 1.7777777777777777rem;
+    --lh: 1.8750000000000002;
+    --pt: 0.5625000000000001em;
+    --mb: 1.3125em;
+    --caph: 0.75;
+  }
+  .cardsSmall {
+    --size: 1.6666666666666667rem;
+    --lh: 2;
+    --pt: 0.6333333333333333em;
+    --mb: 1.3666666666666667em;
+    --caph: 0.7333333333333333;
+  }
+}
+@media screen and (min-width: 1366px) {
+  .cards { /* p-small */
+    --size: 1.6666666666666667rem;
+    --lh: 2;
+    --pt: 0.6em;
+    --mb: 1.4em;
+    --caph: 0.8;
+  }
+  .cardsSmall {
+    --size: 1.5555555555555556rem;
+    --lh: 1.0714285714285716;
+    --pt: 0.17857142857142866em;
+    --mb: 0.892857142857143em;
+    --caph: 0.7142857142857143;
+  }
+}
+@media screen and (min-width: 1425px) {
+  .cards { /* l */
+    --size: 1.7777777777777777rem;
+    --lh: 1.8750000000000002;
+    --pt: 0.5625000000000001em;
+    --mb: 1.3125em;
+    --caph: 0.75;
+  }
+}
+
+small, p, h5, h4, h3, h2, h1, b, big, i, small, tt, abbr, acronym, cite, code,
+dfn, em, kbd, strong, samp, var, a, bdo, img, map, object, q, script, pre,
+sub, sup, button, input, label, select, textarea,
+.small, .p, .p-small, .h6, .h5, .h4, .h3, .h2, .h1, .hero, .xs, .s, .m, .l, .xl, .xxl,
+.meta {
+  font-size: var(--size, 16px);
+  line-height: var(--lh, 24px);
+  padding-top: var(--pt, 8px);
+  margin-bottom: var(--mb, 16px);
+}
+small, p, h5, h4, h3, h2, h1, b, big, i, small, tt, abbr, acronym, cite, code,
+dfn, em, kbd, strong, samp, var, a, bdo, img, map, object, q, script, pre,
+sub, sup, button, input, label, select, textarea {
+  font-weight: var(--weight, 400);
+}
+strong, .semibold, .strong, .meta {
+  font-weight: var(--weight-semibold, 500);
+}
+b, .b, .bold {
+  font-weight: var(--weight-bold, 700);
+}
+
+i, em, .italic {
+  font-style: italic;
+}
+
+/*
+.xs { --p: 1.5px; }
+.s { --p: 3.5px; }
+.m { --p: -8px; }
+.l { --p: -3.5px; }
+.xl { --p: 0px; }
+.xxl { --p: 3.5px; }
+.ui {
+  --hc: calc(var(--caph) * var(--size));
+  --ht: calc(var(--size) * var(--lh));
+  --above: calc(var(--ht) - var(--hc));
+  --uiMT: calc(var(--p) * -1);
+  --uiMB: calc(var(--mb, 16px) - var(--above) + var(--pt) - var(--p));
+  --uiPLR: calc(var(--size) * 0.618);
+  --uiPTB: calc(var(--pt) + var(--p));
+  --omlr: calc(var(--size, 4px) * 0.382);
+  --oml: calc(var(--size, 4px) * 0.618);
+	font-family: var(--font-sans);
+  margin: var(--uiMT) var(--omlr, 4px) var(--uiMB) var(--omlr, 4px);
+  padding: var(--uiPTB) var(--uiPLR) var(--uiPTB) var(--uiPLR);
+  vertical-align: -8px;
+
+  border: none;
+}
+.ui.nextBaseline {
+  vertical-align: calc(var(--hc) * -1);
+}
+*/
+.input {
+  font-family: var(--font-sans);
+}
+.input::placeholder {
+  padding-top: 0;
+}
+
+
+p > i,
+p > em {
+  line-height: 0;
+}
+
+*:not(pre) > code { /* TODO inline code */
+  background: var(--ui-bg);
+  color: var(--text);
+  border-radius: var(--ui-border-radius-emphasized);
+  text-shadow: 0 1px var(--ui-status);
+  padding: calc(var(--pt, 8px) / 3) calc(var(--pt, 8px) / 1.618) !important;
+}
+
+em,
+[class*="text shadow"] {
+  text-shadow: 0px 1px 2px rgba(34, 36, 38, 0.15);
+}
+
+.shadow:not([class*="subtle shadow"]) {
+  box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.08);
+}
+
+[class*="subtle shadow"] {
+  box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
+}
+
+.header {
+  font-variant-numeric: lining-nums;
+}
+.running {
+  font-variant-numeric: oldstyle-nums;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+/*--------------------------------------------------------------
+Typo <---
+--------------------------------------------------------------*/
+
+/* PARADE ONLY TODO */
+.bg-white {
+  border-color: var(--ui-border) !important;
+  background-color: var(--ui-status) !important;
+  color: var(--text) !important;
+}
+.bg-white.rounded-t-lg {
+  padding: 0 !important;
+  background-color: #303030 !important;
+}
+.flex.header {
+  border: none !important;
+}
+h1.h, h2.h, h3.h, h4.h, h5.h, .text-4xl, .text-3xl, .text-2xl,
+.my-1, .py-1, .my-4, .mt-4, .py-4, .my-8, .py-8, .my-12, .py-12, .pt-6 {
+  margin-top: 0 !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--size, 16px) !important;
+  line-height: var(--lh, 24px) !important;
+  padding-top: var(--pt, 8px) !important;
+  margin-bottom: var(--mb, 16px) !important;
+}
+a.text-gray-600:hover { color: var(--text, #fff) !important; }
+.header.h-16 { padding-top: var(--line,15px) !important; color: #BBB; height: var(--line3, 45px); }
+.top-16, .top-16.-mt-12 { top: var(--line2, 30px) !important; }
+.h { margin: auto !important; }
+.inline { display: inline-block !important; }
+.pt-12, .pt-16 { padding-top: var(--line, 15px) !important; }
+.pt-24 { padding-top: var(--line2, 30px) !important; }
+#app > .pt-24 { padding-top: var(--line3, 45px) !important; }
+.pb-16 { padding-bottom: var(--line, 15px) !important; }
+.pb-24 { padding-bottom: var(--line2, 30px) !important; }
+.p-4 { padding: var(--line) !important; }
+.p-12 { padding: var(--line2) !important; }
+.py-1 { margin-bottom: calc(var(--mb) - var(--line)) !important; }
+.my-1 { padding-bottom: var(--line) !important; }
+.py-1, .my-6, .py-4, .my-8, .py-8, .my-12, .py-12, .pt-6 {
+  padding-bottom: 0 !important;
+}
+.border-t {
+  margin-top: -1px !important;
+}
+.mb-2, li.mb-2 > a {
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+hr.my-1, hr.my-6 {
+  margin: 0 0 calc(var(--line) - 3px) 0 !important;
+  padding: 0 !important;
+}
+code.language-ts {
+  font-size: 17px !important;
+}
+@media (max-width: 1280px) {
+  .max-w-3xl { max-width: 80rem !important; }
+}
+@media (min-width: 1280px) {
+  .w-full.max-w-screen-xl {
+    max-width: 1920px !important;
+  }
+  .max-w-3xl {
+    max-width: 1280px !important;
+    flex-grow: 1 !important;
+  }
+}
+.markdownFullscreen {
+  position: absolute;
+  z-index: 101;
+  top: var(--line3, 45px);
+  left: 0;
+  min-width: 100%;
+  display: flex;
+  margin: 0;
+  padding: 0 0 var(--line4) 0 !important;
+  background-color: #303030;
+}
+.markdownFullscreen > * {
+  width: 100%;
+}
+.markdownFullscreen .p-4 {
+  padding: 0 !important;
+}
+/* <--- */

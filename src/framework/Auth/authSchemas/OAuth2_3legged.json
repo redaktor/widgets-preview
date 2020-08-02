@@ -1,0 +1,10 @@
+{
+	"id": "https://indieauth.com/OAuth2_3legged",
+	"title": "OAuth 2 3legged",
+  "meta": {"client": "OAuthTwo"},
+	"allOf": [
+    { "$ref": "https://indieauth.com/IndieAuth#definitions/OAuth/definitions/basics" },
+    { "$ref": "https://indieauth.com/IndieAuth#definitions/OAuth/definitions/OAuth2" }
+  ],
+	"required": ["authUrl", "accessUrl", "clientId", "clientSecret"]
+}

@@ -1,0 +1,82 @@
+.root {
+	composes: ui from './_ui.m.css';
+	transition: background-color, border-color var(--ui-dpd-1) var(--ui-easing);
+	cursor: pointer;
+	text-transform: uppercase;
+	overflow: hidden;
+	border-radius: var(--ui-border-radius-emphasized);
+	padding-left: var(--plr);
+	padding-right: var(--plr);
+	background-size: cover;
+}
+.root:focus {
+	background-color: var(--ui-bg, #7a7a7a);
+}
+.root.group {
+	border-radius: 0;
+}
+.root.group:first-child {
+	border-top-left-radius: var(--ui-border-radius-emphasized);
+	border-bottom-left-radius: var(--ui-border-radius-emphasized);
+}
+.root.group:last-child {
+	border-bottom-right-radius: var(--ui-border-radius-emphasized);
+	border-top-right-radius: var(--ui-border-radius-emphasized);
+}
+.responsive {
+	width: 100%;
+}
+.disabled { composes: disabled from './_ui.m.css'; }
+.flat { composes: flat from './_ui.m.css'; }
+.filled { composes: filled from './_ui.m.css'; }
+.raised { composes: raised from './_ui.m.css'; }
+.outlined { composes: outlined from './_ui.m.css'; }
+.shaped { composes: shaped from './_ui.m.css'; }
+.raised2 { box-shadow: var(--ui-dp-2); }
+.raised4 { box-shadow: var(--ui-dp-4); }
+.raised8 { box-shadow: var(--ui-dp-8); }
+
+@keyframes flat {
+	0%   { color: inherit; }
+	50%  { color: var(--text); }
+	100%   { color: inherit; }
+}
+.flat.animated:not(.disabled):not(:active) {
+	animation: flat var(--ui-dpd-animation) var(--ui-easing);
+}
+@keyframes pulse {
+	0%   { opacity: 0; box-shadow: 0 0 0 1px var(--pulse); }
+	40%  { opacity: var(--pulseAlpha, 0.64); }
+	80%	 { box-shadow: 0 0 0 var(--redaktor-btn-w) var(--pulse); }
+	100% { opacity: 0; box-shadow: 0 0 0 0px var(--pulse); }
+}
+.animated:not(.disabled)::after {
+	content: "";
+	position: absolute;
+	display: block;
+	opacity: 0;
+	left: var(--redaktor-btn-x);
+	top: var(--redaktor-btn-y);
+	width: 1px;
+	height: 1px;
+	box-shadow: 0 0 0 0px var(--ui-flat-accent);
+	border-radius: 50%;
+	z-index: -1;
+	transform: perspective(1px) translate(0, 0);
+}
+.animated:not(.disabled):active::after {
+	left: var(--redaktor-btn-x);
+	top: var(--redaktor-btn-y);
+	outline: none;
+}
+.animated:not(.disabled):not(:active)::after {
+	animation: pulse var(--ui-dpd-animation) var(--ui-easing);
+	animation-play-state: running;
+}
+
+/* Styles taken from :active pseudo class */
+.pressed { }
+.pressed::after {
+	transition-duration: 75ms;
+	opacity: 0.12;
+}

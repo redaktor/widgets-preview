@@ -1,0 +1,11 @@
+{
+	"id": "https://indieauth.com/OAuth1_3legged",
+	"title": "OAuth 1.0A 3legged",
+	"meta": {"client": "OAuthOne"},
+	"allOf": [
+    { "$ref": "https://indieauth.com/IndieAuth#definitions/OAuth/definitions/basics" },
+    { "$ref": "https://indieauth.com/IndieAuth#definitions/OAuth/definitions/OAuth1" },
+    { "$ref": "https://indieauth.com/IndieAuth#definitions/OAuth/definitions/OAuth1_3legged" }
+  ],
+	"required": ["requestUrl", "authUrl", "accessUrl", "consumerKey", "consumerSecret"]
+}

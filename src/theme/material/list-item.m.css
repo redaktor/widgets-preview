@@ -1,0 +1,85 @@
+.wrapper {
+	position: relative;
+	margin: 0;
+	padding: 0;
+}
+.root {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	white-space: nowrap;
+	overflow: hidden;
+	border: none;
+	min-height: var(--line2);
+	padding-left: var(--line);
+	padding-right: var(--line);
+}
+.animated {
+	transition: background-color var(--ui-dpd-0) var(--ui-easing);
+}
+.animated:not(.disabled):hover {
+	cursor: pointer;
+}
+
+.input {
+	position: absolute;
+	opacity: 0.8;
+	z-index: 111;
+}
+.input:checked + .root:not(.disabled),
+.root:not(.disabled).selected,
+.root.animated:not(.disabled):not(.selected):hover {
+	color: var(--text-filled-hover);
+	background-color: var(--ui-filled-hover);
+}
+
+.root:not(.disabled):not(.selected).active {
+	background-color: var(--ui-filled-on);
+}
+
+.active {
+	border: none;
+}
+.disabled { }
+
+
+.animated.flat,
+.animated.outlined {
+	background-color: var(--ui-bg-muted);
+}
+.animated.outlined {
+	border-left: var(--ui-border-width-emphasized,2px) solid var(--ui-outline);
+	border-right: var(--ui-border-width-emphasized,2px) solid var(--ui-outline);
+}
+.animated.outlined:last-child {
+	border-bottom: var(--ui-border-width-emphasized,2px) solid var(--ui-outline);
+}
+.animated.filled,
+.animated.flat:not(.disabled):not(.selected):hover,
+.animated.flat:not(.disabled):not(.selected).active {
+	color: var(--text-flat-hover);
+	background-color: var(--ui-flat-hover);
+}
+.animated.raised,
+.animated.shaped {
+	color: var(--text-inverse);
+	background-color: var(--native-input);
+	border-left: var(--ui-border-width,1px) solid var(--ui-outline);
+	border-right: var(--ui-border-width,1px) solid var(--ui-outline);
+}
+.animated.raised:last-child,
+.animated.shaped:last-child {
+	border-bottom: var(--ui-border-width,1px) solid var(--ui-outline);
+}
+.animated.filled:not(.disabled):not(.selected):hover,
+.animated.filled:not(.disabled):not(.selected).active,
+.animated.raised:not(.disabled):not(.selected):hover,
+.animated.raised:not(.disabled):not(.selected).active {
+	color: var(--text-filled-hover);
+	background-color: var(--ui-filled-hover);
+}
+.animated.shaped:not(.disabled):not(.selected):hover,
+.animated.shaped:not(.disabled):not(.selected).active {
+	color: var(--text-shaped-hover);
+	background-color: var(--bg);
+}

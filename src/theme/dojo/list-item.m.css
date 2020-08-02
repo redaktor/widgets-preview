@@ -1,0 +1,17 @@
+.root {
+	padding: var(--spacing-regular);
+	border: 1px solid transparent;
+}
+
+.active {
+	border: 1px solid var(--color-highlight-border);
+}
+
+.selected {
+	background: var(--color-background-faded);
+}
+
+.disabled {
+	color: var(--color-text-faded);
+	font-style: italic;
+}

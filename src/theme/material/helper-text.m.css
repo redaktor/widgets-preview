@@ -1,0 +1,17 @@
+.root {
+	color: var(--text-muted);
+	max-width: 100%;
+}
+.text {
+	composes: small from './_typo.css';
+	font-weight: var(--ui-weight-semibold, 500);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.valid .text {
+	color: var(--ui-success);
+}
+.invalid .text {
+	color: var(--ui-error);
+}

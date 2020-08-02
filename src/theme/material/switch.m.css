@@ -1,0 +1,145 @@
+.root {
+	--checkbox-ripple-alpha: 1;
+	--checkbox-ripple-size: 2.5;
+	composes: ui ui-transition from './_ui.m.css';
+	color: inherit;
+	user-select: none;
+}
+.animated { composes: animated from './checkbox.m.css'; }
+.disabled { composes: disabled from './checkbox.m.css'; }
+.thumb {
+	composes: box from './checkbox.m.css';
+	display: flex;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	border-radius: 50%;
+	z-index: 1;
+	box-shadow: var(--ui-dp-2);
+	transform: translate(calc(var(--border-width) * -1), 0);
+	will-change: background-color,border-color,transform;
+	transition:  background-color var(--ui-dpd-1) var(--ui-easing),
+		border-color var(--ui-dpd-1) var(--ui-easing),
+		transform var(--ui-dpd-1) var(--ui-easing);
+}
+.input:checked + .track .thumb {
+	transform: translate(61.8%, 0);
+}
+.raised .thumb {
+	box-shadow: var(--ui-dp-4);
+}
+.shaped .input:checked + .track .thumb {
+	background-color: var(--ui-flat-on);
+}
+.shaped:not(.disabled):hover .thumb {
+	background-color: var(--ui-flat-hover) !important;
+}
+.outlined .input:checked + .track .thumb::before {
+	opacity: 1 !important;
+	display: inline-block;
+	transform: scale(.618);
+	background-color: var(--ui-outline-hover);
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+}
+.input {
+	composes: input from './checkbox.m.css';
+	height: 100% !important;
+	z-index: 2;
+}
+
+.track {
+	display: inline-block;
+	vertical-align: calc(var(--h) * 0.75 - var(--pt) - var(--ui-border-width));
+	margin-bottom: 0 !important;
+	min-width: calc(var(--h) * 1.618 + var(--plr));
+	position: relative;
+	user-select: none;
+	z-index: 0;
+}
+.track::before {
+	content: "";
+	display: block;
+	width: calc(var(--h) * 1.618);
+	height: calc(var(--h) * 0.5);
+	position: absolute;
+	top: calc(var(--h) * 0.25);
+	border-radius: calc(var(--h) * 0.25);
+}
+.flat .track::before {
+	background: linear-gradient(to right, var(--ui-flat-off) 50%, var(--ui-flat-hover) 50%);
+}
+.filled .track::before {
+	background: linear-gradient(to right, var(--ui-filled-off) 50%, var(--ui-filled-on) 50%);
+}
+.raised .track::before {
+	background: linear-gradient(to right, var(--ui-flat-off) 50%, var(--bg) 50%);
+	border: var(--ui-border-width-emphasized) solid var(--m-600);
+  border-top-color: var(--m-400);
+  border-right-color: var(--m-400);
+	box-shadow: var(--ui-dp-2);
+}
+.outlined .track::before {
+	border: var(--ui-border-width-emphasized) solid var(--ui-outline);
+	clip-path: inset(100% 44% 100% 100%);
+}
+.outlined .input:checked + .track::before {
+	clip-path: inset(100% 100% 100% 44%);
+}
+.shaped .track::before {
+	height: var(--h);
+	top: 0;
+	border-radius: calc(var(--h) * 0.5);
+	border: var(--ui-border-width) solid var(--ui-outline);
+}
+
+/*
+.root:not(.raised):not(.shaped) .input:checked + .track::before {
+	border-color: var(--ui-outline-hover);
+}
+*/
+
+
+.checked {
+
+}
+.label,
+.onLabel,
+.offLabel {
+	display: inline-block;
+	cursor: pointer;
+}
+.offLabel {
+	padding-left: calc(var(--plr) / 2);
+}
+.label,
+.onLabel {
+	padding-right: calc(var(--plr) / 2);
+}
+
+.root.disabled .inputWrapper {
+	opacity: 0.5;
+}
+
+
+
+/* Added when the switch is invalid */
+.invalid {
+}
+
+/* Added when the switch is valid */
+.valid {
+}
+
+/* Added to a read-only Switch */
+.readonly {
+}
+
+/* Added when the Switch is required */
+.required {
+}
+
+/* Added when focused */
+.focused {
+}

@@ -1,0 +1,58 @@
+.root {
+	composes: ui noHover from './_ui.m.css';
+	list-style-type: none;
+}
+.transformer { }
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+}
+.disabled { composes: disabled from './_ui.m.css'; }
+.flat { composes: flat from './_ui.m.css'; }
+.filled { composes: filled from './_ui.m.css'; }
+.raised { composes: raised from './_ui.m.css'; }
+.outlined { composes: outlined from './_ui.m.css'; }
+.shaped { composes: shaped from './_ui.m.css'; }
+.root.animated {
+	box-shadow: none;
+	background: none;
+}
+.root.animated.outlined::before,
+.root.animated.shaped::before {
+	border: none;
+}
+.root.flat {
+	color: var(--text);
+}
+.root.flat,
+.root.flat:hover {
+	background-color: var(--transparent) !important;
+}
+.root.above,
+.root.above .item:first-child {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	border-top-left-radius: var(--ui-border-radius-emphasized);
+	border-top-right-radius: var(--ui-border-radius-emphasized);
+}
+.root:not(.above),
+.root:not(.above) .item:last-child {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	border-bottom-left-radius: var(--ui-border-radius-emphasized);
+	border-bottom-right-radius: var(--ui-border-radius-emphasized);
+}
+.item { }
+
+.divider {
+	margin: calc(var(--line) / 2 - var(--ui-border-width, 1px)) 0 calc(var(--line) / 2) 0;
+	border: none;
+	border-bottom-width: var(--ui-border-width, 1px);
+	border-bottom-style: solid;
+	border-bottom-color: var(--text-muted, rgba(0,0,0,.12));
+}
