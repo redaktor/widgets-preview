@@ -1,0 +1,48 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "ActivityPub Conference 2020",
+  "startDate": "2020-10-02",
+  "endDate": "2020-10-09",
+  "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "location": {
+    "@type": "VirtualLocation",
+    "url": "https://redaktor.me/apconf2020"
+  },
+  "image": [
+    "https://redaktor.me/_deliver/apconf/APConfLogo_1_1.png",
+    "https://redaktor.me/_deliver/apconf/APConfLogo_2_1.png",
+    "https://redaktor.me/_deliver/apconf/APConfLogo.png"
+   ],
+  "description": "A conference about the present and future of ActivityPub, the world’s leading federated social web standard.",
+
+  "offers": {
+    "@type": "Offer",
+    "url": "https://redaktor.me/apconf2020/register",
+    "price": "0",
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "validFrom": "2020-10-01T00:00"
+  },
+  "performer": {
+    "@type": "Person",
+    "name": "Christopher Lemmer-Webber",
+    "url": "https://"
+  },
+  "organizer": [
+    {
+      "@type": "Organization",
+      "name": "W3C Social Community Group",
+      "url": "https://www.w3.org/community/socialcg/"
+    }, {
+      "@type": "Person",
+      "name": "Morgan Lemmer-Webber",
+      "url": "https://octodon.social/@mlemweb"
+    }, {
+      "@type": "Person",
+      "name": "Sebastian Lasse",
+      "url": "https://redaktor.me"
+    }
+  ]
+}

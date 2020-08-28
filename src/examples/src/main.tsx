@@ -3,7 +3,7 @@ import config from './config';
 
 parade({ config });
 
-/* TODO FIXME ; */
+/* TODO FIXME ;
 setTimeout(() => {
   let mdContainer = (document.querySelector('.markdown') as any);
   if (mdContainer) {
@@ -12,3 +12,4 @@ setTimeout(() => {
   	}
   }
 }, 2000)
+*/

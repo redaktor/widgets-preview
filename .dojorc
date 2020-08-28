@@ -1,4 +1,11 @@
 {
+  "externals": {
+    "dependencies": [
+      "_polyfill/pep.min.js",
+      "_polyfill/modernizr-custom.js",
+      "https://cdn.jsdelivr.net/npm/intersection-observer-polyfill@0.1.0/index.min.js"
+    ]
+  },
 	"extends": "./node_modules/@dojo/parade/parade.json",
 	"build-theme": {
 		"themes": ["dojo", "material"]

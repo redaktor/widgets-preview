@@ -29,7 +29,7 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 	} = properties();
 
 	const classes = theme.classes(css);
-
+	console.log(type);
 	return (
 		<virtual>
 			<i
@@ -38,10 +38,26 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 					theme.sized(ui, 'l'),
 					theme.spaced(ui),
 					theme.colored(colors),
-					classes.icon, classes[type]
+					classes.icon,
+					classes[type]
 				]}
 				{...formatAriaProperties(aria)}
-			/>
+			>
+				{type === 'osm' ? (
+					<virtual>
+						<span />
+						<span />
+						<span />
+						<span />
+						<span />
+						<span />
+						<span />
+						<span />
+						<span />
+						<span />
+					</virtual>
+				) : null}
+			</i>
 			{altText ? <span classes={baseCss.visuallyHidden}>{altText}</span> : null}
 		</virtual>
 	);

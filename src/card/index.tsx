@@ -1,7 +1,7 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import global from '@dojo/framework/shim/global';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import Icon, {IconType as IType} from '../icon';
+import Icon, { IconType as IType } from '../icon';
 import Details from '../details';
 import Button from '../button';
 // import * as ui from '../theme/material/_ui.m.css';
@@ -68,15 +68,32 @@ Playlist titles: 60 characters
 YouTube tags: 30 characters per tag, 500 characters total
 
 */
-
-interface LangMap { [iso:string]: string; }
+interface ColoredItem {
+	name?: string;
+	color?: string;
+}
+interface LangMap {
+	[iso: string]: string;
+}
 const ApTypes = {
-	note: 1, article: 1, image: 1, audio: 1, video: 1, event: 1, place: 1,
-	chat: 1, page: 1, redaktor: 1, terminal: 1, map: 1
-}
+	note: 1,
+	article: 1,
+	image: 1,
+	audio: 1,
+	video: 1,
+	event: 1,
+	place: 1,
+	chat: 1,
+	page: 1,
+	redaktor: 1,
+	terminal: 1,
+	map: 1
+};
 const IconTypes = {
-	private: 1, group: 1, public: 1
-}
+	private: 1,
+	group: 1,
+	public: 1
+};
 type IconType = (keyof typeof ApTypes | keyof typeof IconTypes) & IType;
 
 export interface CardProperties {
@@ -84,14 +101,19 @@ export interface CardProperties {
 	responsiveTypo?: boolean;
 
 	language?: string;
-	aspectRatio?: '1:1'|'3:2'|'16:9'|'4:1';
-	mediaSrc?: string; /* TODO mediaSrcset */
+	aspectRatio?: '1:1' | '3:2' | '16:9' | '4:1';
+	mediaBaselined?: boolean /* true */;
+	mediaSrc?: string /* TODO mediaSrcset */;
 	mediaName?: string;
 	mediaNameMap?: LangMap;
+	kicker?: string;
+	byline?: string;
 	name?: string;
 	nameMap?: LangMap;
 	summary?: string;
 	summaryMap?: LangMap;
+	bookmark?: boolean | ColoredItem;
+	topic?: boolean | ColoredItem;
 	type?: IconType | IconType[];
 	privacy?: IconType;
 	petName?: string;
@@ -121,131 +143,233 @@ TODO popup
 */
 
 export const Card = factory(function Card({ children, properties, middleware: { theme } }) {
-	const userLang = global.navigator.language ||
-		(new Intl.DateTimeFormat().resolvedOptions().locale) ||
-		global.navigator.userLanguage || 'en';
+	const userLang =
+		global.navigator.language ||
+		new Intl.DateTimeFormat().resolvedOptions().locale ||
+		global.navigator.userLanguage ||
+		'en';
 	const themedCss = theme.classes(css);
 
-	let { type = 'note', name: n = '', summary: s, content: c, privacy, mediaName } = properties();
-	const {
-		onAction, aspectRatio = '16:9', responsiveTypo = true, 	mediaSrc, mediaNameMap,
-		nameMap, summaryMap, contentMap, actorName, petName, handle, activity, time
-	} = properties();
 	let {
-		header, avatar, content, actionButtons, actionIcons
-	} = children()[0] || ({} as CardChildren);
+		type = 'note',
+		name: n = '',
+		summary: s,
+		content: c,
+		bookmark: b = false,
+		topic: t = false,
+		privacy,
+		mediaName
+	} = properties();
+	const {
+		onAction,
+		aspectRatio = '16:9',
+		responsiveTypo = true,
+		mediaBaselined = true,
+		mediaSrc,
+		mediaNameMap,
+		kicker,
+		byline,
+		nameMap,
+		summaryMap,
+		contentMap,
+		actorName,
+		petName,
+		handle,
+		activity,
+		time
+	} = properties();
+	let { header, avatar, content, actionButtons, actionIcons } =
+		children()[0] || ({} as CardChildren);
 
 	const majorType = Array.isArray(type) ? type[0] : type;
-	const langMap = (o: LangMap): string => o.hasOwnProperty(userLang) ? o[userLang] :
-			(o.hasOwnProperty(userLang.split('-')[0]) ? o[userLang.split('-')[0]] : o[Object.keys(o)[0]]);
-	const multiline = (s?: string, isSummary = false) => !s ? void 0 : <p classes={
-		responsiveTypo ?
-			(majorType === 'note' && isSummary ? themedCss.responsiveTypoSmall : themedCss.responsiveTypo) :
-			themedCss.defaultTypo
-		}>
-		{s.split('\n').map((item) => <virtual>{item}<br /></virtual>)}
-	</p>;
+	const langMap = (o: LangMap): string =>
+		o.hasOwnProperty(userLang)
+			? o[userLang]
+			: o.hasOwnProperty(userLang.split('-')[0])
+			? o[userLang.split('-')[0]]
+			: o[Object.keys(o)[0]];
+	const multiline = (s?: string, isSummary = false) =>
+		!s ? (
+			void 0
+		) : (
+			<p
+				classes={
+					responsiveTypo
+						? majorType === 'note' && isSummary
+							? themedCss.responsiveTypoSmall
+							: themedCss.responsiveTypo
+						: themedCss.defaultTypo
+				}
+			>
+				{s.split('\n').map((item) => (
+					<virtual>
+						{item}
+						<br />
+					</virtual>
+				))}
+			</p>
+		);
 
 	const name = nameMap ? langMap(nameMap) : n || '';
 	const summary = multiline(summaryMap ? langMap(summaryMap) : s, true) || '';
-
+	const bookmark =
+		b === true
+			? { name: '', color: 'var(--orange)' }
+			: typeof b === 'object'
+			? { ...{ name: '', color: 'var(--orange)' }, b }
+			: false;
+	const topic =
+		t === true
+			? { name: '', color: 'var(--orange)' }
+			: typeof t === 'object'
+			? { ...{ name: '', color: 'var(--orange)' }, t }
+			: false;
 	if (!content && c) {
 		content = multiline(contentMap ? langMap(contentMap) : c) || '';
 	}
 
-	if (mediaNameMap) { mediaName = langMap(mediaNameMap) }
+	if (mediaNameMap) {
+		mediaName = langMap(mediaNameMap);
+	}
 
-	const privacies: string|null = (typeof privacy === 'string' && IconTypes.hasOwnProperty(privacy)) ?
-	 	`${privacy as IconType}` : null;
+	const privacies: string | null =
+		typeof privacy === 'string' && IconTypes.hasOwnProperty(privacy)
+			? `${privacy as IconType}`
+			: null;
 
-	const titleClass = {note:1, image:1, audio:1, video:1, chat:1}.hasOwnProperty(majorType) ?
-		themedCss.smallTitle : themedCss.largeTitle;
-
+	const titleClass = { note: 1, image: 1, audio: 1, video: 1, chat: 1 }.hasOwnProperty(majorType)
+		? themedCss.smallTitle
+		: themedCss.largeTitle;
 
 	return (
-		<div key="root" classes={[
-			themedCss.root,
-			theme.variant(),
-			ApTypes.hasOwnProperty(majorType) ? (themedCss as any)[majorType] : null,
-			!privacies ? null :
-				(privacies === 'public' ? themedCss.publicPost :
-					(privacies === 'group' ? themedCss.groupPost : themedCss.privatePost)),
-			avatar ? themedCss.hasAvatar : null,
-			(summary && content) ? themedCss.hasMore : null,
-			mediaSrc ? themedCss.hasMedia : null
-		]}>
-			{header && (
-				<div key="header" classes={themedCss.header}>
-					{header}
-				</div>
-			)}
+		<div
+			key="root"
+			classes={[
+				themedCss.root,
+				theme.variant(),
+				ApTypes.hasOwnProperty(majorType) ? (themedCss as any)[majorType] : null,
+				!privacies
+					? null
+					: privacies === 'public'
+					? themedCss.publicPost
+					: privacies === 'group'
+					? themedCss.groupPost
+					: themedCss.privatePost,
+				avatar ? themedCss.hasAvatar : null,
+				summary && content ? themedCss.hasMore : null,
+				mediaSrc ? themedCss.hasMedia : null,
+				bookmark ? themedCss.hasBookmark : null,
+				topic ? themedCss.hasTopics : null
+			]}
+		>
 			{mediaSrc && (
 				<div
 					title={mediaName}
 					classes={[
 						themedCss.media,
-						(aspectRatio === '16:9' ? themedCss.m16by9 :
-							(aspectRatio === '3:2' ? themedCss.m3by2 :
-								(aspectRatio === '4:1' ? themedCss.m4by1 :
-									(aspectRatio === '1:1' ? themedCss.m1by1 : themedCss.m16by9))))
+						mediaBaselined ? themedCss.baselined : null,
+						aspectRatio === '16:9'
+							? themedCss.m16by9
+							: aspectRatio === '3:2'
+							? themedCss.m3by2
+							: aspectRatio === '4:1'
+							? themedCss.m4by1
+							: aspectRatio === '1:1'
+							? themedCss.m1by1
+							: themedCss.m16by9
 					]}
 					styles={{
 						backgroundImage: `url("${mediaSrc}")`
 					}}
 				/>
 			)}
+			{bookmark && (
+				<div classes={themedCss.bookmark} style={`--c:${bookmark.color};`}>
+					{bookmark.name}
+				</div>
+			)}
+			{topic && (
+				<div classes={themedCss.topic} style={`--c:${topic.color};`}>
+					{topic.name || '.'}
+				</div>
+			)}
+			{header && (
+				<div key="header" classes={themedCss.header}>
+					{header}
+				</div>
+			)}
 
-			{(avatar || privacies || actorName || handle || activity || time) &&
+			{(avatar || privacies || actorName || handle || activity || time) && (
 				<div classes={[themedCss.statusWrapper, petName ? themedCss.wellKnown : null]}>
 					{avatar && <span classes={themedCss.avatar}>{avatar}</span>}
 					<div classes={themedCss.metaWrapper}>
 						{petName && <h2 classes={themedCss.petname}>{petName}</h2>}
 						{!petName && actorName && <h3 classes={themedCss.name}>{actorName}</h3>}
-						{(handle || activity || time) &&
+						{(handle || activity || time) && (
 							<h3 classes={themedCss.time}>
 								{activity ? ` ${activity} ` : ''}
-								{(activity && handle) ? ' • ' : ' '}
+								{activity && handle ? ' • ' : ' '}
 								{handle ? ` ${handle} ` : ''}
-								{(handle && time) ? ' • ' : ' '}
+								{handle && time ? ' • ' : ' '}
 								{time ? time : ''}
 							</h3>
-						}
+						)}
 					</div>
-					{privacies && <Icon size="xxl" type={(privacies as IconType)} />
-				}
+					{privacies && <Icon size="xxl" type={privacies as IconType} />}
 				</div>
-			}
+			)}
 
-			<div key="content"
-				classes={[themedCss.content /*, onAction ? themedCss.primary : null*/ ]}
+			{(kicker || byline) && (
+				<header classes={themedCss.titleWrapper}>
+					{kicker && <p classes={themedCss.kicker}>{kicker}</p>}
+					{name && <h2 classes={titleClass}>{name}</h2>}
+					{byline && <p classes={themedCss.byline}>{byline}</p>}
+				</header>
+			)}
+			{!kicker && !byline && name && (
+				<div classes={themedCss.titleWrapper}>
+					{name && <h2 classes={titleClass}>{name}</h2>}
+				</div>
+			)}
+			<div
+				key="content"
+				classes={[themedCss.contentWrapper /*, onAction ? themedCss.primary : null*/]}
 				onClick={() => onAction && onAction()}
 			>
-				{name && (
-					<div classes={themedCss.titleWrapper}>
-						{name && <h2 classes={titleClass}>{name}</h2>}
+				{summary && (
+					<div
+						classes={[
+							themedCss.content,
+							majorType === 'article' ? themedCss.serif : null
+						]}
+					>
+						{summary}
 					</div>
 				)}
-				{summary && <div classes={[
-					themedCss.contentWrapper,
-					majorType === 'article' ? themedCss.serif : null
-				]}>{summary}</div>}
-				{!summary && content && <div classes={themedCss.contentWrapper}>{content}</div>}
+				{!summary && content && <div classes={themedCss.content}>{content}</div>}
 			</div>
-			{(majorType !== 'article' && summary && content) && <Details summary="read more">
-					<div classes={[themedCss.content]}>{content}</div>
+			{majorType !== 'article' && summary && content && (
+				<Details summary="read more">
+					<div classes={[themedCss.contentWrapper]}>{content}</div>
 				</Details>
-			}
+			)}
 
-			{(majorType === 'article' && summary && content) &&
-				<Button classes={{
-					'@dojo/widgets/button': {'root': [themedCss.activityBtn]}
-				}} size="xl" spaced={false} variant="flat" depth={2}>
+			{majorType === 'article' && summary && content && (
+				<Button
+					classes={{
+						'@dojo/widgets/button': { root: [themedCss.activityBtn] }
+					}}
+					size="xl"
+					spaced={false}
+					variant="flat"
+					depth={2}
+				>
 					Read
 				</Button>
-			}
+			)}
 
 			{(actionButtons || actionIcons) && (
-				<div key="actions" classes={themedCss.actions}>
+				<div key="actions" classes={themedCss.actionWrapper}>
 					{actionButtons && <div classes={themedCss.actionButtons}>{actionButtons}</div>}
 					{actionIcons && <div classes={themedCss.actionIcons}>{actionIcons}</div>}
 				</div>
@@ -255,3 +379,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 });
 
 export default Card;
+/*
+<div classes={themedCss.bookmark} />
+<div classes={themedCss.topic}>topic</div>
+*/
