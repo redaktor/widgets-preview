@@ -1,3 +1,4 @@
+/*
 :global .markdown {
 	position: absolute;
 	z-index: 101;
@@ -15,13 +16,14 @@
 :global .markdown .p-4 {
 	padding: 0 !important;
 }
-
+*/
 .root {
 	--asideW: 240px;
 	display: flex;
 	max-width: 3840px;
 	padding: 0 0.83333333vw calc(0.83333333vw * 2) 0.83333333vw;
 	margin: var(--lineHalf, 7px) auto 0 auto;
+	position: relative;
 }
 .asideNav {
 	display: flex;
@@ -158,6 +160,24 @@
 	margin: 0 !important;
 	padding: 0 !important;
 }
+.col1 { order: 1; }
+.col2 { order: 2; }
+.col3 { order: 3; }
+.col4 { order: 4; }
+.col5 { order: 5; }
+.col6 { order: 6; }
+.col2, .col3, .col4, .col5, .col6 {
+	background: red;
+	display: none;
+}
+
+.loadTrigger {
+	height: 10px;
+	width: 100%;
+	position: absolute;
+	background: green;
+}
+
 @media screen and (max-width: 480px) {
 	.root {
 		padding: 0;
@@ -190,7 +210,7 @@
 		padding: var(--lineHalf, 7px) 5.56vw var(--lineHalf, 7px) 5.56vw;
 	}
 }
-
+/* 2 col */
 @media screen and (min-width: 940px) {
 	.item {
 		width: 50%;
@@ -202,8 +222,11 @@
 	.item:nth-child(2n) {
 		order: 2;
 	}
+	.col2 {
+		display: block;
+	}
 }
-
+/* 3 col */
 @media screen and (min-width: 1366px) {
 	.item {
 		width: 33.33333333%;
@@ -217,7 +240,11 @@
 	.item:nth-child(3n) {
 		order: 3;
 	}
+	.col2, .col3 {
+		display: block;
+	}
 }
+/* 4 col */
 @media screen and (min-width: 1900px) {
 	.item {
 		width: 25%;
@@ -234,7 +261,11 @@
 	.item:nth-of-type(4n) {
 		order: 4;
 	}
+	.col2, .col3, .col4 {
+		display: block;
+	}
 }
+/* 5 col */
 @media screen and (min-width: 2680px) {
 	.root {
 		margin: var(--line) auto 0 auto;
@@ -257,6 +288,9 @@
 	}
 	.item:nth-of-type(5n) {
 		order: 5;
+	}
+	.col2, .col3, .col4, .col5 {
+		display: block;
 	}
 }
 @media screen and (min-width: 3020px) {
@@ -286,7 +320,10 @@
 	.item:nth-of-type(6n) {
 		order: 6;
 	}
-	.card__content {
+	.content {
 		padding: 0.83333333vw 1.2vw 0.83333333vw 1.2vw;
+	}
+	.col2, .col3, .col4, .col5, .col6 {
+		display: block;
 	}
 }

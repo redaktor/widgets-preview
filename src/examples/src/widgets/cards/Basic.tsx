@@ -200,12 +200,21 @@ export default factory(function CardsExample({ middleware: { icache } }) {
 					const newData = await getListItems();
 					const data = icache.get('data') || [];
 					console.log(data);
-					icache.set('loading', false);
+					icache.set('loading', false, false);
 					icache.set('data', [...(data as any), ...newData]);
 				}
 			}}
 		>
 			{{
+				header: (
+					<button style="position:absolute;top:-18px;left:0;background:#fadc00;" onclick={() => {
+						(document.querySelector('.markdown + .hidden') as any).classList.toggle("markdownFullscreen");
+						(document.querySelector('.z-90.hidden') as any).classList.toggle("markdownFullscreen");
+						(document.querySelector('.markdown') as any).classList.toggle("markdownFullscreen");
+					}}>
+						TOGGLE EXAMPLE
+					</button>
+				),
 				aside: (
 					<div classes={asideCss.root}>
 						<Details open={true} summary="Most read">

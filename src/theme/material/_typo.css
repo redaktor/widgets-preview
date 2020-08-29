@@ -537,20 +537,19 @@ code.language-ts {
   }
 }
 .markdownFullscreen {
-  position: absolute;
-  z-index: 101;
-  top: var(--line3, 45px);
-  left: 0;
-  min-width: 100%;
-  display: flex;
-  margin: 0;
+  min-width: 98vw !important;
+  overflow-x: hidden;
+  margin: 0 !important;
   padding: 0 0 var(--line4) 0 !important;
   background-color: #303030;
 }
-.markdownFullscreen > * {
+.markdown.markdownFullscreen > * {
   width: 100%;
 }
 .markdownFullscreen .p-4 {
   padding: 0 !important;
+}
+.markdownFullscreen.hidden {
+  display: none !important;
 }
 /* <--- */

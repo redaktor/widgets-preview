@@ -92,7 +92,7 @@ interface CardProps {
 	time: string;
 }
 const mediaSrc = require('../card/img/card-photo.jpg');
-export function getListItems(count = 10): Promise<CardProps[]> {
+export function getListItems(count = 50): Promise<CardProps[]> {
 	const articles: any[] = [];
 
 	for (let i = 0; i < count; i++) {
