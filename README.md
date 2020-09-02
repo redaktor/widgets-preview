@@ -15,12 +15,17 @@ These widgets are built using Dojo's widget authoring system [(@dojo/framework/c
 
 ## Usage
 
-To use `widgets-redaktor` in your project, you will need to install the package:
+To use `widgets-preview` in your project, you will need to install the package:
 
 ```bash
 npm install
 ```
 This package contains *all* of the widgets in this repo.
+A parade showcase is included. To start it in development mode do 
+```bash
+dojo build --mode dev --watch --serve
+```
+and visit http://localhost:9999/ and be happy, it is a WIP preview.
 
 All of the widgets are on the same release schedule, that is to say, that we release all widgets at the same time.
 Minor releases may include new widgets and/or features, whereas patch releases may contain fixes to more than 1 widget.
@@ -49,10 +54,6 @@ This allows our [`dojo cli`](https://github.com/dojo/cli) build tooling to make 
 - All widgets are fully themeable. Example themes are available in the [@dojo/themes](https://github.com/dojo/themes) repository.
 
 - All widgets support internationalization (`i18n`)
-
-## Widgets
-
-A parade playground is included.
 
 
 ## Conventions
