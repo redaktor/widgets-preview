@@ -1,6 +1,7 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import global from '@dojo/framework/shim/global';
 import { RenderResult } from '@dojo/framework/core/interfaces';
+import { RGB, bestTextColor } from '../framework/color';
 import Icon, { IconType as IType } from '../icon';
 import Details from '../details';
 import Button from '../button';
@@ -70,7 +71,7 @@ YouTube tags: 30 characters per tag, 500 characters total
 */
 interface ColoredItem {
 	name?: string;
-	color?: string;
+	color?: RGB;
 }
 interface LangMap {
 	[iso: string]: string;
@@ -149,20 +150,24 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 		global.navigator.userLanguage ||
 		'en';
 	const themedCss = theme.classes(css);
+	const aspectRatios = {
+		'16:9': themedCss.m16by9,
+		'3:2': themedCss.m3by2,
+		'4:1': themedCss.m4by1,
+		'1:1': themedCss.m16by9
+	}
 
-	let {
+	const {
 		type = 'note',
 		name: n = '',
 		summary: s,
 		content: c,
 		bookmark: b = false,
 		topic: t = false,
+		mediaName: mn,
+		aspectRatio: ar = '16:9',
 		privacy,
-		mediaName
-	} = properties();
-	const {
 		onAction,
-		aspectRatio = '16:9',
 		responsiveTypo = true,
 		mediaBaselined = true,
 		mediaSrc,
@@ -212,30 +217,21 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 
 	const name = nameMap ? langMap(nameMap) : n || '';
 	const summary = multiline(summaryMap ? langMap(summaryMap) : s, true) || '';
-	const bookmark =
-		b === true
-			? { name: '', color: 'var(--orange)' }
-			: typeof b === 'object'
-			? { ...{ name: '', color: 'var(--orange)' }, b }
-			: false;
-	const topic =
-		t === true
-			? { name: '', color: 'var(--orange)' }
-			: typeof t === 'object'
-			? { ...{ name: '', color: 'var(--orange)' }, t }
-			: false;
+	const bookmark: ColoredItem|null = b === true ? { name: '', color: [255,122,0] } :
+		(typeof b === 'object' 	? { ...{ name: '', color: [255,122,0] }, ...b } : null);
+	const topic: ColoredItem|null = t === true ? { name: '', color: [109,167,209] } :
+		(typeof t === 'object' ? { ...{ name: '', color: [109,167,209] }, ...t } : null);
 	if (!content && c) {
 		content = multiline(contentMap ? langMap(contentMap) : c) || '';
 	}
 
-	if (mediaNameMap) {
-		mediaName = langMap(mediaNameMap);
-	}
+	const mediaName = mediaNameMap ? langMap(mediaNameMap) : mn;
 
-	const privacies: string | null =
-		typeof privacy === 'string' && IconTypes.hasOwnProperty(privacy)
-			? `${privacy as IconType}`
-			: null;
+
+	const privClass = !privacy || typeof privacy === 'string' ? null :
+		(privacy === 'public' ? themedCss.publicPost :
+		(privacy === 'group' ? themedCss.groupPost : themedCss.privatePost));
+	const aspectRatio = aspectRatios[ar] ? aspectRatios[ar] : '16:9';
 
 	const titleClass = { note: 1, image: 1, audio: 1, video: 1, chat: 1 }.hasOwnProperty(majorType)
 		? themedCss.smallTitle
@@ -247,14 +243,8 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 			classes={[
 				themedCss.root,
 				theme.variant(),
+				privClass,
 				ApTypes.hasOwnProperty(majorType) ? (themedCss as any)[majorType] : null,
-				!privacies
-					? null
-					: privacies === 'public'
-					? themedCss.publicPost
-					: privacies === 'group'
-					? themedCss.groupPost
-					: themedCss.privatePost,
 				avatar ? themedCss.hasAvatar : null,
 				summary && content ? themedCss.hasMore : null,
 				mediaSrc ? themedCss.hasMedia : null,
@@ -283,14 +273,14 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 					}}
 				/>
 			)}
-			{bookmark && (
-				<div classes={themedCss.bookmark} style={`--c:${bookmark.color};`}>
+			{bookmark && bookmark.color && (
+				<div classes={themedCss.bookmark} style={`--bg: rgb(${bookmark.color.join(',')}); --c:${bestTextColor(bookmark.color)};`}>
 					{bookmark.name}
 				</div>
 			)}
-			{topic && (
-				<div classes={themedCss.topic} style={`--c:${topic.color};`}>
-					{topic.name || '.'}
+			{topic && topic.color && (
+				<div classes={themedCss.topic} style={`--bg: rgb(${topic.color.join(',')}); --c:${bestTextColor(topic.color)};`}>
+					{topic.name || '•'}
 				</div>
 			)}
 			{header && (
@@ -299,7 +289,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 				</div>
 			)}
 
-			{(avatar || privacies || actorName || handle || activity || time) && (
+			{(avatar || privacy || actorName || handle || activity || time) && (
 				<div classes={[themedCss.statusWrapper, petName ? themedCss.wellKnown : null]}>
 					{avatar && <span classes={themedCss.avatar}>{avatar}</span>}
 					<div classes={themedCss.metaWrapper}>
@@ -315,7 +305,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 							</h3>
 						)}
 					</div>
-					{privacies && <Icon size="xxl" type={privacies as IconType} />}
+					{privacy && <Icon size="xxl" type={privacy as IconType} />}
 				</div>
 			)}
 

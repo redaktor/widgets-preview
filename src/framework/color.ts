@@ -1,7 +1,7 @@
 export type RGB = [number, number, number];
 
 export function specificLight(rgb: RGB) {
-  var [r,g,b] = rgb;
+  const [r,g,b] = rgb;
   return 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 }
 export function bestTextColor(rgb: RGB, lightText = '#ffffff', darkText = '#000000', average = 0.5) {
@@ -10,18 +10,18 @@ export function bestTextColor(rgb: RGB, lightText = '#ffffff', darkText = '#0000
 
 export function rgb2hex(r: number, g: number, b: number) {
 	return [r, g, b].reduce((s, v) => {
-  	var hex = v.toString(16);
-    return s + (hex.length == 1 ? '0' + hex : hex);
+  	const hex = v.toString(16);
+    return s + (hex.length === 1 ? '0' + hex : hex);
   }, '#');
 }
 export function rgb2hsl(r: number, g: number, b: number) {
   r /= 255; g /= 255; b /= 255;
   const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  var h, s, l = (max + min) / 2;
+  let h, s, l = (max + min) / 2;
   if(max === min){
     h = s = 0;
   } else {
-    var d = max - min;
+    const d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
     switch(max) {
       case r: h = (g - b) / d + (g < b ? 6 : 0); break;
@@ -33,18 +33,18 @@ export function rgb2hsl(r: number, g: number, b: number) {
   return [360*h, 100*s, 100*l]
 }
 
-export function hsl2rgb(h: number, s: number, l: number): RGB {
-  var r, g, b;
-  var [h, s, l] = [h, s, l].map((v, i) => v / (!i ? 360 : 100));
+export function hsl2rgb(_h: number, _s: number, _l: number): RGB {
+  let r, g, b;
+  let [h, s, l] = [_h, _s, _l].map((v, i) => v / (!i ? 360 : 100));
   if (s === 0) {
     r = g = b = l; // achromatic
   } else {
     const hue2rgb = (p: number, q: number, t: number) => {
-      if (t < 0) t += 1;
-      if (t > 1) t -= 1;
-      if (t < 1/6) return p + (q - p) * 6 * t;
-      if (t < 1/2) return q;
-      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      if (t < 0) { t += 1 }
+      if (t > 1) { t -= 1 }
+      if (t < 1/6) { return p + (q - p) * 6 * t }
+      if (t < 1/2) { return q }
+      if (t < 2/3) { return p + (q - p) * (2/3 - t) * 6 }
       return p;
     }
     const q = l < 0.5 ? l * (1 + s) : l + s - l * s;

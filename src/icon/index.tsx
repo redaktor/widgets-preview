@@ -29,7 +29,6 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 	} = properties();
 
 	const classes = theme.classes(css);
-	console.log(type);
 	return (
 		<virtual>
 			<i

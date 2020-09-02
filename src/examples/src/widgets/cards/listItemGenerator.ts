@@ -1,6 +1,50 @@
 /*
  * Nonsense content generation to keep our infinite list interesting.
  */
+/*
+
+*/
+const topics = [
+	true,
+	{color: [220,0,5], name: 'DEPOL'},
+	{color: [255,40,0], name: 'USPOL'},
+	{color: [255,122,0], name: 'Street Photography'},
+	{color: [255,175,0], name: 'Reportage'},
+	{color: [250,220,0], name: 'JS'},
+	{color: [223,220,0], name: 'Journalism'},
+	{color: [149,204,13], name: 'Photojournalism'},
+	{color: [19,178,11], name: 'Online Journalism'},
+	{color: [51,153,133], name: 'Travel'},
+	{color: [0,177,204], name: 'Climate Change'},
+	{color: [109,167,209], name: 'TS'},
+	{color: [13,126,204], name: 'Surveillance'},
+	{color: [59,78,184], name: 'Hamburg'},
+	{color: [102,51,153], name: 'Robert Frank'},
+	{color: [195,12,112], name: 'ActivityPub'},
+	{color: [235,47,89], name: 'FLASH'},
+	{color: [122,86,83], name: 'Racism'},
+	{color: [97,124,143], name: 'Introduction'}
+]
+const bookmarks = [
+	{color: [220,0,5], name: ''},
+	{color: [255,40,0], name: ''},
+	{color: [255,122,0], name: ''},
+	{color: [255,175,0], name: ''},
+	{color: [250,220,0], name: ''},
+	{color: [223,220,0], name: ''},
+	{color: [149,204,13], name: ''},
+	{color: [19,178,11], name: ''},
+	{color: [51,153,133], name: ''},
+	{color: [0,177,204], name: ''},
+	{color: [109,167,209], name: ''},
+	{color: [13,126,204], name: ''},
+	{color: [59,78,184], name: ''},
+	{color: [102,51,153], name: ''},
+	{color: [195,12,112], name: ''},
+	{color: [235,47,89], name: ''},
+	{color: [122,86,83], name: ''},
+	{color: [97,124,143], name: ''}
+]
 
 const names = [
 	'Double Your Profit with These [number] tips on [subject]',
@@ -81,6 +125,7 @@ function generateArticleTitle() {
 interface CardProps {
 	name: string;
 	summary: string;
+	aspectRatio?: '1:1' | '3:2' | '16:9' | '4:1';
 	mediaSrc: any;
 	type: string;
 	privacy: string;
@@ -92,6 +137,16 @@ interface CardProps {
 	time: string;
 }
 const mediaSrc = require('../card/img/card-photo.jpg');
+const mediaSrc41 = require('../card/img/card-photo-1-4.jpg');
+const mediaSrc11 = require('../card/img/card-photo-1-1.jpg');
+const mediaSrc23 = require('../card/img/card-photo-2-3.jpg');
+const medias = [
+	{mediaSrc, aspectRatio: '16:9'},
+	{mediaSrc: mediaSrc41, aspectRatio: '4:1'},
+	{mediaSrc: mediaSrc11, aspectRatio: '1:1'},
+	{mediaSrc: mediaSrc23, aspectRatio: '3:2'}
+];
+
 export function getListItems(count = 50): Promise<CardProps[]> {
 	const articles: any[] = [];
 
@@ -102,19 +157,21 @@ export function getListItems(count = 50): Promise<CardProps[]> {
 		for (let j = 0; j < sentences; j++) {
 			summary += '. ' + generateArticleTitle();
 		}
+		const media = i < 1 ? {mediaSrc: mediaSrc23, aspectRatio: '3:2'} :
+			(Math.random() > 0.5 ? medias[Math.floor(Math.random() * medias.length)] : {aspectRatio: '16:9'});
 
 		articles.push({
-			mediaSrc: Math.random() > 0.5 ? mediaSrc : null,
 			name: generateArticleTitle(),
 			summary,
-			type: types[Math.floor(Math.random() * types.length)],
+			type: i < 2 ? 'article' : types[Math.floor(Math.random() * types.length)],
 			privacy: privacies[Math.floor(Math.random() * privacies.length)],
-			bookmark: Math.random() > 0.5, // TODO
-			topic: Math.random() > 0.5,
+			bookmark: Math.random() > 0.75 ? bookmarks[Math.floor(Math.random() * bookmarks.length)] : false,
+			topic: Math.random() > 0.65 ? topics[Math.floor(Math.random() * topics.length)] : false,
 			actorName: `Lorem Ipsum`,
 			handle: '@sl007@mastodon.social',
 			activity: 'created',
-			time: '23m ago'
+			time: '23m ago',
+			...media
 		});
 	}
 

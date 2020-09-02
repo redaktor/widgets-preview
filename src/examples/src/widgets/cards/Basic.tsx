@@ -1,20 +1,39 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import { wordsAndBreaks } from '../../../../framework/String/words';
+// import { wordsAndBreaks } from '../../../../framework/String/words';
 import icache from '@dojo/framework/core/middleware/icache';
 import { getListItems } from './listItemGenerator';
-import Card from '@dojo/widgets/card';
+// import Card from '@dojo/widgets/card';
+// import Map from '@dojo/widgets/map';
 import Cards from '@dojo/widgets/cards';
 import Details from '@dojo/widgets/details';
 import Avatar from '@dojo/widgets/avatar';
 import Icon from '@dojo/widgets/icon';
 import Button from '@dojo/widgets/button';
-import Map from '@dojo/widgets/map';
-import * as cardCss from '../../../../theme/material/card.m.css';
+// import * as cardCss from '../../../../theme/material/card.m.css';
 import * as asideCss from '../../../../theme/material/aside.m.css';
-const mediaSrc = require('../card/img/card-photo.jpg');
-const mediaSrc41 = require('../card/img/card-photo-1-4.jpg');
-const mediaSrc11 = require('../card/img/card-photo-1-1.jpg');
-const mediaSrc23 = require('../card/img/card-photo-2-3.jpg');
+
+const actionButtons = (
+	<virtual>
+		<Button spaced={false} responsive={true}>
+			<Icon size="xxl" type="link" />
+		</Button>
+		<Button spaced={false} responsive={true}>
+			<Icon size="xxl" type="like" />
+		</Button>
+		<Button spaced={false} responsive={true}>
+			<Icon size="xxl" type="bookmark" />
+		</Button>
+		<Button spaced={false} responsive={true}>
+			<Icon size="xxl" type="share" />
+		</Button>
+		<noscript>
+			<Button spaced={false} responsive={true}>
+				<Icon size="xxl" type="comment" />
+			</Button>
+		</noscript>
+		<Icon spaced={false} type="more" />
+	</virtual>
+);
 // TODO aside + css
 /* TODO : Focus and List styles
 Languages
@@ -118,77 +137,21 @@ Map
 </Card>
 */
 
-const nameMap = {
-	en: 'It is on! The season is officially open!',
-	de: 'Es ist an! Die Saison ist eröffnet!'
-};
-const summary = `Auch 2020 gibt es wieder #ActivityPub Conf
-Yay!
-
-Eine Konferenz zur Gegenwart und Zukunft des führenden föderierten Webstandards.
-
-Ihr könnt Euch hier registrieren, es ist für alle gratis:
-https://conf.activitypub.rocks
-Wer zuerst kommt, malt zuerst.
-Un projet parmi d'autres, Roborder : une flotte autonomes de robots, avec algorithmes de détection et analyses prédictives lorem ipsu
-⬡ #apconf2020 #fediverse`;
-const avatar = <Avatar spaced={false}>SL</Avatar>;
-const name = 'Sebastian Lasse'; /* TODO max length 20 */
-const nameSummary = 'redaktor.me 🐍'; /* TODO max length like mastodon-20 */
-const handle = '@sl007@mastodon.social';
-
-const actionButtons = (
-	<virtual>
-		<Button spaced={false} responsive={true}>
-			<Icon size="xxl" type="link" />
-		</Button>
-		<Button spaced={false} responsive={true}>
-			<Icon size="xxl" type="like" />
-		</Button>
-		<Button spaced={false} responsive={true}>
-			<Icon size="xxl" type="bookmark" />
-		</Button>
-		<Button spaced={false} responsive={true}>
-			<Icon size="xxl" type="share" />
-		</Button>
-		<noscript>
-			<Button spaced={false} responsive={true}>
-				<Icon size="xxl" type="comment" />
-			</Button>
-		</noscript>
-		<Icon spaced={false} type="more" />
-	</virtual>
-);
-const actionButtons2 = (
-	<virtual>
-		<Button spaced={false} responsive={true}>
-			<Icon size="xxl" type="update" />
-		</Button>
-		<Button spaced={false} responsive={true}>
-			<Icon size="xxl" type="_delete" />
-		</Button>
-		<Button spaced={false} responsive={true}>
-			<Icon size="xxl" type="bookmark" />
-		</Button>
-		<Button spaced={false} responsive={true}>
-			<Icon size="xxl" type="move" />
-		</Button>
-		<Icon spaced={false} type="more" />
-	</virtual>
-);
-
+function withChildren(o: any) {
+	o.avatar = <Avatar spaced={false}>SL</Avatar>;
+	o.actionButtons = actionButtons;
+	return o
+}
+async function getListItemsWithChildren(o: any) {
+	const data = await getListItems();
+	return data.map(withChildren)
+}
 const factory = create({ icache });
+
 // const chunks = wordsAndBreaks(summary);
 export default factory(function CardsExample({ middleware: { icache } }) {
-	const data: any = icache.getOrSet('data', getListItems);
+	const data: any = icache.getOrSet('data', getListItemsWithChildren);
 	const isLoading: boolean = icache.get('loading') || false;
-
-	const stdProps: any = {
-		actorName: `${name}, ${nameSummary}`,
-		handle,
-		privacy: 'group',
-		time: '23m ago'
-	};
 
 	return (
 		<Cards
@@ -197,9 +160,8 @@ export default factory(function CardsExample({ middleware: { icache } }) {
 				data,
 				onRequestItems: async () => {
 					icache.set('loading', true);
-					const newData = await getListItems();
+					const newData = (await getListItems()).map(withChildren);
 					const data = icache.get('data') || [];
-					console.log(data);
 					icache.set('loading', false, false);
 					icache.set('data', [...(data as any), ...newData]);
 				}
@@ -408,53 +370,7 @@ export default factory(function CardsExample({ middleware: { icache } }) {
 							</ul>
 						</Details>
 					</div>
-				),
-
-				content: (
-					<virtual>
-						<Card
-							{...{
-								...stdProps,
-								type: 'note',
-								bookmark: true,
-								topic: true,
-								content: '1: minimal note: \n' + summary.substr(0, 48),
-								mediaSrc: mediaSrc11,
-								aspectRatio: '1:1'
-							}}
-						>
-							{{ avatar, actionButtons }}
-						</Card>
-						<Card
-							{...{
-								...stdProps,
-								name: '2 A headline',
-								petName: 'Sebi',
-								mediaSrc: mediaSrc23,
-								aspectRatio: '3:2',
-								type: 'note',
-								summary:
-									'2: note w. image and summary: \n' + summary.substr(0, 180),
-								content: summary
-							}}
-						>
-							{{ avatar, actionButtons }}
-						</Card>
-						<Card
-							{...{
-								...stdProps,
-								mediaSrc,
-								nameMap,
-								type: 'article',
-								summary: '3: article w. image and summary: \n' + summary,
-								content: summary
-							}}
-						>
-							{{ avatar, actionButtons }}
-						</Card>
-					</virtual>
-				)
-			}}
+				)}}
 		</Cards>
 	);
 });

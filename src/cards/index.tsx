@@ -41,7 +41,7 @@ export const Cards = factory(function Cards({
 	const colHeight = Math.max(...([1,2,3,4,5,6].map((i) => dimensions.get(`col${i}`).offset.top||0)));
 
 	const { isIntersecting } = intersection.get('bottom');
-	console.log('isLoading', data.length, isLoading, isIntersecting);
+	// console.log('isLoading', data.length, isLoading, isIntersecting);
 	if (!isLoading && isIntersecting) {
 		onRequestItems();
 	}
@@ -59,38 +59,68 @@ export const Cards = factory(function Cards({
 			</aside>
 		</virtual>
 	);
-
+/*
+TODO
+export interface CardProperties {
+	onAction?: () => void;
+	responsiveTypo?: boolean;
+}
+*/
 	const cards = !data ? [] : data.map(
 		(
 			{
 				name,
+				nameMap,
 				summary,
+				summaryMap,
+				aspectRatio,
 				mediaSrc,
+				mediaName,
+				mediaNameMap,
+				content,
+				contentMap,
+				kicker,
+				byline,
 				type,
 				privacy,
 				actorName,
+				petName,
 				handle,
 				activity,
 				time,
 				bookmark,
-				topic
+				topic,
+				avatar,
+				actionButtons
 			}
 		) => <li classes={themedCss.item}>
 				<Card
 					{...{
 						name,
+						nameMap,
 						summary,
+						summaryMap,
+						aspectRatio,
 						mediaSrc,
+						mediaName,
+						mediaNameMap,
+						content,
+						contentMap,
+						kicker,
+						byline,
 						type,
 						privacy,
 						actorName,
+						petName,
 						handle,
 						activity,
 						time,
 						bookmark,
 						topic
 					}}
-				/>
+				>
+					{{avatar, actionButtons}}
+				</Card>
 			</li>
 	);
 
