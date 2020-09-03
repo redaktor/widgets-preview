@@ -1,4 +1,7 @@
 export const root: string;
+export const loadBar: string;
+export const isLoading: string;
+export const loading: string;
 export const asideNav: string;
 export const cards: string;
 export const hasAside: string;

@@ -50,7 +50,7 @@ const names = [
 	'Double Your Profit with These [number] tips on [subject]',
 	'[number] Easy Ways You Can Turn [subject] Into Success',
 	'Can You Pass The [subject] Test?',
-	'Why Ignoring [subject] Will Cost You Time And Sales',
+	'Why Ignoring [subject] Will Cost You [goal]',
 	'[number] Methods Of [subject] [goal]',
 	"What [organization] Doesn't Want You To Know About [subject]",
 	'The Aliens Are Sneaking [subject] Into America. What You Need To Know For [better]',
@@ -69,15 +69,21 @@ const names = [
 	"Drone Overhead? Why [organization] Can't Have You Panic"
 ];
 
-const subjects = ['Waning Gibbous', 'Government Test Sites', 'Tin Foil Hats', 'Cats'];
+const subjects = ['Waning Gibbous', 'Groby', 'Bitdiddle Industries', 'Tin Foil Hats', 'Cats'];
 
-const goals = ['Success', 'Domination', 'Happiness'];
+const goals = ['Success', 'Diversity', 'Happiness'];
 
 const locations = ['Life', 'Business', "Mother's Basement", 'Cat'];
 
 const betters = ['Faster', 'Stronger', 'Successful'];
 
-const organizations = ['The Government', 'The CIA', 'The FBI', 'Math Teachers'];
+const organizations = ['The Government', 'The CIA', 'The NSA', 'Math Teachers', 'Mozilla'];
+
+const coordinates = ['18.71511, 34.09042', '-118.71511, 34.09042', '51.537888, 6.745791'];
+
+const places = ['Santa Monica', 'Café Du Bonheur', 'Folkwang Museum Essen'];
+
+const events = ['ActivityPub Conference 2020', 'Fridays For Future Berlin', 'Dinner at Yafo'];
 
 const ApTypes = {
 	note: 1,
@@ -87,11 +93,12 @@ const ApTypes = {
 	video: 1,
 	event: 1,
 	place: 1,
-	chat: 1,
 	page: 1,
+	/* TODO
+	chat: 1,
 	redaktor: 1,
 	terminal: 1,
-	map: 1
+	map: 1 */
 };
 const types = Object.keys(ApTypes);
 const privacies = ['private', 'group', 'public'];
@@ -125,6 +132,7 @@ function generateArticleTitle() {
 interface CardProps {
 	name: string;
 	summary: string;
+	kicker?: string;
 	aspectRatio?: '1:1' | '3:2' | '16:9' | '4:1';
 	mediaSrc: any;
 	type: string;
@@ -151,25 +159,56 @@ export function getListItems(count = 50): Promise<CardProps[]> {
 	const articles: any[] = [];
 
 	for (let i = 0; i < count; i++) {
-		const sentences = Math.round(Math.random() * 3);
+		const type = i < 2 ? 'article' : types[Math.floor(Math.random() * types.length)];
 
-		let summary = generateArticleTitle();
+		const name = type === 'place' ? places[Math.floor(Math.random() * places.length)] :
+			(type === 'event' ? events[Math.floor(Math.random() * events.length)] : generateArticleTitle());
+
+		const sentences = Math.round(Math.random() * (type === 'event' || type === 'place' ? 3 : 5));
+		let summary = `${type} ${generateArticleTitle()}`;
 		for (let j = 0; j < sentences; j++) {
 			summary += '. ' + generateArticleTitle();
 		}
-		const media = i < 1 ? {mediaSrc: mediaSrc23, aspectRatio: '3:2'} :
-			(Math.random() > 0.5 ? medias[Math.floor(Math.random() * medias.length)] : {aspectRatio: '16:9'});
+		/*
+
+		note: 1,
+		article: 1,
+		image: 1,
+		audio: 1,
+		video: 1,
+		event: 1,
+		place: 1,
+		page: 1,
+
+		TODO
+		chat: 1,
+		redaktor: 1,
+		terminal: 1,
+		map: 1 ::
+		*/
+		const media = i < 1 || type === 'image' ? {mediaSrc: mediaSrc23, aspectRatio: '3:2'} : (
+			type === 'video' || type === 'page' ? {mediaSrc} : (
+				type === 'audio' ? {mediaSrc: mediaSrc11, aspectRatio: '1:1'} : (
+					type === 'event' ? {mediaSrc: mediaSrc41, aspectRatio: '4:1'} :
+						(Math.random() > 0.5 ? medias[Math.floor(Math.random() * medias.length)] : {aspectRatio: '16:9'})
+				)
+			)
+		);
+
+		const kicker = type === 'place' ? coordinates[Math.floor(Math.random() * coordinates.length)] : null;
+
 
 		articles.push({
-			name: generateArticleTitle(),
+			name,
+			type,
 			summary,
-			type: i < 2 ? 'article' : types[Math.floor(Math.random() * types.length)],
+			kicker,
 			privacy: privacies[Math.floor(Math.random() * privacies.length)],
 			bookmark: Math.random() > 0.75 ? bookmarks[Math.floor(Math.random() * bookmarks.length)] : false,
 			topic: Math.random() > 0.65 ? topics[Math.floor(Math.random() * topics.length)] : false,
+			activity: Math.random() > 0.5 ? 'Susanne Sharer shared' : null,
 			actorName: `Lorem Ipsum`,
 			handle: '@sl007@mastodon.social',
-			activity: 'created',
 			time: '23m ago',
 			...media
 		});

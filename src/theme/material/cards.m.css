@@ -6,6 +6,35 @@
 	margin: var(--lineHalf, 7px) auto 0 auto;
 	position: relative;
 }
+.loadBar {
+	composes: primary from './_color.m.css';
+  position: fixed;
+  width: 100%;
+  height: 8px;
+	left: 0px;
+	top: 0px;
+	background-color: #ccc;
+	z-index: 9999;
+}
+.loadBar::before {
+  content: "";
+  display: inline;
+  position: absolute;
+  width: 0;
+  height: 100%;
+  left: 50%;
+  text-align: center;
+}
+.root.isLoading .loadBar::before,
+.root:not(.isLoading) .loadBar::before {
+  background: linear-gradient(90deg, var(--m-500), var(--m-a400) 32%, var(--m-600));
+  animation: loading 1s linear;
+}
+@keyframes loading {
+  from {left: 50%; width: 0; z-index:100;}
+  33.3333% {left: 0; width: 100%; z-index: 10;}
+  to {left: 0; width: 100%;}
+}
 .asideNav {
 	display: flex;
 	height: calc(var(--line, 15px) * 1.5);

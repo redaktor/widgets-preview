@@ -2,15 +2,19 @@ import { tsx, create } from '@dojo/framework/core/vdom';
 import global from '@dojo/framework/shim/global';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { RGB, bestTextColor } from '../framework/color';
-import Icon, { IconType as IType } from '../icon';
+import Icon from '../icon';
 import Details from '../details';
 import Button from '../button';
 // import * as ui from '../theme/material/_ui.m.css';
 // import * as colors from '../theme/material/_color.m.css';
-
 // import * as iconCss from '../theme/material/icon.m.css';
 import * as css from '../theme/material/card.m.css';
 import theme from '../middleware/theme';
+
+/*
+TODO
+READ Button as ALTERNATIVE to actionButtons [has read article ?]
+*/
 
 /* Limits
 
@@ -95,7 +99,7 @@ const IconTypes = {
 	group: 1,
 	public: 1
 };
-type IconType = (keyof typeof ApTypes | keyof typeof IconTypes) & IType;
+type IconType = (keyof typeof ApTypes | keyof typeof IconTypes);
 
 export interface CardProperties {
 	onAction?: () => void;
@@ -119,8 +123,9 @@ export interface CardProperties {
 	privacy?: IconType;
 	petName?: string;
 	actorName?: string;
-	handle?: string;
+
 	activity?: string;
+	handle?: string;
 	time?: string;
 
 	content?: string;
@@ -154,7 +159,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 		'16:9': themedCss.m16by9,
 		'3:2': themedCss.m3by2,
 		'4:1': themedCss.m4by1,
-		'1:1': themedCss.m16by9
+		'1:1': themedCss.m1by1
 	}
 
 	const {
@@ -166,7 +171,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 		topic: t = false,
 		mediaName: mn,
 		aspectRatio: ar = '16:9',
-		privacy,
+		privacy = 'private',
 		onAction,
 		responsiveTypo = true,
 		mediaBaselined = true,
@@ -199,11 +204,10 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 		) : (
 			<p
 				classes={
-					responsiveTypo
-						? majorType === 'note' && isSummary
-							? themedCss.responsiveTypoSmall
-							: themedCss.responsiveTypo
-						: themedCss.defaultTypo
+					!responsiveTypo ? themedCss.defaultTypo : (
+						majorType === 'note' && isSummary ?
+							themedCss.responsiveTypoSmall : themedCss.responsiveTypo
+					)
 				}
 			>
 				{s.split('\n').map((item) => (
@@ -228,14 +232,15 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 	const mediaName = mediaNameMap ? langMap(mediaNameMap) : mn;
 
 
-	const privClass = !privacy || typeof privacy === 'string' ? null :
+	const privClass = !privacy || typeof privacy !== 'string' ? null :
 		(privacy === 'public' ? themedCss.publicPost :
 		(privacy === 'group' ? themedCss.groupPost : themedCss.privatePost));
-	const aspectRatio = aspectRatios[ar] ? aspectRatios[ar] : '16:9';
 
-	const titleClass = { note: 1, image: 1, audio: 1, video: 1, chat: 1 }.hasOwnProperty(majorType)
-		? themedCss.smallTitle
-		: themedCss.largeTitle;
+	const aspectRatioClass = aspectRatios[ar] ? aspectRatios[ar] : themedCss.m16by9;
+
+	const titleClass = { image: 1, audio: 1, video: 1, chat: 1 }.hasOwnProperty(majorType) ?
+		(!responsiveTypo ? themedCss.defaultTypo : themedCss.responsiveTypo) :
+			(majorType === 'note' ? themedCss.smallTitle : themedCss.largeTitle);
 
 	return (
 		<div
@@ -258,15 +263,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 					classes={[
 						themedCss.media,
 						mediaBaselined ? themedCss.baselined : null,
-						aspectRatio === '16:9'
-							? themedCss.m16by9
-							: aspectRatio === '3:2'
-							? themedCss.m3by2
-							: aspectRatio === '4:1'
-							? themedCss.m4by1
-							: aspectRatio === '1:1'
-							? themedCss.m1by1
-							: themedCss.m16by9
+						aspectRatioClass
 					]}
 					styles={{
 						backgroundImage: `url("${mediaSrc}")`
@@ -289,36 +286,36 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 				</div>
 			)}
 
-			{(avatar || privacy || actorName || handle || activity || time) && (
-				<div classes={[themedCss.statusWrapper, petName ? themedCss.wellKnown : null]}>
+			{activity && <div classes={[themedCss.activities]}>{activity}</div>}
+
+			{(avatar || privacy || actorName || handle || time) && (
+				<div classes={[themedCss.attributions, petName ? themedCss.wellKnown : null]}>
 					{avatar && <span classes={themedCss.avatar}>{avatar}</span>}
 					<div classes={themedCss.metaWrapper}>
 						{petName && <h2 classes={themedCss.petname}>{petName}</h2>}
 						{!petName && actorName && <h3 classes={themedCss.name}>{actorName}</h3>}
-						{(handle || activity || time) && (
+						{(handle || time) && (
 							<h3 classes={themedCss.time}>
-								{activity ? ` ${activity} ` : ''}
-								{activity && handle ? ' • ' : ' '}
 								{handle ? ` ${handle} ` : ''}
 								{handle && time ? ' • ' : ' '}
 								{time ? time : ''}
 							</h3>
 						)}
 					</div>
-					{privacy && <Icon size="xxl" type={privacy as IconType} />}
+					{privacy && <Icon size="xxl" type={privacy as any} />}
 				</div>
 			)}
 
 			{(kicker || byline) && (
 				<header classes={themedCss.titleWrapper}>
 					{kicker && <p classes={themedCss.kicker}>{kicker}</p>}
-					{name && <h2 classes={titleClass}>{name}</h2>}
+					{name && <h2 classes={[themedCss.title, titleClass]}>{name}</h2>}
 					{byline && <p classes={themedCss.byline}>{byline}</p>}
 				</header>
 			)}
 			{!kicker && !byline && name && (
 				<div classes={themedCss.titleWrapper}>
-					{name && <h2 classes={titleClass}>{name}</h2>}
+					{name && <h2 classes={[themedCss.title, titleClass]}>{name}</h2>}
 				</div>
 			)}
 			<div

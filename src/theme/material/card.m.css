@@ -30,13 +30,17 @@
 .serif {
 	composes: serif from './_typo.css';
 }
+.title {
+
+}
 .smallTitle {
 	composes: sans h5 from './_typo.css';
 }
 .largeTitle {
 	composes: sans cardsName from './_typo.css';
 }
-.article .largeTitle {
+
+.root:not(.note) .title {
 	font-weight: var(--weight-semibold, 500);
 }
 /* A card can have an ActivityPub "major" type*/
@@ -81,7 +85,15 @@
 	margin: 0 0 var(--line) 0;
 }
 
-.statusWrapper {
+.activities {
+	composes: sans s from './_typo.css';
+	margin-bottom: calc(var(--mb, 16px) - var(--line, 16px)) !important;
+	padding-left: calc(46px + var(--lineHalf));
+	width: 100%;
+	order: 2;
+}
+
+.attributions {
 	composes: h3 from './_typo.css';
 	--toColor: var(--ui-border, gray);
 	--btnColor: var(--ui-bg, black);
@@ -91,20 +103,23 @@
 	height: var(--line3);
 	padding: 0 !important;
 	box-sizing: border-box;
-	order: 2;
+	order: 3;
+}
+.event .attributions {
+	margin-top: 0 !important;
 }
 
 .titleWrapper {
 	padding: var(--line) var(--p) 0 var(--p);
-	order: 3;
+	order: 4;
 }
 .article .titleWrapper {
 	--mlr: calc(var(--p) - var(--lineHalf));
-	order: 1;
 	margin: var(--line) var(--mlr) var(--pt) var(--mlr);
 	padding: 0 var(--lineHalf);
 	background: var(--surface, #fff);
 	z-index: 2;
+	order: 1;
 }
 .article.hasBookmark .titleWrapper,
 .article.hasTopics .titleWrapper {
@@ -125,7 +140,11 @@
 	-webkit-box-direction: normal;
 	max-width: 64ch;
 	padding: var(--line) var(--p) var(--line) var(--p);
-	order: 4;
+	order: 5;
+}
+.event .contentWrapper {
+	order: 1;
+	padding-bottom: 0;
 }
 .root:not(.article) .titleWrapper + .contentWrapper {
 	padding-top: 0;
@@ -135,14 +154,14 @@
 	border-top-right-radius: inherit;
 }
 .contentWrapper + details {
-	order: 5;
+	order: 6;
 }
 
 .activityBtn {
 	position: relative !important;
 	border-bottom-left-radius: 0 !important;
 	border-bottom-right-radius: 0 !important;
-	order: 6;
+	order: 7;
 }
 .activityBtn:not(:hover):not(:focus) {
 	background-color: var(--bg) !important;
@@ -157,7 +176,7 @@
 	padding: 0;
 	margin: 0;
 	height: var(--line2);
-	order: 6;
+	order: 7;
 }
 details[open] + .actionWrapper,
 .contentWrapper + .actionWrapper,
@@ -165,36 +184,47 @@ details[open] + .actionWrapper,
 	display: flex;
 }
 
-.root:not(.article) .statusWrapper {
+.root:not(.article) .attributions {
 	margin: var(--line) 0 0 0;
 }
-.hasBookmark:not(.article):not(.hasMedia) .statusWrapper,
-.hasTopics:not(.article):not(.hasMedia) .statusWrapper {
+
+.hasBookmark:not(.article):not(.hasMedia) .attributions,
+.hasTopics:not(.article):not(.hasMedia) .attributions,
+.hasBookmark:not(.article):not(.hasMedia) .activities,
+.hasTopics:not(.article):not(.hasMedia) .activities {
 	margin: var(--line2) 0 0 0;
 }
-.hasAvatar .statusWrapper {
-	padding: 0 var(--lineHalf) 0 calc(var(--lineHalf) - 2px) !important;
-}
-.article .statusWrapper,
-.media .statusWrapper,
-.header + .statusWrapper {
+
+.root:not(.article) .activities + .attributions,
+.hasBookmark:not(.article):not(.hasMedia) .activities + .attributions,
+.hasTopics:not(.article):not(.hasMedia) .activities + .attributions  {
 	margin: 0;
 }
-.statusWrapper.wellKnown {
+
+
+.hasAvatar .attributions {
+	padding: 0 var(--lineHalf) 0 var(--lineHalf) !important;
 }
-.publicPost .statusWrapper {
+.article .attributions,
+.media .attributions,
+.header + .attributions {
+	margin: 0;
+}
+.attributions.wellKnown {
+}
+.publicPost .attributions {
 	--toColor: var(--ui-public, green);
 }
-.groupPost .statusWrapper {
+.groupPost .attributions {
 	--toColor: var(--ui-group, yellow);
 }
-.privatePost .statusWrapper {
+.privatePost .attributions {
 	--toColor: var(--ui-private, red);
 }
-.statusWrapper.wellKnown::after {
+.attributions.wellKnown::after {
 	opacity: 0.8;
 }
-.statusWrapper > i {
+.attributions > i {
 	margin: 0;
 	padding: 0;
 	font-size: inherit !important;
@@ -282,9 +312,6 @@ details[open] + .actionWrapper,
 	align-items: center;
 	padding: 0;
 }
-.title {
-	margin: 0;
-}
 .content {
 	color: var(--text);
 }
@@ -294,7 +321,7 @@ details[open] + .actionWrapper,
 	margin-bottom: calc(var(--mb, 16px) - var(--line, 15px));
 }
 
-.statusWrapper::after {
+.attributions::after {
 	content: '';
 	display: block;
 	width: 100%;
@@ -1083,7 +1110,7 @@ details summary + .contentWrapper {
 	width: 0px;
 	right: -8px;
 	top: 0px;
-	border-bottom: 8px solid #8d5a20;
+	border-bottom: 8px solid #555;
 	border-right: 8px solid transparent;
 }
 .bookmark:before,

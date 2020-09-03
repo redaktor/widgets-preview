@@ -138,6 +138,7 @@ Map
 */
 
 function withChildren(o: any) {
+	if (o.type === 'article') { o.content = 'Lorem Ipsum' }
 	o.avatar = <Avatar spaced={false}>SL</Avatar>;
 	o.actionButtons = actionButtons;
 	return o

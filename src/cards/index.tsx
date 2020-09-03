@@ -93,35 +93,37 @@ export interface CardProperties {
 				avatar,
 				actionButtons
 			}
-		) => <li classes={themedCss.item}>
-				<Card
-					{...{
-						name,
-						nameMap,
-						summary,
-						summaryMap,
-						aspectRatio,
-						mediaSrc,
-						mediaName,
-						mediaNameMap,
-						content,
-						contentMap,
-						kicker,
-						byline,
-						type,
-						privacy,
-						actorName,
-						petName,
-						handle,
-						activity,
-						time,
-						bookmark,
-						topic
-					}}
-				>
-					{{avatar, actionButtons}}
-				</Card>
-			</li>
+		) => {
+			return <li classes={themedCss.item}>
+					<Card
+						{...{
+							name,
+							nameMap,
+							summary,
+							summaryMap,
+							aspectRatio,
+							mediaSrc,
+							mediaName,
+							mediaNameMap,
+							content,
+							contentMap,
+							kicker,
+							byline,
+							type,
+							privacy,
+							actorName,
+							petName,
+							handle,
+							activity,
+							time,
+							bookmark,
+							topic
+						}}
+					>
+						{{avatar, actionButtons}}
+					</Card>
+				</li>
+		}
 	);
 
 	/* up to 6 columns: */
@@ -131,10 +133,12 @@ export interface CardProperties {
 			classes={[
 				theme.variant(),
 				themedCss.root,
+				isLoading ? themedCss.isLoading : null,
 				asidePosition === true || asidePosition === 'left' ? themedCss.hasAside : null,
 				asidePosition === 'left' ? themedCss.hasLeftAside : null
 			]}
 		>
+			<div classes={[themedCss.loadBar]} />
 			{header}
 			{cards || aside ? (
 				<virtual>
