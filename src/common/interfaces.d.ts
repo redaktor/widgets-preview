@@ -1,6 +1,9 @@
 import commonBundle from './nls/common';
 import { ThemedProperties } from '@dojo/framework/core/mixins/Themed';
+import { RGB } from '../framework/color';
 import { Keys, Sizes, Material } from './util';
+
+/* COMMON EXPORTS */
 
 export type CommonMessages = typeof commonBundle.messages;
 
@@ -39,7 +42,6 @@ export interface Toggle extends MouseEvent {
 	readonly checked: boolean;
 }
 
-
 /**
  * @type LabeledProperties
  * @property labelAfter     If false, moves the label before the input
@@ -52,6 +54,10 @@ export interface LabeledProperties {
 	labelStatic?: boolean;
 	label?: string;
 	helperText?: string;
+}
+export interface ColoredItem {
+	name?: string;
+	color?: RGB;
 }
 
 /**
@@ -143,7 +149,7 @@ export interface Level2Input {
 	type: string
 }
 
-
+/* REDAKTOR EXPORTS */
 // interfaces for the extended API
 export interface RedaktorProperties extends ThemedProperties {
   required?: boolean;
@@ -151,7 +157,7 @@ export interface RedaktorProperties extends ThemedProperties {
   readOnly?: boolean;
   invalid?: boolean;
   responsive?: boolean;
-	size?: Sizes | undefined;
+	size?: Sizes;
 	schema?: any; // TODO
   filled?: boolean;
   outlined?: boolean;
@@ -201,3 +207,277 @@ export interface RedaktorPositionCSS extends RedaktorBaseCSS {
 }
 
 export type RedaktorCSS = RedaktorDisabledCSS & RedaktorValidCSS & RedaktorSchemaCSS;
+
+export type IconType = 'private' | 'group' | 'public';
+
+type anyURI = string /* RFCs 2396 and 2732 */;
+type dateTime = string; /* ISO 8601, 5.4 - e.g. 2020-10-26T21:32:52+02:00 */
+type duration = string /* xsd:duration */;
+type nonNegativeInteger = number /* xsd:nonNegativeInteger */;
+type float = number /* xsd:float */;
+
+
+/* ACTIVITYPUB EXPORTS */
+
+export type ActivityPubActorTypes = 'Application'|'Group'|'Organization'|'Person'|'Service';
+export type ActivityPubActivityTypes = 'Activity'|'Accept'|'Add'|'Announce'|'Arrive'|
+'Block'|'Create'|'Delete'|'Dislike'|'Flag'|'Follow'|'Ignore'|'Invite'|'Join'|'Leave'|
+'Like'|'Listen'|'Move'|'Offer'|'Question'|'Reject'|'Read'|'Remove'|'TentativeReject'|
+'TentativeAccept'|'Travel'|'Undo'|'Update'|'View';
+export type ActivityPubObjectTypes = 'Article'|'Audio'|'Document'|'Event'|'Image'|
+'Note'|'Page'|'Place'|'Video'|'Profile'|'Relationship'|'Tombstone'|'Link'|'Mention'|
+'Collection'|'OrderedCollection'|'CollectionPage'|'OrderedCollectionPage';
+export type ActivityPubLinkTypes = 'Link'|'Mention';
+
+export interface LangMap {
+	[iso: string]: string;
+}
+
+export interface ActivityPubBase {
+/*
+OBJECT
+tag 	The key difference between attachment and tag is
+			that the former implies association by inclusion, while the latter implies associated by reference.
+url 	Identifies one or more links to representations of the object
+*/
+	type?: anyURI | anyURI[];
+	id?: anyURI;
+	url?: anyURI | ActivityPubLink | (anyURI|ActivityPubLink)[];
+
+	icon?: ActivityPubImage | ActivityPubLink | (ActivityPubImage | ActivityPubLink)[];
+	image?: ActivityPubImage | ActivityPubLink | (ActivityPubImage | ActivityPubLink)[];
+	mediaType?: string; /* Functional - TODO TS: MIME Media Type */
+
+	attributedTo?: AP | ActivityPubActor | ActivityPubActor[];
+	generator?: AP;
+	published?: dateTime; /* Functional */
+	updated?: dateTime; /* Functional */
+	duration?: duration; /* Functional */
+	startTime?: dateTime; /* Functional */
+	endTime?: dateTime; /* Functional */
+
+	name?: string | string[];
+	nameMap?: LangMap | LangMap[];
+	summary?: string | string[];
+	summaryMap?: LangMap | LangMap[];
+	source?: string | string[];
+	sourceMap?: LangMap | LangMap[];
+	content?: string | string[];
+	contentMap?: LangMap | LangMap[];
+
+	location?: AP;
+
+	inReplyTo?: AP;
+	audience?: AP;
+	to?: AP;
+	cc?: AP;
+	bto?: AP;
+	bcc?: AP;
+
+	attachment?: AP;
+	tag?: AP;
+	preview?: AP;
+	replies?: ActivityPubCollection; /* Functional */
+
+	height?: nonNegativeInteger; /* Functional */
+	width?: nonNegativeInteger; /* Functional */
+	[key: string]: any;
+}
+export interface ActivityPubBaseNormalized extends ActivityPubBase {
+	type?: anyURI[];
+	id?: anyURI;
+	url?: (anyURI|ActivityPubLink)[];
+
+	icon?: (ActivityPubImage | ActivityPubLink)[];
+	image?: (ActivityPubImage | ActivityPubLink)[];
+
+	attributedTo?: APnormalized | ActivityPubActor | ActivityPubActor[];
+	generator?: APnormalized;
+
+	name?: string[];
+	nameMap?: LangMap[];
+	summary?: string[];
+	summaryMap?: LangMap[];
+	source?: string[];
+	sourceMap?: LangMap[];
+	content?: string[];
+	contentMap?: LangMap[];
+
+	location?: APnormalized;
+
+	inReplyTo?: APnormalized;
+	audience?: APnormalized;
+	to?: APnormalized;
+	cc?: APnormalized;
+	bto?: APnormalized;
+	bcc?: APnormalized;
+
+	attachment?: APnormalized;
+	tag?: APnormalized;
+	preview?: APnormalized;
+	[key: string]: any;
+}
+/* ui extends :
+	language?: string;
+	kicker?: string;
+	byline?: string;
+	bookmark?: boolean | ColoredItem;
+	topic?: boolean | ColoredItem;
+	privacy?: IconType;
+	petName?: string;
+	actorName?: string;
+
+	activity?: string;
+	handle?: string;
+*/
+
+/*
+RELATIONSHIP
+relationship, describes
+*/
+export interface ActivityPubEndpoints {
+	[endpointID: string]: anyURI;
+}
+export interface ActivityPubActor extends ActivityPubBase {
+	type: ActivityPubActorTypes | [ActivityPubActorTypes, ...(ActivityPubActorTypes | ActivityPubObjectTypes | string)[]];
+	inbox?: ActivityPubOrderedCollection; /* Functional */
+	outbox?: ActivityPubOrderedCollection; /* Functional */
+	following?: anyURI;
+	followers?: anyURI;
+	liked?: anyURI;
+
+	streams?: (ActivityPubCollection|ActivityPubOrderedCollection)[];
+	preferredUsername?: string;
+	endpoints?: ActivityPubEndpoints;
+}
+export interface RedaktorActor extends ActivityPubActor {
+	petName?: string; /* seeAlso preferredUsername as self-proposed name */
+	edgeNames?: RedaktorActor[];
+	handle?: string;
+	follow?: boolean | 'follower' | 'mutual' | 'me';
+}
+export interface ActivityPubActivity extends ActivityPubBase {
+	type: ActivityPubActivityTypes | [ActivityPubActivityTypes, ...(ActivityPubActivityTypes | string)[]];
+	object?: AP;
+	actor?: ActivityPubActor | ActivityPubLink | (ActivityPubActor | ActivityPubLink)[];
+	instrument?: AP;
+	origin?: AP;
+	target?: AP;
+	result?: AP;
+	/* Question */
+	oneOf?: AP;
+	anyOf?: AP;
+	closed?: AP | dateTime | boolean;
+}
+export interface ActivityPubActivityNormalized extends ActivityPubBaseNormalized {
+	type: [ActivityPubActivityTypes, ...(ActivityPubActivityTypes | string)[]];
+	object?: APnormalized;
+	actor?: (ActivityPubActor | ActivityPubLink)[];
+	instrument?: APnormalized;
+	origin?: APnormalized;
+	target?: APnormalized;
+	result?: APnormalized;
+	/* Question */
+	oneOf?: APnormalized;
+	anyOf?: APnormalized;
+	closed?: APnormalized | dateTime | boolean;
+}
+
+interface ActivityPubCore extends ActivityPubBase {
+	type?: ActivityPubObjectTypes | [ActivityPubObjectTypes, ...(ActivityPubObjectTypes | string)[]];
+}
+export interface ActivityPubObject extends ActivityPubBase {
+	type?: ActivityPubObjectTypes | [ActivityPubObjectTypes, ...(ActivityPubObjectTypes | string)[]];
+	/* Collection */
+	current?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	first?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	last?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	items?: ActivityPubCollection; /* Functional */
+	totalItems?: nonNegativeInteger; /* Functional */
+	/* CollectionPage */
+	next?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	prev?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	partOf?: ActivityPubCollection | ActivityPubLink; /* Functional */
+	/* OrderedCollection */
+	startIndex?: nonNegativeInteger; /* Functional */
+	/* Place */
+	accuracy?: float; /* percentage [>= 0.0f, <= 100.0f] Functional*/
+	altitude?: float; /* Functional */
+	latitude?: float; /* Functional */
+	longitude?: float; /* Functional */
+	radius?: float; /* [>= 0.0f] Functional */
+	units?: "cm" | "feet" | "inches" | "km" | "m" | "miles" | anyURI;
+	/* Link */
+	href?: string; /* Functional */
+	hreflang?: string; /* Functional */
+	rel?: string | string[];
+}
+export interface ActivityPubObjectNormalized extends ActivityPubBaseNormalized {
+	type: [ActivityPubObjectTypes, ...(ActivityPubObjectTypes | string)[]];
+	/* Collection */
+	current?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	first?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	last?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	items?: ActivityPubCollection; /* Functional */
+	totalItems?: nonNegativeInteger; /* Functional */
+	/* CollectionPage */
+	next?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	prev?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	partOf?: ActivityPubCollection | ActivityPubLink; /* Functional */
+	/* OrderedCollection */
+	startIndex?: nonNegativeInteger; /* Functional */
+	/* Place */
+	accuracy?: float; /* percentage [>= 0.0f, <= 100.0f] Functional*/
+	altitude?: float; /* Functional */
+	latitude?: float; /* Functional */
+	longitude?: float; /* Functional */
+	radius?: float; /* [>= 0.0f] Functional */
+	units?: "cm" | "feet" | "inches" | "km" | "m" | "miles" | anyURI;
+	/* Link */
+	href?: string; /* Functional */
+	hreflang?: string; /* Functional */
+	rel?: string[];
+}
+
+export interface ActivityPubCollection extends ActivityPubCore {
+	current?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	first?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	last?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+
+	items?: ActivityPubCollection; /* Functional */
+	totalItems?: nonNegativeInteger; /* Functional */
+}
+export interface ActivityPubCollectionPage extends ActivityPubCollection {
+	next?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	prev?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+	partOf?: ActivityPubCollection | ActivityPubLink; /* Functional */
+}
+export interface ActivityPubOrderedCollection extends ActivityPubCollection {
+	startIndex?: nonNegativeInteger; /* Functional */
+}
+export type ActivityPubOrderedCollectionPage = ActivityPubOrderedCollection & ActivityPubCollectionPage;
+
+export interface ActivityPubPlace extends ActivityPubCore {
+	type: 'Place' | ['Place', ...ActivityPubObjectTypes[]];
+	accuracy?: float /* percentage [>= 0.0f, <= 100.0f] Functional*/;
+	altitude?: float; /* Functional */
+	latitude?: float; /* Functional */
+	longitude?: float; /* Functional */
+	radius?: float; /* [>= 0.0f] Functional */
+	units?: "cm" | "feet" | "inches" | "km" | "m" | "miles" | anyURI;
+}
+export interface ActivityPubImage extends ActivityPubCore {
+	type: 'Image' | ['Image', ...ActivityPubObjectTypes[]];
+}
+
+export interface ActivityPubLinkObject extends ActivityPubCore {
+	type: ActivityPubLinkTypes | [ActivityPubLinkTypes, ...ActivityPubObjectTypes[]];
+	href?: string; /* Functional */
+	hreflang?: string; /* Functional */
+	rel?: string | string[];
+}
+export type ActivityPubLink = ActivityPubLinkObject;
+
+export type AP = ActivityPubObject | ActivityPubActivity |
+	(ActivityPubObject | ActivityPubActivity)[];
+export type APnormalized = (ActivityPubObjectNormalized | ActivityPubActivityNormalized)[];

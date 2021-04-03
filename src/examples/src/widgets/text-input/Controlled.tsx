@@ -1,13 +1,14 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
 import TextInput from '@dojo/widgets/text-input';
 import Button from '@dojo/widgets/button';
 
 const factory = create({ icache });
 
-const Example = factory(function Controlled({ middleware: { icache } }) {
-	return (
-		<virtual>
+const Controlled = factory(function Controlled({ middleware: { icache } }) {
+	return (<Example spaced={true}>
+		<span>
 			<TextInput
 				value={icache.getOrSet('value', '')}
 				onValue={(value) => {
@@ -24,8 +25,8 @@ const Example = factory(function Controlled({ middleware: { icache } }) {
 				Reset input
 			</Button>
 			<div>The value text input is: "{icache.getOrSet('value', '')}"</div>
-		</virtual>
-	);
+		</span>
+	</Example>);
 });
 
-export default Example;
+export default Controlled;

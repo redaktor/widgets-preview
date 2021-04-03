@@ -1,20 +1,20 @@
 import renderer, { create, tsx, diffProperty } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import theme from '@dojo/framework/core/middleware/theme';
+import theme from '../middleware/theme';
 import dimensions from '@dojo/framework/core/middleware/dimensions';
 import resize from '@dojo/framework/core/middleware/resize';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import {
 	createResourceMiddleware,
-	createMemoryResourceTemplate
+	createResourceTemplate
 } from '@dojo/framework/core/middleware/resources';
 import global from '@dojo/framework/shim/global';
 
 import Icon from '../icon';
 import Select from '../select';
 
-import bundle from './Pagination.nls';
+import bundle from './nls/Pagination';
 import * as css from '../theme/default/pagination.m.css';
 import { ListOption } from '../list';
 
@@ -57,7 +57,7 @@ interface PaginationCache {
 	pageSizes: number[];
 }
 
-const pageSizesTemplate = createMemoryResourceTemplate<ListOption>();
+const pageSizesTemplate = createResourceTemplate<ListOption>('value');
 
 function getRenderedWidth(dnode: RenderResult, wrapperClass?: string): number {
 	if (dnode === undefined) {
@@ -289,14 +289,16 @@ export default factory(function Pagination({
 							}
 							value={pageSize === undefined ? undefined : pageSize.toString()}
 							resource={resource({
-								template: pageSizesTemplate,
-								initOptions: {
+								template: pageSizesTemplate({
 									id,
-									data: pageSizes.map((ps) => ({ value: ps.toString() }))
-								}
+									data: pageSizes.map((ps) => ({
+										value: `${ps}`,
+										label: `${ps}`
+									}))
+								})
 							})}
-							onValue={(value:any) => {
-								onPageSize && onPageSize(parseInt(value, 10));
+							onValue={(value) => {
+								onPageSize && onPageSize(parseInt(value.value, 10));
 							}}
 						/>
 					</div>

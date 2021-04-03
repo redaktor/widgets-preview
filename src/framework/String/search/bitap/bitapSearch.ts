@@ -31,7 +31,7 @@ export function matchedIndices(matchmask: any[] = [], minMatchCharLength = 1) {
 
 export default function bitapSearch (text: string, pattern: string, patternAlphabet: any,
   { location = 0, distance = 100, threshold = 0.6, findAllMatches = false, minMatchCharLength = 1 }) {
-  //console.log(text);
+  // console.log(text);
   const expected = location;
   // Set starting location at beginning text and initialize the alphabet.
   const textLen = text.length;

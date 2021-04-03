@@ -3,7 +3,8 @@
 	max-width: 100%;
 }
 .text {
-	composes: small from './_typo.css';
+	composes: italic serif from './_typo.css';
+	margin-bottom: calc(var(--mb) - var(--pt)) !important;
 	font-weight: var(--ui-weight-semibold, 500);
 	white-space: nowrap;
 	overflow: hidden;

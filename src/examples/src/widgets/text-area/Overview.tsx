@@ -1,13 +1,14 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
 import TextArea from '@dojo/widgets/text-area';
 
 const factory = create({ icache });
 
-const Example = factory(function({ middleware: { icache } }) {
+const Overview = factory(function({ middleware: { icache } }) {
 	const variant = 'flat';
-	return (
-		<virtual>
+	return (<Example spaced={true}>
+		<span>
 			<p>Medium sized input variants</p>
 			<div class="flexRow">
 				<TextArea variant='flat'>flat</TextArea>
@@ -72,8 +73,8 @@ const Example = factory(function({ middleware: { icache } }) {
 				>xxl</TextArea>
 			</div>
 			<p>The latest text input is: "{icache.getOrSet('value', '')}"</p>
-		</virtual>
-	);
+		</span>
+	</Example>);
 });
 
-export default Example;
+export default Overview;

@@ -1,4 +1,20 @@
 .root {
-	background: var(--example-background, #fff);
-	padding: 10px;
+	background: var(--example-bg, var(--surface, #000));
+	min-height: var(--line2);
+}
+.spaced {
+	padding: var(--line);
+}
+.nav {
+	height: var(--line2);
+	z-index: 9999;
+}
+.nav button,
+.nav label {
+	margin-right: var(--line);
+}
+:global(.markdownFullscreen) .nav {
+	position: fixed;
+	top: var(--line, 0px);
+	left: 0px;
 }

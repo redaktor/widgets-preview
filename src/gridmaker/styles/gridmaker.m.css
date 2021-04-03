@@ -187,9 +187,9 @@
 .conicEnhance {
 	border-radius: 50%;
 	background: var(--r-rgba, white);
-	background: var(--r-gradient, conic-gradient(var(--r-deep_orange, red),
+	background: var(--r-gradient, conic-gradient(var(--r-deepOrange, red),
 		var(--r-orange, orange), var(--r-yellow, yellow), var(--r-lime, lime),
-		var(--r-light_green, aqua), var(--r-cyan, cyan), var(--r-light_blue, AliceBlue),
+		var(--r-lightGreen, aqua), var(--r-cyan, cyan), var(--r-lightBlue, AliceBlue),
 		var(--r-blue, blue), var(--r-purple, magenta), var(--r-red, red)));
 	background-clip: content-box;
 	background-repeat: no-repeat;

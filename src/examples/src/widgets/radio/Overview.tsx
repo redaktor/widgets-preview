@@ -1,5 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
 import Radio from '@dojo/widgets/radio';
 
 const factory = create({ icache });
@@ -8,8 +9,8 @@ export default factory(function Overview({ middleware: { icache } }) {
 	const singleChecked = icache.getOrSet('singleChecked', false);
 	const checked = icache.getOrSet('checked', false);
 	const variant = 'flat';
-	return (
-		<div>
+	return (<Example spaced={true}>
+		<span>
 			<div class="flexRow">
 				<Radio variant='flat' checked={singleChecked}>flat</Radio>
 				<Radio variant='filled' checked={singleChecked}>filled</Radio>
@@ -53,6 +54,6 @@ export default factory(function Overview({ middleware: { icache } }) {
 				</Radio>
 			</div>
 			<p>See other examples for colors and more</p>
-		</div>
-	);
+		</span>
+	</Example>);
 });

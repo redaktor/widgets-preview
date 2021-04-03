@@ -1,10 +1,11 @@
 import { GridUnit, GridColor } from './interfaces';
-import { hex2rgb, bestTextColor } from '../../framework/color';
-const _COLOR: {keys: any[], defaults: GridColor[], length: number} = { /* TODO TS*/
+import { hex2rgb, bestTextColor } from '../framework/color';
+const _COLOR: {keys: any[], defaults: GridColor[], length: number} = {
+  /* TODO TS*/
   keys: [
-    'red','deep_orange','orange','amber','yellow','lime',
-    'light_green','green','teal','cyan', 'light','light_blue',
-    'blue_grey','blue','indigo','deep_purple','purple','pink','brown'
+    'red','deepOrange','orange','amber','yellow','lime',
+    'lightGreen','green','teal','cyan', 'light','lightBlue',
+    'blueGrey','blue','indigo','deepPurple','purple','pink','brown'
   ],
   defaults: [],
   length: 0

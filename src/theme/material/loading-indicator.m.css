@@ -1,19 +1,133 @@
-.root {
-	composes: mdc-linear-progress mdc-linear-progress--indeterminate from '@material/linear-progress/dist/mdc.linear-progress.css';
+
+@keyframes progressBuffering {
+  to {
+    -webkit-transform: translateX(-10px);
+            transform: translateX(-10px);
+  }
+}
+@keyframes progressPrimaryIndeterminateTranslate {
+  0% {
+    -webkit-transform: translateX(0);
+            transform: translateX(0);
+  }
+  20% {
+    -webkit-animation-timing-function: cubic-bezier(0.5, 0, 0.701732, 0.495819);
+            animation-timing-function: cubic-bezier(0.5, 0, 0.701732, 0.495819);
+    -webkit-transform: translateX(0);
+            transform: translateX(0);
+  }
+  59.15% {
+    -webkit-animation-timing-function: cubic-bezier(0.302435, 0.381352, 0.55, 0.956352);
+            animation-timing-function: cubic-bezier(0.302435, 0.381352, 0.55, 0.956352);
+    -webkit-transform: translateX(83.67142%);
+            transform: translateX(83.67142%);
+  }
+  100% {
+    -webkit-transform: translateX(200.611057%);
+            transform: translateX(200.611057%);
+  }
+}
+@keyframes progressPrimaryIndeterminateScale {
+  0% {
+    -webkit-transform: scaleX(0.08);
+            transform: scaleX(0.08);
+  }
+  36.65% {
+    -webkit-animation-timing-function: cubic-bezier(0.334731, 0.12482, 0.785844, 1);
+            animation-timing-function: cubic-bezier(0.334731, 0.12482, 0.785844, 1);
+    -webkit-transform: scaleX(0.08);
+            transform: scaleX(0.08);
+  }
+  69.15% {
+    -webkit-animation-timing-function: cubic-bezier(0.06, 0.11, 0.6, 1);
+            animation-timing-function: cubic-bezier(0.06, 0.11, 0.6, 1);
+    -webkit-transform: scaleX(0.661479);
+            transform: scaleX(0.661479);
+  }
+  100% {
+    -webkit-transform: scaleX(0.08);
+            transform: scaleX(0.08);
+  }
 }
 
-.buffer {
-	composes: mdc-linear-progress__buffer from '@material/linear-progress/dist/mdc.linear-progress.css';
+.linearProgress {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  -webkit-transform: translateZ(0);
+          transform: translateZ(0);
+  outline: 1px solid transparent;
+  overflow: hidden;
+  transition: opacity 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1);
 }
-
 .bar {
-	composes: mdc-linear-progress__bar from '@material/linear-progress/dist/mdc.linear-progress.css';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-animation: none;
+          animation: none;
+  -webkit-transform-origin: top left;
+          transform-origin: top left;
+  transition: -webkit-transform 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1);
+  transition: transform 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1);
+  transition: transform 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1), -webkit-transform 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1);
 }
-
-.primary {
-	composes: mdc-linear-progress__primary-bar from '@material/linear-progress/dist/mdc.linear-progress.css';
-}
-
 .inner {
-	composes: mdc-linear-progress__bar-inner from '@material/linear-progress/dist/mdc.linear-progress.css';
+  display: inline-block;
+  position: absolute;
+  width: 100%;
+  -webkit-animation: none;
+          animation: none;
+  border-top: 4px solid;
+  border-color: #dfdc00;
+  /* @alternate */
+  border-color: var(--ui-accent, #dfdc00);
+}
+.bufferingDots {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-repeat: repeat-x;
+  background-size: 10px 4px;
+  -webkit-animation: progressBuffering 250ms infinite linear;
+          animation: progressBuffering 250ms infinite linear;
+}
+.buffer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-transform-origin: top left;
+          transform-origin: top left;
+  transition: -webkit-transform 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1);
+  transition: transform 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1);
+  transition: transform 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1), -webkit-transform 250ms 0ms cubic-bezier(0.4, 0, 0.6, 1);
+}
+.linearProgressPrimaryBar {
+  -webkit-transform: scaleX(0);
+          transform: scaleX(0);
+}
+.linearProgressSecondaryBar {
+  visibility: hidden;
+}
+.linearProgressIndeterminate .bar {
+  transition: none;
+}
+.linearProgressIndeterminate .linearProgressPrimaryBar {
+  left: -145.166611%;
+  -webkit-animation: progressPrimaryIndeterminateTranslate 2s infinite linear;
+          animation: progressPrimaryIndeterminateTranslate 2s infinite linear;
+}
+.linearProgressIndeterminate .linearProgressPrimaryBar > .inner {
+  -webkit-animation: progressPrimaryIndeterminateScale 2s infinite linear;
+          animation: progressPrimaryIndeterminateScale 2s infinite linear;
+}
+.buffer {
+  background-color: var(--ui-bg,#e6e6e6);
+}
+
+.root {
+	composes: linearProgress linearProgressIndeterminate;
+}
+.primary {
+	composes: linearProgressPrimaryBar;
 }

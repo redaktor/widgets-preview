@@ -50,7 +50,7 @@ export interface SearchResult extends BitapResult {
 export default class StringSearch {
   protected properties: SearchProperties;
   protected tokens = new Map();
-  protected _list: string[];
+  protected _list: string[] = [];
   set collection(list: string[]) {
     this._list = list;
   }
@@ -227,7 +227,7 @@ export default class StringSearch {
             let obj: any = {};
             if (tokenSearchResult.isMatch) {
               obj[word] = tokenSearchResult.score;
-              //exists = true;
+              // exists = true;
               hasMatchInText = true;
               scores.push(tokenSearchResult.score)
             } else {

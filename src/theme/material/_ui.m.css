@@ -1,16 +1,17 @@
-
 @import url("./_depth.css");
-/* @import url("./_typo.css"); */
-
+@import url("./_typo.css");
 /*--------------------------------------------------------------
   Globals
 --------------------------------------------------------------*/
 
+/*
+TODO ui-input, ui-transition, ui-border, ui-box is inconsistent
+SHOULD BE uiInput, uiTransition ?
+while CSS vars should be "-" style
+*/
 :root {
 	--pi: 3.14159265359;
 	--transparent: transparent;
-	--ui-font-weight: 400;
-  --ui-font-weight-bold: 700;
 	--ui-default-input-width: 200px; /* if neither responsive or width is given */
 	/* Border */
 	--ui-border-width: 1px;
@@ -67,42 +68,40 @@
 .l { composes: l from './_typo.css'; }
 .xl {composes: xl from './_typo.css'; }
 .xxl{composes: xxl from './_typo.css'; }
-.xs {
-	--pm: 1.5px;
-	--h: var(--line);
-	--fullH: var(--line);
-	--maxH: var(--line2);
-}
 .s, .m, .l, .xl, .xxl {
 	--fullH: var(--line2);
 }
+.xs, .s, .m {
+	--below: 0px;
+}
+.l, .xl, .xxl {
+	--below: var(--line);
+}
+.xs {
+	--h: var(--line);
+	--maxH: var(--line2);
+	--fullH: var(--line);
+}
 .s {
-	--pm: 3.5px;
 	--h: calc(var(--line) * 1.25);
 	--maxH: var(--line2);
 }
 .m {
-	--pm: -7.5px;
 	--h: calc(var(--line) * 1.5);
 	--maxH: var(--line3);
 }
 .l {
-	--pm: -4.5px;
-	--h: calc(var(--line) * 1.618);
+	--h: var(--line2);
 	--maxH: var(--line3);
 }
 .xl {
-	--pm: 0px;
-	--h: calc(var(--line) * 2);
+	--h: calc(var(--line) * 2.25);
 	--maxH: var(--line3);
 }
 .xxl {
-	--pm: 3.5px;
-	--h: calc(var(--line) * 2.25);
+	--h: calc(var(--line) * 2.5);
 	--maxH: var(--line4);
 }
-.xs > .xs { --pm: -1.5px; }
-.xxl > .l { --pm: -0.5px }
 
 
 .ui, .uiVar {
@@ -111,40 +110,61 @@
   --above: calc(var(--ht) - var(--hc));
   --mlr: calc(var(--size, 4px) * 0.382);
   --ml: calc(var(--size, 4px) * 0.618);
-  --mt: calc(var(--pm) * -1);
   --plr: calc(var(--size) * 0.618);
-  --uiMB: calc(var(--mb, 16px) - var(--above) + var(--pt) - var(--pm));
+  --uiMB: calc(var(--mb, 16px) - var(--above) + var(--pt) + var(--below));
 	--uiH: calc(var(--ht) + var(--pt) * 2);
 	--pulse: var(--ui-accent);
 }
 .ui {
+	background-color: var(--transparent);
+	display: inline-block;
+	display: inline-flex;
+	color: inherit;
+	font-family: var(--font-sans);
+	margin: 0 0 var(--uiMB) 0;
+	padding-top: var(--pt);
+	padding-bottom: var(--pt);
+	position: relative;
+	align-content: baseline;
+	border: none;
+  outline: none;
+}
+.uiClick {
+	--plr: calc(var(--size) * 0.618);
 	--m: calc((var(--fullH) - var(--h)) / 2);
+	display: inline-block;
+	display: inline-flex;
+	align-content: baseline;
+	align-items: center;
+	justify-content: center;
 	background-color: var(--transparent);
 	color: var(--text,inherit);
 	font-family: var(--font-sans);
 	height: var(--h);
-  margin-bottom: calc(var(--m) + var(--pt));
   margin-top: calc(var(--m) - var(--pt));
+  margin-bottom: calc(var(--m) + var(--pt));
 	padding-top: 0;
-	vertical-align: baseline;
-	vertical-align: -webkit-baseline-middle;
 	position: relative;
-	display: inline-block;
 	border: none;
   outline: none;
 }
+.xs.uiClick {
+	margin-top: 0;
+	margin-bottom: 0;
+}
 .uiInline,
-p:not(.ui) > .ui {
+p:not(.uiClick) > .uiClick {
 	vertical-align: baseline;
 	margin-top: var(--line);
 	margin-bottom: var(--mb);
 }
-.ui.ui-input {
+
+.ui-input {
 	padding-top: var(--line);
 	padding-bottom: 0;
 }
 
-.ui.square {
+.square {
 	width: var(--uiH) !important;
 }
 .ui.nextBaseline {
@@ -191,9 +211,22 @@ p:not(.ui) > .ui {
 .filled.box, .raised.box {
 	background-color: var(--ui-filled-off);
 }
-.raised {
+.raised0 {
+	box-shadow: none;
+}
+.raised,
+.raised1 {
 	box-shadow: var(--ui-dp-2);
 }
+.raised2 { box-shadow: var(--ui-dp-2); }
+.raised3 { box-shadow: var(--ui-dp-3); }
+.raised4 { box-shadow: var(--ui-dp-4); }
+.raised6 { box-shadow: var(--ui-dp-6); }
+.raised8 { box-shadow: var(--ui-dp-8); }
+.raised12 { box-shadow: var(--ui-dp-12); }
+.raised16 { box-shadow: var(--ui-dp-16); }
+.raised24 { box-shadow: var(--ui-dp-24); }
+
 .raised.box { /* TODO it is for dark where you can't see shadows */
 	border: 0.5px solid var(--m-600);
   border-top-color: var(--m-400);
@@ -248,14 +281,10 @@ p:not(.ui) > .ui {
 	height: calc(100% - var(--line));
 }
 .input-box::after,
+.outlined:not(.box)::before,
 .shaped:not(.box)::before {
 	top: 0;
 	height: 100%;
-}
-.outlined:not(.box)::before {
-	top: 0;
-	height: calc(100% - (var(--ui-border-width-emphasized) * 2));
-	width: calc(100% - (var(--ui-border-width-emphasized) * 2));
 }
 .outlined:not(.box),
 .shaped:not(.box) {
@@ -293,11 +322,20 @@ p:not(.ui) > .ui {
 	background-color: var(--bg);
 }
 
-
+p:not(.ui) > .ui {
+  margin: 0;
+	padding-top: 0;
+	padding-bottom: 0;
+	vertical-align: top;
+}
+p:not(.ui) > .ui.xs,
+p:not(.ui) > .ui.s {
+	vertical-align: baseline;
+}
 
 /* Typo */
 .strongTypo {
-	font-weight: var(--ui-font-weight-bold);
+	font-weight: var(--weight-bold);
 }
 .muted {
 	color: var(--text-muted);

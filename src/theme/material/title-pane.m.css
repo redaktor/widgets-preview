@@ -1,45 +1,119 @@
 .root {
-	font-family: var(--mdc-theme-font-family);
+	/* font-family: var(--mdc-theme-font-family); */
 	box-sizing: border-box;
-	box-shadow: var(--mdc-theme-elevation-1);
+	box-shadow: var(--ui-dp-1);
 }
 
-.titleButton {
-	composes: nativeResetRoot from './button.m.css';
-
-	background-color: var(--mdc-theme-surface);
+.title {
+	display: flex;
+	align-items: center;
+	color: var(--text);
+	font-weight: var(--weight-semibold);
+	/* background-color: hsl(var(--m-h), var(--m-s), var(--ui-dp-l-24)); /* var(--ui-filled-off) */
 	cursor: pointer;
 	position: relative;
-	padding: 12px 24px;
-	width: 100%;
+	padding-left: var(--plr);
+	padding-right: var(--plr);
+	padding-top: var(--mb);
+	padding-bottom: var(--pt);
 	margin: 0;
-	display: flex;
-	align-items: center;
+	transition: padding-top var(--ui-easing, ease-in-out) var(--ui-dpd-1, 0.25s),
+		background-color var(--ui-easing, ease-in-out) var(--ui-dpd-1, 0.25s);
+}
+.titleWrapper {
+	width: 100%;
+}
+
+.iconLeft .title {
+	flex-direction: row;
+}
+.iconRight .title {
 	justify-content: space-between;
 	flex-direction: row-reverse;
-	transition: padding ease-in-out 0.25s, background-color ease-in-out 0.25s;
 }
 
-.titleButton:active {
-	background-color: var(--mdc-theme-background-selected);
+.title:active {
+	/* background-color: var(--ui-filled-on); */
 	outline: none;
 }
 
-.titleButton:focus {
+.title:focus {
 	outline: none;
 }
 
-.arrow {
+/* Added to a closable pane */
+.closeable {
+}
+/* Style the content animation */
+.contentTransition {
+	transition: margin-top var(--ui-easing, ease-in-out) var(--ui-dpd-1);
+}
+
+.iconWrapper {
 	display: flex;
 	align-items: center;
+	width: var(--line2);
+	height: var(--line2);
+	margin: 0;
+	transition: transform var(--ui-easing, ease-in-out) var(--ui-dpd-8);
+}
+.plusClose {
+	transform-origin: 25% 50%;
+}
+.plusMinus::before,
+.plusMinus::after,
+.plusClose::before,
+.plusClose::after {
+	content: "";
+	width: var(--line);
+	background: var(--text);
+	height: 4px;
+	position: absolute;
+}
+.chevron {
+	padding-left: var(--plr);
+}
+.chevron::before {
+	--w: calc(var(--line) * 0.618);
+	content: "";
+	width: var(--w);
+	height: var(--w);
+	border-style: solid;
+	border-width: var(--ui-border-width-emphasized) var(--ui-border-width-emphasized) 0 0;
+	transform: rotate(135deg);
+	transition: transform var(--ui-easing, ease-in-out) var(--ui-dpd-8);
+}
+.plusMinus::after,
+.plusClose::after {
+	transition: transform var(--ui-easing, ease-in-out) var(--ui-dpd-8);
+	transform: rotate(90deg) scaleX(1);
 }
 
-.open .titleButton {
-	padding: 24px;
+summary {
+  list-style-image: none;
+}
+details summary::-webkit-details-marker {
+  display:none;
+}
+
+details.spaced[open],
+details.spaced[open] .title {
+	margin-bottom: var(--lineHalf);
+}
+details[open] .title {
+	/* background-color: var(--ui-filled); */
+	padding-top: calc(var(--line) + var(--mb));
+}
+details[open] .chevron::before,
+details[open] .plusClose {
+	transform: rotate(45deg);
+}
+details[open] .plusMinus::after {
+	transform: rotate(90deg) scaleX(0);
 }
 
 .content {
-	padding: 24px;
-	padding-top: 0;
-	transition: margin-top ease-in-out 0.25s;
+	background-color: var(--ui-bg);
+	padding: 0 var(--line, 16px) var(--line, 16px) var(--line, 16px);
+	transition: margin-top var(--ui-easing, ease-in-out) var(--ui-dpd-1, 0.25s);
 }

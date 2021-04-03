@@ -18,10 +18,8 @@ customIcon or customIcon-variant
 export interface CheckboxBaseProperties extends ThemeProperties, FocusProperties {
 	/** Custom aria attributes */
 	aria?: { [key: string]: string | null };
-	/** The variant for the button: 'flat', 'outlined', 'raised', 'shaped'
-	 * 'flat' by default
-	 */
-	variant?: Variants;
+	/** Full width */
+	responsive?: boolean;
 	/**  Checked/unchecked property of the control */
 	checked?: boolean;
 	/** Set the disabled property of the control */
@@ -78,6 +76,7 @@ export const Checkbox = factory(function Checkbox({
 		variant = 'flat',
 		checked = false,
 		icon = 'checkmark',
+		responsive,
 		disabled,
 		labelHidden,
 		name,
@@ -97,12 +96,12 @@ export const Checkbox = factory(function Checkbox({
 			classes={[
 				theme.variant(),
 				themedCss.root,
-
 				theme.sized(ui),
 				theme.spaced(ui),
 				theme.colored(colors),
 				theme.animated(themedCss),
 				checked ? themedCss.checked : null,
+				responsive ? themedCss.responsive : null,
 				disabled ? themedCss.disabled : null,
 				valid === false ? themedCss.invalid : null,
 				valid === true ? themedCss.valid : null,
@@ -147,6 +146,7 @@ export const Checkbox = factory(function Checkbox({
 			/>
 			<div key="box" classes={[
 				themedCss.box,
+				theme.elevated(ui),
 				themedCss[variant as (keyof typeof themedCss)],
 				themedCss[icon as (keyof typeof themedCss)]
 			]}></div>

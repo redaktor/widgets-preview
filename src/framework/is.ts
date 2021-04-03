@@ -7,7 +7,7 @@
  * @function
  *
  * @param {Array} data - Any data
- * @param {Object} evtType - Any Json Schema type or JS type
+ * @param {String} evtType - Any Json Schema type or JS type
  *
  * @return {String|Boolean}
  * The SCHEMATYPE (JSON Schema) OR if not available JS type OR

@@ -1,8 +1,9 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
+import Example from '../../Example';
 import Progress from '@dojo/widgets/progress';
 
 const factory = create();
 
 export default factory(function ProgressWithoutOutput() {
-	return <Progress value={50} showOutput={false} />;
+	return <Example spaced={false}><Progress value={50} outputDisplay={false} /></Example>;
 });

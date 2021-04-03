@@ -1,10 +1,11 @@
-.transformer {
-	display: flex;
-	flex-direction: column;
+.wrapper {
 	overflow: hidden;
-	will-change: transform;
 	position: relative;
 	width: 100%;
+}
+
+.transformer {
+
 }
 
 .root {

@@ -1,12 +1,13 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
 import TextArea from '@dojo/widgets/text-area';
 
 const factory = create({ icache });
 
 export default factory(function ValidateCustom({ middleware: { icache } }) {
 	const valid = icache.getOrSet('valid', {});
-	return (
+	return (<Example spaced={true}>
 		<TextArea
 			valid={valid}
 			helperText='Enter "valid" to be valid'
@@ -32,5 +33,5 @@ export default factory(function ValidateCustom({ middleware: { icache } }) {
 		>
 			Custom Validated
 		</TextArea>
-	);
+	</Example>);
 });

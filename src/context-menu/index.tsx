@@ -7,16 +7,17 @@ import ContextPopup from '../context-popup';
 import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
 
 export interface ContextMenuProperties {
-	/* A callback that will be called with the value of whatever item is selected  */
-	onSelect(value: string): void;
+	/* A callback that will be called with the value of whatever item is selected */
+	onSelect(value: ListOption): void;
 }
 
-const factory = create({ theme, resource: createResourceMiddleware<ListOption>() }).properties<
-	ContextMenuProperties
->();
+const factory = create({
+	theme,
+	resource: createResourceMiddleware<ListOption>()
+}).properties<ContextMenuProperties>();
 
 export const ContextMenu = factory(function({ properties, children, middleware: { theme } }) {
-	const { resource, onSelect } = properties();
+	const { resource, onSelect, classes, variant } = properties();
 	return (
 		<ContextPopup>
 			{{
@@ -24,17 +25,20 @@ export const ContextMenu = factory(function({ properties, children, middleware: 
 				content: ({ close, shouldFocus }) => (
 					<List
 						key="menu"
+						height="auto"
 						focus={shouldFocus}
 						theme={theme.compose(
 							menuCss,
 							css,
 							'menu'
 						)}
+						classes={classes}
+						variant={variant}
 						menu
 						resource={resource}
 						onBlur={close}
 						onRequestClose={close}
-						onValue={(value: any) => {
+						onValue={(value) => {
 							close();
 							onSelect(value);
 						}}

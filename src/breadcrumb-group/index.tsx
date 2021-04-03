@@ -1,11 +1,13 @@
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import theme from '@dojo/framework/core/middleware/theme';
+import { theme, ThemeProperties } from '../middleware/theme';
 import { create, tsx } from '@dojo/framework/core/vdom';
 
-import * as css from '../theme/default/breadcrumb-group.m.css';
 import * as fixedCss from './styles/breadcrumb-group.m.css';
+import * as css from '../theme/default/breadcrumb-group.m.css';
+import * as ui from '../theme/material/_ui.m.css';
+import * as colors from '../theme/material/_color.m.css';
 
-export interface BreadcrumbItem {
+export interface BreadcrumbItem extends ThemeProperties {
 	[key: string]: any;
 
 	href?: string;
@@ -107,7 +109,12 @@ export const BreadcrumbGroup = factory(function BreadcrumbGroup({
 	const [renderer = defaultRenderer] = children();
 
 	return (
-		<nav classes={[theme.variant(), themeCss.root]} aria-label={label}>
+		<nav classes={[
+			theme.variant(),
+			themeCss.root,
+			theme.sized(ui),
+			theme.colored(colors)
+		]} aria-label={label}>
 			<ol classes={[fixedCss.listFixed, themeCss.list]}>{renderer(items)}</ol>
 		</nav>
 	);

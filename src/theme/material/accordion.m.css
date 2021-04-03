@@ -1,11 +1,25 @@
 .root {
-	font-family: var(--mdc-theme-font-family);
+	box-shadow: var(--ui-dp-1);
+}
+.root.raised {
+	background-color: none;
+	box-shadow: var(--ui-dp-2);
+}
+
+
+.rounded details:first-child {
+	border-top-left-radius: var(--ui-border-radius-emphasized);
+	border-top-right-radius: var(--ui-border-radius-emphasized);
+}
+.rounded details:last-child {
+	border-bottom-left-radius: var(--ui-border-radius-emphasized);
+	border-bottom-right-radius: var(--ui-border-radius-emphasized);
 }
 
 .paneRoot {
 	composes: root from './title-pane.m.css';
 	margin-bottom: 1px;
-	transition: margin ease-in-out 0.25s;
+	transition: margin var(--ui-easing, ease-in-out) var(--ui-dpd-0, 0.25s);
 }
 
 .paneRoot:first-child {
@@ -31,3 +45,7 @@
 .paneOpen:last-child {
 	margin-bottom: 0;
 }
+
+.responsive { }
+.disabled { }
+.expanded { }

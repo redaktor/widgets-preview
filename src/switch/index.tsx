@@ -28,8 +28,7 @@ const factory = create({ theme, focus })
 export default factory(function Switch({ children, properties, id, middleware: { theme, focus } }) {
 	const {
 		aria = {},
-		variant = 'flat',
-		// classes,
+		variant,
 		disabled,
 		labelHidden,
 		name,
@@ -74,9 +73,10 @@ export default factory(function Switch({ children, properties, id, middleware: {
 			classes={[
 				theme.variant(),
 				themedCss.root,
-				themedCss[variant as (keyof typeof themedCss)], /* TODO */
-				theme.spaced(ui),
+				theme.shaped(themedCss),
+				theme.sized(ui),
 				theme.colored(colors),
+				theme.spaced(ui),
 				theme.animated(themedCss),
 				value ? themedCss.checked : null,
 				disabled ? themedCss.disabled : null,
@@ -91,7 +91,7 @@ export default factory(function Switch({ children, properties, id, middleware: {
 			<input
 				id={idBase}
 				{...formatAriaProperties(aria)}
-				classes={themedCss.input}
+				classes={[themedCss.input, theme.elevated(ui)]}
 				checked={!!value}
 				disabled={disabled}
 				focus={focus.shouldFocus()}

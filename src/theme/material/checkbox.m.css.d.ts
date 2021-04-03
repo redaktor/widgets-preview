@@ -1,6 +1,7 @@
 export const root: string;
 export const box: string;
 export const input: string;
+export const responsive: string;
 export const disabled: string;
 export const flat: string;
 export const filled: string;

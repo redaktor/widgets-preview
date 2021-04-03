@@ -3,27 +3,39 @@
 	--checkbox-ripple-size: 2;
 	--mark-width: var(--ui-border-width-emphasized, 2px);
 	composes: ui ui-transition from './_ui.m.css';
-	color: inherit;
 	padding-left: calc(var(--h) + var(--plr)) !important;
 }
+
 .box {
 	composes: box from './_ui.m.css';
 	display: inline-block;
-	width: var(--h);
 	height: var(--h);
+	min-width: var(--h);
 	margin-bottom: 0;
 	margin-right: var(--plr);
 	border-radius: var(--ui-border-radius-emphasized);
-	will-change: background-color,border;
 	transition: none;
 }
 .input {
+	--bh: calc(var(--ui-border-width-emphasized, 2px) * 2);
 	composes: input from './_ui.m.css';
 	cursor: pointer;
-	top: calc(50% - var(--h) / 2) !important;
-	height: calc(var(--h) + var(--ui-border-width-emphasized, 2px)) !important;
+	top: calc(50% - var(--h) / 2 - var(--bh)) !important;
+	height: calc(var(--h) + var(--bh)) !important;
 	opacity: 0;
+	padding: 0;
 }
+.root:not(.responsive) .box {
+	width: var(--h);
+}
+.root:not(.responsive) .input {
+	width:  calc(var(--h) + var(--ui-border-width-emphasized, 2px)) !important;
+}
+.root.responsive .box,
+.root.responsive .input {
+	width:  100% !important;
+}
+
 .disabled { composes: disabled from './_ui.m.css'; }
 .flat { composes: flat from './_ui.m.css'; }
 .filled { composes: filled from './_ui.m.css'; }

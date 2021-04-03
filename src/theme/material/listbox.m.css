@@ -1,0 +1,572 @@
+html {
+	/* mouse position aware w. JS, noscript fallback : */
+	--redaktor-btn-w: var(--redaktor-btn-min-w);
+	--redaktor-btn-x: 50%;
+	--redaktor-btn-y: 50%;
+}
+.root.filled,
+.root.outlined {
+	--root-bg: var(--ui-bg);
+	--root-off: var(--ui-off);
+	--root-hover: var(--ui-hover);
+	--root-fill: var(--ui-fill);
+	--root-text: var(--text);
+	--root-text-muted: var(--text-muted);
+}
+.root.filled .options,
+.root.outlined .options {
+	--ui-off: var(--root-off);
+	--text: var(--root-text);
+	--text-muted: var(--root-text-muted);
+}
+.root.outlined .options {
+	--ui-bg: var(--root-bg);
+	--ui-hover: var(--root-hover);
+}
+.root.filled .options {
+	--ui-bg: var(--root-fill);
+}
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
+}
+/* TODO might go to typo */
+.match {
+	position: relative;
+	text-decoration: none !important;
+}
+.match {
+	text-shadow: 1px 1px var(--ui-bg), 1px -1px var(--ui-bg), -1px 1px var(--ui-bg), -1px -1px var(--ui-bg);
+	transition: text-shadow var(--ui-dpd-6) var(--ui-easing);
+}
+.option:hover .token.match,
+.option:hover .fuzzy.match {
+	text-shadow: none;
+}
+.match::after {
+	content: "";
+	position: absolute;
+	left: 0px;
+	bottom: calc(var(--ui-border-width-emphasized) * -1);
+	width: 100%;
+	height: calc(var(--ui-border-width-emphasized) * 2);
+	z-index: -1;
+}
+.exact.match::after {
+	background: var(--ui-success);
+}
+.root .token.match::after {
+	background: var(--text-muted);
+}
+.fuzzy.match::after {
+	border-bottom: calc(var(--ui-border-width-emphasized) * 2) dotted var(--ui-off);
+}
+/* TODO */
+.hasSchema { }
+.parentSchema { }
+
+.required,
+.valid,
+.invalid,
+.raised,
+.shaped { }
+
+.helperText { composes: helperText from "./_ui.m.css"; }
+
+/* TODO ComboBox */
+.selected { }
+.open { }
+
+/*
+.root, .root * { box-sizing: border-box; }
+.root {
+	composes: root from "./text-input.m.css";
+}*/
+
+/* Note :
+.root means the root of 'Select'
+.options could be used standalone
+*/
+.root {
+	min-height: var(--ui-wrap-h);
+	position: relative;
+	cursor: pointer;
+	outline: none;
+	--lines: 7;
+}
+.root.disabled,
+.root.readonly {
+	pointer-events: none;
+}
+.root.disabled {
+	opacity: var(--disabledAlpha);
+}
+/*
+.root.closed {
+	display: none;
+}
+*/
+.root.responsive {
+	width: 100%;
+}
+.root:not(.responsive) {
+	width: var(--ui-default-input-width);
+}
+
+.root.noHelperText {
+	padding-bottom: var(--line);
+	margin-bottom: 0;
+}
+.root.noHelperText.fixedOrder {
+	padding-bottom: calc(var(--line) + var(--ui-border-width-emphasized));
+}
+.root.hasHelperText {
+	margin-bottom: 0;
+}
+.root:not(.root:focus).hasHelperText {
+	padding-bottom: 0;
+}
+.root:focus {
+  z-index: var(--zindex-dropdown);
+}
+.animated.expandable .option {
+	z-index: 1;
+	transition: z-index 0 linear var(--ui-dpd-4);
+	/* no duration prevents flicker */
+}
+.animated.expandable:focus input:checked + .option {
+	z-index: calc(var(--zindex-dropdown) + 1);
+}
+.animated.expandable input:not(:checked) + .option {
+	z-index: var(--zindex-dropdown);
+}
+.root.expanded {
+	padding-top: 0;
+}
+
+.root.expandable {
+	padding-top: var(--line);
+}
+.expandable:focus {
+	padding-bottom: calc(var(--ui-border-width-emphasized) + var(--ui-wrap-h) + var(--margin-bottom) + var(--line));
+}
+
+/* sliding labels */
+.expandable > label {
+	transform: scale(1, 1);
+	transform-origin: top left;
+	transition-property: transform, top, color, background-color;
+	transition-duration: var(--ui-dpd-0);
+	transition-timing-function: var(--ui-easing);
+}
+.expandable:focus > label {
+	position: absolute;
+	top: calc(0px - var(--ui-t));
+	transform: scale(var(--small-size), var(--small-size));
+}
+.bottom.expandable:focus > label {
+	top: auto;
+	bottom: calc(var(--padding-top) * -1);
+}
+.scroll.bottom.expandable:focus > label {
+	bottom: calc(var(--padding-top) * -1 - var(--line));
+}
+.options {
+	--button-pulse: var(--ui-accent);
+	/*margin-top: var(--ui-wrap-h);*/
+	width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+	top: calc(var(--ui-t) * -1);
+	left: 0;
+}
+.outlined .options {
+	--button-pulse: var(--ui-flat);
+}
+.root.outlined .options {
+	border: var(--ui-border-width) solid var(--ui-outline);
+}
+.root:focus.outlined .options {
+	border-width: var(--ui-border-width-emphasized);
+}
+.open .options {
+	min-height: var(--ui-wrap-h);
+}
+
+
+.autoOrder .options,
+.single.autoOrder input:checked + .option,
+.single.outlined input:checked + .option,
+.multi input:checked + .first.option {
+	border-radius: var(--ui-border-radius-emphasized) var(--ui-border-radius-emphasized) 0 0;
+}
+.single.autoOrder.expandable:focus .options,
+.root.fixedOrder:not(.outlined) .options {
+	border-radius: 0 0 var(--ui-border-radius-emphasized) var(--ui-border-radius-emphasized);
+}
+.expanded .options {
+	border-radius: var(--ui-border-radius-emphasized);
+}
+.expanded:not(.closed) .options {
+	box-shadow: var(--ui-dp-4);
+}
+.expandable:focus .options {
+	box-shadow: var(--ui-dp-8);
+	position: absolute;
+	height: auto;
+}
+/*
+.autoOrder.expanded:focus .options {
+	border-radius: var(--ui-border-radius-emphasized);
+}
+*/
+.expanded.scroll .options,
+.expandable.scroll:focus .options {
+	max-height: calc(var(--ui-wrap-h) * var(--lines));
+	overflow-x: hidden;
+	overflow-y: auto;
+	overflow-wrap: break-word;
+}
+.expandable.top:focus .options {
+	top: calc(var(--ui-wrap-h) * -1 - var(--ui-t));
+}
+.expandable.top:focus label + .options {
+	top: calc(var(--ui-wrap-h) - var(--ui-t) + var(--line));
+}
+.single.expandable.top.scroll:focus label + .options {
+	top: calc(var(--ui-t) * -1 + var(--line));
+}
+.multi.expandable.top.scroll:focus label + .options {
+	top: calc(var(--ui-t) * -1 + var(--line) - var(--padding-top));
+}
+
+.expandable.bottom:focus .options {
+	top: calc(var(--ui-wrap-h) * var(--lines) * -1 + var(--margin-bottom));
+	/* top: calc(var(--ui-wrap-h) * var(--lines) * -1 + var(--ui-t)); */
+}
+.expandable.bottom.scroll:focus .options {
+	top: auto;
+	bottom: calc(var(--line) + var(--ui-t));
+	/* bottom: var(--ui-wrap-h); */
+}
+
+.option {
+	cursor: pointer;
+  min-height: var(--ui-wrap-h);
+  display: flex;
+  align-items: center;
+  width: 100%;
+	position: relative;
+  z-index: 1;
+	background: var(--ui-bg);
+  transition: background var(--ui-dpd-6) var(--ui-easing);
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.root .option {
+	color: var(--text);
+	outline: none;
+}
+.root.muted input:not(:checked) + .option {
+	color: var(--text-muted);
+}
+.single .option,
+.multi input:not(:checked) + .option {
+	padding-left: var(--ui-l);
+	padding-right:var(--ui-lr)
+}
+.single input:not(input:checked) + .option.selected,
+.single.fixedOrder input:checked + .option,
+.multi input:checked + .option {
+	padding-left: calc(var(--ui-l) * 2 + (var(--ui-wrap-h) / 4));
+	padding-right:var(--ui-lr)
+}
+
+.expandable .option {
+	transform-origin: 50% 0%;
+	pointer-events: none;
+	top: 0;
+}
+.expandable:focus .option {
+  pointer-events: auto;
+}
+.expandable:not(.expandable:focus):not(.animated) .options input:not(:checked) + .option {
+	display: none;
+}
+.options input {
+  position: absolute;
+  left: -99999px;
+	opacity: 0;
+}
+
+.autoOrder input:checked {
+	order: 1;
+}
+.autoOrder input:checked + .option {
+	order: 2;
+	z-index: 2;
+	top: 0px;
+}
+.single input:checked + .option {
+	/*color: var(--ui-accent);*/
+	min-height: var(--ui-wrap-h);
+	overflow-y: hidden;
+	padding-top: 0px;
+  border-top: none;
+  /*position: relative;*/
+}
+
+.single input:checked + .option {
+	background: var(--ui-bg);
+}
+
+.autoOrder.single.noscroll:focus input:checked + .option {
+	box-shadow: var(--ui-dp-2);
+}
+/*
+.single.expanded.scroll input:checked + .option {
+	border-bottom: var(--ui-border-width-emphasized) solid var(--ui-border);
+}*/
+.autoOrder input:not(:checked) {
+	order: 4;
+}
+.autoOrder input:not(:checked) + .option {
+	order: 5;
+}
+.autoOrder.single.expandable.noscroll input:checked + .option {
+	margin-bottom: calc(0px - var(--ui-wrap-h));
+}
+.autoOrder.single.expandable.noscroll:focus .options input:checked + .option {
+	top: calc(0px - var(--ui-wrap-h));
+}
+.scroll .options input:checked + .option {
+	position: relative;
+}
+
+
+/* TODO : */
+.hasSchema.options input:checked + .option {
+	background: var(--ui-flat-accent);
+}
+
+.multi:not(.filled) .options input:checked + .option,
+.options:not(.filled) input:not(:checked) + .option:hover {
+	background: var(--ui-hover);
+}
+.multi.filled .options input:checked + .option,
+.options.filled input:not(:checked) + .option:hover {
+	background: var(--ui-bg);
+}
+
+/*.root .options input.selected + .option::after,*/
+.single input:not(input:checked) + .option.selected::after,
+.root .options input:checked + .option::after {
+  content: '';
+  width: 0;
+	height: 0;
+	border-left: calc(var(--ui-wrap-h) / 4) solid transparent;
+	border-right: calc(var(--ui-wrap-h) / 4) solid transparent;
+	border-top: calc(var(--ui-wrap-h) / 4) solid var(--text-muted);
+  position: absolute;
+  top: calc(50% - (var(--ui-wrap-h) / 8));
+  pointer-events: none;
+  z-index: 3;
+}
+.autoOrder.single .options input:checked + .option::after {
+	right: calc(var(--ui-wrap-h) / 2);
+}
+.single input:not(input:checked) + .option.selected::after,
+.single.fixedOrder .options input:checked + .option::after,
+.multi .options input:checked + .option::after {
+	left: calc(var(--ui-l) / 2);
+	transform: rotate(-90deg);
+}
+.autoOrder.single.expanded input:checked + .option::after {
+	transform: rotate(90deg);
+}
+.autoOrder.single.expandable:focus input:checked + .option::after {
+	transform: rotate(180deg);
+}
+
+.options input:checked + .option::before {
+  position: absolute;
+  right: 0;
+  height: var(--ui-wrap-h);
+  width: var(--ui-wrap-h);
+  content: '';
+	box-shadow: 0 0 0 0px var(--ui-border);
+	border-radius: var(--ui-wrap-h);
+	transform: perspective(1px) translate(0, 0);
+  /*background: var(--ui-hover);*/
+}
+.hasSchema.options input:checked + .option::before {
+	/*background: var(--ui-flat-accent);*/
+}
+.animated { }
+@keyframes pulse {
+	0%   { opacity: 0; box-shadow: 0 0 0 1px var(--button-pulse); }
+	40%  { opacity: 0.8; }
+	80%	 { box-shadow: 0 0 0 var(--redaktor-btn-w) var(--button-pulse); }
+	100% { opacity: 0; box-shadow: 0 0 0 0px var(--button-pulse); }
+}
+
+/*.animated .selected.option::before,*/
+.animated .options input:checked + .option::before {
+	width: 1px;
+	height: 1px;
+	left: calc(var(--redaktor-btn-x) - 2px);
+	top: var(--redaktor-btn-y);
+	animation-duration: var(--ui-dpd-animation);
+	animation-timing-function: var(--ui-easing);
+	animation-delay: 0s;
+	animation-iteration-count: 1;
+	animation-direction: normal;
+	animation-fill-mode: none;
+	animation-play-state: running;
+  animation-name: pulse;
+	z-index: -1;
+}
+
+.closed.animated .options input:checked + .option .match {
+	text-shadow: none;
+}
+
+
+.animated .options {
+	/*background: var(--ui-bg);*/
+	height: auto;
+	transition: height box-shadow var(--ui-dpd-1) var(--ui-easing-enter) 0s;
+}
+.animated.expandable:not(.animated:focus) .options {
+	pointer-events: none;
+	height: 0px;
+	transition: height top var(--ui-dpd-2) var(--ui-easing-leave) 0s;
+}
+.animated.expandable:focus .option {
+  transform: perspective(var(--ui-default-input-width)) rotateX(0deg);
+}
+.animated.expandable.autoOrder:focus input:not(input:checked) + .option,
+.animated.expandable.fixedOrder:focus .option {
+	transition: transform var(--ui-dpd-6) var(--ui-easing-enter) 0s;
+}
+.animated.expandable.autoOrder:not(.animated:focus) input:not(input:checked) + .option,
+.animated.expandable.fixedOrder:not(.animated:focus) .option {
+	min-height: 0px;
+	top: var(--ui-t);
+  transition: all var(--ui-dpd-4) var(--ui-easing-leave) 0s;
+}
+.animated.expandable.autoOrder:not(.animated:focus) input:not(input:checked) + label:nth-of-type(2n),
+.animated.expandable.fixedOrder:not(.animated:focus) label:nth-of-type(2n) {
+	filter: brightness(96%);
+	transform: perspective(var(--ui-default-input-width)) rotateX(-90deg) scaleX(.86);
+}
+.animated.expandable.autoOrder:not(.animated:focus) input:not(input:checked) + label:nth-of-type(2n+1),
+.animated.expandable.fixedOrder:not(.animated:focus) label:nth-of-type(2n+1) {
+	box-shadow: var(--ui-dp-12);
+	transform: perspective(var(--ui-default-input-width)) rotateX(90deg) scaleX(.86);
+}
+.multi.animated.expandable:not(.animated:focus) .options,
+.multi.closed.options {
+	height: auto;
+}
+.multi.animated.expandable:not(.animated:focus) input:not(input:checked) + .option {
+	height: 0px;
+	transition: height 1ms linear var(--ui-dpd-4);
+}
+
+/* manual animation for expanded with 'opening' property */
+@keyframes open {
+	0% {
+		transform: perspective(var(--ui-default-input-width)) rotateX(var(--close-deg));
+		margin-top: calc(var(--ui-wrap-h) * -.48);
+		margin-bottom: calc(var(--ui-wrap-h) * -.48);
+		box-shadow: var(--ui-dp-4);
+	}
+	100% {
+		transform: perspective(var(--ui-default-input-width)) rotateX(0deg);
+		margin-top: 0px;
+		margin-bottom: 0px;
+		box-shadow: none;
+	}
+}
+.animated.expanded label:nth-of-type(2n) { --close-deg: 90deg; }
+.animated.expanded label:nth-of-type(2n+1) { --close-deg: -90deg; }
+.animated.expanded .option {
+	animation-duration: var(--ui-dpd-6);
+	animation-delay: 0s;
+	animation-iteration-count: 1;
+	animation-fill-mode: both;
+	animation-play-state: running;
+}
+.animated.expanded.opening .option {
+	animation-timing-function: var(--ui-easing-enter);
+	animation-direction: normal;
+	animation-name: open;
+}
+.animated.expanded.closed .option {
+	animation-timing-function: var(--ui-easing);
+	animation-direction: reverse;
+	animation-name: open;
+}
+
+
+.border {
+	composes: border from "./text-input.m.css";
+	display: flex;
+	order: 3;
+	z-index: 3;
+	bottom: 0px;
+	margin-bottom: calc(var(--ui-border-width-emphasized) * -1);
+}
+
+.animated:focus .border {
+	z-index: calc(var(--zindex-dropdown) + 1);
+}
+
+/*.expanded .border,*/
+.noscroll .border {
+	bottom: var(--ui-border-width-emphasized);
+}
+.noscroll:focus .border {
+	bottom: auto;
+	top: 0px;
+}
+.scroll .border {
+	position: relative;
+}
+@supports (position: sticky) {
+	.scroll .options input:checked + .option {
+		position: sticky;
+	}
+	.scroll .border {
+		position: sticky;
+		min-height: var(--ui-border-width-emphasized);
+	}
+}
+.multi.required .border,
+.multi.required .border::after {
+	background-color: var(--ui-error);
+}
+.root:not(.multi.required) .border,
+.multi.required input:checked ~ .border {
+	background-color: var(--ui-border);
+}
+.enabled:not(.multi.required) .border::after,
+.enabled.multi.required input:checked ~ .border::after {
+	background-color: var(--ui-accent);
+}
+.enabled.hasSchema:not(.multi.required) .border::after,
+.enabled.multi.hasSchema.required input:checked ~ .border::after {
+	background-color: var(--ui-flat);
+}
+.enabled:focus .border::after {
+	transition: transform var(--ui-dpd-4) var(--ui-easing) 0ms;
+	transform: scaleX(1);
+}

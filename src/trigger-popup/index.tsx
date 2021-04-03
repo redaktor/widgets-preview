@@ -1,47 +1,48 @@
 import { dimensions } from '@dojo/framework/core/middleware/dimensions';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import Popup, { BasePopupProperties } from '../popup';
+import Popup, { PopupPosition, BasePopupProperties } from '../popup';
 import * as fixedCss from './trigger-popup.m.css';
+import theme from '../middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 
 export interface TriggerPopupProperties extends BasePopupProperties {
 	/** If the popup wrapper should match the trigger width (defaults to true) */
 	matchWidth?: boolean;
-	/** Optional min height for the popup's preferred position */
-	minHeight?: number;
 	/** Callback when the menu is opened  */
-	onOpen?(position: any): void;
+	onOpen?(): void;
+	/** Position of popup that is triggered  */
+	position?: PopupPosition;
 }
 
 export interface TriggerPopupChildren {
 	trigger: (toggleOpen: () => void) => RenderResult;
-	content: (close: () => void) => RenderResult;
+	content: (close: () => void, position: PopupPosition) => RenderResult;
 }
 
 interface TriggerPopupICache {
 	open: boolean;
-	openPopup: boolean;
 }
 
 const icache = createICacheMiddleware<TriggerPopupICache>();
 
-const factory = create({ dimensions, icache })
+const factory = create({ dimensions, icache, theme })
 	.properties<TriggerPopupProperties>()
 	.children<TriggerPopupChildren>();
 
-export const TriggerPopup = factory(function({
+export const TriggerPopup = factory(function TriggerPopup({
 	properties,
 	children,
-	middleware: { dimensions, icache }
+	middleware: { dimensions, icache, theme }
 }) {
-	const { matchWidth = true, minHeight = 0, onOpen, ...otherProperties } = properties();
+	const { matchWidth = true, onOpen, classes, ...otherProperties } = properties();
 
 	const { position: triggerPosition, size: triggerSize } = dimensions.get('trigger');
-	const el = document.scrollingElement || document.documentElement;
-	const scrollTop = el.scrollTop || Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop);
-	const triggerTop = triggerPosition.top + scrollTop;
+	const triggerTop = triggerPosition.top + document.documentElement.scrollTop;
 	const triggerBottom = triggerTop + triggerSize.height;
+
+	const themedCss = theme.classes(fixedCss);
+
 	const wrapperStyles = {
 		width: matchWidth ? `${triggerSize.width}px` : 'auto'
 	};
@@ -54,35 +55,30 @@ export const TriggerPopup = factory(function({
 	};
 
 	return (
-		<virtual>
+		<virtual classes={[themedCss.root]}>
 			<span key="trigger" classes={fixedCss.trigger}>
 				{trigger(() => {
+					const { onOpen } = properties();
 					icache.set('open', !icache.get('open'));
-					if (icache.get('open')) {
-						icache.set('openPopup', true);
-					}
+					onOpen && onOpen();
 				})}
 			</span>
 			<Popup
 				key="popup"
 				{...otherProperties}
-				x={triggerPosition.left}
+				classes={classes}
 				yTop={triggerBottom}
 				yBottom={triggerTop}
-				minHeight={minHeight}
-				onOpen={(pos:any) => {
-					if (open && icache.get('openPopup')) {
-						const { onOpen } = properties();
-						icache.set('openPopup', false);
-						onOpen && onOpen(pos);
-					}
-				}}
+				xLeft={triggerPosition.left}
+				xRight={triggerPosition.right}
 				onClose={close}
 				open={icache.get('open')}
 			>
-				<div key="trigger-wrapper" styles={wrapperStyles}>
-					{content(close)}
-				</div>
+				{(position) => (
+					<div key="triggerWrapper" styles={wrapperStyles}>
+						{content(close, position)}
+					</div>
+				)}
 			</Popup>
 		</virtual>
 	);

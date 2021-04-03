@@ -1,6 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import CheckboxGroup from '@dojo/widgets/checkbox-group';
 import { icache } from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
+import CheckboxGroup from '@dojo/widgets/checkbox-group';
 
 const factory = create({ icache });
 
@@ -8,7 +9,7 @@ const App = factory(function({ properties, middleware: { icache } }) {
 	const { get, set } = icache;
 
 	return (
-		<virtual>
+		<Example>
 			<CheckboxGroup
 				name="standard"
 				options={[{ value: 'cat' }, { value: 'dog' }, { value: 'fish' }]}
@@ -20,8 +21,8 @@ const App = factory(function({ properties, middleware: { icache } }) {
 					label: 'pets'
 				}}
 			</CheckboxGroup>
-			<pre>{`${get('standard')}`}</pre>
-		</virtual>
+			<pre>{`${get('standard')||''}`}</pre>
+		</Example>
 	);
 });
 

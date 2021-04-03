@@ -1,3 +1,9 @@
+.root {
+}
+
+.input {
+}
+
 .toggleCalendarButton {
 	composes: nativeResetRoot from './button.m.css';
 	cursor: pointer;

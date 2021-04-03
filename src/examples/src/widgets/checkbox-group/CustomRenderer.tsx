@@ -1,7 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import CheckboxGroup from '@dojo/widgets/checkbox-group';
 import { Checkbox } from '@dojo/widgets/checkbox';
 import { icache } from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
+import CheckboxGroup from '@dojo/widgets/checkbox-group';
 
 const factory = create({ icache });
 
@@ -22,8 +23,8 @@ const App = factory(function({ middleware: { icache } }) {
 					checkboxes: (name, checkboxGroup, options) => {
 						return options.map(({ value, label }) => {
 							const { checked } = checkboxGroup(value);
-							return (
-								<virtual>
+							return (<Example>
+								<span>
 									<span>I'm custom!</span>
 									<Checkbox
 										name={name}
@@ -43,8 +44,8 @@ const App = factory(function({ middleware: { icache } }) {
 											overflow: 'hidden'
 										}}
 									/>
-								</virtual>
-							);
+								</span>
+							</Example>);
 						});
 					}
 				}}

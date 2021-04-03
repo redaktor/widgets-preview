@@ -1,5 +1,35 @@
 export type ParseableDate = string | number | Date | null | undefined;
 
+export function format(date: Date) {
+	return Intl.DateTimeFormat().format(date);
+}
+
+function _getLocalised(
+	locales: string[] = [Intl.DateTimeFormat().resolvedOptions().locale],
+	min = 1,
+	max = 8,
+	month: number | null = 7,
+	date?: number
+) {
+	let i, _d;
+	const id = max === 8 ? 'weekday' : 'month';
+	const locale = Array.isArray(locales) && locales.length ? locales[0] : void 0;
+	const a = [];
+	for (i = min; i < max; i++) {
+		_d = new Date(2021, month||i, date||i);
+	  a.push({
+	  	short: Intl.DateTimeFormat(locale, { [id]: 'short' }).format(_d),
+	    long: Intl.DateTimeFormat(locale, { [id]: 'long' }).format(_d)
+	  });
+	}
+	return a
+}
+export function getWeekdays(locales?: string[]) {
+	return _getLocalised(locales)
+}
+export function getMonths(locales?: string[]) {
+	return _getLocalised(locales, 0, 12, null, 3)
+}
 export function monthInMin(year: number, month: number, minDate?: Date) {
 	if (minDate) {
 		return new Date(year, month, 1) >= new Date(minDate.getFullYear(), minDate.getMonth(), 1);

@@ -2,11 +2,11 @@
 <!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 width="128px" height="140px" viewBox="0 0 128 140" enable-background="new 0 0 128 140" xml:space="preserve">
+	 width="96px" height="96px" viewBox="0 0 96 96" enable-background="new 0 0 96 96" xml:space="preserve">
 <g>
-	<g>
-		<path d="M33.021,105.998l30.999-31.084l31.001,31.092c8.024-7.971,12.995-19.013,12.995-31.217h-0.063
-			C107.311,51.05,87.88,32,63.985,32c-24.302,0-44.002,19.699-44.002,44h0.063C20.365,87.72,25.268,98.292,33.021,105.998z"/>
-	</g>
+	<path d="M28.299,63.277H3c4.29,12.142,13.538,21.958,25.299,27.01V63.277z"/>
+	<path d="M28.299,5.713C16.538,10.765,7.29,20.581,3,32.723h25.299V5.713z"/>
+	<path d="M46.381,2c-5.272,0-10.338,0.9-15.058,2.541L74.781,48L31.323,91.459C36.043,93.1,41.108,94,46.381,94
+		c25.365,0,46.002-20.635,46.002-46C92.383,22.635,71.746,2,46.381,2z"/>
 </g>
 </svg>

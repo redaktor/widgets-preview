@@ -4,6 +4,7 @@ import icache from '@dojo/framework/core/middleware/icache';
 import { getListItems } from './listItemGenerator';
 // import Card from '@dojo/widgets/card';
 // import Map from '@dojo/widgets/map';
+import Example from '../../Example';
 import Cards from '@dojo/widgets/cards';
 import Details from '@dojo/widgets/details';
 import Avatar from '@dojo/widgets/avatar';
@@ -14,20 +15,20 @@ import * as asideCss from '../../../../theme/material/aside.m.css';
 
 const actionButtons = (
 	<virtual>
-		<Button spaced={false} responsive={true}>
+		<Button size="l" spaced={false} responsive={true}>
 			<Icon size="xxl" type="link" />
 		</Button>
-		<Button spaced={false} responsive={true}>
+		<Button size="l" spaced={false} responsive={true}>
 			<Icon size="xxl" type="like" />
 		</Button>
-		<Button spaced={false} responsive={true}>
+		<Button size="l" spaced={false} responsive={true}>
 			<Icon size="xxl" type="bookmark" />
 		</Button>
-		<Button spaced={false} responsive={true}>
+		<Button size="l" spaced={false} responsive={true}>
 			<Icon size="xxl" type="share" />
 		</Button>
 		<noscript>
-			<Button spaced={false} responsive={true}>
+			<Button size="l" spaced={false} responsive={true}>
 				<Icon size="xxl" type="comment" />
 			</Button>
 		</noscript>
@@ -138,240 +139,226 @@ Map
 */
 
 function withChildren(o: any) {
-	if (o.type === 'article') { o.content = 'Lorem Ipsum' }
-	o.avatar = <Avatar spaced={false}>SL</Avatar>;
-	o.actionButtons = actionButtons;
+	console.log(o.actor.name);
+	if (o.type !== 'article') { o.actionButtons = actionButtons }
 	return o
 }
-async function getListItemsWithChildren(o: any) {
-	const data = await getListItems();
-	return data.map(withChildren)
+async function getListItemsWithChildren() {
+	const page = await getListItems();
+	return page.map(withChildren)
 }
 const factory = create({ icache });
 
 // const chunks = wordsAndBreaks(summary);
 export default factory(function CardsExample({ middleware: { icache } }) {
-	const data: any = icache.getOrSet('data', getListItemsWithChildren);
-	const isLoading: boolean = icache.get('loading') || false;
+	const page: any = icache.getOrSet('page', getListItemsWithChildren);
 
+	(async () => console.log( (await getListItems()).map(withChildren)[0] ))();
 	return (
-		<Cards
-			{...{
-				isLoading,
-				data,
-				onRequestItems: async () => {
-					icache.set('loading', true);
-					const newData = (await getListItems()).map(withChildren);
-					const data = icache.get('data') || [];
-					icache.set('loading', false, false);
-					icache.set('data', [...(data as any), ...newData]);
-				}
-			}}
-		>
-			{{
-				header: (
-					<button style="position:absolute;top:-18px;left:0;background:#fadc00;" onclick={() => {
-						(document.querySelector('.markdown + .hidden') as any).classList.toggle("markdownFullscreen");
-						(document.querySelector('.z-90.hidden') as any).classList.toggle("markdownFullscreen");
-						(document.querySelector('.markdown') as any).classList.toggle("markdownFullscreen");
-					}}>
-						TOGGLE EXAMPLE
-					</button>
-				),
-				aside: (
-					<div classes={asideCss.root}>
-						<Details open={true} summary="Most read">
-							<ol classes={[asideCss.container, asideCss.mostread]}>
-								<li tabindex="0" classes={asideCss.item}>
-									<div classes={asideCss.icon}>1</div>
-									<span classes={asideCss.caption}>
-										Lorem Ipsum Lorem Ipsum Lorem Ipsum dolor sunt lorem ipsum
-										lorem ipsum max 5 lines
-									</span>
-								</li>
-								<li tabindex="0" classes={asideCss.item}>
-									<div classes={asideCss.icon}>2</div>
-									<span classes={asideCss.caption}>Lorem Ipsum dolor sunt</span>
-								</li>
-								<li tabindex="0" classes={asideCss.item}>
-									<div classes={asideCss.icon}>3</div>
-									<span classes={asideCss.caption}>Lorem Ipsum dolor sunt</span>
-								</li>
-								<li tabindex="0" classes={asideCss.item}>
-									<div classes={asideCss.icon}>4</div>
-									<span classes={asideCss.caption}>Lorem Ipsum dolor sunt</span>
-								</li>
-							</ol>
-							<br />
-							<Button>
-								<Icon size="l" spaced={false} type="view" /> All
-							</Button>
-						</Details>
-						<Details open={true} summary="Federate">
-							<h5 classes={asideCss.subheadline}>new</h5>
-							<ul classes={[asideCss.container, asideCss.federate]}>
-								<li classes={[asideCss.item, asideCss.top]}>
-									<div classes={asideCss.avatar}>
-										<Avatar spaced={false}>BB</Avatar>
-									</div>
-									<span classes={asideCss.rows}>
-										<span classes={asideCss.name}>Robin Rebel</span>
-										<br />
-										<small classes={asideCss.handle}>@robin@rebel.me</small>
-										<Button spaced={false} variant="outlined">
-											Follow
-										</Button>
-									</span>
-								</li>
-							</ul>
-							<h5 classes={asideCss.subheadline}>recommended</h5>
-							<ul classes={[asideCss.container, asideCss.federate]}>
-								<li classes={[asideCss.item, asideCss.top]}>
-									<div classes={asideCss.avatar}>
-										<Avatar spaced={false}>AP</Avatar>
-									</div>
-									<span classes={asideCss.rows}>
-										<span classes={asideCss.name}>Alyssa P. Hacker</span>
-										<br />
-										<small classes={asideCss.handle}>alyssa@chaos.social</small>
-										<Button spaced={false} variant="outlined">
-											Follow
-										</Button>
-									</span>
-								</li>
-								<li classes={[asideCss.item, asideCss.top]}>
-									<div classes={asideCss.avatar}>
-										<Avatar spaced={false}>BB</Avatar>
-									</div>
-									<span classes={asideCss.rows}>
-										<span classes={asideCss.name}>Ben Bitdiddle</span>
-										<br />
-										<small classes={asideCss.handle}>@ben@octodon.social</small>
-										<Button spaced={false} variant="outlined">
-											Follow
-										</Button>
-									</span>
-								</li>
-								<li classes={[asideCss.item, asideCss.top]}>
-									<div classes={asideCss.avatar}>
-										<Avatar spaced={false}>ED</Avatar>
-									</div>
-									<span classes={asideCss.rows}>
-										<span classes={asideCss.name}>Ed</span>
-										<br />
-										<small classes={asideCss.handle}>@ed@octodon.social</small>
-										<Button spaced={false} variant="outlined">
-											Follow
-										</Button>
-									</span>
-								</li>
-							</ul>
-							<br />
-							<Button>
-								<Icon size="l" spaced={false} type="view" /> All
-							</Button>
-						</Details>
-						<Details open={true} summary="Trending Tags">
-							<ol classes={[asideCss.container, asideCss.tags]}>
-								<li classes={asideCss.item}>
-									<div classes={asideCss.graph} />
-									<span classes={asideCss.tag}>
-										supertag
-										<br />
-										<small classes={asideCss.tagCount}>
-											<b>382</b>
-											<span> reden drüber</span>
-										</small>
-									</span>
-								</li>
-								<li classes={asideCss.item}>
-									<div classes={asideCss.graph} />
-									<span classes={asideCss.tag}>
-										cooltag
-										<br />
-										<small classes={asideCss.tagCount}>
-											<b>342</b>
-											<span> reden drüber</span>
-										</small>
-									</span>
-								</li>
-								<li classes={asideCss.item}>
-									<div classes={asideCss.graph} />
-									<span classes={asideCss.tag}>
-										3tag
-										<br />
-										<small classes={asideCss.tagCount}>
-											<b>287</b>
-											<span> reden drüber</span>
-										</small>
-									</span>
-								</li>
-								<li classes={asideCss.item}>
-									<div classes={asideCss.graph} />
-									<span classes={asideCss.tag}>
-										othertag
-										<br />
-										<small classes={asideCss.tagCount}>
-											<b>40</b>
-											<span> reden drüber</span>
-										</small>
-									</span>
-								</li>
-								<li classes={asideCss.item}>
-									<div classes={asideCss.graph} />
-									<span classes={asideCss.tag}>
-										incredibleFive
-										<br />
-										<small classes={asideCss.tagCount}>
-											<b>5</b>
-											<span> reden drüber</span>
-										</small>
-									</span>
-								</li>
-							</ol>
-							<br />
-							<Button>
-								<Icon size="l" spaced={false} type="view" /> All
-							</Button>
-						</Details>
-						<Details open={true} summary="Recent Topics">
-							<ul classes={[asideCss.container, asideCss.topics]}>
-								<li classes={[asideCss.item, asideCss.rows]}>
-									<span classes={asideCss.topic}>
-										b&w photography
-										<br />
-										<small classes={asideCss.topicCount}>
-											<b>82</b>
-											<span> neu / 1238</span>
-										</small>
-									</span>
-									<div classes={asideCss.topicImage} />
-								</li>
-								<li classes={[asideCss.item, asideCss.rows]}>
-									<span classes={asideCss.topic}>
-										webdesign
-										<br />
-										<small classes={asideCss.topicCount}>
-											<b>40</b>
-											<span> neu / 761</span>
-										</small>
-									</span>
-									<div classes={asideCss.topicImage} />
-								</li>
-								<li classes={[asideCss.item, asideCss.rows]}>
-									<span classes={asideCss.topic}>
-										rare stamps
-										<br />
-										<small classes={asideCss.topicCount}>
-											<span>22</span>
-										</small>
-									</span>
-									<div classes={asideCss.topicImage} />
-								</li>
-							</ul>
-						</Details>
-					</div>
-				)}}
-		</Cards>
+		<Example hasFullscreen={true}>
+			<Cards
+				{...{
+					page,
+					onRequestItems: async () => (await getListItems()).map(withChildren)
+				}}
+			>
+				{{
+					// header: '',
+					aside: (
+						<div classes={asideCss.root}>
+							<Details open={true} summary="Most read">
+								<ol classes={[asideCss.container, asideCss.mostread]}>
+									<li tabindex="0" classes={asideCss.item}>
+										<div classes={asideCss.icon}>1</div>
+										<span classes={asideCss.caption}>
+											Lorem Ipsum Lorem Ipsum Lorem Ipsum dolor sunt lorem ipsum
+											lorem ipsum max 5 lines
+										</span>
+									</li>
+									<li tabindex="0" classes={asideCss.item}>
+										<div classes={asideCss.icon}>2</div>
+										<span classes={asideCss.caption}>Lorem Ipsum dolor sunt</span>
+									</li>
+									<li tabindex="0" classes={asideCss.item}>
+										<div classes={asideCss.icon}>3</div>
+										<span classes={asideCss.caption}>Lorem Ipsum dolor sunt</span>
+									</li>
+									<li tabindex="0" classes={asideCss.item}>
+										<div classes={asideCss.icon}>4</div>
+										<span classes={asideCss.caption}>Lorem Ipsum dolor sunt</span>
+									</li>
+								</ol>
+								<br />
+								<Button>
+									<span><Icon size="l" spaced={false} type="view" /> All</span>
+								</Button>
+							</Details>
+							<Details open={true} summary="Federate">
+								<h5 classes={asideCss.subheadline}>new</h5>
+								<ul classes={[asideCss.container, asideCss.federate]}>
+									<li classes={[asideCss.item, asideCss.top]}>
+										<div classes={asideCss.avatar}>
+											<Avatar spaced={false}>RR</Avatar>
+										</div>
+										<span classes={asideCss.rows}>
+											<span classes={asideCss.name}>Robin Rebel</span>
+											<br />
+											<small classes={asideCss.handle}>@robin@rebel.me</small>
+											<Button spaced={false} variant="outlined">
+												Follow
+											</Button>
+										</span>
+									</li>
+								</ul>
+								<h5 classes={asideCss.subheadline}>recommended</h5>
+								<ul classes={[asideCss.container, asideCss.federate]}>
+									<li classes={[asideCss.item, asideCss.top]}>
+										<div classes={asideCss.avatar}>
+											<Avatar spaced={false}>AP</Avatar>
+										</div>
+										<span classes={asideCss.rows}>
+											<span classes={asideCss.name}>Alyssa P. Hacker</span>
+											<br />
+											<small classes={asideCss.handle}>alyssa@chaos.social</small>
+											<Button spaced={false} variant="outlined">
+												Follow
+											</Button>
+										</span>
+									</li>
+									<li classes={[asideCss.item, asideCss.top]}>
+										<div classes={asideCss.avatar}>
+											<Avatar spaced={false}>BB</Avatar>
+										</div>
+										<span classes={asideCss.rows}>
+											<span classes={asideCss.name}>Ben Bitdiddle</span>
+											<br />
+											<small classes={asideCss.handle}>@ben@octodon.social</small>
+											<Button spaced={false} variant="outlined">
+												Follow
+											</Button>
+										</span>
+									</li>
+									<li classes={[asideCss.item, asideCss.top]}>
+										<div classes={asideCss.avatar}>
+											<Avatar spaced={false}>ED</Avatar>
+										</div>
+										<span classes={asideCss.rows}>
+											<span classes={asideCss.name}>Ed</span>
+											<br />
+											<small classes={asideCss.handle}>@ed@octodon.social</small>
+											<Button spaced={false} variant="outlined">
+												Follow
+											</Button>
+										</span>
+									</li>
+								</ul>
+								<br />
+								<Button>
+									<span><Icon size="l" spaced={false} type="view" /> All</span>
+								</Button>
+							</Details>
+							<Details open={true} summary="Trending Tags">
+								<ol classes={[asideCss.container, asideCss.tags]}>
+									<li classes={asideCss.item}>
+										<div classes={asideCss.graph} />
+										<span classes={asideCss.tag}>
+											supertag
+											<br />
+											<small classes={asideCss.tagCount}>
+												<b>382</b>
+												<span> reden drüber</span>
+											</small>
+										</span>
+									</li>
+									<li classes={asideCss.item}>
+										<div classes={asideCss.graph} />
+										<span classes={asideCss.tag}>
+											cooltag
+											<br />
+											<small classes={asideCss.tagCount}>
+												<b>342</b>
+												<span> reden drüber</span>
+											</small>
+										</span>
+									</li>
+									<li classes={asideCss.item}>
+										<div classes={asideCss.graph} />
+										<span classes={asideCss.tag}>
+											3tag
+											<br />
+											<small classes={asideCss.tagCount}>
+												<b>287</b>
+												<span> reden drüber</span>
+											</small>
+										</span>
+									</li>
+									<li classes={asideCss.item}>
+										<div classes={asideCss.graph} />
+										<span classes={asideCss.tag}>
+											othertag
+											<br />
+											<small classes={asideCss.tagCount}>
+												<b>40</b>
+												<span> reden drüber</span>
+											</small>
+										</span>
+									</li>
+									<li classes={asideCss.item}>
+										<div classes={asideCss.graph} />
+										<span classes={asideCss.tag}>
+											incredibleFive
+											<br />
+											<small classes={asideCss.tagCount}>
+												<b>5</b>
+												<span> reden drüber</span>
+											</small>
+										</span>
+									</li>
+								</ol>
+								<br />
+								<Button>
+									<span><Icon size="l" spaced={false} type="view" /> All</span>
+								</Button>
+							</Details>
+							<Details open={true} summary="Recent Topics">
+								<ul classes={[asideCss.container, asideCss.topics]}>
+									<li classes={[asideCss.item, asideCss.rows]}>
+										<span classes={asideCss.topic}>
+											b&w photography
+											<br />
+											<small classes={asideCss.topicCount}>
+												<b>82</b>
+												<span> neu / 1238</span>
+											</small>
+										</span>
+										<div classes={asideCss.topicImage} />
+									</li>
+									<li classes={[asideCss.item, asideCss.rows]}>
+										<span classes={asideCss.topic}>
+											webdesign
+											<br />
+											<small classes={asideCss.topicCount}>
+												<b>40</b>
+												<span> neu / 761</span>
+											</small>
+										</span>
+										<div classes={asideCss.topicImage} />
+									</li>
+									<li classes={[asideCss.item, asideCss.rows]}>
+										<span classes={asideCss.topic}>
+											rare stamps
+											<br />
+											<small classes={asideCss.topicCount}>
+												<span>22</span>
+											</small>
+										</span>
+										<div classes={asideCss.topicImage} />
+									</li>
+								</ul>
+							</Details>
+						</div>
+					)}}
+			</Cards>
+		</Example>
 	);
 });

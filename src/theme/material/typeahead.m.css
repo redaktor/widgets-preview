@@ -1,10 +1,15 @@
 .root {
 	padding: 0;
+	margin: 0;
+	/*
 	margin-top: calc(var(--line) * -1);
-	margin-bottom: var(--line2);
+	margin-bottom: var(--line);
+	*/
+	width: 100%;
 	height: var(--maxH);
 	outline: none;
 }
+/*
 .root.below.open,
 .root.below.hasHelperText {
 	margin-top: 0;
@@ -13,7 +18,7 @@
 .root.open.below:not(.hasHelperText) {
 	transform: translateY(calc(var(--line) * -1));
 }
-
+*/
 .hasHelperText { }
 .flat, .outlined, .filled, .shaped { }
 .disabled, .valid, .invalid { }
@@ -22,8 +27,11 @@
 	composes: uiVar from './_ui.m.css';
 	margin: 0;
 	padding: 0;
-	transform: translateX(-4px);
 }
+.js.animated.menuWrapper.below {
+	transform: translate(0px, -4px);
+}
+/*
 .js.menuWrapper.below {
 	margin-top: calc(var(--line) * -1 - var(--mt) + var(--ui-border-width-emphasized) * 2);
 }
@@ -36,7 +44,7 @@
 .js.animated.menuWrapper.above:not(.opening) {
 	transform: translate(-4px, var(--line));
 }
-
+*/
 .menuTransformer {
 	padding-left: 4px;
 	padding-right: 4px;
@@ -70,12 +78,11 @@
 .root .menu { }
 .trigger .menu,
 .js .menu {
-	min-width: 124px;
-	width: auto;
 	margin: 0;
 	padding-top: 0;
 	cursor: pointer;
-	background-color: transparent !important;
+	background: var(--ui-bg);
+	/* background-color: transparent !important; */
 }
 .below .menu,
 .below .menuTransformer::after,
@@ -98,7 +105,6 @@
 
 .listItem {
 	z-index: 11;
-	padding-top: 0 !important;
 }
 
 /* manual animation for expanded with 'animated' property */
@@ -151,7 +157,6 @@
 .animated .listItem {
 	transition: filter var(--ui-dpd-22) var(--ui-easing), background-color var(--ui-dpd-0) var(--ui-easing);
 	transform-origin: center;
-	will-change: transform, margin-top, margin-bottom, filter;
 }
 .animated.closing .listItem,
 .animated .input:not(:focus) ~ .focusedWrapper:not(:focus-within) .listItem {

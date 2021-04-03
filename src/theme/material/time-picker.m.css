@@ -1,13 +1,44 @@
+.root {
+
+}
+.root.responsive {
+	width: 100%;
+}
+
+.menuWrapper {
+	composes: menuWrapper from './typeahead.m.css';
+}
+.js {
+	composes: js from './typeahead.m.css';
+}
+.opening {
+	composes: opening from './typeahead.m.css';
+}
+.closing {
+	composes: closing from './typeahead.m.css';
+}
+.above {
+	composes: above from './typeahead.m.css';
+}
+.below {
+	composes: below from './typeahead.m.css';
+}
+
+.input {
+
+}
+
 .toggleMenuButton {
-	composes: nativeResetRoot from './button.m.css';
-	cursor: pointer;
-	display: flex;
-	pointer-events: all;
+	position: relative;
+	top: calc(var(--ui-border-width-emphasized,2px) * -1);
+	--h: calc(var(--size) * 2) !important;
+	border-bottom-right-radius: 0 !important;
+	align-self: flex-end;
 }
 
 .popup {
 	display: inline-block;
-	background: var(--mdc-theme-background);
-	border-radius: var(--mdc-theme-border-radius);
-	box-shadow: var(--mdc-theme-elevation-2);
+	background: var(--ui-fill);
+	border-radius: var(--ui-border-radius, 2px);
+	box-shadow: var(--ui-dp-4);
 }

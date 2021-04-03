@@ -10,17 +10,17 @@ function symbolsForTrim(str: string, chars: string, guard?: any, regexSuffix = '
   return Array.from(str);
 }
 function charsStartIndex(strSymbols: string[], chrSymbols: string[]) {
-  var index = -1, length = strSymbols.length;
+  let index = -1, length = strSymbols.length;
   while (++index < length && chrSymbols.indexOf(strSymbols[index]) > -1) {}
   return index;
 }
 function charsEndIndex(strSymbols: string[], chrSymbols: string[]) {
-  var index = strSymbols.length;
+  let index = strSymbols.length;
   while (index-- && chrSymbols.indexOf(strSymbols[index]) > -1) {}
   return index;
 }
 export function baseTrim(str: string, chars: string, guard?: any, type?: 'Start'|'End') {
-  var strSymbols = symbolsForTrim(str, chars, guard);
+  const strSymbols = symbolsForTrim(str, chars, guard);
   if (typeof strSymbols === 'string') { return strSymbols; }
   const chrSymbols = Array.from(chars);
   const start = type === 'End' ? 0 : charsStartIndex(strSymbols, chrSymbols);

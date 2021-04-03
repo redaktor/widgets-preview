@@ -10,5 +10,5 @@ export default factory(function LimitedRange({ middleware: { icache } }) {
 	const minDate = today;
 	const maxDate = new Date(today.getFullYear(), today.getMonth() + 1, 15);
 
-	return <Calendar initialValue={date} minDate={minDate} maxDate={maxDate} />;
+	return <Calendar start={date} minDate={minDate} maxDate={maxDate} />;
 });

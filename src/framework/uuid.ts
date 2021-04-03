@@ -1,4 +1,4 @@
-//import crypto from './crypto';
+// import crypto from './crypto';
 
 export function uuid4(): string {
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -11,7 +11,7 @@ export function uuid4(): string {
 /** UUID :
  * version 4 without arguments
  * version 5 with one string as arguments
-*/
+ */
 export default function uuid(
   /** optionally provide a string for uuid v5 */
   v5name?: string

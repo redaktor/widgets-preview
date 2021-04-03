@@ -1,59 +1,23 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import List, { ListOption } from '@dojo/widgets/list';
+import List from '@dojo/widgets/list';
 import icache from '@dojo/framework/core/middleware/icache';
-import {
-	createMemoryResourceTemplate,
-	createResourceMiddleware
-} from '@dojo/framework/core/middleware/resources';
+import Example from '../../Example';
+import { listOptionTemplate } from '../../template';
 
-const resource = createResourceMiddleware();
-const factory = create({ icache, resource });
+const factory = create({ icache });
 
-const animals = [{ value: 'cat' }, { value: 'dog' }, { value: 'mouse' }, { value: 'rat' }];
-const template = createMemoryResourceTemplate<ListOption>();
-
-export default factory(function Basic({ id, middleware: { icache, resource } }) {
+export default factory(function Basic({ middleware: { icache } }) {
 	return (
-		<virtual>
+		<Example>
 			<List
-				resource={resource({ template, initOptions: { id, data: animals } })}
-				onValue={(value: string) => {
+				variant='flat'
+				color='primary'
+				resource={{ template: listOptionTemplate }}
+				onValue={(value) => {
 					icache.set('value', value);
 				}}
 			/>
-			<br />
-			<List
-				variant='filled'
-				resource={resource({ template, initOptions: { id, data: animals } })}
-				onValue={(value: string) => {
-					icache.set('value', value);
-				}}
-			/>
-			<br />
-			<List
-				variant='outlined'
-				resource={resource({ template, initOptions: { id, data: animals } })}
-				onValue={(value: string) => {
-					icache.set('value', value);
-				}}
-			/>
-			<br />
-			<List
-				variant='raised'
-				resource={resource({ template, initOptions: { id, data: animals } })}
-				onValue={(value: string) => {
-					icache.set('value', value);
-				}}
-			/>
-			<br />
-			<List
-				variant='shaped'
-				resource={resource({ template, initOptions: { id, data: animals } })}
-				onValue={(value: string) => {
-					icache.set('value', value);
-				}}
-			/>
-			<p>{`Clicked on: ${icache.getOrSet('value', '')}`}</p>
-		</virtual>
+			<p>{`Clicked on: ${JSON.stringify(icache.getOrSet('value', ''))}`}</p>
+		</Example>
 	);
 });

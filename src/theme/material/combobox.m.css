@@ -1,0 +1,116 @@
+/*transform: perspective(var(--ui-default-input-width)) rotateX(-90deg) scaleY(0);*/
+.root, .root *, .root *::before, .root *::after { box-sizing: border-box; }
+.root {
+	--combo-selected: var(--text-selected);
+}
+.animated { }
+.open { }
+.dropdown {
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	z-index: var(--zindex-dropdown);
+	visibility: visible;
+	height: auto;
+	/*transition: visibility 1ms var(--ui-easing) 0s;*/
+	/*transform: scaleY(1);*/
+	transform-origin: top;
+}
+.closed.dropdown {
+	pointer-events: none;
+	/*transform:  scaleY(0);*/
+	/*transition: visibility 1ms var(--ui-easing) var(--ui-dpd-4);*/
+	/*visibility: hidden;*/
+		/*height: 0px; // TODO MUST hav no painted frame in the end, index autoOrder should be 0  */
+}
+
+
+.clear, .trigger {
+	background: none;
+	outline: none;
+	overflow: hidden;
+	color: inherit;
+}
+.invalid .trigger {
+	/*border-left-color: color(var(--ui-error) saturation(-9%) lightness(+37%));*/
+	color: var(--ui-error);
+}
+.valid .trigger {
+	/*border-left-color: color(var(--ui-success) saturation(-32%) lightness(+55%));*/
+	color: var(--ui-success);
+}
+.enabled .clear, .enabled .trigger {
+	cursor: pointer;
+}
+.clear:hover, .trigger:hover {
+	color: var(--combo-selected);
+}
+
+/*
+.parentSchema .clear:hover,
+.parentSchema .trigger:hover {
+	border-color: var(--ui-accent);
+}
+
+.parentSchema .clear:active span,
+.parentSchema .clear:focus span,
+.parentSchema .trigger:active span,
+.parentSchema .trigger:focus span {
+	font-weight: bold;
+	color: var(--ui-focus);
+}
+.primary .clear:active span, .secondary .clear:active span,
+.primary .clear:focus span, .secondary .clear:focus span,
+.primary .trigger:active span, .secondary .trigger:active span,
+.primary .trigger:focus span, .secondary .trigger:focus span {
+	font-weight: bold;
+	color: var(--ui-bg);
+}
+
+.primary .clear, .secondary .clear {
+	height: auto;
+	padding-left: 0px;
+	text-align: left;
+}
+.primary .trigger, .secondary .trigger {
+	height: auto;
+	padding-right: 0px;
+	text-align: right;
+}
+*/
+
+/*
+.root .dropdown ul {
+	transform-origin: center top;
+	transition: transform var(--ui-dpd-4), box-shadow var(--ui-dpd-4);
+	-webkit-transform-style: preserve-3d;
+}
+.root:not(:focus-within) .dropdown ul,
+.root:not(.focused) .dropdown ul {
+	transform: translateY(-100%);
+}
+.root:focus-within .dropdown ul,
+.root.focused .dropdown ul {
+	transform: translateY(0);
+	transition: transform var(--ui-dpd-4), box-shadow var(--ui-dpd-4);
+}
+*/
+
+/*
+.dropdown li {
+  position: relative;
+  -webkit-transform: translate3d(0, -10px, 0);
+          transform: translate3d(0, -10px, 0);
+  opacity: 0;
+}
+.dropdown.open {
+  -webkit-transform: scale(1);
+          transform: scale(1);
+}
+.dropdown.open li {
+  transition: all 350ms cubic-bezier(0.19, 1, 0.22, 1);
+  -webkit-transform: translate3d(0, 0, 0);
+          transform: translate3d(0, 0, 0);
+  opacity: 1;
+}
+*/

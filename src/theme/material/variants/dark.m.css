@@ -1,4 +1,3 @@
-:root,
 .root {
 	/* stronger shadow depth */
 	--sd1: rgba(0, 0, 0, 0.6);
@@ -7,14 +6,14 @@
 
 	--disabledAlpha: 0.72;
 	--pulseAlpha: 0.64;
-	--surface: #000;
-	--bg: var(--r-dark);
+	--surface: #121212;
+
+	--bg: var(--r-dark, #1c191b);
+	--paper: #303030;
 
 	--text: var(--full-white);
 	--text-flat: var(--m-400);
 	--text-flat-hover: var(--m-50);
-	--text-filled: #f9f9f9;
-	--text-filled-hover: var(--full-white);
 	--text-colored: #ffaf00;
 	--text-shaped: var(--m-a400);
 	--text-shaped-hover: var(--full-white);
@@ -31,37 +30,49 @@
 	/*-------------------
       Accent Colors
   --------------------*/
-	--ui-kicker: #e53e8d;
-	--ui-nut: #7a95a9;
+	--kicker: #e53e8d;
+	--kicker-muted: #a40057;
+	--nut: #7a95a9;
+	--border: #444a52;
+	--border-muted: var(--full-black);
+	--border-hover: #525252;
+	--border-focus: var(--m-100);
 
-	--ui-status: var(--full-black);
-	--ui-menu: #373a3e;
 	--ui-bg: #2f3338;
-	--ui-bg-muted: #303030;
-	--ui-bg-hover: var(--m-900);
-	--ui-bg-inverse: rgba(255, 255, 255, 0.88);
-	--ui-bg-inverse-muted: var(--m-100);
-	--ui-bg-inverse-hover: var(--full-white);
+	--ui-bg-hover: var(--off-black);
+	--ui-bg-inverse: var(--full-white);
+	--ui-bg-inverse-muted: #ccc;
+	--ui-bg-inverse-hover: var(--off-white);
 
+	--ui-header: #242629;
+	--ui-menu: #373a3e;
+	--ui-status: var(--full-black);
 	--ui-disabled: hsl(var(--m-h), var(--m-s), 20%);
-	--ui-flat-hover: hsl(var(--m-h900), var(--m-s), 32%);
-	--ui-flat-off: hsl(var(--m-h900), 100%, 40%); /*var(--m-900);*/
-	--ui-flat-on: var(--m-700);
-
-	--ui-filled: var(--m-800);
-	--ui-filled-hover: var(--m-700);
-	--ui-filled-off: var(--m-800);
-	--ui-filled-on: var(--m-600);
-
-	--ui-border: var(--m-800);
-	--ui-border-hover: var(--m-900);
-	--ui-outline: var(--m-600);
-	--ui-outline-hover: var(--m-400);
-
+	--ui-empty: rgba(255, 255, 255, 16%);
+	--ui-accent: var(--m-a400);
+	--ui-text: var(--m-400);
 	--ui-focus: #dfdc00;
 	--ui-focus-alpha: rgba(223, 220, 0, 0.618);
-	--ui-accent: var(--m-a400);
-	--ui-flat-accent: var(--m-a700);
+
+	--ui-flat-empty: hsla(var(--m-h900), var(--m-s), var(--m-l), 24%);
+  --ui-flat-hover: var(--m-800, hsla(var(--m-h900), var(--m-s), var(--m-l), 64%));
+	--ui-flat-off: hsla(var(--m-h900), var(--m-s), var(--m-l), 50%);
+	--ui-flat-on: var(--m-400, hsla(var(--m-h900), var(--m-s), var(--m-l), var(--ui-dp-l-8)));
+	--ui-flat-accent: var(--m-a200, hsl(var(--m-h), var(--m-s), var(--ui-dp-l-4)));
+	--ui-flat-border: #3b4047;
+
+	--ui-filled: var(--m-600, hsla(var(--m-h), var(--m-s), 100%, calc(100% - var(--ui-dp-l-8))));
+	--ui-filled-empty: var(--m-dark, var(--bg));
+	--ui-filled-hover: var(--m-700, hsla(var(--m-h), var(--m-s), 100%, calc(100% - var(--ui-dp-l))));
+	--ui-filled-off: var(--m-800, hsla(var(--m-h), var(--m-s), 100%, var(--ui-dp-l)));
+	--ui-filled-on: var(--m-500, hsla(var(--m-h), var(--m-s), 100%, calc(100% - var(--ui-dp-l-12))));
+	--text-filled: var(--ui-fill-text, #f9f9f9);
+	--text-filled-hover: var(--ui-fill-text, var(--full-white, #fff));
+
+	--ui-border: var(--m-800, hsl(var(--m-h), var(--m-s), calc(100% - var(--ui-dp-l))));
+	--ui-border-hover: var(--m-900, hsl(var(--m-h), var(--m-s), calc(100% - var(--ui-dp-l-24))));
+	--ui-outline: var(--m-600, hsla(var(--m-h), var(--m-s), 100%, calc(100% - var(--ui-dp-l-16))));
+	--ui-outline-hover: var(--m-400, var(--full-white, #fff));
 
 	--ui-track: rgba(255, 255, 255, 0.16);
 	--ui-opacity: 0.24;
@@ -69,7 +80,7 @@
 	--native-input: var(--off-white);
 	--native-input-text: var(--full-black);
 	--ui-menu-border: rgba(0, 0, 0, 0.24);
-	--ui-fill-text: var(--full-black);
+
 
 	/*---   Emotive defaults  ---*/
 	--ui-info: #4197e7;
@@ -81,11 +92,15 @@
 	--ui-private: #eb2f59;
 	--ui-open: rgba(192, 192, 0, 0.24);
 	--ui-close: rgba(200, 31, 88, 0.24);
+
+	color: var(--text);
+/*
+	background-color: var(--bg);
+*/
 }
 
-:root {
-	color: var(--text);
-	background-color: var(--bg);
+::selection {
+  background: #a40057;
 }
 
 /*-------------------

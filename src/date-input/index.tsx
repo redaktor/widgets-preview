@@ -1,110 +1,154 @@
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
+import theme from '../middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { i18n } from '@dojo/framework/core/middleware/i18n';
-import { focus } from '@dojo/framework/core/middleware/focus';
-import { FocusProperties } from '@dojo/framework/core/mixins/Focus';
-
-import { parseDate, formatDateISO, formatDate } from './date-utils';
+import i18n from '@dojo/framework/core/middleware/i18n';
+import focus from '@dojo/framework/core/middleware/focus';
 import { Keys } from '../common/util';
-import theme, { ThemeProperties } from '../middleware/theme';
-import Calendar from '../calendar';
-import TextInput, { Addon } from '../text-input';
-import Icon from '../icon';
-import TriggerPopup from '../trigger-popup';
-import * as textInputCss from '../theme/default/text-input.m.css';
-import * as css from '../theme/default/date-input.m.css';
+import TextInput, { BaseInputProperties } from '../text-input';
+
+import { parseDate, formatDateISO, formatDate } from '../calendarInput/date-utils';
 
 import bundle from './nls/DateInput';
+import * as css from '../theme/material/time-picker.m.css';
+import * as inputCss from '../theme/material/text-input.m.css';
 
-export interface DateInputProperties extends ThemeProperties, FocusProperties {
-	/** The initial value */
-	initialValue?: string;
-	/** Controlled value property */
+/* TODO parse relative w datezone */
+
+export interface DateInputProperties extends BaseInputProperties {
+	/** Set the disabled property of the control */
+	disabled?: boolean;
+	/** Callback to determine if a particular date entry should be disabled */
+	dateDisabled?: (date: Date) => boolean;
+	/** The name of the field */
+	name?: string;
+	/** Indicates the input is required to complete the form */
+	required?: boolean;
+	/** The maximum date to display in the menu (defaults to '23:59:59') */
+	max?: Date;
+	/** The minimum date to display in the menu (defaults to '00:00:00') */
+	min?: Date;
+	/** Relative dates, default locales for the user, false disables relative support */
+	locales?: string[];
+	/** Relative dates are parsed relative to this or now */
+	relativeTo?: Date;
+	/** Relative dates timezone, calculates int. differences with daylight savings */
+	timezone?: string;
+}
+
+export interface DateInputChildren {
+	/** The label to be displayed above the input */
+	label?: RenderResult;
+}
+
+export interface DateInputICache {
 	value?: string;
-	/** Set the latest date the calendar will display in (it will show the whole month but not allow previous selections) */
-	max?: string;
-	/** Set the earliest date the calendar will display (it will show the whole month but not allow previous selections) */
-	min?: string;
-	/** name used on the underlying form input's name attribute */
-	name: string;
-	/** Callback fired with new value in YYYY-MM-DD format */
-	onValue?(date: string): void;
-	/** Callback fired when input validation changes */
-	onValidate?: (valid: boolean | undefined, message: string) => void;
-}
-
-interface DateInputICache {
-	/** The most recent "initialValue" property passed */
-	initialValue: string;
-	/** Current user-inputted value */
-	inputValue: string;
-	/** The last valid Date of value */
-	value: Date;
-	/** The last "value" property passed */
 	lastValue: string;
-	/** A possible new value that should not be saved until we call a callback */
 	nextValue: string;
-	/** Should validate the input value on the next cycle */
-	shouldValidate: boolean;
-	/** Message for current validation state */
+	inputValue: string;
 	validationMessage: string | undefined;
-	/** Indicates which node will be focused */
-	focusNode: 'input' | 'calendar';
+	focusNode: 'input' | 'menu';
+	inputValid?: boolean;
+	inputValidMessage?: string;
+	isValid?: boolean;
+	initialValue?: string;
+	min: Date;
+	max: Date;
+	dirty: boolean;
+	callOnValue: void;
 }
 
-const icache = createICacheMiddleware<DateInputICache>();
-const factory = create({ theme, icache, i18n, focus }).properties<DateInputProperties>();
+function isDateInputChildren(children: any): children is DateInputChildren {
+	// In order to not make this a breaking change, check for an edge case where an object
+	// with a label property that would have been used as a label might instead be treated as a render result
+	return children && children.hasOwnProperty && children.hasOwnProperty('label');
+}
 
-export default factory(function({ properties, middleware: { theme, icache, i18n, focus } }) {
-	const { initialValue, name, onValue, onValidate, value: controlledValue } = properties();
+const factory = create({
+	theme,
+	i18n,
+	focus,
+	icache: createICacheMiddleware<DateInputICache>()
+})
+	.properties<DateInputProperties>()
+	.children<DateInputChildren | RenderResult | undefined>();
+
+
+export const DateInput = factory(function DateInput({
+	middleware: { theme, icache, focus, i18n},
+	properties,
+	children
+}) {
+	const themedCss = theme.classes(css);
 	const { messages } = i18n.localize(bundle);
-	const classes = theme.classes(css);
-	const max = parseDate(properties().max);
-	const min = parseDate(properties().min);
+
+	const {
+		initialValue,
+		value: controlledValue,
+		min = new Date(1970, 0, 1, 0, 0, 0, 0),
+		max = new Date(2099, 11, 31, 23, 59, 59, 99),
+		relativeTo = (new Date()),
+		timezone,
+		dateDisabled,
+		locales,
+		onValue,
+		onBlur,
+		onFocus,
+		...inputProperties
+	} = properties();
+
+	const parse = (v?: string) => parseDate(v, locales, relativeTo, timezone);
 
 	if (
 		initialValue !== undefined &&
 		controlledValue === undefined &&
 		icache.get('initialValue') !== initialValue
 	) {
-		const parsed = initialValue && parseDate(initialValue);
-
-		if (parsed) {
-			icache.set('inputValue', formatDate(parsed));
-		}
+		const parsed = initialValue && parse(initialValue);
+		icache.set('inputValue', parsed ? formatDate(parsed) : '');
 		icache.set('initialValue', initialValue);
-		icache.set('shouldValidate', true);
+		icache.delete('callOnValue');
 	}
 
 	if (controlledValue !== undefined && icache.get('lastValue') !== controlledValue) {
-		const parsed = controlledValue && parseDate(controlledValue);
-		if (parsed) {
-			icache.set('inputValue', formatDate(parsed));
-			icache.set('value', parsed);
-		}
+		const parsed = controlledValue && parse(controlledValue);
+		icache.set('inputValue', parsed ? formatDate(parsed) : '');
+		icache.set('value', parsed ? formatDateISO(parsed) : '');
 		icache.set('lastValue', controlledValue);
 	}
+	if (!!icache.get('inputValue')) {
+		const t = parse(icache.get('inputValue'));
+		if (!!t !== icache.get('isValid')) {
+			icache.set('isValid', !!t);
+			if (!!t) {
+				icache.set('validationMessage', void 0);
+			}
+		}
+	} else if (!inputProperties.required && !icache.get('isValid')) {
+		icache.set('isValid', true, false);
+		icache.set('validationMessage', void 0);
+	}
 
-	const inputValue = icache.getOrSet('inputValue', () => {
-		const parsed = initialValue && parseDate(initialValue);
-
-		return formatDate(parsed || new Date());
-	});
-	const shouldValidate = icache.getOrSet('shouldValidate', true);
 	const shouldFocus = focus.shouldFocus();
 	const focusNode = icache.getOrSet('focusNode', 'input');
 
-	if (shouldValidate) {
+	function callOnValue() {
+		const inputValue = icache.get('inputValue');
 		const testValue = icache.get('nextValue') || inputValue;
-		let isValid: boolean | undefined;
+		const { onValidate, onValue } = properties();
+
+		let isValid = icache.get('inputValid');
 		let validationMessages: string[] = [];
 
-		// if min & max create an impossible range, no need to validate anything else
+		if (icache.get('inputValidMessage')) {
+			validationMessages.push(icache.get('inputValidMessage') || '');
+		}
+
 		if (min && max && min > max) {
 			validationMessages.push(messages.invalidProps);
 			isValid = false;
 		} else {
-			const newDate = parseDate(testValue);
+			const newDate = parse(testValue);
 
 			if (newDate !== undefined) {
 				if (min && newDate < min) {
@@ -112,128 +156,115 @@ export default factory(function({ properties, middleware: { theme, icache, i18n,
 				} else if (max && newDate > max) {
 					validationMessages.push(messages.tooLate);
 				} else {
+					const twentyFourHourDate = formatDateISO(newDate);
 					if (controlledValue === undefined) {
-						icache.set('value', newDate);
+						icache.set('value', twentyFourHourDate);
 						icache.set('inputValue', formatDate(newDate));
 					}
 					if (onValue) {
-						onValue(formatDateISO(newDate));
+						onValue(twentyFourHourDate);
 					}
 				}
 			} else {
-				validationMessages.push(messages.invalidDate);
+				if (inputValue) {
+					validationMessages.push(messages.invalidDate);
+				}
 			}
 
 			isValid = validationMessages.length === 0;
+			icache.set('isValid', isValid);
 		}
 
 		const validationMessage = validationMessages.join('; ');
 		onValidate && onValidate(isValid, validationMessage);
+
 		icache.set('validationMessage', validationMessage);
-		icache.set('shouldValidate', false);
+		icache.set('dirty', false);
 	}
 
+	icache.getOrSet('callOnValue', () => callOnValue());
+
+	if (min !== icache.get('min') || max !== icache.get('max')) {
+		icache.set('min', min);
+		icache.set('max', max);
+	}
+
+
+	const { name, classes, variant, color, size, disabled, required } = properties();
+	const [labelChild] = children();
+	const _label = isDateInputChildren(labelChild) ? labelChild.label : labelChild;
+
+	// console.log('V', icache.get('value'), icache.get('inputValue'), icache.get('nextValue'));
+	const d = parseDate(icache.get('nextValue') || icache.get('inputValue') || '');
+	const label = icache.get('dirty') && icache.get('isValid') && d ? formatDate(d, locales) : _label;
+
 	return (
-		<div classes={[theme.variant(), classes.root]}>
+		<div classes={[
+			theme.variant(),
+			themedCss.root,
+			inputProperties.responsive && themedCss.responsive
+		]}>
 			<input
 				type="hidden"
 				name={name}
-				value={formatDateISO(icache.get('value'))}
+				value={icache.getOrSet('value', '')}
 				aria-hidden="true"
 			/>
-			<TriggerPopup key="popup">
-				{{
-					trigger: (toggleOpen) => {
-						function openCalendar() {
-							icache.set('focusNode', 'calendar');
-							focus.focus();
-							toggleOpen();
-						}
-
-						return (
-							<div classes={classes.input}>
-								<TextInput
-									key="input"
-									focus={() => shouldFocus && focusNode === 'input'}
-									theme={theme.compose(
-										textInputCss,
-										css,
-										'input'
-									)}
-									type="text"
-									initialValue={icache.get('inputValue')}
-									onBlur={() => icache.set('shouldValidate', true)}
-									onValue={(v) => {
-										icache.set(
-											controlledValue === undefined
-												? 'inputValue'
-												: 'nextValue',
-											v || ''
-										);
-									}}
-									helperText={icache.get('validationMessage')}
-									onKeyDown={(key) => {
-										if (
-											key === Keys.Down ||
-											key === Keys.Space ||
-											key === Keys.Enter
-										) {
-											openCalendar();
-										}
-									}}
-								>
-									{{
-										trailing: (
-											<Addon>
-												<button
-													key="dateIcon"
-													onclick={(e) => {
-														e.stopPropagation();
-														openCalendar();
-													}}
-													classes={classes.toggleCalendarButton}
-													type="button"
-												>
-													<Icon type="dateIcon" />
-												</button>
-											</Addon>
-										)
-									}}
-								</TextInput>
-							</div>
-						);
-					},
-					content: (onClose) => {
-						function closeCalendar() {
-							icache.set('focusNode', 'input');
-							focus.focus();
-							onClose();
-						}
-
-						return (
-							<div classes={classes.popup}>
-								<Calendar
-									key="calendar"
-									focus={() => shouldFocus && focusNode === 'calendar'}
-									maxDate={max}
-									minDate={min}
-									initialValue={icache.get('value')}
-									onValue={(date) => {
-										icache.set(
-											controlledValue === undefined
-												? 'inputValue'
-												: 'nextValue',
-											formatDate(date)
-										);
-										icache.set('shouldValidate', true);
-										closeCalendar();
-									}}
-								/>
-							</div>
-						);
+			<TextInput
+				{...inputProperties}
+				key="input"
+				disabled={disabled}
+				required={required}
+				focus={() => shouldFocus && focusNode === 'input'}
+				theme={theme.compose(
+					inputCss,
+					css,
+					'input'
+				)}
+				classes={classes}
+				variant={variant}
+				color={color}
+				size={size}
+				initialValue={icache.getOrSet('inputValue', '')}
+				onBlur={() => {
+					if (icache.get('dirty')) {
+						callOnValue();
+					}
+					onBlur && onBlur(icache.get('nextValue') || icache.get('inputValue') || '');
+				}}
+				onValue={(v) => {
+					onValue && onValue(v);
+					return controlledValue === undefined
+						? icache.set('inputValue', v || '')
+						: icache.set('nextValue', v || '')
+					}
+				}
+				onFocus={() => {
+					icache.set('dirty', true);
+					onFocus && onFocus();
+				}}
+				helperText={icache.get('validationMessage')||inputProperties.helperText}
+				valid={icache.get('isValid') && icache.get('inputValid')}
+				onValidate={(valid, message) => {
+					if (valid !== icache.get('inputValid')) {
+						icache.set('inputValid', valid);
+						icache.set('inputValidMessage', message);
 					}
 				}}
-			</TriggerPopup>
+				onKeyDown={(key) => {
+					if (key === Keys.Down || key === Keys.Enter) {
+						if (key === Keys.Enter) {
+							callOnValue();
+						}
+						// openMenu();
+					}
+				}}
+				type="text"
+			>
+				{{ label }}
+			</TextInput>
 		</div>
-	);
+	)
 });
+
+export default DateInput;

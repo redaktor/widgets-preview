@@ -52,7 +52,7 @@ export const CheckboxGroup = factory(function({
 		return options.map(({ value, label }) => {
 			const { checked } = checkbox(value);
 			return (
-				<Checkbox name={name} value={value} checked={checked()} onValue={checked}>
+				<Checkbox spaced={true} name={name} value={value} checked={checked()} onValue={checked}>
 					{label || value}
 				</Checkbox>
 			);

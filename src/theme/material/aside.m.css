@@ -111,7 +111,7 @@
 	composes: serif s from './_typo.css';
 	overflow : hidden;
   text-overflow: ellipsis;
-	max-height: var(--line5); /* old browsers */
+	max-height: calc(var(--line5) + var(--pt)); /* old browsers */
 	display: -webkit-box;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;

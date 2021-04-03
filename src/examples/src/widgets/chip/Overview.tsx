@@ -1,5 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
 import Chip from '@dojo/widgets/chip';
 
 const factory = create({ icache });
@@ -7,7 +8,7 @@ const factory = create({ icache });
 export default factory(function Overview({ middleware: { icache } }) {
 	const checked = icache.getOrSet('checked', false);
 	const variant = 'flat';
-	return (
+	return (<Example spaced={true}>
 		<div>
 			<p>Medium sized Chip variants</p>
 			<div class="flexRow">
@@ -36,5 +37,5 @@ export default factory(function Overview({ middleware: { icache } }) {
 			</div>
 			<p>See other examples for colors and more</p>
 		</div>
-	);
+	</Example>);
 });

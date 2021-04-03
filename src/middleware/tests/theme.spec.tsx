@@ -4,13 +4,15 @@ import coreTheme from '@dojo/framework/core/middleware/theme';
 import { sandbox } from 'sinon';
 import icacheMiddleware from '@dojo/framework/core/middleware/icache';
 import theme from '../theme';
+import ThemeInjector from '@dojo/framework/core/ThemeInjector';
 
 const sb = sandbox.create();
 const invalidator = sb.stub();
 const diffProperty = sb.stub();
+const getStub = sb.stub();
 const injector = {
 	subscribe: sb.stub(),
-	get: sb.stub()
+	get: getStub
 };
 const defineInjector = sb.stub();
 const getRegistry = sb.stub();
@@ -144,9 +146,11 @@ describe('theme middleware', () => {
 
 		properties.theme = {
 			'@dojo/widgets/Base': {
+				' _key': '@dojo/widgets/Base',
 				root: 'base_theme_root'
 			},
 			'@dojo/widgets/Variant': {
+				' _key': '@dojo/widgets/Variant',
 				extra: 'variant_theme_extra',
 				selected: 'variant_theme_selected'
 			}
@@ -158,11 +162,13 @@ describe('theme middleware', () => {
 		);
 		assert.deepEqual(composedClasses, {
 			'@dojo/widgets/Base': {
+				' _key': '@dojo/widgets/Base',
 				root: 'base_theme_root',
 				selected: 'variant_theme_selected',
 				active: 'variant_active'
 			},
 			'@dojo/widgets/Variant': {
+				' _key': '@dojo/widgets/Variant',
 				extra: 'variant_theme_extra',
 				selected: 'variant_theme_selected'
 			}
@@ -211,6 +217,7 @@ describe('theme middleware', () => {
 
 		properties.theme = {
 			'@dojo/widgets/Variant': {
+				' _key': '@dojo/widgets/Variant',
 				baseActive: 'variant_theme_active'
 			}
 		};
@@ -227,6 +234,7 @@ describe('theme middleware', () => {
 				active: 'variant_theme_active'
 			},
 			'@dojo/widgets/Variant': {
+				' _key': '@dojo/widgets/Variant',
 				baseActive: 'variant_theme_active'
 			}
 		});
@@ -459,15 +467,27 @@ describe('theme middleware', () => {
 
 		properties.theme = {
 			theme: {
-				'@dojo/widgets/Base': {
-					root: 'base_theme_root'
+				theme: {
+					'@dojo/widgets/Base': {
+						root: 'base_theme_root'
+					},
+					'@dojo/widgets/Variant': {
+						extra: 'variant_theme_extra',
+						selected: 'variant_theme_selected'
+					}
 				},
-				'@dojo/widgets/Variant': {
-					extra: 'variant_theme_extra',
-					selected: 'variant_theme_selected'
+				variants: {
+					default: {
+						root: 'default root variant'
+					}
 				}
 			},
-			variant: { root: 'foo' }
+			variant: {
+				name: 'default',
+				value: {
+					root: 'default root variant'
+				}
+			}
 		};
 
 		const composedClasses = composesInstance.compose(
@@ -476,17 +496,29 @@ describe('theme middleware', () => {
 		);
 		assert.deepEqual(composedClasses, {
 			theme: {
-				'@dojo/widgets/Base': {
-					root: 'base_theme_root',
-					selected: 'variant_theme_selected',
-					active: 'variant_active'
+				theme: {
+					'@dojo/widgets/Base': {
+						root: 'base_theme_root',
+						selected: 'variant_theme_selected',
+						active: 'variant_active'
+					},
+					'@dojo/widgets/Variant': {
+						extra: 'variant_theme_extra',
+						selected: 'variant_theme_selected'
+					}
 				},
-				'@dojo/widgets/Variant': {
-					extra: 'variant_theme_extra',
-					selected: 'variant_theme_selected'
+				variants: {
+					default: {
+						root: 'default root variant'
+					}
 				}
 			},
-			variant: { root: 'foo' }
+			variant: {
+				name: 'default',
+				value: {
+					root: 'default root variant'
+				}
+			}
 		});
 	});
 
@@ -505,15 +537,25 @@ describe('theme middleware', () => {
 
 		properties.theme = {
 			theme: {
-				'@dojo/widgets/Base': {
-					active: 'base_theme_active'
+				theme: {
+					'@dojo/widgets/Base': {
+						active: 'base_theme_active'
+					},
+					'@dojo/widgets/Variant': {
+						baseActive: 'variant_theme_active'
+					}
 				},
-				'@dojo/widgets/Variant': {
-					baseActive: 'variant_theme_active'
+				variants: {
+					default: {
+						root: 'default root variant'
+					}
 				}
 			},
 			variant: {
-				root: 'foo'
+				name: 'default',
+				value: {
+					root: 'default root variant'
+				}
 			}
 		};
 
@@ -524,16 +566,167 @@ describe('theme middleware', () => {
 		);
 		assert.deepEqual(composedClasses, {
 			theme: {
-				'@dojo/widgets/Base': {
-					root: 'base_root',
-					selected: 'base_selected',
-					active: 'variant_theme_active'
+				theme: {
+					'@dojo/widgets/Base': {
+						root: 'base_root',
+						selected: 'base_selected',
+						active: 'variant_theme_active'
+					},
+					'@dojo/widgets/Variant': {
+						baseActive: 'variant_theme_active'
+					}
 				},
-				'@dojo/widgets/Variant': {
-					baseActive: 'variant_theme_active'
+				variants: {
+					default: {
+						root: 'default root variant'
+					}
 				}
 			},
-			variant: { root: 'foo' }
+			variant: {
+				name: 'default',
+				value: {
+					root: 'default root variant'
+				}
+			}
 		});
+	});
+
+	it('Use theme with variant set in the injector', () => {
+		const baseClasses = {
+			' _key': '@dojo/widgets/Base',
+			root: 'base_root',
+			selected: 'base_selected',
+			active: 'base_active'
+		};
+
+		const variantClasses = {
+			' _key': '@dojo/widgets/Variant',
+			baseActive: 'variant_active'
+		};
+
+		properties.theme = undefined;
+		const injector = new ThemeInjector({
+			theme: {
+				theme: {
+					'@dojo/widgets/Base': {
+						active: 'base_theme_active'
+					},
+					'@dojo/widgets/Variant': {
+						baseActive: 'variant_theme_active'
+					}
+				},
+				variants: {
+					default: {
+						root: 'default root variant'
+					}
+				}
+			},
+			variant: {
+				name: 'default',
+				value: {
+					root: 'default root variant'
+				}
+			}
+		});
+		getStub.returns(injector);
+
+		const composedClasses = composesInstance.compose(
+			baseClasses,
+			variantClasses,
+			'base'
+		);
+		assert.deepEqual(composedClasses, {
+			theme: {
+				theme: {
+					'@dojo/widgets/Base': {
+						root: 'base_root',
+						selected: 'base_selected',
+						active: 'variant_theme_active'
+					},
+					'@dojo/widgets/Variant': {
+						baseActive: 'variant_theme_active'
+					}
+				},
+				variants: {
+					default: {
+						root: 'default root variant'
+					}
+				}
+			},
+			variant: {
+				name: 'default',
+				value: {
+					root: 'default root variant'
+				}
+			}
+		});
+	});
+
+	it('Use theme set in the injector', () => {
+		const baseClasses = {
+			' _key': '@dojo/widgets/Base',
+			root: 'base_root',
+			selected: 'base_selected',
+			active: 'base_active'
+		};
+
+		const variantClasses = {
+			' _key': '@dojo/widgets/Variant',
+			baseActive: 'variant_active'
+		};
+
+		properties.theme = undefined;
+		const injector = new ThemeInjector({
+			'@dojo/widgets/Variant': {
+				baseActive: 'variant_theme_active'
+			}
+		});
+		getStub.returns(injector);
+
+		const composedClasses = composesInstance.compose(
+			baseClasses,
+			variantClasses,
+			'base'
+		);
+		assert.deepEqual(composedClasses, {
+			'@dojo/widgets/Base': {
+				root: 'base_root',
+				selected: 'base_selected',
+				active: 'variant_theme_active'
+			},
+			'@dojo/widgets/Variant': {
+				baseActive: 'variant_theme_active'
+			}
+		});
+	});
+
+	it('should not apply variant if set to inherit', () => {
+		properties.theme = {
+			theme: {
+				theme: {
+					'@dojo/widgets/Base': {
+						active: 'base_theme_active'
+					},
+					'@dojo/widgets/Variant': {
+						baseActive: 'variant_theme_active'
+					}
+				},
+				variants: {
+					default: {
+						root: 'default root variant'
+					}
+				}
+			},
+			variant: {
+				name: 'default',
+				value: {
+					root: 'default root variant'
+				}
+			}
+		};
+
+		assert.strictEqual(composesInstance.variant(), 'default root variant');
+		properties.variant = 'inherit';
+		assert.isUndefined(composesInstance.variant());
 	});
 });

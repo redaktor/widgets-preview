@@ -1,6 +1,7 @@
 import { create } from '@dojo/framework/core/vdom';
-import { Sizes, Materials, Spaced, PointerDevices } from '../common/util';
+import { Sizes, Materials, Spaced, Variants, Elevation, PointerDevices } from '../common/util';
 import coreTheme, { ThemeProperties as CoreProps } from '@dojo/framework/core/middleware/theme';
+import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { ClassNames, Theme } from '@dojo/framework/core/mixins/Themed';
 import { ThemeWithVariant } from '@dojo/framework/core/interfaces';
 
@@ -25,7 +26,7 @@ export interface ThemeProperties extends CoreProps {
 	 * 'm' by default
 	 */
 	size?: Sizes;
-	/** The material for the button, e.g. 'secondary', 'success', 'orange', 'deep_purple'
+	/** The material for the button, e.g. 'secondary', 'success', 'orange', 'deepPurple'
 	 * 'primary' by default
 	 */
 	color?: Materials;
@@ -37,23 +38,42 @@ export interface ThemeProperties extends CoreProps {
 	 * true by default
 	 */
 	animated?: PointerDevices;
+	/** The variant for the button: 'flat', 'outlined', 'raised', 'shaped'
+	 * 'filled' by default
+	 */
+	variant?: Variants;
+	/* Shadow */
+	depth?: keyof typeof Elevation;
 }
-const factory = create({ coreTheme }).properties<ThemeProperties>();
-export const theme = factory(function({ middleware: { coreTheme }, properties }) {
+interface ThemeIcache {
+	l: number;
+}
+const icache = createICacheMiddleware<ThemeIcache>();
+const factory = create({ coreTheme, icache }).properties<ThemeProperties>();
+export const theme = factory(function({ middleware: { coreTheme, icache }, properties }) {
+
 	return {
+		line: () => {
+			return icache.getOrSet('l', () => {
+				const newDiv = document.createElement("div");
+				newDiv.style.height = `${window.getComputedStyle(document.documentElement).getPropertyValue('--line')}`;
+				document.body.appendChild(newDiv);
+				return parseInt(window.getComputedStyle(newDiv).height||''.replace('px',''), 10);
+			});
+		},
 		isJS: () => !document.documentElement.classList.contains('no-js'),
 		sized: <T extends ClassNames>(uiCss: T, _default = 'm' as (keyof typeof uiCss)) => {
 			const { size = _default } = properties();
 			return uiCss.hasOwnProperty(size) ? uiCss[size] : null
 		},
-		spaced: <T extends ClassNames>(uiCss: T, _default = true) => {
+		spaced: <T extends ClassNames>(uiCss: T, _default = false) => {
 			const { spaced = _default } = properties();
 			const spaceClass = (spaced === false ? null : (spaced === 'left' ? 'spaceLeft' :
 				(spaced === 'right' ? 'spaceRight' : 'spaceEqual')));
 			return spaceClass && uiCss.hasOwnProperty(spaceClass) ? uiCss[spaceClass] : null
 		},
 		colored: <T extends ClassNames>(colorCss: T, _default = 'primary' as (keyof typeof colorCss)) => {
-			const { color = _default} = properties();
+			const { color = _default } = properties();
 			return colorCss.hasOwnProperty(color) ? colorCss[color] : null
 		},
 		animated: <T extends ClassNames>(themeCss: T, _default = true) => {
@@ -63,6 +83,19 @@ export const theme = factory(function({ middleware: { coreTheme }, properties })
 					(animated.indexOf('touch') > -1 && window.matchMedia("(hover: none) and (pointer: coarse)").matches) ?
 						'animated' : null));
 			return animationClass && themeCss.hasOwnProperty(animationClass) ? themeCss[animationClass] : null
+		},
+
+		shaped: <T extends ClassNames>(uiCss: T, _default = 'filled') => {
+			const { variant = _default } = properties();
+			return variant && uiCss.hasOwnProperty(variant) ? uiCss[variant] : null
+		},
+		elevated: <T extends ClassNames>(
+			uiCss: T, defaultShape = 'filled', defaultDepth = { shaped: 1, filled: 2, raised: 4, outlined: 0, flat: 0 }
+		) => {
+			const { variant = defaultShape, depth } = properties();
+			const elevation = (typeof depth === 'number' && (depth in Elevation)) ? depth :
+				variant && defaultDepth.hasOwnProperty(variant) ? (defaultDepth as any)[variant] : 0;
+			return (`raised${elevation}` in uiCss) && (uiCss as any)[`raised${elevation}`]
 		},
 
 		compose: <T extends ClassNames, B extends ClassNames>(
@@ -122,13 +155,13 @@ export const theme = factory(function({ middleware: { coreTheme }, properties })
 							[baseKey]: baseTheme
 						},
 						variant: theme.variant
-					};
+					}
 				}
 
 				return {
 					...theme,
 					[baseKey]: baseTheme
-				};
+				}
 			}
 
 			const constructedTheme = Object.keys(baseTheme).reduce(
@@ -154,9 +187,8 @@ export const theme = factory(function({ middleware: { coreTheme }, properties })
 						[baseKey]: constructedTheme
 					},
 					variant: theme.variant
-				};
+				}
 			}
-
 			return {
 				...theme,
 				[baseKey]: constructedTheme

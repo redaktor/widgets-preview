@@ -22,7 +22,21 @@ export enum Keys {
 	Right = 39,
 	Space = 32,
 	Tab = 9,
-	Up = 38
+	Up = 38,
+	Shift = 16
+}
+
+export const Elevation = {
+	0:0,
+	1:1,
+	2:2,
+	3:3,
+	4:4,
+	6:6,
+	8:8,
+	12:12,
+	16:16,
+	24:24
 }
 
 interface AriaPropertyObject {
@@ -76,27 +90,30 @@ export enum Material {
 	'warning' = 'warning',
 	'error' = 'error',
 	'success' = 'success',
-	'neutral' = 'neutral',
 
 	'red' = 'red',
-	'deep_orange' = 'deep_orange',
+	'deepOrange' = 'deepOrange',
 	'orange' = 'orange',
 	'amber' = 'amber',
 	'yellow' = 'yellow',
 	'lime' = 'lime',
-	'light_green' = 'light_green',
+	'lightGreen' = 'lightGreen',
 	'green' = 'green',
 	'teal' = 'teal',
 	'cyan' = 'cyan',
-	'light_blue' = 'light_blue',
+	'lightBlue' = 'lightBlue',
 	'blue' = 'blue',
 	'indigo' = 'indigo',
-	'deep_purple' = 'deep_purple',
+	'deepPurple' = 'deepPurple',
 	'purple' = 'purple',
 	'pink' = 'pink',
 	'brown' = 'brown',
 	'grey' = 'grey',
-	'blue_grey' = 'blue_grey'
+	'blueGrey' = 'blueGrey',
+
+	'neutral' = 'neutral',
+	'dark' = 'dark',
+	'light' = 'light'
 }
 export type Materials = (Material | keyof typeof Material);
 

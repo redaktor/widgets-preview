@@ -1,14 +1,620 @@
+/* TODO
+thumb on hover and focus COLORS
+Removed fill-track - The track can be turned off with track={false}
+outputDisplay
+"discrete" if step is given SHOULD have other styles
+dots/circles ?
+*/
+
 .root {
-	composes: mdc-linear-progress from '@material/linear-progress/dist/mdc.linear-progress.css';
+	--track-h: calc(var(--h) * 0.236);
+	--thumb-h: calc(var(--h) * 0.618);
+	composes: ui ui-transition from './_ui.m.css';
+	align-items: center;
+	user-select: none;
 }
+.slider { }
+.vertical.root {
+	margin-bottom: var(--mb);
+}
+.horizontal.responsive,
+.horizontal.responsive .wrapper,
+.horizontal.responsive .progress {
+	width: 100%;
+}
+.horizontal.root {
+	margin: 0;
+	min-height: var(--maxH);
+}
+
+.horizontal.root.hasTooltip {
+	align-items: flex-end;
+}
+.vertical.root,
+.horizontal.progressRoot {
+	padding: 0 !important;
+}
+/* TODO fixedCSS --> display: inline-block !important; */
+.column.root,
+.row.root {
+	margin: 0;
+	display: flex !important;
+}
+.column.root {
+	flex-direction: column;
+}
+.row.root {
+	flex-direction: row;
+}
+.circular {
+	margin: calc(var(--pt) * -1) 0 0 0 !important;
+}
+
+.disabled { }
+.readonly { }
+.focused { }
+.invalid { }
+.valid { }
+
+.flat {
+	--off: var(--ui-flat-empty);
+	--on: var(--ui-flat-on);
+	--doneTick-bg: rgba(0,0,0,0.5);
+}
+.filled {
+	--off: var(--ui-filled-empty);
+	--on: var(--ui-filled-on);
+	--nextTick-bg: var(--m-500);
+}
+.raised, .shaped {
+	--off: var(--ui-empty);
+	--on: var(--ui-filled-on);
+}
+.raised {
+	--nextTick-bg: var(--ui-filled-on);
+}
+.shaped {
+	--arrow-w: calc(100% - (var(--track-h, 4px) * 2));
+	--nextTick-bg: var(--surface);
+}
+.outlined {
+	--off: rgba(0,0,0,0.1); /* Safari bug */
+	--on: var(--ui-filled-on);
+	--nextTick-bg: var(--text-muted);
+}
+.wrapper {
+	position: relative;
+	--onOff: linear-gradient(
+		90deg,
+		var(--on,#e1e1e1) 0%,
+		var(--on,#e1e1e1) var(--progress,50%),
+		var(--off,#eb2f59) var(--progress,50%),
+		var(--off,#eb2f59) 100%
+	);
+	--height: calc(var(--line) * var(--lines,10));
+	--orig: calc(var(--height) / 2);
+}
+.horizontal.indeterminate .wrapper {
+	overflow-x: hidden;
+}
+.vertical.indeterminate .wrapper {
+	overflow-y: hidden;
+}
+.vertical .wrapper {
+	min-height: calc(var(--line) * var(--lines,10));
+	width: var(--width, auto);
+}
+
+progress.progress,
+input.range {
+	display: flex;
+  background-color: transparent;
+  border: none;
+  max-height: var(--track-h, var(--line, 16px));
+  padding: 0;
+}
+.vertical progress.progress,
+.vertical input.range {
+	transform: rotate(-90deg);
+	transform-origin: var(--orig) var(--orig);
+	min-width: var(--height);
+}
+:global(.no-js) input.range {
+	background-color: var(--on,#eb2f59);
+}
+/* sic --> */
+progress.progress,
+progress.progress::-webkit-progress-bar {
+  background: var(--off,#e1e1e1);
+}
+progress.progress::-webkit-progress-value {
+	background: var(--on,#eb2f59);
+}
+.indeterminate progress.progress::-moz-progress-bar {
+	background: var(--off,#e1e1e1);
+}
+progress.progress::-moz-progress-bar {
+  background: var(--on,#eb2f59);
+}
+
+input.range::-ms-fill-lower {
+ background: var(--on,#eb2f59);
+}
+input.range::-ms-fill-upper {
+	background: var(--off,#e1e1e1);
+}
+input.range::-ms-track {
+	background: var(--onOff,#e1e1e1);
+	margin: 0 calc(var(--thumb-h) * -0.5) 0 calc(var(--thumb-h) * -0.5);
+}
+input.range::-webkit-slider-runnable-track {
+	background: var(--onOff,#e1e1e1);
+	max-height: var(--track-h);
+	margin: 0 calc(var(--thumb-h) * -0.5) 0 calc(var(--thumb-h) * -0.5);
+}
+input.range::-moz-range-track {
+	height: 100%;
+	background: var(--onOff,#e1e1e1);
+}
+/* TODO FOCUS */
+input.range:focus::-webkit-slider-runnable-track {
+	background: var(--onOff,#eb2f59);
+}
+input.range:focus::-moz-range-track {
+	background: var(--onOff,#eb2f59);
+}
+
+.rounded:not(.shaped) .progress,
+.rounded:not(.shaped) .progress::-moz-progress-bar {
+	border-radius: calc(var(--track-h, var(--line, 16px)) / 2);
+}
+.rounded:not(.shaped) progress.progress::-webkit-progress-bar {
+ border-radius: var(--track-h, var(--line, 16px));
+}
+.rounded .wrapper,
+.rounded:not(.shaped) progress.progress::-webkit-progress-value {
+ border-radius: var(--track-h, var(--line, 16px));
+}
+.outlined input.range,
+.outlined progress.progress {
+	border: var(--ui-border-width-emphasized, 2px) solid var(--border);
+	max-height: calc(var(--track-h, var(--line, 16px)) + (var(--ui-border-width-emphasized, 2px) * 2));
+	margin-top: calc(var(--ui-border-width-emphasized, 2px) * -2);
+}
+.shaped progress.progress::-webkit-progress-value {
+	clip-path: polygon(0% 0%, var(--arrow-w, 92%) 0%, 100% 50%, var(--arrow-w, 92%) 100%, 0% 100%) !important;
+	-webkit-clip-path: polygon(0% 0%, var(--arrow-w, 92%) 0%, 100% 50%, var(--arrow-w, 92%) 100%, 0% 100%) !important;
+}
+.shaped progress.progress,
+.shaped.indeterminate .wrapper,
+.shaped progress.progress::-moz-progress-bar {
+	clip-path: polygon(0% 0%, var(--arrow-w, 92%) 0%, 100% 50%, var(--arrow-w, 92%) 100%, 0% 100%);
+}
+
+input.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: var(--thumb-h);
+  width: var(--thumb-h);
+  border-radius: 50%;
+  background: var(--m-500);
+  cursor: pointer;
+  box-shadow: var(--ui-dp-2);
+  margin-top: calc(var(--thumb-h) * -0.5 + var(--track-h) * 0.5);
+	transition: box-shadow var(--ui-dpd-0) cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+input.range:focus::-webkit-slider-thumb,
+input.range::-webkit-slider-thumb:hover {
+	box-shadow: 0px 0px 0px 8px rgba(144, 202, 249, 0.16);
+}
+input.range::-webkit-slider-thumb:active {
+	box-shadow: 0 1px 5px var(--sd1), 0 2px 2px var(--sd2), 0 3px 1px -2px var(--sd3),
+		0px 0px 0px 12px rgba(144, 202, 249, 0.16);
+}
+input.range::-moz-range-thumb {
+	height: var(--thumb-h);
+	width: var(--thumb-h);
+	border-radius: 50%;
+  background: var(--m-500);
+  cursor: pointer;
+	box-shadow: var(--ui-dp-2);
+	transform: translateX(calc((50% - var(--progress,50%)) * -1));
+	transition: box-shadow var(--ui-dpd-0) cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+input.range:focus::-moz-range-thumb,
+input.range::-moz-range-thumb:hover {
+	box-shadow: 0px 0px 0px 8px rgba(144, 202, 249, 0.16);
+}
+input.range::-moz-range-thumb:active {
+	box-shadow: 0 1px 5px var(--sd1), 0 2px 2px var(--sd2), 0 3px 1px -2px var(--sd3),
+		0px 0px 0px 12px rgba(144, 202, 249, 0.16);
+}
+input.range::-ms-thumb {
+	height: var(--thumb-h);
+	width: var(--thumb-h);
+	border-radius: 50%;
+  background: var(--m-500);
+  cursor: pointer;
+	box-shadow: var(--ui-dp-2);
+	transition: box-shadow var(--ui-dpd-0) cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+input.range:focus::-ms-thumb,
+input.range::-ms-thumb:hover {
+	box-shadow: 0px 0px 0px 8px rgba(144, 202, 249, 0.16);
+}
+input.range::-ms-thumb:active {
+	box-shadow: 0 1px 5px var(--sd1), 0 2px 2px var(--sd2), 0 3px 1px -2px var(--sd3),
+		0px 0px 0px 12px rgba(144, 202, 249, 0.16);
+}
+/* <-- */
 
 .output {
+	color: var(--text);
+	font-weight: var(--weight-semibold, 500);
+	z-index: -1;
 }
 
-.bar {
-	composes: mdc-linear-progress__buffer from '@material/linear-progress/dist/mdc.linear-progress.css';
+.output.left, .output.right {
+	padding-right: var(--plr);
+	padding-left: var(--plr);
+}
+.vertical .output.bottom {
+	padding-top: var(--pt);
+	margin-bottom: calc(var(--pt) * -1)
+}
+.vertical .output.top.value.start,
+.vertical .output.bottom.value.start {
+	transform: translateX(calc(-50% + var(--track-h)));
+}
+.output.start {
+	align-self: flex-start;
+}
+.output.center {
+	align-self: center;
+}
+.output.end {
+	align-self: flex-end;
+}
+.circular .output {
+	position: absolute;
+	text-align: center;
+	align-self: center;
+	left: 0px;
+	right: 0px;
+	margin: 0px;
+	padding: 0px;
+}
+.circular .output.small {
+	left: calc(var(--size) * -1);
+}
+.outputInline {
+	text-indent: 0.3236em;
+}
+.output.tooltip {
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	/*
+		opacity: 0;
+	*/
+	pointer-events: none;
+	transition: opacity var(--ui-dpd-1) var(--ui-easing);
+}
+.output.value:not(.tooltip) > span {
+	min-width: calc(var(--plr) * 2 + 5ch);
+}
+.horizontal .output.tooltip,
+.vertical .output.tooltip {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.vertical .output.tooltip {
+	top: calc(100% - var(--progress, 0%));
+	right: calc(100% + (var(--track-h) * 1.618));
+}
+.horizontal .output.tooltip {
+	top: calc(var(--track-h) * -1.618);
+	left: var(--progress, 0%);
+}
+.horizontal.labeled.hasTooltip {
+	min-height: calc(var(--maxH) + var(--line2));
+}
+.output.value.tooltip {
+	border-radius: 50% 50% 50% 0;
+	background-color: var(--ui-filled,#eb2f59);
+}
+.horizontal .output.value.tooltip {
+	transform: rotate(-45deg);
+	transform-origin: -100% 50%;
+}
+.vertical .output.value.tooltip {
+	transform: rotate(-135deg);
+	top: calc(100% - var(--progress, 0%) - (var(--pt) * 2) - (var(--size) / 2));
+}
+.output.value.tooltip > span {
+	text-align: center;
+}
+.horizontal .output.value.tooltip > span {
+	transform: rotate(45deg) translateY(-25%);
+}
+.vertical .output.value.tooltip > span {
+	transform: rotate(135deg) translateY(-25%);
+}
+.output.value.tooltip > span::before {
+  content: "";
+  display: block;
+	min-width: calc(var(--line) * 2);
+	min-height: var(--line);
 }
 
-.progress {
-	composes: mdc-linear-progress__bar-inner from '@material/linear-progress/dist/mdc.linear-progress.css';
+
+.dotted.wrapper::after {
+	position: absolute;
+	top: 0px;
+}
+.dotted.wrapper::after {
+	content: "";
+	left: 0px;
+	opacity: 0.24;
+	background: radial-gradient(ellipse at center, var(--surface) 0%, var(--surface) calc(var(--track-h) / 3.82), transparent calc(var(--track-h) / 3.82));
+	background-size: var(--track-h, 4px) auto;
+	background-repeat: repeat-x;
+	background-position: 0px center;
+}
+/* TODO fixedCSS --> */
+.ticks {
+	--distance: 1px;
+	--tick-h: calc(var(--track-h) - (var(--distance) * 2));
+	--tickmark: var(--ui-border-width-emphasized, 2px) solid var(--text-muted);
+	display: grid;
+	color: var(--text-muted);
+	z-index: -1;
+}
+.step {
+	--tick-h: var(--track-h);
+	--tickmark: var(--ui-border-width-emphasized, 2px) solid var(--on);
+}
+.horizontal .ticks {
+	grid-template-columns: var(--ticks);
+	width: 100%;
+}
+.horizontal .tickmark.ticks {
+	margin-top: var(--ui-border-width-emphasized, 2px);
+	margin-left: calc(var(--ui-border-width-emphasized, 2px) * -0.5);
+}
+.vertical .ticks {
+	grid-template-rows: var(--ticks);
+	position: absolute;
+	height: var(--height);
+}
+.vertical .dot.ticks {
+	left: var(--distance);
+	top: calc(var(--tick-h) * -0.5);
+}
+.vertical .tickmark.ticks {
+	left: calc(var(--track-h) + var(--distance));
+	top: calc(var(--ui-border-width-emphasized, 2px) / 2);
+}
+.outlined.vertical .tickmark.ticks {
+	left: calc(var(--track-h) + var(--distance) + var(--ui-border-width-emphasized, 2px));
+	top: -1px;
+}
+.outlined.horizontal .ticks {
+	margin-top: var(--ui-border-width-emphasized, 2px);
+}
+.ticks > li {
+	display: block;
+	white-space: nowrap;
+}
+.vertical .ticks > li {
+	display: flex;
+	align-items: flex-end;
+}
+
+.dot.ticks > li::before {
+	content: "";
+	display: block;
+	width: var(--tick-h);
+	height: var(--tick-h);
+	border-radius: 50%;
+}
+.horizontal .dot.ticks > li::before {
+	margin-left: calc(var(--tick-h) * -0.5);
+	margin-top: calc(var(--tick-h) * -1 - ((var(--track-h) - var(--tick-h)) / 2));
+	background: var(--doneTick-bg, var(--ui-bg, #303030));
+}
+.horizontal .dot > li.next::before,
+.horizontal .dot > li.next ~ li::before {
+	background: var(--nextTick-bg, var(--ui-bg, #303030));
+}
+.vertical .dot > li.next::before,
+.vertical .dot.ticks > li::before {
+	background: var(--nextTick-bg, var(--ui-bg, #303030));
+}
+.vertical .dot > li.next ~ li::before {
+	background: var(--doneTick-bg, var(--ui-bg, #303030));
+}
+.tickmark.ticks > li::before {
+	content: "";
+	display: block;
+	box-shadow: var(--ui-dp-1);
+}
+.raised .tickmark.ticks > li::before {
+	box-shadow: var(--ui-dp-2);
+}
+.horizontal .tickmark.ticks > li::before {
+	height: var(--tick-h);
+	width: 0px;
+	border-left: var(--tickmark);
+}
+.vertical .tickmark.ticks > li::before {
+	width: var(--tick-h);
+	border-top: var(--tickmark);
+	margin-left: var(--ui-border-width-emphasized, 2px);
+}
+.horizontal .ticks li:first-child::before,
+.vertical .ticks li:last-child::before {
+	opacity: 0 !important;
+}
+.shaped .ticks > li::before {
+	background: var(--surface, #303030);
+	opacity: 0.4;
+}
+
+.tickmark > li.next::before,
+.tickmark > li.next ~ li::before {
+	border-color: var(--text, #303030);
+}
+
+.caption {
+	display: inline-block;
+}
+.horizontal .caption {
+	transform: translateX(-50%);
+	padding-top: var(--pt);
+}
+.vertical .caption {
+	transform: translateY(calc(50% - var(--tick-h) / 2));
+	padding-left: var(--plr);
+}
+/* <-- */
+
+
+.indeterminate .wrapper::before {
+  content: '';
+  position: absolute;
+	height: var(--track-h, var(--line, 16px));
+  background-color: var(--on,#eb2f59);
+  top: 0;
+  left: 0;
+  bottom: 0;
+  will-change: left, right;
+  animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+}
+
+.indeterminate .wrapper::after,
+.buffer .wrapper::after {
+  content: '';
+  position: absolute;
+	height: var(--track-h, var(--line, 16px));
+  background-color: var(--m-a700,#eb2f59);
+  top: 0;
+  bottom: 0;
+  will-change: left, right;
+	pointer-events: none;
+}
+.buffer .wrapper::after {
+	opacity: 0.5;
+	left: var(--progress, 0%);
+	right: var(--buffer, 50%);
+}
+.indeterminate .wrapper::after {
+	left: 0;
+	animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+	animation-delay: 1.15s;
+}
+
+@keyframes indeterminate {
+    0% {
+        left: -35%;
+        right: 100%;
+    }
+
+    60% {
+        left: 100%;
+        right: -90%;
+    }
+
+    100% {
+        left: 100%;
+        right: -90%;
+    }
+}
+@keyframes indeterminate-short {
+    0% {
+        left: -200%;
+        right: 100%;
+    }
+
+    60% {
+        left: 107%;
+        right: -8%;
+    }
+
+    100% {
+        left: 107%;
+        right: -8%;
+    }
+}
+
+/* Circle */
+.circular,
+.circular .wrapper {
+	width: var(--maxH);
+	height: var(--maxH);
+}
+.circular progress.progress {
+	appearance: none;
+	visibility: hidden;
+	height: 0px;
+}
+.svg {
+  font-size: calc(var(--track-h, 4px) * 2);
+  width: 100%;
+  height: 100%;
+	overflow: visible;
+	transform: rotate(-90deg);
+}
+.circle {
+	--center: calc(var(--maxH) / 2);
+	--radius: calc(var(--track-h) * 2);
+	--circumference: calc(var(--radius) * 2 * var(--pi));
+	fill: none;
+	stroke-linecap: butt;
+	stroke-width: var(--track-h);
+	vector-effect: non-scaling-stroke;
+	cx: var(--center);
+	cy: var(--center);
+	r: var(--radius);
+}
+/* Progress background */
+.circle.bg {
+  stroke: var(--off,#e1e1e1);
+
+}
+/* Track */
+.circle.track {
+	stroke: var(--on,#eb2f59);
+	stroke-dashoffset: calc(var(--circumference) - (var(--progress) / 100) * var(--circumference));
+}
+.indeterminate {
+  animation: circular-rotate 1.4s linear infinite;
+}
+.determinate .circle {
+  stroke-dasharray: var(--circumference);
+  transition: stroke-dashoffset 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+}
+.indeterminate .circle {
+  animation: dash 1.4s ease-in-out infinite;
+  stroke-dasharray: calc(var(--maxH) * 2.5), calc(var(--maxH) * 5);
+  stroke-dashoffset: 0px;
+}
+@keyframes circular-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1px, calc(var(--maxH) * 5);
+    stroke-dashoffset: 0px;
+  }
+  50% {
+    stroke-dasharray: calc(var(--maxH) * 2.5), calc(var(--maxH) * 5);
+    stroke-dashoffset: -15px;
+  }
+  100% {
+    stroke-dasharray: calc(var(--maxH) * 2.5), calc(var(--maxH) * 5);
+    stroke-dashoffset: -120px;
+  }
 }

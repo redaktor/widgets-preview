@@ -1,5 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
 import Switch from '@dojo/widgets/switch';
 import { ExampleProperties } from '@dojo/widgets/common/util';
 
@@ -9,8 +10,8 @@ export default factory(function Basic({ properties, middleware: { icache } }) {
 	const singleSwitched = icache.getOrSet('singleSwitched', true);
 	const switched = icache.getOrSet('switched', false);
 	const { variant = 'flat' } = properties();
-	return (
-		<div>
+	return (<Example spaced={true}>
+		<span>
 			<Switch variant={variant} checked={singleSwitched} name="Switch"
 				onValue={(singleSwitched) => { icache.set('switched', singleSwitched); }}
 			>
@@ -51,6 +52,6 @@ export default factory(function Basic({ properties, middleware: { icache } }) {
 			<Switch variant={variant} color="amber">amber</Switch>
 
 			<p>Lorem Ipsum</p>
-		</div>
-	);
+		</span>
+	</Example>);
 });

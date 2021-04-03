@@ -136,8 +136,10 @@
   --line5: calc(var(--line) * 5);
   --lineHalf: calc(var(--line) / 2);
   /*---   debug  ---*/
-  --color-baseline 	  : rgba(255, 0, 0, 0.1);
-  --color-baseline-xl : rgba(0, 255, 0, 1);
+  --color-baseline-dark: rgba(255, 175, 0, 0.4);
+  --color-baseline-light: rgba(255, 122, 0, 0.32);
+  --color-baseline: var(--color-baseline-dark);
+  --color-baseline-xl: rgba(0, 255, 0, 1);
   --color: rgba(0, 0, 0, 0.87);
 
   font-size: var(--base-size);
@@ -191,16 +193,12 @@ Typography
 }
 
 /* RYTHM AND SIZE */
-:root {
+:root, .sans, input, textarea {
   --lineHeight: 1.826086956521739; /*
   --gridColor: rgba(255, 0, 0, 0.5);*/
   font-family: var(--font-sans);
-  font-size: 11.5px;
-  font-weight: var(--weight, 400);
   line-height: var(--lineHeight);
   box-sizing: border-box;
-}
-.sans {
   --weight: 400;
   --weight-semibold: 500;
   --weight-bold: 700;
@@ -210,7 +208,6 @@ Typography
   --weight-semibold: 700;
   --weight-bold: 700;
   font-family: var(--font-serif);
-
 }
 
 
@@ -471,12 +468,13 @@ Typo <---
 /* PARADE ONLY TODO */
 .bg-white {
   border-color: var(--ui-border) !important;
-  background-color: var(--ui-status) !important;
+  background-color: var(--surface) !important;
   color: var(--text) !important;
 }
 .bg-white.rounded-t-lg {
   padding: 0 !important;
-  background-color: #303030 !important;
+  background-color: transparent !important;
+  /*  #303030 */
 }
 .flex.header {
   border: none !important;
@@ -489,6 +487,9 @@ h1.h, h2.h, h3.h, h4.h, h5.h, .text-4xl, .text-3xl, .text-2xl,
   line-height: var(--lh, 24px) !important;
   padding-top: var(--pt, 8px) !important;
   margin-bottom: var(--mb, 16px) !important;
+}
+.mb-2 .inline-block.relative {
+  margin-top: var(--line, 16px) !important;
 }
 nav.pt-6 {
   padding-top: 0 !important;
@@ -529,7 +530,7 @@ code.language-ts {
 }
 @media (min-width: 1280px) {
   .w-full.max-w-screen-xl {
-    max-width: 1920px !important;
+    max-width: 4800px !important;
   }
   .max-w-3xl {
     max-width: 1280px !important;
@@ -537,7 +538,7 @@ code.language-ts {
   }
 }
 .markdownFullscreen {
-  min-width: 98vw !important;
+  min-width: 98.9vw !important;
   overflow-x: hidden;
   margin: 0 !important;
   padding: 0 0 var(--line4) 0 !important;
@@ -546,7 +547,11 @@ code.language-ts {
 .markdown.markdownFullscreen > * {
   width: 100%;
 }
-.markdownFullscreen .p-4 {
+.markdownFullscreen>div>h2 {
+  display: none !important;
+}
+.markdownFullscreen .p-4,
+.markdownFullscreen .p-6 {
   padding: 0 !important;
 }
 .markdownFullscreen.hidden {

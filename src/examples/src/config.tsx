@@ -3,6 +3,8 @@ import materialTheme from '../../theme/material';
 import * as light from '../../theme/material/variants/light.m.css';
 import * as dark from '../../theme/material/variants/dark.m.css';
 
+import AudioOverview from './widgets/audio/Basic';
+
 import ButtonOverview from './widgets/button/Overview';
 import ButtonFlat from './widgets/button/Basic';
 import ButtonFilled from './widgets/button/Filled';
@@ -61,8 +63,8 @@ import TextAreaWithLabel from './widgets/text-area/Label';
 import TextAreaDisabled from './widgets/text-area/Disabled';
 import TextAreaHelper from './widgets/text-area/HelperText';
 import TextAreaHiddenLabel from './widgets/text-area/HiddenLabel';
-import ValidatedCustomTextArea from './widgets/text-area/ValidatedCustom';
-import ValidatedRequiredTextArea from './widgets/text-area/ValidatedRequired';
+import TextAreaValidatedCustom from './widgets/text-area/ValidatedCustom';
+import TextAreaValidatedRequired from './widgets/text-area/ValidatedRequired';
 
 import CheckboxBasicGroup from './widgets/checkbox-group/Basic';
 import CheckboxCustomLabelGroup from './widgets/checkbox-group/CustomLabel';
@@ -98,12 +100,33 @@ import BasicHeaderCard from './widgets/header-card/Basic';
 import MediaHeaderCard from './widgets/header-card/MediaCard';
 import ActionHeaderCard from './widgets/header-card/ActionCard';
 
+import BasicProgress from './widgets/progress/Basic';
+import ProgressVariants from './widgets/progress/Variants';
+import ProgressCircular from './widgets/progress/Circular';
+import ProgressTicks from './widgets/progress/ProgressWithTicks';
+import ProgressRounded from './widgets/progress/ProgressRounded';
+import ProgressWithChangingValues from './widgets/progress/ProgressWithChangingValues';
+import ProgressWithCustomOutput from './widgets/progress/ProgressWithCustomOutput';
+import ProgressWithMax from './widgets/progress/ProgressWithMax';
+import ProgressWithoutOutput from './widgets/progress/ProgressWithoutOutput';
 
+import BasicSlider from './widgets/slider/Basic';
+import SliderVariants from './widgets/slider/Variants';
+import SliderWithCustomOutput from './widgets/slider/SliderWithCustomOutput';
+import SliderWithTicks from './widgets/slider/SliderWithTicks';
+import SliderDisabled from './widgets/slider/DisabledSlider';
+import SliderVertical from './widgets/slider/VerticalSlider';
+import SliderWithNoOutput from './widgets/slider/SliderWithNoOutput';
+import SliderWithValidityCheck from './widgets/slider/SliderWithValidityCheck';
+import SliderControlled from './widgets/slider/Controlled';
+
+import BasicTypeahead from './widgets/typeahead/Basic';
 
 import BasicAccordionPane from './widgets/accordion/Basic';
 import BasicAvatar from './widgets/avatar/Basic';
 import ImageAvatar from './widgets/avatar/Image';
 import AvatarVariant from './widgets/avatar/Variant';
+import AvatarShape from './widgets/avatar/Shape';
 import AvatarSize from './widgets/avatar/Size';
 import AvatarIcon from './widgets/avatar/Icon';
 import AvatarSecondary from './widgets/avatar/Secondary';
@@ -115,6 +138,15 @@ import FirstDayOfWeekCalendar from './widgets/calendar/CustomFirstWeekDay';
 import LimitedRange from './widgets/calendar/LimitedRange';
 import InitialMonthAndYear from './widgets/calendar/InitialMonthAndYear';
 import FullyControlledCalendar from './widgets/calendar/FullyControlled';
+
+import TimePickerOverview from './widgets/time-picker/Basic';
+import TimePickerControlled from './widgets/time-picker/Controlled';
+import TimePickerTwelve from './widgets/time-picker/12HourTime';
+import TimePickerSelectBySecond from './widgets/time-picker/SelectBySecond';
+import TimePickerDisabled from './widgets/time-picker/Disabled';
+import TimePickerDisabledMenuItems from './widgets/time-picker/DisabledMenuItems';
+import TimePickerRequired from './widgets/time-picker/Required';
+
 
 import BasicContextMenu from './widgets/context-menu/Basic';
 import BasicConstrainedInput from './widgets/constrained-input/Basic';
@@ -168,11 +200,7 @@ import ItemRenderer from './widgets/list/ItemRenderer';
 import FetchedResource from './widgets/list/FetchedResource';
 import Menu from './widgets/list/Menu';
 import CustomTransformer from './widgets/list/CustomTransformer';
-import BasicMultiSelectTypeahead from './widgets/multi-select-typeahead/Basic';
-import ControlledMultiSelectTypeahead from './widgets/multi-select-typeahead/Controlled';
-import DisabledMultiSelectTypeahead from './widgets/multi-select-typeahead/Disabled';
-import CustomRendererMultiSelectTypeahead from './widgets/multi-select-typeahead/CustomRenderer';
-import BottomMultiSelectTypeahead from './widgets/multi-select-typeahead/BottomPlacement';
+
 import BasicNumberInput from './widgets/number-input/Basic';
 import ValidatedNumberInput from './widgets/number-input/Validation';
 import BasicPassword from './widgets/password-input/Basic';
@@ -181,11 +209,6 @@ import BasicTriggerPopup from './widgets/trigger-popup/Basic';
 import MenuTriggerPopup from './widgets/trigger-popup/MenuPopup';
 import SetWidth from './widgets/trigger-popup/SetWidth';
 import Underlay from './widgets/trigger-popup/Underlay';
-import BasicProgress from './widgets/progress/Basic';
-import ProgressWithChangingValues from './widgets/progress/ProgressWithChangingValues';
-import ProgressWithCustomOutput from './widgets/progress/ProgressWithCustomOutput';
-import ProgressWithMax from './widgets/progress/ProgressWithMax';
-import ProgressWithoutOutput from './widgets/progress/ProgressWithoutOutput';
 
 import BasicRangeSlider from './widgets/range-slider/Basic';
 import MinMaxRangeSlider from './widgets/range-slider/MinMax';
@@ -207,32 +230,13 @@ import LeftAlignSlidePane from './widgets/slide-pane/LeftAlignSlidePane';
 import BottomAlignSlidePane from './widgets/slide-pane/BottomAlignSlidePane';
 import UnderlaySlidePane from './widgets/slide-pane/UnderlaySlidePane';
 import FixedWidthSlidePane from './widgets/slide-pane/FixedWidthSlidePane';
-import BasicSlider from './widgets/slider/Basic';
-import SliderWithCustomOutput from './widgets/slider/SliderWithCustomOutput';
-import DisabledSlider from './widgets/slider/DisabledSlider';
-import VerticalSlider from './widgets/slider/VerticalSlider';
-import SliderWithNoOutput from './widgets/slider/SliderWithNoOutput';
-import SliderWithValidityCheck from './widgets/slider/SliderWithValidityCheck';
-import ControlledSlider from './widgets/slider/Controlled';
 import BasicSnackbar from './widgets/snackbar/Basic';
 import ErrorSnackbar from './widgets/snackbar/Error';
 import LeadingSnackbar from './widgets/snackbar/Leading';
 import StackedSnackbar from './widgets/snackbar/Stacked';
 import SuccessSnackbar from './widgets/snackbar/Success';
-import BasicTabController from './widgets/tab-controller/Basic';
-import ControlledTabController from './widgets/tab-controller/Controlled';
-import ButtonAlignmentTabController from './widgets/tab-controller/ButtonAlignment';
-import CloseableTabController from './widgets/tab-controller/Closeable';
-import DisabledTabController from './widgets/tab-controller/Disabled';
 
 import BasicThreeColumnLayout from './widgets/three-column-layout/Basic';
-import TwelveHourTimePicker from './widgets/time-picker/12HourTime';
-import BasicTimePicker from './widgets/time-picker/Basic';
-import ControlledTimePicker from './widgets/time-picker/Controlled';
-import DisabledTimePicker from './widgets/time-picker/Disabled';
-import DisabledMenuItemsTimePicker from './widgets/time-picker/DisabledMenuItems';
-import RequiredTimePicker from './widgets/time-picker/Required';
-import SelectBySecondTimePicker from './widgets/time-picker/SelectBySecond';
 import BasicTitlePane from './widgets/title-pane/Basic';
 import HeadingLevel from './widgets/title-pane/HeadingLevel';
 import NonCloseable from './widgets/title-pane/NonCloseable';
@@ -253,12 +257,14 @@ import Pagination from './widgets/pagination/Basic';
 import PaginationPageSizeSelector from './widgets/pagination/PageSizeSelector';
 import PaginationControlled from './widgets/pagination/Controlled';
 import PaginationSiblingCount from './widgets/pagination/SiblingCount';
-import BasicTypeahead from './widgets/typeahead/Basic';
-import RemoteTypeahead from './widgets/typeahead/RemoteSource';
-import ValidatedTypeahead from './widgets/typeahead/Validation';
 import BasicTwoColumnLayout from './widgets/two-column-layout/Basic';
 import TrailingBiasTwoColumnLayout from './widgets/two-column-layout/TrailingBias';
 import CollapsingLayout from './widgets/two-column-layout/Collapsing';
+import BasicTabContainer from './widgets/tab-container/Basic';
+import ControlledTabContainer from './widgets/tab-container/Controlled';
+import ButtonAlignmentTabContainer from './widgets/tab-container/ButtonAlignment';
+import CloseableTabContainer from './widgets/tab-container/Closeable';
+import DisabledTabContainer from './widgets/tab-container/Disabled';
 
 `!has('docs')`;
 import testsContext from './tests';
@@ -271,12 +277,12 @@ export const config = {
 		{
 			label: 'material',
 			theme: materialTheme,
-			variants: { default: dark }
+			variants: {
+				default: light,
+				dark,
+				light
+			}
 		}
-		/*
-		{ label: 'dojo', theme: dojoTheme },
-		{ label: 'default', theme: {}}
-		*/
 	],
 	tests,
 	readmePath: (widget: string) => `src/${widget}/README.md`,
@@ -302,6 +308,21 @@ export const config = {
 				}
 			}
 		},
+		audio: {
+			examples: [
+				{
+					filename: 'Overview',
+					module: AudioOverview
+				}
+			],
+			filename: 'index',
+			overview: {
+				example: {
+					filename: 'Basic',
+					module: AudioOverview
+				}
+			}
+		},
 		avatar: {
 			examples: [
 				{
@@ -313,6 +334,11 @@ export const config = {
 					title: 'Avatar variants',
 					filename: 'Variant',
 					module: AvatarVariant
+				},
+				{
+					title: 'Avatar shapes',
+					filename: 'Shape',
+					module: AvatarShape
 				},
 				{
 					title: 'Avatar with secondary colors',
@@ -1083,36 +1109,6 @@ export const config = {
 				}
 			]
 		},
-		'multi-select-typeahead': {
-			overview: {
-				example: {
-					filename: 'Basic',
-					module: BasicMultiSelectTypeahead
-				}
-			},
-			examples: [
-				{
-					title: 'Controlled',
-					filename: 'Controlled',
-					module: ControlledMultiSelectTypeahead
-				},
-				{
-					title: 'Disabled',
-					filename: 'Disabled',
-					module: DisabledMultiSelectTypeahead
-				},
-				{
-					title: 'Custom Renderer',
-					filename: 'CustomRenderer',
-					module: CustomRendererMultiSelectTypeahead
-				},
-				{
-					title: 'Bottom Placement',
-					filename: 'BottomPlacement',
-					module: BottomMultiSelectTypeahead
-				}
-			]
-		},
 		'number-input': {
 			overview: {
 				example: {
@@ -1149,8 +1145,25 @@ export const config = {
 				}
 			}
 		},
+
 		progress: {
 			examples: [
+				{
+					filename: 'Variants',
+					module: ProgressVariants
+				},
+				{
+					filename: 'Circular',
+					module: ProgressCircular
+				},
+				{
+					filename: 'ProgressWithTicks',
+					module: ProgressTicks
+				},
+				{
+					filename: 'ProgressWithRoundedEdges',
+					module: ProgressRounded
+				},
 				{
 					filename: 'ProgressWithChangingValues',
 					module: ProgressWithChangingValues
@@ -1389,16 +1402,24 @@ export const config = {
 			},
 			examples: [
 				{
+					filename: 'Variants',
+					module: SliderVariants
+				},
+				{
+					filename: 'SliderWithTicks',
+					module: SliderWithTicks
+				},
+				{
 					filename: 'SliderWithCustomOutput',
 					module: SliderWithCustomOutput
 				},
 				{
-					filename: 'DisabledSlider',
-					module: DisabledSlider
+					filename: 'SliderDisabled',
+					module: SliderDisabled
 				},
 				{
-					filename: 'VerticalSlider',
-					module: VerticalSlider
+					filename: 'SliderVertical',
+					module: SliderVertical
 				},
 				{
 					filename: 'SliderWithNoOutput',
@@ -1410,7 +1431,7 @@ export const config = {
 				},
 				{
 					filename: 'Controlled',
-					module: ControlledSlider
+					module: SliderControlled
 				}
 			]
 		},
@@ -1494,34 +1515,35 @@ export const config = {
 				},
 			]
 		},
-		'tab-controller': {
+
+		'tab-container': {
 			examples: [
 				{
 					filename: 'Controlled',
-					module: ControlledTabController,
-					title: 'Controlled TabController'
+					module: ControlledTabContainer,
+					title: 'Controlled TabContainer'
 				},
 				{
 					filename: 'Disabled',
-					module: DisabledTabController,
-					title: 'TabController with disabled tabs'
+					module: DisabledTabContainer,
+					title: 'TabContainer with disabled tabs'
 				},
 				{
 					filename: 'ButtonAlignment',
-					module: ButtonAlignmentTabController,
-					title: 'TabController with adjustable button alignment'
+					module: ButtonAlignmentTabContainer,
+					title: 'TabContainer with adjustable button alignment'
 				},
 				{
 					filename: 'Closeable',
-					module: CloseableTabController,
-					title: 'TabController with closeable tab'
+					module: CloseableTabContainer,
+					title: 'TabContainer with closeable tab'
 				}
 			],
 			filename: 'index',
 			overview: {
 				example: {
 					filename: 'Basic',
-					module: BasicTabController
+					module: BasicTabContainer
 				}
 			}
 		},
@@ -1554,12 +1576,12 @@ export const config = {
 				},
 				{
 					filename: 'ValidatedCustom',
-					module: ValidatedCustomTextArea,
+					module: TextAreaValidatedCustom,
 					title: 'Validated with custom validator'
 				},
 				{
 					filename: 'ValidatedRequired',
-					module: ValidatedRequiredTextArea,
+					module: TextAreaValidatedRequired,
 					title: 'Validated required'
 				}
 			],
@@ -1646,51 +1668,52 @@ export const config = {
 			],
 			filename: 'index'
 		},
+		'time-picker': {
+			overview: {
+				example: {
+					filename: 'Overview',
+					module: TimePickerOverview
+				}
+			},
+			examples: [
+				{
+					filename: 'Controlled',
+					module: TimePickerControlled,
+					title: 'Controlled'
+				},
+				{
+					filename: '12HourTime',
+					module: TimePickerTwelve,
+					title: '12 Hour Time'
+				},
+				{
+					filename: 'SelectBySecond',
+					module: TimePickerSelectBySecond,
+					title: 'Select By Second'
+				},
+				{
+					filename: 'Disabled',
+					module: TimePickerDisabled,
+					title: 'Disabled'
+				},
+				{
+					filename: 'DisabledMenuItems',
+					module: TimePickerDisabledMenuItems,
+					title: 'Disabled Menu Items'
+				},
+				{
+					filename: 'Required',
+					module: TimePickerRequired,
+					title: 'Required'
+				}
+			],
+			filename: 'index'
+		},
 		'three-column-layout': {
 			overview: {
 				example: {
 					filename: 'BasicThreeColumnLayout',
 					module: BasicThreeColumnLayout
-				}
-			}
-		},
-		'time-picker': {
-			examples: [
-				{
-					filename: 'Controlled',
-					module: ControlledTimePicker,
-					title: 'Controlled time picker'
-				},
-				{
-					filename: 'DisabledMenuItems',
-					module: DisabledMenuItemsTimePicker,
-					title: 'Disabled menu items'
-				},
-				{
-					filename: 'Disabled',
-					module: DisabledTimePicker,
-					title: 'Disabled time picker'
-				},
-				{
-					filename: 'SelectBySecond',
-					module: SelectBySecondTimePicker,
-					title: 'Select time by the second'
-				},
-				{
-					filename: '12HourTime',
-					module: TwelveHourTimePicker,
-					title: '12 hour time'
-				},
-				{
-					filename: 'Required',
-					module: RequiredTimePicker,
-					title: 'Required time picker'
-				}
-			],
-			overview: {
-				example: {
-					filename: 'Basic',
-					module: BasicTimePicker
 				}
 			}
 		},
@@ -1755,21 +1778,10 @@ export const config = {
 			}
 		},
 		typeahead: {
-			examples: [
-				{
-					filename: 'Remote',
-					module: RemoteTypeahead,
-					title: 'Remote Source'
-				},
-				{
-					filename: 'Validation',
-					module: ValidatedTypeahead,
-					title: 'Validation'
-				}
-			],
+			filename: 'index',
 			overview: {
 				example: {
-					filename: 'Typeahead',
+					filename: 'Basic',
 					module: BasicTypeahead
 				}
 			}

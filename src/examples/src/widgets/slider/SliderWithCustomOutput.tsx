@@ -1,10 +1,11 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
+import Example from '../../Example';
 import Slider from '@dojo/widgets/slider';
 
 const factory = create({});
 
 export default factory(function SliderWithCustomOutput({}) {
-	return (
+	return (<Example spaced={true}>
 		<Slider min={0} initialValue={0} max={100}>
 			{{
 				output: (value) => {
@@ -25,5 +26,5 @@ export default factory(function SliderWithCustomOutput({}) {
 				}
 			}}
 		</Slider>
-	);
+	</Example>);
 });

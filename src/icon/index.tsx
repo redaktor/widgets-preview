@@ -42,7 +42,7 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 				]}
 				{...formatAriaProperties(aria)}
 			>
-				{type === 'osm' ? (
+				{type === 'mapOSM' ? (
 					<virtual>
 						<span />
 						<span />

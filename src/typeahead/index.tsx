@@ -1,47 +1,30 @@
-import { create, tsx} from '@dojo/framework/core/vdom';
-import { PopupPosition } from '@dojo/widgets/popup';
+import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { createResourceMiddleware, ResourceMeta } from '@dojo/framework/core/middleware/resources';
-// import { createResource, createMemoryTemplate } from '../framework/resource';
-/* ^^^ TODO FIXME : THIS IS 7.0 '@dojo/framework/core/resource' */
-// import MetaBase from '@dojo/framework/core/meta/Base';
+import List, {ItemRendererProperties,ListOption,ListProperties} from '../list';
+import { ListItemProperties, MenuItemProperties } from '../list/Listitem';
+
+import theme from '../middleware/theme';
 import focus from '@dojo/framework/core/middleware/focus';
-import { theme, ThemeProperties, Keys, Variants } from '../middleware/theme';
-import List, {
-	ItemRendererProperties, ListOption, ListItemProperties, MenuItemProperties, ListProperties
-} from '../list';
-
-// import { find } from '@dojo/framework/shim/array';
-// import LoadingIndicator from '../loading-indicator';
-import TriggerPopup from '../trigger-popup';
-import TextInput from '../text-input';
-import bundle from '../select/select.nls';
 import i18n from '@dojo/framework/core/middleware/i18n';
+import { dimensions } from '@dojo/framework/core/middleware/dimensions';
+import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
+import TriggerPopup from '../trigger-popup';
+import { PopupPosition } from '@dojo/widgets/popup';
+import TextInput from '../text-input';
 import HelperText from '../helper-text';
-
-/* TODO how to deal with native autocomplete ?
-// TODO onSort / onSortRemaining (notMatches)
-
-// TODO - phonetic search - localized AS string !!!  */
-// import Search, { SearchResult } from '../framework/String/search/';
-// import phonetics from '../../framework/String/phonetic/doubleMetaphone';
-// import germanPhonetics from '../../framework/String/phonetic/colognePhonetics';
-// import spanishPhonetics from '../../framework/String/phonetic/spanishPhonology';
-
+import { Keys } from '../common/util';
+import LoadingIndicator from '../loading-indicator';
+import { find } from '@dojo/framework/shim/array';
+import bundle from '../select/nls/Select';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/typeahead.m.css';
-import * as listCss from '../theme/material/list.m.css';
 import * as inputCss from '../theme/material/text-input.m.css';
 
-export interface TypeaheadProperties extends ThemeProperties {
-	/** The variant for the input and box: 'flat', 'outlined', 'raised', 'shaped'
-	 * 'flat' by default
-	 */
-	variant?: Variants;
+export interface TypeaheadProperties {
 	/** Callback called when user selects a value */
-	onValue(value: string): void;
+	onValue?(value: ListOption): void;
 	/** The initial selected value */
 	initialValue?: string;
 	/** Property to determine how many items to render. Defaults to 6 */
@@ -66,25 +49,27 @@ export interface TypeaheadProperties extends ThemeProperties {
 	onFocus?(): void;
 	/** Callback to determine if an individual item is disabled */
 	itemDisabled?: ListProperties['disabled'];
-	/** Flag to indicate if values other than those in the resource can be entered, defaults to true */
+	/** Flag to indicate if values must be those in the resource, defaults to true */
 	strict?: boolean;
 }
 
 export interface TypeaheadICache {
 	value: string;
+	labelValue: string;
 	lastValue: string | undefined;
 	activeIndex: number;
-	position: PopupPosition;
+
 	isDirty: boolean;
 	isExpanded: boolean;
-	isOpening: boolean;
 	isClosing: boolean;
+	isAbove: boolean;
 	isValid: boolean;
+
 	focusNode: string;
 	initial: string;
-	menuHeight: number;
-	selected: boolean;
-	meta?: ResourceMeta;
+	valid: boolean | undefined;
+	selectedOption?: ListOption;
+	scrollTop?: number;
 }
 
 export interface TypeaheadChildren {
@@ -98,20 +83,10 @@ export interface TypeaheadChildren {
 	leading?: RenderResult;
 }
 
-/* // TODO FIXME if screen too small: scrollIntoView
-export class ScrollViewMeta extends MetaBase {
-	public scroll(key: string | number): void {
-		const node = this.getNode(key);
-		if (node) {
-			node.scrollIntoView({block: "end", behavior: "smooth"});
-		}
-	}
-}
-*/
-
 const factory = create({
 	icache: createICacheMiddleware<TypeaheadICache>(),
 	resource: createResourceMiddleware<ListOption>(),
+	dimensions,
 	theme,
 	focus,
 	i18n
@@ -123,28 +98,37 @@ export const Typeahead = factory(function Typeahead({
 	id,
 	properties,
 	children,
-	middleware: { icache, resource, theme, focus, i18n }
+	middleware: { icache, resource, dimensions, theme, focus, i18n }
 }) {
-	const themedCss = theme.classes(css);
-	const { messages } = i18n.localize(bundle);
-	const { createOptions, meta, find, /*isLoading, getOrRead*/ } = resource;
 	const {
 		initialValue,
-		value: controlledValue,
-		strict = true,
-		variant = 'flat',
-		animated = true,
-		size = 'm',
-		color = 'primary',
-		position = 'below',
 		disabled,
 		required,
+		position,
 		name,
 		helperText,
 		itemsInView,
 		onValidate,
-		resource: { template, options = createOptions(id) }
+		strict = true,
+		value: controlledValue,
+		itemDisabled,
+		resource: {
+			template,
+			options = resource.createOptions((curr, next) => ({ ...curr, ...next }))
+		},
+		classes,
+		theme: themeProp,
+		variant,
+		color = 'primary',
+		size = 'm',
 	} = properties();
+	const {
+		get,
+		template: { read }
+	} = resource.template(template);
+
+	const themedCss = theme.classes(css);
+	const { messages } = i18n.localize(bundle);
 
 	const [{ label, items, leading } = {} as TypeaheadChildren] = children();
 
@@ -155,50 +139,47 @@ export const Typeahead = factory(function Typeahead({
 	) {
 		icache.set('initial', initialValue);
 		icache.set('value', initialValue);
+		icache.delete('labelValue');
 	}
-
-	if (controlledValue !== undefined && icache.get('lastValue') !== controlledValue) {
+	const updatedValue = icache.get('lastValue') !== controlledValue;
+	if (controlledValue !== undefined && updatedValue) {
 		icache.set('value', controlledValue);
 		icache.set('lastValue', controlledValue);
+		icache.delete('labelValue');
+		icache.set('selectedOption', (option) => {
+			if (option && option.value !== controlledValue) {
+				return undefined;
+			}
+			return option;
+		});
 		options({ query: { value: controlledValue } });
 	}
 
-	let valid = icache.get('isValid');
-	let invalidText = '';
-	const value = icache.get('value');
+	let valid = icache.get('valid');
+	let value = icache.get('value');
+	let labelValue = icache.get('labelValue');
 	const listId = `typeahead-list-${id}`;
 	const triggerId = `typeahead-trigger-${id}`;
-	const isDirty = icache.get('isDirty');
-
-	if (required && isDirty) {
-		const isValid = Boolean(value);
-		if (isValid !== valid) {
-			icache.set('isValid', isValid);
-			valid = isValid;
-			onValidate && onValidate(isValid);
-		}
-	}
-	if (strict && Boolean(value) && icache.get('lastValue') !== icache.get('value')) {
-		icache.set('isValid', false);
-		valid = false;
-		invalidText = messages.strictMessage;
-		onValidate && onValidate(false);
-	}
-	if (strict && required && !valid) {
-		invalidText = messages.strictMessage;
-	} else if (required && !valid) {
-		invalidText = messages.requiredMessage;
+	const dirty = icache.get('isDirty');
+	if (strict && icache.get('selectedOption')) {
+		icache.set('valid', true, false)
 	}
 
-
-	function callOnValue(value: string) {
+	function callOnValue(value: ListOption) {
 		const { onValidate, onValue, required } = properties();
 		const lastValue = icache.get('lastValue');
-		if (lastValue === value) { return }
 
-		let valid = !required ? true : required && !value;
-		icache.set('lastValue', value);
-		icache.set('isValid', Boolean(valid));
+		if (lastValue === value.value) {
+			return;
+		}
+
+		let valid = required ? true : undefined;
+		if (required && !value) {
+			valid = false;
+		}
+
+		icache.set('lastValue', value.value);
+		icache.set('valid', valid);
 		value && onValue && onValue(value);
 		onValidate && onValidate(valid);
 	}
@@ -209,10 +190,9 @@ export const Typeahead = factory(function Typeahead({
 		onOpen: () => boolean,
 		onClose: () => void
 	) {
-		const activeIndex = icache.getOrSet('activeIndex', 0);
-		const metaInfo = meta(template, options()) || icache.get('meta');
-		const total = (metaInfo && metaInfo.total) || 0;
-
+		const {
+			meta: { total = 0 }
+		} = get(options(), { meta: true, read });
 		switch (event) {
 			case Keys.Escape:
 				onClose();
@@ -220,293 +200,332 @@ export const Typeahead = factory(function Typeahead({
 			case Keys.Down:
 				preventDefault();
 				if (!onOpen()) {
-					icache.set('activeIndex', (activeIndex + 1) % total);
+					icache.set('activeIndex', (activeIndex = strict ? 0 : -1) => {
+						return total ? (activeIndex + 1) % total : total;
+					});
 				}
 				break;
 			case Keys.Up:
 				preventDefault();
 				if (!onOpen()) {
-					icache.set('activeIndex', (activeIndex - 1 + total) % total);
+					icache.set('activeIndex', (activeIndex = 0) => {
+						activeIndex = activeIndex === -1 ? 0 : activeIndex;
+						return total ? (activeIndex - 1 + total) % total : total;
+					});
 				}
 				break;
 			case Keys.Enter:
 				preventDefault();
-				icache.set('selected', true);
-				onClose();
-				break;
-/*
-				const allItems = get({ query: getOptions().query });
-				if (allItems && allItems.length >= activeIndex) {
-					const { itemDisabled } = properties();
-
-					const activeItem = allItems[activeIndex];
-					let disabled = false;
-					if (activeItem) {
-						disabled = itemDisabled ? itemDisabled(activeItem) : !!activeItem.disabled;
-
-						if (!disabled) {
-							icache.set('value', activeItem.value);
-							onClose();
-							callOnValue(activeItem.value);
-						} else if (!strict) {
-							const value = icache.getOrSet('value', '');
-							onClose();
-							callOnValue(value);
-						}
-					} else {
-						if (strict) {
-							const { onValidate, required } = properties();
+				const activeIndex = icache.getOrSet('activeIndex', strict ? 0 : -1);
+				const labelValue = icache.get('labelValue');
+				if (activeIndex > -1 || labelValue) {
+					const data = get({ ...options(), size: total });
+					let selectedValue: ListOption | undefined;
+					const activeItem = data[activeIndex];
+					if (strict) {
+						if (!data.length) {
 							if (required) {
-								icache.set('isValid', false);
+								icache.set('valid', false);
 								onValidate && onValidate(false);
 							}
-						} else {
-							const value = icache.getOrSet('value', '');
-							onClose();
-							callOnValue(value);
+							options({ query: {} });
+							icache.set('labelValue', '');
+						} else if (activeItem) {
+							const disabled = itemDisabled
+								? itemDisabled(activeItem)
+								: !!activeItem.disabled;
+							if (!disabled) {
+								const { value: itemValue, label, disabled, divider } = activeItem;
+								selectedValue = { value: itemValue, label, disabled, divider };
+							}
 						}
-					}
-				}
-				break;
-				*/
-		}
-	}
-
-	function renderList(toggleClosed?: any) {
-		function closeMenu() {
-			icache.set('focusNode', 'trigger');
-			toggleClosed && toggleClosed();
-		}
-		return <List
-			variant={variant}
-			animated={true}
-			above={icache.get('position') === 'above'}
-			key="menu"
-			focusable={false}
-			activeIndex={icache.get('activeIndex')}
-			resource={resource({ template, options })}
-			onValue={(value: any) => {
-				focus.focus();
-				closeMenu();
-				value !== icache.get('value') && icache.set('value', value);
-				callOnValue(value);
-				icache.set('lastValue', value);
-			}}
-			onHeight={(h: any) => icache.set('menuHeight', h)}
-			onRequestClose={closeMenu}
-			onAnimationEnd={() => { animated && icache.set('isOpening', false); }}
-			onBlur={closeMenu}
-			initialValue={value}
-			itemsInView={itemsInView}
-			theme={theme.compose(
-				listCss,
-				css,
-				'menu'
-			)}
-			classes={{
-				'@dojo/widgets/list': {
-					root: [
-						themedCss.menu,
-						themedCss[variant as (Variants & keyof typeof themedCss)],
-						disabled ? themedCss.disabled : null
-					],
-					transformer: [themedCss.menuTransformer],
-					item: [themedCss.listItem, disabled ? themedCss.disabled : null]
-				}
-			}}
-			widgetId={listId}
-		>
-			{items}
-		</List>
-	}
-
-	const helper = ((valid === false && invalidText) || helperText) &&
-	<HelperText
-		key="helperText"
-		text={valid === false ? invalidText : helperText}
-		valid={valid}
-		/*
-		classes={{
-			'@dojo/widgets/helper-text': {
-				root: [theme.spaced(ui)]
-			}
-		}}
-		*/
-	/>;
-
-	return (
-		<virtual>
-			{icache.get('position') === 'below' && helper}
-			<div
-				key="root"
-				classes={[
-					themedCss.root,
-					theme.variant(),
-					theme.sized(ui),
-					theme.spaced(ui),
-					theme.colored(colors),
-					theme.animated(themedCss),
-					animated && icache.get('activeIndex') === void 0 ? themedCss.first : null,
-					themedCss[icache.get('position')||position],
-					icache.get('isExpanded') ? themedCss.open : null,
-					helper ? themedCss.hasHelperText : null,
-					disabled ? themedCss.disabled : null,
-					valid === true ? themedCss.valid : null,
-					valid === false ? themedCss.invalid : null
-				]}
-			>
-				<TriggerPopup
-					key="popup"
-					onOpen={(openPos) => {
-						icache.set('isExpanded', true);
-						if (openPos !== icache.get('position')) {
-							icache.set('position', openPos);
+					} else {
+						if (activeItem) {
+							const disabled = itemDisabled
+								? itemDisabled(activeItem)
+								: !!activeItem.disabled;
+							if (!disabled) {
+								const { value: itemValue, label, disabled, divider } = activeItem;
+								selectedValue = { value: itemValue, label, disabled, divider };
+							}
 						}
-					}}
-					onClose={() => {
-						icache.set('isExpanded', false);
-						icache.set('position', 'below');
-						if (!icache.get('isDirty')) {
-							icache.set('isDirty', true);
-						}
-					}}
-					minHeight={Math.max(icache.get('menuHeight')||0, 120)}
-					position={position}
-				>
-					{{
-						content: renderList,
-						trigger: (toggleOpen) => {
-							function openMenu() {
-								const { disabled } = properties();
-								if (!disabled && !icache.get('isExpanded')) {
-									toggleOpen();
-									icache.set('isExpanded', true);
-									icache.getOrSet('activeIndex', -1);
-									return true;
+						if (!selectedValue && labelValue) {
+							selectedValue = find(data, (item) => {
+								if (item) {
+									return item.label.toLowerCase() === labelValue!.toLowerCase();
 								}
 								return false;
+							});
+							if (!selectedValue) {
+								selectedValue = { value: labelValue, label: labelValue };
 							}
-
-							function closeMenu() {
-								if (icache.get('isExpanded')) {
-									toggleOpen();
-									icache.set('isExpanded', false);
-								}
-							}
-
-							let valueOption: any;
-							if (value) {
-								valueOption = (
-									find(template, {
-										options: options(),
-										start: 0,
-										query: { value },
-										type: 'exact'
-									}) || {
-										item: undefined
-									}
-								).item;
-							}
-
-
-							return (
-								<TextInput
-									autocomplete={false}
-									variant={variant}
-									animated={animated}
-									size={size}
-									spaced={false}
-									color={color}
-									onValue={(value) => {
-										if (value !== icache.get('value')) {
-											animated && icache.get('isOpening') && icache.set('isOpening', false);
-											openMenu();
-											options({ query: { value } });
-											icache.set('value', value || '');
-										}
-									}}
-									theme={theme.compose(
-										inputCss,
-										css,
-										'input'
-									)}
-									onFocus={() => {
-										const { onFocus } = properties();
-										openMenu();
-										animated && icache.set('isOpening', true);
-										onFocus && onFocus();
-									}}
-									onBlur={() => {
-										const { onBlur } = properties();
-										closeMenu();
-										onBlur && onBlur();
-									}}
-									name={name}
-									initialValue={valueOption ? valueOption.label || valueOption.value : value}
-									focus={() =>
-										icache.get('focusNode') === 'trigger' && focus.shouldFocus()
-									}
-									aria={{
-										controls: listId,
-										haspopup: 'listbox',
-										isExpanded: `${icache.getOrSet('isExpanded', false)}`
-									}}
-									key="trigger"
-									widgetId={triggerId}
-									disabled={disabled}
-									required={required}
-									classes={{
-										'@dojo/widgets/text-input': {
-											root: [themedCss.trigger, themedCss[icache.get('position')||position]],
-											label: [themedCss.label],
-											input: [themedCss.input],
-											focusedContent: [themedCss.focusedWrapper]
-										}
-									}}
-									onKeyDown={(event, preventDefault) => {
-										onKeyDown(event, preventDefault, openMenu, closeMenu);
-									}}
-									valid={valid}
-								>
-									{{ label, leading, focusContent: (theme.isJS() === false) && renderList() }}
-								</TextInput>
-							);
 						}
-					}}
-				</TriggerPopup>
-			</div>
-			{icache.get('position') === 'above' && helper}
-		</virtual>
+					}
+					if (selectedValue) {
+						icache.set('value', selectedValue.value);
+						icache.set('selectedOption', selectedValue);
+						callOnValue(selectedValue);
+					}
+				}
+				onClose();
+				break;
+		}
+	}
+	const {
+		meta: { total, status }
+	} = get(options(), { meta: true, read });
+	const selectedOption = icache.get('selectedOption');
+	if (required && dirty) {
+		const isValid = Boolean(selectedOption) || Boolean(!strict && !!labelValue);
+		if (isValid !== valid) {
+			icache.set('valid', isValid);
+			valid = isValid;
+			onValidate && onValidate(isValid);
+		}
+	}
+
+	let currentItems = [];
+	if (!icache.get('selectedOption') && value) {
+		currentItems = get(options(), { read }) || [];
+		const option = currentItems.find((item) => Boolean(item && item.value === value));
+		if (option) {
+			icache.set('selectedOption', option);
+		} else {
+			const findItem =
+				get({ ...options(), query: { ...options().query, value } }, { read }) || [];
+			if (findItem) {
+				icache.set('selectedOption', findItem[0]);
+			}
+		}
+	}
+
+	return (
+		<div
+			key="root"
+			classes={[
+				theme.variant(),
+				theme.sized(ui),
+				theme.sized(themedCss),
+				theme.colored(colors),
+				theme.spaced(ui, false),
+				theme.animated(themedCss, true),
+				themedCss.root,
+				disabled && themedCss.disabled,
+				valid === true && themedCss.valid,
+				valid === false && themedCss.invalid
+			]}
+		>
+			<TriggerPopup
+				key="popup"
+				onOpen={() => icache.set('isExpanded', true)}
+				onClose={() => {
+					icache.set('isExpanded', false);
+					if (!icache.get('isDirty')) {
+						icache.set('isDirty', true);
+					}
+				}}
+				position={position}
+				classes={classes}
+				theme={themeProp}
+				variant={variant}
+			>
+				{{
+					trigger: (toggleOpen) => {
+						function openMenu() {
+							const { disabled } = properties();
+
+							if (!disabled && !icache.get('isExpanded')) {
+								toggleOpen();
+								icache.set('isExpanded', true);
+								icache.set('activeIndex', strict ? 0 : -1);
+								return true;
+							}
+
+							return false;
+						}
+
+						function closeMenu() {
+							if (icache.get('isExpanded')) {
+								toggleOpen();
+								icache.set('isExpanded', false);
+							}
+							if (!icache.get('isDirty')) {
+								icache.set('isDirty', true);
+							}
+						}
+
+						const selectedOption = icache.get('selectedOption');
+						return (
+							<TextInput
+								selection={
+									((!!icache.get('valid') && !!icache.get('selectedOption')) ||
+									!currentItems.length)
+								}
+								onValue={(value) => {
+									openMenu();
+									options({ query: { label: value } });
+									icache.set('labelValue', value || '');
+									icache.set('activeIndex', strict ? 0 : -1);
+									icache.delete('value');
+									icache.delete('selectedOption');
+								}}
+								theme={theme.compose(inputCss, css, 'input')}
+								onFocus={() => {
+									const { onFocus } = properties();
+									onFocus && onFocus();
+								}}
+								onBlur={() => {
+									const { onBlur } = properties();
+									if (!strict) {
+										const value = icache.getOrSet('labelValue', '');
+										const currentOption = icache.get('selectedOption');
+										const selectedOption = icache.set(
+											'selectedOption',
+											(selectedOption) => {
+												if (selectedOption) {
+													return selectedOption;
+												}
+												if (value) {
+													return { value, label: value };
+												}
+											}
+										);
+										icache.set(
+											'value',
+											selectedOption ? selectedOption.value : value
+										);
+										if (selectedOption) {
+											if (
+												!currentOption ||
+												currentOption.value !== selectedOption.value
+											) {
+												callOnValue(selectedOption);
+											}
+										}
+									} else if (typeof icache.get('selectedOption') === 'undefined') {
+										icache.set('valid', false);
+										onValidate && onValidate(false);
+									}
+
+									closeMenu();
+									onBlur && onBlur();
+								}}
+								name={name}
+								value={selectedOption ? selectedOption.label : labelValue || ''}
+								focus={() =>
+									icache.get('focusNode') === 'trigger' && focus.shouldFocus()
+								}
+								aria={{
+									controls: listId,
+									haspopup: 'listbox',
+									expanded: `${icache.getOrSet('isExpanded', false)}`
+								}}
+								key="trigger"
+								widgetId={triggerId}
+								disabled={disabled}
+								classes={{
+									'@dojo/widgets/text-input': {
+										root: [themedCss.trigger]
+									}
+								}}
+								variant={variant}
+								color={color}
+								size={size}
+								onClick={openMenu}
+								onKeyDown={(event, preventDefault) => {
+									onKeyDown(event, preventDefault, openMenu, closeMenu);
+								}}
+								valid={icache.get('valid')}
+							>
+								{{ label, leading }}
+							</TextInput>
+						);
+					},
+					content: (toggleClosed) => {
+						function closeMenu() {
+							icache.set('focusNode', 'trigger');
+							toggleClosed();
+						}
+
+						const { itemDisabled } = properties();
+
+						const menu = <List
+							key="menu"
+							height="auto"
+							animated={true}
+							focusable={false}
+							activeIndex={icache.getOrSet('activeIndex', strict ? 0 : -1)}
+							resource={resource({ template, options })}
+							disabled={itemDisabled}
+							classes={{
+								'@dojo/widgets/list': {
+									root: [
+										themedCss.menu,
+										variant && (themedCss as any)[variant],
+										disabled ? themedCss.disabled : null
+									],
+									transformer: [themedCss.menuTransformer],
+									item: [themedCss.listItem, disabled ? themedCss.disabled : null]
+								}
+							}}
+							onValue={(value, scrollTop) => {
+
+								focus.focus();
+								closeMenu();
+								icache.set('scrollTop', scrollTop, false);
+								if (value.value !== icache.get('value')) {
+									icache.set('value', value.value);
+									icache.set('selectedOption', value);
+								}
+								callOnValue(value);
+							}}
+							scrollTop={icache.get('scrollTop')}
+							onRequestClose={closeMenu}
+							onBlur={closeMenu}
+							initialValue={value}
+							itemsInView={itemsInView}
+							variant={variant}
+							color={color}
+							size={size}
+							widgetId={listId}
+						>
+							{items}
+						</List>
+
+						return total === undefined && status === 'reading' ? (
+							<LoadingIndicator
+								key="loading"
+								theme={themeProp}
+								classes={classes}
+								variant={variant}
+								color={color}
+								size={size}
+							/>
+						) : (
+							<div
+								key="menu-wrapper"
+								classes={[
+									themedCss.menuWrapper,
+									/* TODO isJS */
+									// theme.isJS() ? themedCss.js : null,
+									icache.get('isClosing') ? themedCss.closing : (!icache.get('activeIndex') ? themedCss.opening : null),
+									!icache.get('isExpanded') && icache.get('isAbove') ? themedCss.above : themedCss.below
+								]}
+							>
+								{menu}
+							</div>
+						);
+					}
+				}}
+			</TriggerPopup>
+			<HelperText
+				key="helperText"
+				text={valid === false ? messages.requiredMessage : helperText}
+				valid={valid}
+				theme={themeProp}
+			/>
+		</div>
 	);
 });
 
 export default Typeahead;
-/*
-const menuMinH = 120;
-const { position: triggerPosition } = dimensions.get('root');
-const el = document.scrollingElement || document.documentElement;
-const scrollTop = el.scrollTop || Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop);
-const aboveTop = scrollTop + triggerPosition.top;
-const belowBottom = el.scrollHeight - triggerPosition.bottom;
-const belowVisible = el.clientHeight - triggerPosition.bottom;
-let pos = position||'below';
-const nPos = pos === 'below' ? 'above' : 'below';
-const willFit = {
-	below: {
-		fixed: belowVisible - menuMinH > 0,
-		scroll: belowBottom - menuMinH > 0
-	},
-	above: {
-		fixed: triggerPosition.top - menuMinH > 0,
-		scroll: aboveTop - menuMinH > 0
-	}
-};
-if (!willFit[pos].fixed) {
-	const autoPos = (willFit[nPos].fixed) ? nPos : (aboveTop < belowBottom ? 'below' : 'above');
-	pos = (!position) ? autoPos : (!willFit[nPos].fixed && willFit[pos].scroll ? pos : autoPos)
-}
-console.log(pos);
-if (icache.get('position') === 'above') {
-	icache.set('isAbove', true)
-}
-*/

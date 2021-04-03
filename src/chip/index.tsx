@@ -3,15 +3,10 @@ import { RenderResult } from '@dojo/framework/core/interfaces';
 import theme, { ThemeProperties, Keys, Variants } from '../middleware/theme';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
-import * as buttonCss from '../theme/material/button.m.css';
 import * as css from '../theme/material/chip.m.css';
 import Icon from '../icon/index';
 
 export interface ChipProperties extends ThemeProperties {
-	/** The variant for the input: 'flat', 'outlined', 'raised', 'shaped'
-	 * 'flat' by default
-	 */
-	variant?: Variants;
 	/** A callback when the close icon is clicked, if `closeRenderer` is not provided a default X icon will be used */
 	onClose?(): void;
 	/** An optional callback for the the widget is clicked */
@@ -20,6 +15,8 @@ export interface ChipProperties extends ThemeProperties {
 	disabled?: boolean;
 	/** Indicates whe "checked" state of the widget, will be passed to the icon renderer */
 	checked?: boolean;
+	/** */
+	inline?: boolean;
 }
 
 export interface ChipChildren {
@@ -36,27 +33,28 @@ const factory = create({ theme })
 	.children<ChipChildren | RenderResult>();
 
 export default factory(function Chip({ properties, children, middleware: { theme } }) {
-	const {
-		onClose, onClick, disabled, checked,
-		variant = 'flat' as (keyof typeof buttonCss)
-	} = properties();
 	const themedCss = theme.classes(css);
+	const {
+		onClose, onClick, disabled, checked, inline,
+		variant = 'flat' as (keyof typeof themedCss)
+	} = properties();
 	const [{ icon, closeIcon, label: l} = {} as any] = children();
 	const label = (!!l ? l : (!l && !!children()) ?
 		children() : void 0) || void 0;
 	const clickable = !disabled && onClick;
 	return (
-		<div
+		<span
 			key="root"
 			classes={[
 				theme.variant(),
-				theme.sized(ui),
-				theme.spaced(ui),
-				theme.colored(colors),
-				theme.animated(buttonCss),
-				buttonCss.root,
-				buttonCss[variant],
 				themedCss.root,
+				theme.shaped(themedCss),
+				theme.sized(ui),
+				theme.colored(colors),
+				theme.elevated(ui),
+				theme.spaced(ui),
+				theme.animated(themedCss),
+				inline && themedCss.inline,
 				disabled && themedCss.disabled,
 				clickable && themedCss.clickable
 			]}
@@ -100,12 +98,12 @@ export default factory(function Chip({ properties, children, middleware: { theme
 				>
 					{closeIcon || (
 						<Icon
-							type="closeIcon"
+							type="close"
 							classes={{ '@dojo/widgets/icon': { icon: [themedCss.icon] } }}
 						/>
 					)}
 				</span>
 			)}
-		</div>
+		</span>
 	);
 });

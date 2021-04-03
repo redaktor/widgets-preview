@@ -1,14 +1,20 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
 import TextInput from '@dojo/widgets/text-input';
 
 const factory = create({ icache });
+const greet = "Hello World!";
 
-const Example = factory(function({ middleware: { icache } }) {
-	const variant = 'flat';
-	return (
-		<virtual>
+const Overview = factory(function({ middleware: { icache } }) {
+	icache.getOrSet('value', greet);
+	const variant = 'filled';
+	return (<Example spaced={true}>
+		<span>
 			<p>Medium sized input variants</p>
+			<div class="flexRow">
+				<TextInput>Input label</TextInput>
+			</div>
 			<div class="flexRow">
 				<TextInput variant='flat'>flat</TextInput>
 				<TextInput variant='filled'>filled</TextInput>
@@ -16,7 +22,6 @@ const Example = factory(function({ middleware: { icache } }) {
 				<TextInput variant='raised'>raised</TextInput>
 				<TextInput variant='shaped'>shaped</TextInput>
 			</div>
-			<br />
 			<div class="flexRow">
 				<TextInput variant='flat' color='secondary'>flat</TextInput>
 				<TextInput variant='filled' color='secondary'>filled</TextInput>
@@ -24,12 +29,14 @@ const Example = factory(function({ middleware: { icache } }) {
 				<TextInput variant='raised' color='secondary'>raised</TextInput>
 				<TextInput variant='shaped' color='secondary'>shaped</TextInput>
 			</div>
+			<br />
 			<p>All the sizes</p>
 			<div class="flexRow">
 				<TextInput
 					size='xs'
 					variant={variant}
-					initialValue="Hello World!"
+					initialValue={greet}
+					value={icache.get('value')}
 					onValue={(value) => {
 						icache.set('value', value);
 					}}
@@ -37,7 +44,8 @@ const Example = factory(function({ middleware: { icache } }) {
 				<TextInput
 					size='s'
 					variant={variant}
-					initialValue="Hello World!"
+					initialValue={greet}
+					value={icache.get('value')}
 					onValue={(value) => {
 						icache.set('value', value);
 					}}
@@ -45,6 +53,8 @@ const Example = factory(function({ middleware: { icache } }) {
 				<TextInput
 					size='m'
 					variant={variant}
+					initialValue={greet}
+					value={icache.get('value')}
 					onValue={(value) => {
 						icache.set('value', value);
 					}}
@@ -52,6 +62,8 @@ const Example = factory(function({ middleware: { icache } }) {
 				<TextInput
 					size='l'
 					variant={variant}
+					initialValue={greet}
+					value={icache.get('value')}
 					onValue={(value) => {
 						icache.set('value', value);
 					}}
@@ -59,6 +71,8 @@ const Example = factory(function({ middleware: { icache } }) {
 				<TextInput
 					size='xl'
 					variant={variant}
+					initialValue={greet}
+					value={icache.get('value')}
 					onValue={(value) => {
 						icache.set('value', value);
 					}}
@@ -66,14 +80,16 @@ const Example = factory(function({ middleware: { icache } }) {
 				<TextInput
 					size='xxl'
 					variant={variant}
+					initialValue={greet}
+					value={icache.get('value')}
 					onValue={(value) => {
 						icache.set('value', value);
 					}}
 				>xxl</TextInput>
 			</div>
 			<p>The latest text input is: "{icache.getOrSet('value', '')}"</p>
-		</virtual>
-	);
+		</span>
+	</Example>);
 });
 
-export default Example;
+export default Overview;

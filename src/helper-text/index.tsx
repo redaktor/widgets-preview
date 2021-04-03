@@ -1,5 +1,7 @@
-import theme from '@dojo/framework/core/middleware/theme';
+import theme from '../middleware/theme';
 import { create, tsx } from '@dojo/framework/core/vdom';
+import * as ui from '../theme/material/_ui.m.css';
+import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/helper-text.m.css';
 
 export interface HelperTextProperties {
@@ -29,7 +31,13 @@ export default factory(function HelperText({ properties, middleware: { theme } }
 			]}
 		>
 			{text && (
-				<p key="text" classes={themedCss.text} aria-hidden={'true'} title={text}>
+				<p key="text" classes={[
+					themedCss.text,
+					theme.sized(ui),
+					theme.sized(themedCss),
+					theme.spaced(ui, false),
+					theme.colored(colors),
+				]} aria-hidden={'true'} title={text}>
 					{text}
 				</p>
 			)}

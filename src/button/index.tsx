@@ -1,4 +1,4 @@
-import { formatAriaProperties, Variants, PointerDevices } from '../common/util';
+import { formatAriaProperties, Variants, Elevation, PointerDevices } from '../common/util';
 import { DimensionResults } from '@dojo/framework/core/meta/Dimensions';
 import { dimensions } from '@dojo/framework/core/middleware/dimensions';
 import { focus } from '@dojo/framework/core/middleware/focus';
@@ -16,15 +16,9 @@ popup?: { expanded?: boolean; id?: string; type?: string } | boolean;
 export interface ButtonProperties extends ThemeProperties {
 	/** Custom aria attributes */
 	aria?: { [key: string]: string | null };
-	/** The variant for the button: 'flat', 'outlined', 'raised', 'shaped'
-	 * 'flat' by default
-	 */
-	variant?: Variants;
-	/* border-radius, not spaced */
+	/** border-radius, not spaced */
 	group?: boolean;
-	/* Shadow */
-	depth?: 0|2|4|8;
-	/* Full width */
+	/** Full width */
 	responsive?: boolean;
 	/** Whether the button is disabled or clickable */
 	disabled?: boolean;
@@ -69,11 +63,13 @@ function setClickDimensions(e: PointerEvent, devices: string[], dim: DimensionRe
 		(e as any).offsetY = (e.clientY - dim.position.top)||-1
 	}
 	const doSet = devices.indexOf(e.pointerType) > -1;
+	// console.log(doSet);
 	if (!!doSet && !!elW && typeof e.offsetX === 'number' && e.offsetX > -1) {
 		const btnW = elW / 2 + Math.abs(elW / 2 - e.offsetX);
 		docStyle.setProperty('--redaktor-btn-w', `${btnW}px`);
 		docStyle.setProperty('--redaktor-btn-x', `${e.offsetX}px`);
 		docStyle.setProperty('--redaktor-btn-y', `${e.offsetY}px`);
+		// console.log(btnW, e.offsetX, e.offsetY);
 	}
 	return e
 }
@@ -90,8 +86,6 @@ export const Button = factory(function Button({
 	const {
 		aria = {},
 		animated = true,
-		variant = 'flat' as (keyof typeof themedCss),
-		depth = 0,
 		group,
 		responsive,
 		disabled,
@@ -117,16 +111,15 @@ export const Button = factory(function Button({
 			classes={[
 				theme.variant(),
 				themedCss.root,
-				themedCss[variant],
+				theme.shaped(themedCss),
 				theme.sized(ui),
 				theme.colored(colors),
+				theme.elevated(ui),
 				theme.animated(themedCss),
 				group ? themedCss.group : theme.spaced(ui),
 				responsive || group ? themedCss.responsive : null,
 				disabled ? themedCss.disabled : null,
-				pressed ? themedCss.pressed : null,
-				depth === 8 ? themedCss.raised8 :
-					(depth === 4 ? themedCss.raised4 : (depth === 2 ? themedCss.raised2 : null))
+				pressed ? themedCss.pressed : null
 			]}
 			disabled={disabled}
 			id={idBase}
@@ -143,6 +136,7 @@ export const Button = factory(function Button({
 			onpointerenter={() => onOver && onOver()}
 			onpointerleave={() => onOut && onOut()}
 			onpointerdown={(event: PointerEvent) => {
+				// TODO: not fired in Safari 12
 				event.stopPropagation();
 				const devs: PointerDevices = !animated ? [] :
 					(Array.isArray(animated) ? animated : devicesAll);

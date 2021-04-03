@@ -4,6 +4,8 @@
 /*
 
 */
+import { CardProperties } from '../../../../card/';
+import { RedaktorActor } from '../../../../common/interfaces';
 const topics = [
 	true,
 	{color: [220,0,5], name: 'DEPOL'},
@@ -85,24 +87,25 @@ const places = ['Santa Monica', 'Café Du Bonheur', 'Folkwang Museum Essen'];
 
 const events = ['ActivityPub Conference 2020', 'Fridays For Future Berlin', 'Dinner at Yafo'];
 
-const ApTypes = {
-	note: 1,
-	article: 1,
-	image: 1,
-	audio: 1,
-	video: 1,
-	event: 1,
-	place: 1,
-	page: 1,
-	/* TODO
-	chat: 1,
-	redaktor: 1,
-	terminal: 1,
-	map: 1 */
-};
-const types = Object.keys(ApTypes);
+const actTypes = ['Activity','Accept','Add','Announce','Arrive',
+'Block','Create','Delete','Dislike','Flag','Follow','Ignore','Invite','Join','Leave',
+'Like','Listen','Move','Offer','Question','Reject','Read','Remove','Travel','Undo','Update','View'];
+const types = ['Article','Audio','Document','Event','Image',
+'Note','Page','Place','Video','Profile','Relationship','Link'];
+
 const privacies = ['private', 'group', 'public'];
 
+function activityPubContext(sampleID: string = 'sample') {
+	return (o: any, i: number) => {
+		if (!o['@context']) {
+			o['@context'] = "https://www.w3.org/ns/activitystreams"
+		}
+		if (!o['id']) {
+			o.id = `${sampleID}ID${i}`
+		}
+		return o
+	}
+}
 function generateArticleTitle() {
 	const template = names[Math.floor(Math.random() * names.length)];
 
@@ -126,24 +129,117 @@ function generateArticleTitle() {
 	});
 }
 
+
+const actors = [
+	{
+	  "type": "Application",
+		"id": "https://example.com/",
+	  "name": "Exampletron 3000"
+	}, {
+	  "type": "Group",
+		"id": "https://austin.peterjoannou.co.uk/",
+	  "name": "Big Beards of Austin",
+	  "summary": "Beards longer than walls"
+	}, {
+	  "type": "Organization",
+		"id": "https://redaktor.me/",
+	  "name": "redaktor Foundation"
+	}, {
+	  "type": "Person",
+		"id": "https://alyssa.redaktor.me/",
+	  "name": "Alyssa P. Hacker"
+	}, {
+	  "type": "Person",
+		"id": "https://robin.redaktor.me/",
+	  "name": "Robin Rebel",
+	  "summary": generateArticleTitle()
+	}, {
+	  "type": "Person",
+		"id": "https://ben.example.com/",
+	  "name": "Ben Bitdiddle"
+	}, {
+	  "type": "Person",
+		"id": "https://fayola.example.com/",
+	  "name": "Fayola",
+	  "summary": generateArticleTitle()
+	}, {
+	  "type": "Person",
+		"id": "https://sara.example.com/",
+	  "name": "Sara Talk",
+	  "summary": generateArticleTitle()
+	}, {
+	  "type": "Person",
+		"id": "https://chris.example.com/",
+	  "name": "Chris",
+	  "summary": generateArticleTitle()
+	}, {
+	  "type": "Person",
+		"id": "https://amy.example.com/",
+	  "name": "Amy",
+	  "summary": generateArticleTitle()
+	}, {
+	  "type": "Person",
+		"id": "https://evan.example.com/",
+	  "name": "Evan",
+	  "summary": generateArticleTitle()
+	}, {
+	  "@context": ["https://www.w3.org/ns/activitystreams",
+	               {"@language": "ja"}],
+	  "type": "Person",
+	  "id": "https://kenzoishii.example.com/",
+	  "preferredUsername": "kenzoishii",
+	  "name": "石井健蔵",
+	  "summary": "この方はただの例です",
+	  "icon": [
+	    "https://kenzoishii.example.com/image/165987aklre4"
+	  ]
+	}
+].map(activityPubContext('actor'));
+
+const fixedActors: RedaktorActor[] = [
+	{
+		type: 'Person',
+		id: 'https://mstdn.io/@tmarble',
+		name: `Tom Marble`,
+		summary: `Consultant specializing in: Clojure, Debian GNU/Linux, cybersecurity, performance analysis, and FLOSS hw/sw/legal policy.`,
+		handle: '@tmarble@mstdn.io',
+		preferredUsername: 'Tom Marble',
+		follow: 'follower',
+		icon: 'https://media.mstdn.io/mstdn-media/accounts/avatars/000/067/970/original/4431a7747fe3602a.jpg'
+	}, {
+		type: 'Person',
+		id: 'https://mastodon.social/@sl007',
+		name: `Sebastian Lasse - Consultant and Coach`,
+		summary: `Sebastian Lasse is a photojournalist (concerned photography), filmmaker and developer. Currently building a decentralized ActivityPub FLOSS CMS`,
+		handle: '@sl007@mastodon.social',
+		follow: 'me',
+		icon: 'https://files.mastodon.social/accounts/avatars/000/193/100/original/7f01a5239b42dd26.png'
+	}, {
+		type: 'Person',
+		id: 'https://octodon.social/@cwebber',
+		name: `Christopher Lemmer Webber`,
+		summary: `User freedom activist, ActivityPub co-editor,
+Spritely project lead, parenthesis enthusiast, occasional artist.`,
+		handle: '@cwebber@octodon.social',
+		preferredUsername: 'Christopher Lemmer Webber',
+		petName: 'Chris',
+		follow: 'mutual',
+		icon: 'https://assets.octodon.social/accounts/avatars/000/050/423/original/f460dcb4e096ebf9.png'
+	}
+].map(activityPubContext('fixedActor'));
+
+fixedActors[0].edgeNames = [fixedActors[2]];
+fixedActors[2].edgeNames = [
+	fixedActors[0],
+	actors[1],
+	actors[2],
+	actors[3],
+	actors[5]
+];
+
 /**
  * Grabs content for our list. This is async because it could be pulling data from a server.
  */
-interface CardProps {
-	name: string;
-	summary: string;
-	kicker?: string;
-	aspectRatio?: '1:1' | '3:2' | '16:9' | '4:1';
-	mediaSrc: any;
-	type: string;
-	privacy: string;
-	bookmark: boolean;
-	topic: boolean;
-	actorName: string;
-	handle: string;
-	activity: string;
-	time: string;
-}
 const mediaSrc = require('../card/img/card-photo.jpg');
 const mediaSrc41 = require('../card/img/card-photo-1-4.jpg');
 const mediaSrc11 = require('../card/img/card-photo-1-1.jpg');
@@ -155,66 +251,75 @@ const medias = [
 	{mediaSrc: mediaSrc23, aspectRatio: '3:2'}
 ];
 
-export function getListItems(count = 50): Promise<CardProps[]> {
+export function getListItems(count = 50): Promise<CardProperties[]> {
 	const articles: any[] = [];
 
 	for (let i = 0; i < count; i++) {
-		const type = i < 2 ? 'article' : types[Math.floor(Math.random() * types.length)];
+		const type = i < 2 ? 'Article' : (
+			i === 2 ? 'Event' : (i === 3 ? 'Place' : types[Math.floor(Math.random() * types.length)])
+		);
 
-		const name = type === 'place' ? places[Math.floor(Math.random() * places.length)] :
-			(type === 'event' ? events[Math.floor(Math.random() * events.length)] : generateArticleTitle());
+		const name = type === 'Place' ? places[Math.floor(Math.random() * places.length)] :
+			(type === 'Event' ? events[Math.floor(Math.random() * events.length)] : generateArticleTitle());
 
-		const sentences = Math.round(Math.random() * (type === 'event' || type === 'place' ? 3 : 5));
+		let sentences = Math.round(Math.random() * (type === 'Event' || type === 'Place' ? 3 : 5));
 		let summary = `${type} ${generateArticleTitle()}`;
 		for (let j = 0; j < sentences; j++) {
 			summary += '. ' + generateArticleTitle();
 		}
-		/*
+		let content = null;
+		if (type === 'Note' && Math.random() > 0.3) {
+			sentences = Math.round(Math.random() * 50);
+			content = `${type} ${generateArticleTitle()}`;
+			for (let j = 0; j < sentences; j++) {
+				content += '. ' + generateArticleTitle();
+			}
+		}
 
-		note: 1,
-		article: 1,
-		image: 1,
-		audio: 1,
-		video: 1,
-		event: 1,
-		place: 1,
-		page: 1,
-
-		TODO
-		chat: 1,
-		redaktor: 1,
-		terminal: 1,
-		map: 1 ::
-		*/
-		const media = i < 1 || type === 'image' ? {mediaSrc: mediaSrc23, aspectRatio: '3:2'} : (
-			type === 'video' || type === 'page' ? {mediaSrc} : (
-				type === 'audio' ? {mediaSrc: mediaSrc11, aspectRatio: '1:1'} : (
-					type === 'event' ? {mediaSrc: mediaSrc41, aspectRatio: '4:1'} :
+		const media = i < 1 || type === 'Image' ? {mediaSrc: mediaSrc23, aspectRatio: '3:2'} : (
+			type === 'Video' || type === 'Page' ? {mediaSrc} : (
+				type === 'Audio' ? {mediaSrc: mediaSrc11, aspectRatio: '1:1'} : (
+					type === 'Event' ? {mediaSrc: mediaSrc41, aspectRatio: '4:1'} :
 						(Math.random() > 0.5 ? medias[Math.floor(Math.random() * medias.length)] : {aspectRatio: '16:9'})
 				)
 			)
 		);
 
-		const kicker = type === 'place' ? coordinates[Math.floor(Math.random() * coordinates.length)] : null;
-
+		const kicker = type === 'Place' ? coordinates[Math.floor(Math.random() * coordinates.length)] : null;
 
 		articles.push({
+			"@context": "https://www.w3.org/ns/activitystreams",
+			id: `activityID${i}`,
+			type: i < 3 ? 'Announce' : actTypes[Math.floor(Math.random() * actTypes.length)],
 			name,
-			type,
 			summary,
+			content,
 			kicker,
 			privacy: privacies[Math.floor(Math.random() * privacies.length)],
 			bookmark: Math.random() > 0.75 ? bookmarks[Math.floor(Math.random() * bookmarks.length)] : false,
 			topic: Math.random() > 0.65 ? topics[Math.floor(Math.random() * topics.length)] : false,
-			activity: Math.random() > 0.5 ? 'Susanne Sharer shared' : null,
-			actorName: `Lorem Ipsum`,
-			handle: '@sl007@mastodon.social',
-			time: '23m ago',
+			published: `${i+1}m ago`,
+
+			actor: i < 3 ? fixedActors[i] : actors[Math.floor(Math.random() * actors.length)],
+
+			object: {
+				id: `#${i}`,
+				type,
+				name,
+				summary,
+				content,
+				kicker,
+				privacy: privacies[Math.floor(Math.random() * privacies.length)],
+				bookmark: Math.random() > 0.75 ? bookmarks[Math.floor(Math.random() * bookmarks.length)] : false,
+				topic: Math.random() > 0.65 ? topics[Math.floor(Math.random() * topics.length)] : false,
+				published: `${i+23}m ago`,
+				attributedTo: actors[Math.floor(Math.random() * actors.length)]
+			},
 			...media
 		});
 	}
 
-	return new Promise<CardProps[]>((resolve) => {
+	return new Promise<CardProperties[]>((resolve) => {
 		setTimeout(() => {
 			resolve(articles);
 		}, 300);

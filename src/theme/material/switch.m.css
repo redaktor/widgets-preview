@@ -2,22 +2,79 @@
 	--checkbox-ripple-alpha: 1;
 	--checkbox-ripple-size: 2.5;
 	composes: ui ui-transition from './_ui.m.css';
-	color: inherit;
 	user-select: none;
+	padding: 0 !important;
 }
 .animated { composes: animated from './checkbox.m.css'; }
 .disabled { composes: disabled from './checkbox.m.css'; }
+
+.track {
+	--track-h: calc(var(--size) * var(--caph) + var(--pt));
+	--thumb-h: calc(var(--h) - var(--pt));
+	display: inline-block;
+	min-width: calc(var(--h) * 1.618 + var(--plr));
+	position: relative;
+	user-select: none;
+	z-index: 0;
+	margin-bottom: var(--mb) !important;
+}
+
+
+.track::before {
+	content: "";
+	display: inline-block;
+	width: calc(var(--thumb-h) * 1.618);
+	height: var(--track-h);
+	border-radius: calc(var(--thumb-h) * 0.5);
+	margin-top: calc(var(--pt) * -1);
+}
+.flat .track::before {
+	background: linear-gradient(to right, var(--ui-flat-off) 50%, var(--ui-flat-hover) 50%);
+}
+.filled .track::before {
+	background: linear-gradient(to right, var(--ui-filled-off) 50%, var(--ui-filled-on) 50%);
+}
+.raised .track::before {
+	background: linear-gradient(to right, var(--ui-flat-off) 50%, var(--bg) 50%);
+	border: var(--ui-border-width-emphasized) solid var(--m-600);
+  border-top-color: var(--m-400);
+  border-right-color: var(--m-400);
+	box-shadow: var(--ui-dp-2);
+}
+.outlined .track::before {
+	border: var(--ui-border-width-emphasized) solid var(--ui-outline);
+	clip-path: inset(100% 44% 100% 100%);
+}
+.outlined .input:checked + .track::before {
+	clip-path: inset(100% 100% 100% 44%);
+}
+.shaped .track::before {
+	height: var(--track-h);
+	top: 0;
+	border-radius: calc(var(--track-h) * 0.5);
+	border: var(--ui-border-width) solid var(--ui-outline);
+}
+
+/*
+.root:not(.raised):not(.shaped) .input:checked + .track::before {
+	border-color: var(--ui-outline-hover);
+}
+*/
+
 .thumb {
-	composes: box from './checkbox.m.css';
+	composes: box from './_ui.m.css';
 	display: flex;
 	position: absolute;
-	top: 0px;
+	top: calc(var(--track-h) - (var(--h) / 2) + 1px);
 	left: 0px;
+	height: var(--thumb-h);
+	min-width: var(--thumb-h);
+	margin-bottom: 0;
+	margin-right: var(--plr);
 	border-radius: 50%;
 	z-index: 1;
 	box-shadow: var(--ui-dp-2);
-	transform: translate(calc(var(--border-width) * -1), 0);
-	will-change: background-color,border-color,transform;
+	transform: translate(calc(var(--ui-border-width-emphasized,2px) * -1), 0);
 	transition:  background-color var(--ui-dpd-1) var(--ui-easing),
 		border-color var(--ui-dpd-1) var(--ui-easing),
 		transform var(--ui-dpd-1) var(--ui-easing);
@@ -48,57 +105,6 @@
 	height: 100% !important;
 	z-index: 2;
 }
-
-.track {
-	display: inline-block;
-	vertical-align: calc(var(--h) * 0.75 - var(--pt) - var(--ui-border-width));
-	margin-bottom: 0 !important;
-	min-width: calc(var(--h) * 1.618 + var(--plr));
-	position: relative;
-	user-select: none;
-	z-index: 0;
-}
-.track::before {
-	content: "";
-	display: block;
-	width: calc(var(--h) * 1.618);
-	height: calc(var(--h) * 0.5);
-	position: absolute;
-	top: calc(var(--h) * 0.25);
-	border-radius: calc(var(--h) * 0.25);
-}
-.flat .track::before {
-	background: linear-gradient(to right, var(--ui-flat-off) 50%, var(--ui-flat-hover) 50%);
-}
-.filled .track::before {
-	background: linear-gradient(to right, var(--ui-filled-off) 50%, var(--ui-filled-on) 50%);
-}
-.raised .track::before {
-	background: linear-gradient(to right, var(--ui-flat-off) 50%, var(--bg) 50%);
-	border: var(--ui-border-width-emphasized) solid var(--m-600);
-  border-top-color: var(--m-400);
-  border-right-color: var(--m-400);
-	box-shadow: var(--ui-dp-2);
-}
-.outlined .track::before {
-	border: var(--ui-border-width-emphasized) solid var(--ui-outline);
-	clip-path: inset(100% 44% 100% 100%);
-}
-.outlined .input:checked + .track::before {
-	clip-path: inset(100% 100% 100% 44%);
-}
-.shaped .track::before {
-	height: var(--h);
-	top: 0;
-	border-radius: calc(var(--h) * 0.5);
-	border: var(--ui-border-width) solid var(--ui-outline);
-}
-
-/*
-.root:not(.raised):not(.shaped) .input:checked + .track::before {
-	border-color: var(--ui-outline-hover);
-}
-*/
 
 
 .checked {

@@ -1,4 +1,5 @@
 import * as accordionPane from './accordion.m.css';
+import * as audio from './audio.m.css';
 import * as avatar from './avatar.m.css';
 import * as breadcrumbGroup from './breadcrumb-group.m.css';
 import * as button from './button.m.css';
@@ -7,6 +8,7 @@ import * as calendar from './calendar.m.css';
 import * as checkboxGroup from './checkbox-group.m.css';
 import * as checkbox from './checkbox.m.css';
 import * as chip from './chip.m.css';
+import * as combobox from './combobox.m.css';
 import * as dateInput from './date-input.m.css';
 import * as dialog from './dialog.m.css';
 import * as gridBody from './grid-body.m.css';
@@ -28,17 +30,15 @@ import * as list from './list.m.css';
 import * as menuItem from './menu-item.m.css';
 import * as multiSelectTypeahead from './multi-select-typeahead.m.css';
 import * as nativeSelect from './native-select.m.css';
-import * as outlinedButton from './outlined-button.m.css';
 import * as pagination from './pagination.m.css';
 import * as passwordInput from './password-input.m.css';
 import * as progress from './progress.m.css';
 import * as radioGroup from './radio-group.m.css';
 import * as radio from './radio.m.css';
-import * as raisedButton from './raised-button.m.css';
 import * as rangeSlider from './range-slider.m.css';
 import * as select from './select.m.css';
 import * as slidePane from './slide-pane.m.css';
-import * as slider from './slider.m.css';
+import * as slider from './progress.m.css';
 import * as snackbar from './snackbar.m.css';
 import * as switchControl from './switch.m.css';
 import * as tabController from './tab-controller.m.css';
@@ -56,6 +56,7 @@ import * as light from './variants/light.m.css';
 export default {
 	theme: {
 		'@dojo/widgets/accordion': accordionPane,
+		'@dojo/widgets/audio': audio,
 		'@dojo/widgets/avatar': avatar,
 		'@dojo/widgets/breadcrumb-group': breadcrumbGroup,
 		'@dojo/widgets/button': button,
@@ -64,6 +65,7 @@ export default {
 		'@dojo/widgets/checkbox': checkbox,
 		'@dojo/widgets/card': card,
 		'@dojo/widgets/chip': chip,
+		'@dojo/widgets/combobox': combobox,
 		'@dojo/widgets/date-input': dateInput,
 		'@dojo/widgets/dialog': dialog,
 		'@dojo/widgets/grid-body': gridBody,
@@ -85,13 +87,11 @@ export default {
 		'@dojo/widgets/menu-item': menuItem,
 		'@dojo/widgets/multi-select-typeahead': multiSelectTypeahead,
 		'@dojo/widgets/native-select': nativeSelect,
-		'@dojo/widgets/outlined-button': outlinedButton,
 		'@dojo/widgets/pagination': pagination,
 		'@dojo/widgets/password-input': passwordInput,
 		'@dojo/widgets/progress': progress,
 		'@dojo/widgets/radio-group': radioGroup,
 		'@dojo/widgets/radio': radio,
-		'@dojo/widgets/raised-button': raisedButton,
 		'@dojo/widgets/range-slider': rangeSlider,
 		'@dojo/widgets/select': select,
 		'@dojo/widgets/slide-pane': slidePane,
@@ -110,6 +110,7 @@ export default {
 	},
 	variants: {
 		default: dark,
-		dark
+		dark,
+		light
 	}
 };

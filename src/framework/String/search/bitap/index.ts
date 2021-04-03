@@ -48,7 +48,7 @@ export function patternAlphabet(pattern: string) {
 export default class Bitap {
   protected properties: BitapProperties;
   private pattern: string;
-  private patternAlphabet: string = '';
+  private patternAlphabet = '';
   constructor (pattern: string, options: BitapProperties = {}) {
     const { maxPatternLength = 36 } = this.properties = {
       // Approximately where in the text is the pattern expected to be found?

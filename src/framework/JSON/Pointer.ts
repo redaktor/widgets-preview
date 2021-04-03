@@ -10,7 +10,7 @@ const POINTER_OPTIONS: PatchOptions = {
 	protectRoot: true,
 	mutateDocument: false
 }
-//The pointer / doesn’t point to the root, it points to a key of '' on the root.
+// The pointer / doesn’t point to the root, it points to a key of '' on the root.
 export class JSONpointer {
 	constructor (
 		protected root: any = {}, protected options: PatchOptions = POINTER_OPTIONS
@@ -34,11 +34,11 @@ export class JSONpointer {
 	}
 
 	/**
-	* Lookup a json pointer in an object
-	*
-	* @param {String|Array} pointer
-	* @returns {*}
-	*/
+	 * Lookup a json pointer in an object
+	 *
+	 * @param {String|Array} pointer
+	 * @returns {*}
+	 */
 	get(pointer?: _S) {
 		const refTokens = this.tokens(pointer);
 		if (!refTokens) { return void 0 }
@@ -47,8 +47,8 @@ export class JSONpointer {
 
 		let o = this.root;
 
-		for (var i = 0; i < L; ++i) {
-	    var tok = refTokens[i];
+		for (let i = 0; i < L; ++i) {
+	    const tok = refTokens[i];
 			if (tok === '#') { continue }
 	    if (typeof o !== 'object' || !(tok in o)) { return o }
 	    o = o[tok];
@@ -57,22 +57,22 @@ export class JSONpointer {
 	}
 
 	/**
-	* Sets a value on an object
-	*
-	* @param {String|Array} pointer
-	* @param value
-	*/
+	 * Sets a value on an object
+	 *
+	 * @param {String|Array} pointer
+	 * @param value
+	 */
 	set(pointer: _S, value: any, replacing: boolean = true) {
 		const refTokens = this.tokens(pointer);
-		//console.log('refTokens',refTokens);
+		// console.log('refTokens',refTokens);
 		if (!refTokens) { return void 0 }
 		if (this.options.protectRoot && !refTokens.length) {
 			throw Error('Cannot set the root object')
 		}
 		let key: number | string = refTokens[0];
 		let o = this.root;
-		for (var i = 0; i < refTokens.length - 1; ++i) {
-			var tok = refTokens[i];
+		for (let i = 0; i < refTokens.length - 1; ++i) {
+			let tok = refTokens[i];
 			if (tok === '-' && Array.isArray(o)) {
 			  tok = `${o.length}`;
 			}
@@ -90,7 +90,7 @@ export class JSONpointer {
 				if (this.options.validate && !isIntegerString(key)) {
 					throw new PatchError('OPERATION_PATH_ILLEGAL_ARRAY_INDEX');
 				} else if(isIntegerString(key)) { // only parse key when it's an integer for `arr.prop` to work
-					if (this.options.validate && parseInt(key) > L) {
+					if (this.options.validate && parseInt(key, 10) > L) {
 						throw new PatchError('OPERATION_VALUE_OUT_OF_BOUNDS');
 					}
 					key = ~~key;
@@ -108,17 +108,17 @@ export class JSONpointer {
 	}
 
 	/**
-	* Removes an attribute
-	*
-	* @param {String|Array} pointer
-	*/
+	 * Removes an attribute
+	 *
+	 * @param {String|Array} pointer
+	 */
 	remove(pointer: _S): any {
 	  const refTokens = this.tokens(pointer);
-	  var finalToken = refTokens[refTokens.length - 1];
+	  const finalToken = refTokens[refTokens.length - 1];
 	  if (finalToken === undefined) { return void 0 }
 		const parent = this.get(refTokens.slice(0, -1));
     if (Array.isArray(parent)) {
-      var index = +finalToken;
+      let index = +finalToken;
       if (index < parent.length) {
       	Array.prototype.splice.call(parent, index, 1);
 			}
@@ -129,32 +129,32 @@ export class JSONpointer {
 	}
 
 	/**
-	* Returns a (pointer -> value) dictionary for an object
-	*
-	* @param {function} descend
-	* @returns {}
-	*/
+	 * Returns a (pointer -> value) dictionary for an object
+	 *
+	 * @param {function} descend
+	 * @returns {}
+	 */
 	dict(descend?: any) {
-	  var results: any = {};
+	  const results: any = {};
 	  this.walk((value: any, pointer: string) => { results[pointer] = value }, descend);
 	  return results;
 	}
 
 	/**
-	* Iterates over an object
-	* Iterator: function (value, pointer) {}
-	*
-	* @param obj
-	* @param {function} iterator
-	* @param {function} descend
-	*/
+	 * Iterates over an object
+	 * Iterator: function (value, pointer) {}
+	 *
+	 * @param obj
+	 * @param {function} iterator
+	 * @param {function} descend
+	 */
 	walk(iterator: pointerCB, descend: any = function (value: any) {
-		var type = Object.prototype.toString.call(value);
+		const type = Object.prototype.toString.call(value);
 		return type === '[object Object]' || type === '[object Array]';
 	}) {
-	  var refTokens: string[] = [];
+	  const refTokens: string[] = [];
 		const next = (cur: any) => {
-			for (var key in cur) {
+			for (let key in cur) {
 				refTokens.push(String(key));
 				if (descend(cur[key])) {
 					next(cur[key]);

@@ -1,8 +1,63 @@
 .root {
-	composes: mdc-list-item from '@material/list/dist/mdc.list.css';
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	white-space: nowrap;
+	overflow: hidden;
+	border: none;
+	min-height: var(--line2);
+	padding-left: var(--line);
+	padding-right: calc(var(--line) * 1.5);
+	background-color: var(--ui-bg);
 }
 
 .active {
-	border: none;
-	background: var(--mdc-theme-background-active);
+	height: 100%;
+	box-shadow: none;
+}
+.active:not(.active:hover) {
+	padding-left: calc(var(--line) * 0.5);
+	border-left: calc(var(--line) * 0.5) solid var(--ui-focus);
+}
+.animated.flat,
+.animated.outlined {
+	background-color: var(--paper);
+}
+.animated.outlined {
+	border-left: var(--ui-border-width-emphasized,2px) solid var(--ui-outline);
+	border-right: var(--ui-border-width-emphasized,2px) solid var(--ui-outline);
+}
+.animated.outlined:last-child {
+	border-bottom: var(--ui-border-width-emphasized,2px) solid var(--ui-outline);
+}
+
+.animated.flat:not(.disabled):not(.selected):hover {
+	color: var(--text-flat-hover);
+	background-color: var(--ui-flat-hover);
+}
+.animated.raised,
+.animated.shaped {
+	color: var(--text-inverse);
+	background-color: var(--native-input);
+	border-left: var(--ui-border-width,1px) solid var(--ui-outline);
+	border-right: var(--ui-border-width,1px) solid var(--ui-outline);
+}
+.animated.raised:last-child,
+.animated.shaped:last-child {
+	border-bottom: var(--ui-border-width,1px) solid var(--ui-outline);
+}
+.animated.filled:not(.disabled):not(.selected):hover,
+.animated.raised:not(.disabled):not(.selected):hover {
+	color: var(--text-filled-hover);
+	background-color: var(--ui-filled-off);
+}
+.animated.shaped:not(.disabled):not(.selected):hover {
+	color: var(--text-shaped-hover);
+	background-color: var(--bg);
+}
+
+/* Added to disabled items */
+.disabled {
+	color: grey;
+	font-style: italic;
 }

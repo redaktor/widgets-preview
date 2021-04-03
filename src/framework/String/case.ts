@@ -3,14 +3,14 @@ import { deburr } from './slug';
 import { hasUnicode } from './checks';
 import castSlice from './slice';
 import words from './words';
-//import { each } from '../Collection/each';
+// import { each } from '../Collection/each';
 
 function caseFirstFn(methodName: string) {
   return function(str: string) {
     str = `${str}`;
     const Symbols = hasUnicode(str) ? Array.from(str) : null;
-    var chr: any = Symbols ? Symbols[0] : str.charAt(0);
-    var trailing = Symbols ? castSlice(Symbols, 1).join('') : str.slice(1);
+    const chr: any = Symbols ? Symbols[0] : str.charAt(0);
+    const trailing = Symbols ? castSlice(Symbols, 1).join('') : str.slice(1);
 
     return chr[methodName]() + trailing;
   };
@@ -38,22 +38,22 @@ export function capitalize(str: string) {
   return upperFirst(str);
 }
 /**
-* Converts the first character of `string` to upper case.
-*
-* @static
-* @memberOf _
-* @since 4.0.0
-* @category String
-* @param {string} [string=''] The string to convert.
-* @returns {string} Returns the converted string.
-* @example
-*
-* _.upperFirst('fred');
-* // => 'Fred'
-*
-* _.upperFirst('FRED');
-* // => 'FRED'
-*/
+ * Converts the first character of `string` to upper case.
+ *
+ * @static
+ * @memberOf _
+ * @since 4.0.0
+ * @category String
+ * @param {string} [string=''] The string to convert.
+ * @returns {string} Returns the converted string.
+ * @example
+ *
+ * _.upperFirst('fred');
+ * // => 'Fred'
+ *
+ * _.upperFirst('FRED');
+ * // => 'FRED'
+ */
 export const upperFirst = caseFirstFn('toUpperCase');
 /**
  * Converts the first character of `string` to lower case.

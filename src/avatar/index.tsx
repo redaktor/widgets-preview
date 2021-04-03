@@ -3,13 +3,9 @@ import { theme, ThemeProperties, Variants } from '../middleware/theme';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as buttonCss from '../theme/material/button.m.css';
-import * as css from '../theme/default/avatar.m.css';
+import * as css from '../theme/material/avatar.m.css';
 
 export interface AvatarProperties extends ThemeProperties {
-	/** The variant for the input: 'flat', 'outlined', 'raised', 'shaped'
-	 * 'flat' by default
-	 */
-	variant?: Variants;
 	shape?: 'square' | 'rounded' | 'circle';
 	src?: string;
 	alt?: string;
@@ -31,14 +27,16 @@ export const Avatar = factory(function Avatar({ middleware: { theme }, propertie
 			aria-label={alt}
 			classes={[
 				theme.variant(),
+				theme.shaped(ui),
+				theme.colored(colors),
+				theme.elevated(ui),
 				theme.sized(ui, 'l'),
 				theme.spaced(ui),
-				theme.colored(colors),
-				// theme.animated(buttonCss),
 				buttonCss.root,
-				buttonCss[variant],
 				themeCss.root,
+				buttonCss[variant],
 				themeCss[shape]
+				// theme.animated(themeCss)
 			]}
 			styles={ src ? { backgroundImage: `url(${src})` } : {} }
 		>

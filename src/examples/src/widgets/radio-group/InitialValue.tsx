@@ -1,14 +1,15 @@
-import RadioGroup from '@dojo/widgets/radio-group';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { icache } from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
+import RadioGroup from '@dojo/widgets/radio-group';
 
 const factory = create({ icache });
 
 const App = factory(function({ properties, middleware: { icache } }) {
 	const initialValue = 'tom';
 
-	return (
-		<virtual>
+	return (<Example>
+		<span>
 			<RadioGroup
 				initialValue={initialValue}
 				name="initial-value"
@@ -22,8 +23,8 @@ const App = factory(function({ properties, middleware: { icache } }) {
 				}}
 			</RadioGroup>
 			<pre>{`${icache.getOrSet('value', initialValue)}`}</pre>
-		</virtual>
-	);
+		</span>
+	</Example>);
 });
 
 export default App;

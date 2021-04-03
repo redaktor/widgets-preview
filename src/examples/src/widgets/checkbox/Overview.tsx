@@ -1,14 +1,15 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
 import Checkbox from '@dojo/widgets/checkbox';
 
 const factory = create({ icache });
 
 export default factory(function Overview({ middleware: { icache } }) {
 	const checked = icache.getOrSet('checked', false);
-	const variant = 'flat';
-	return (
-		<div>
+	const variant = 'filled';
+	return (<Example spaced={true}>
+		<span>
 			<p>Medium sized checkbox variants</p>
 			<div class="flexRow">
 				<Checkbox variant='flat' checked={checked}>flat</Checkbox>
@@ -53,6 +54,6 @@ export default factory(function Overview({ middleware: { icache } }) {
 				</Checkbox>
 			</div>
 			<p>See other examples for colors and more</p>
-		</div>
-	);
+		</span>
+	</Example>);
 });

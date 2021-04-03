@@ -1,6 +1,7 @@
 .icon {
 	line-height: inherit;
-	margin-right: 0.5rem;
+	margin-right: 0px;
+	color: var(--text-flat);
 }
 
 .current {

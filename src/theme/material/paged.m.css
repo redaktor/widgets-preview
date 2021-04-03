@@ -1,0 +1,28 @@
+.paged,
+.pager {
+  display: none;
+}
+.pager:checked + .paged {
+  display: inline-block;
+}
+.prev,
+.next {
+	display: inline-block;
+	min-width: var(--touch-target-min, var(--line2, 32px));
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	float: right;
+	cursor: pointer;
+}
+.prev {
+	margin-right: 4px;
+}
+.prev:hover,
+.next:hover {
+	color: var(--ui-filled, #eee);
+}
+.prev i,
+.next i {
+	vertical-align: middle;
+}

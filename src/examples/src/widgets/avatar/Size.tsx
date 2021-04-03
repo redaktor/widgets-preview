@@ -1,10 +1,11 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
+import Example from '../../Example';
 import Avatar from '@dojo/widgets/avatar';
 
 const factory = create();
 
 export default factory(function Basic() {
-	return (
+	return (<Example spaced={true}>
 		<div
 			styles={{
 				width: '400px',
@@ -13,9 +14,10 @@ export default factory(function Basic() {
 				alignItems: 'center'
 			}}
 		>
-			<Avatar size="s">A</Avatar>
-			<Avatar size="l">A</Avatar>
-			<Avatar size="xl">A</Avatar>
+			<Avatar size="s">S</Avatar>
+			<Avatar size="m">M</Avatar>
+			<Avatar size="l">L</Avatar>
+			<Avatar size="xl">XL</Avatar>
 		</div>
-	);
+	</Example>);
 });

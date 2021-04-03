@@ -8,7 +8,7 @@ import { isObject } from '../lang/isObjectTypes';
 import { isIndex, isArrayLike, isTypedArray } from '../lang/isArrayTypes';
 import { toStr } from '../lang/to';
 import { each /*as E*/, map, reduce, filter } from '../Collection/each';
-//export const each = E; // CYCLICAL !
+// export const each = E; // CYCLICAL !
 
 const hasOwnProperty = Object.hasOwnProperty;
 const oIs = (v: any) => {
@@ -26,8 +26,8 @@ const noPath = (paths: string[]) => {
 function enumerableInherited(o: any, R: any[] = []) {
   if (o === null) { return [] }
   if (!isObject(o)) { o = Object(o) || {} } // TODO FIXME initial in Proxy
-  var isProto = isPrototype(o);
-  for (var k in o) {
+  const isProto = isPrototype(o);
+  for (let k in o) {
     !(k === 'constructor' && (isProto || !hasOwnProperty.call(o, k))) && R.push(k)
   }
   return R;
@@ -46,7 +46,7 @@ function _keys(o: any, inherited = false): string[] {
   const skip = _is.arr || _is.buf || _is.args || _is.typed;
   const R = skip ? doTimes(o.length||0, String) : [];
   const L = R.length;
-  for (var k in o) {
+  for (let k in o) {
     const doSkip = (isIndex(k, length) || k === 'length' || (_is.buf && !!_no.buf[k]) ||
                     (_is.typed && !!_no.typed[k]));
     if ((inherited || hasOwnProperty.call(o, k)) && !(skip && doSkip)) { R.push(k) }

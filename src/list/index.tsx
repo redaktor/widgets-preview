@@ -1,121 +1,23 @@
 import { RenderResult } from '@dojo/framework/core/interfaces';
+import { node } from '@dojo/framework/core/vdom';
 import { focus } from '@dojo/framework/core/middleware/focus';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
 import { create, renderer, tsx } from '@dojo/framework/core/vdom';
 import global from '@dojo/framework/shim/global';
-import { theme, ThemeProperties, Keys, Variants } from '../middleware/theme';
-import * as LI from './Listitem';
-import MenuItem from './MenuItem';
-import LoadingIndicator from '../loading-indicator';
+import { Keys } from '../common/util';
+import theme, { ThemeProperties } from '../middleware/theme';
+import offscreen from '../middleware/offscreen';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
-import * as css from '../theme/material/list.m.css';
-import * as fixedCss from './list.m.css';
 import * as listItemCss from '../theme/material/list-item.m.css';
 import * as menuItemCss from '../theme/material/menu-item.m.css';
+import * as css from '../theme/material/list.m.css';
+import * as fixedCss from './list.m.css';
+import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
+import LoadingIndicator from '../loading-indicator';
+import { MenuItem, MenuItemProperties, ListItem, ListItemProperties } from './Listitem';
 
-export const ListItem = LI;
-export type ListOption = { value: string; label?: string; disabled?: boolean; divider?: boolean };
-export const defaultTransform = {
-	value: ['value'],
-	label: ['label'],
-	divider: ['divider'],
-	disabled: ['disabled']
-};
-
-export interface ListProperties extends ThemeProperties {
-	/** The variant for the list: 'flat', 'outlined', 'raised', 'shaped'
-	 * 'flat' by default
-	 */
-	variant?: Variants;
-	/** The initial selected value */
-	initialValue?: string;
-	/** Controlled value property */
-	value?: string;
-	/** Callback called when user selects a value */
-	onValue(value: string, index: number): void;
-	/** Called to request that the menu be closed */
-	onRequestClose?(): void;
-	/** Optional callback, when passed, the widget will no longer control it's own active index / keyboard navigation */
-	onActiveIndexChange?(index: number): void;
-	/** Optional property to set the activeIndex when it is being controlled externally */
-	activeIndex?: number;
-	/** Callback to determine if a list item is disabled. If not provided, ListOption.disabled will be used */
-	disabled?: (item: ListOption) => boolean;
-	/** Hover / Click item */
-	animated?: boolean;
-	/** Determines if the widget can be focused or not.
-	 * If the active index is controlled from elsewhere you may wish to stop the menu being focused and receiving keyboard events
-	 */
-	focusable?: boolean;
-	/** Callback called when menu total height is calculated */
-	onHeight?(height: number): void;
-	/** Callback called when menu root is focused */
-	onFocus?(): void;
-	/** Callback called when menu root is blurred */
-	onBlur?(): void;
-	/** Callback called when menu root finished animations */
-	onAnimationEnd?(): void;
-	/** Property to determine how many items to render. Not passing a number will render all results */
-	itemsInView?: number;
-	/** Property to determine if this list is being used as a menu, changes a11y and item type */
-	menu?: boolean;
-	/** The id to be applied to the root of this widget, if not passed, one will be generated for a11y reasons */
-	widgetId?: string;
-	/** Styled for Lists above/before an element (e.g. Popups) */
-	above?: boolean;
-}
-
-export interface MenuItemProperties {
-	/** Callback used when the item is clicked */
-	onSelect(): void;
-	/** Property to set the active state of the item, indicates it's the current keyboard / mouse navigation target */
-	active?: boolean;
-	/** Callback used when the item wants to request it be made active, to example on pointer move */
-	onRequestActive(): void;
-	/** Property to set the disabled state of the item */
-	disabled?: boolean;
-	/** The id to apply to this widget top level for a11y */
-	widgetId: string;
-}
-export interface ListItemProperties extends MenuItemProperties {
-	/** Property to set the selected state of the item */
-	selected?: boolean;
-}
-
-export interface ListChildren {
-	/** Custom renderer for item contents */
-	(
-		item: ItemRendererProperties,
-		properties: ListItemProperties & MenuItemProperties
-	): RenderResult;
-}
-
-export interface ItemRendererProperties {
-	active: boolean;
-	disabled: boolean;
-	label?: string;
-	selected: boolean;
-	value: string;
-}
-
-interface ListICache {
-	activeIndex: number;
-	initial: string;
-	inputText: string;
-	itemHeight: number;
-	itemsInView: number;
-	menuHeight: number;
-	totalContentHeight: number;
-	resetInputTextTimer: any;
-	value: string;
-	scrollTop: number;
-	previousActiveIndex: number;
-	requestedInputText: string;
-}
-
-const offscreenHeight = (dnode: RenderResult) => {
+export const offscreenHeight = (dnode: RenderResult) => {
 	const r = renderer(() => dnode);
 	const div = global.document.createElement('div');
 	div.style.position = 'absolute';
@@ -126,9 +28,83 @@ const offscreenHeight = (dnode: RenderResult) => {
 	return dimensions.height;
 };
 
+export type ListOption = { value: string; label: string; disabled?: boolean; divider?: boolean };
+
+export interface ListProperties {
+	/** Determines if this list can be reordered */
+	draggable?: boolean;
+	/** Called when a draggable is dropped */
+	onMove?: (from: number, to: number) => void;
+	/** The initial selected value */
+	initialValue?: string;
+	/** Controlled value property */
+	value?: string;
+	/** Callback called when user selects a value */
+	onValue(value: ListOption, scrollTop: number): void;
+	/** Called to request that the menu be closed */
+	onRequestClose?(): void;
+	/** Optional callback, when passed, the widget will no longer control it's own active index / keyboard navigation */
+	onActiveIndexChange?(index: number): void;
+	/** Optional property to set the activeIndex when it is being controlled externally */
+	activeIndex?: number;
+	/** Determines if the widget can be focused or not. If the active index is controlled from elsewhere you may wish to stop the menu being focused and receiving keyboard events */
+	focusable?: boolean;
+	/** Callback called when menu root is focused */
+	onFocus?(): void;
+	/** Callback called when menu root is blurred */
+	onBlur?(): void;
+	/** Property to determine how many items to render. Not passing a number will render all results */
+	itemsInView?: number;
+	/** Property to determine if this list is being used as a menu, changes a11y and item type */
+	menu?: boolean;
+	/** The id to be applied to the root of this widget, if not passed, one will be generated for a11y reasons */
+	widgetId?: string;
+	/** Callback to determine if a list item is disabled. If not provided, ListOption.disabled will be used */
+	disabled?: (item: ListOption) => boolean;
+	/** Specifies if the list height should by fixed to the height of the items in view */
+	height?: 'auto' | 'fixed';
+
+	scrollTop?: number;
+}
+
+export interface ListChildren {
+	/** Custom renderer for item contents */
+	(
+		item: ItemRendererProperties,
+		properties: ListItemProperties & MenuItemProperties & ThemeProperties
+	): RenderResult;
+}
+
+export interface ItemRendererProperties {
+	active: boolean;
+	disabled: boolean;
+	label: string;
+	selected: boolean;
+	value: string;
+}
+
+interface ListICache {
+	activeIndex: number;
+	dragIndex?: number;
+	dragOverIndex?: number;
+	initial: string;
+	previousInputText: string;
+	inputText: string;
+	itemHeight: number;
+	itemsInView: number;
+	menuHeight: number;
+	resetInputTextTimer: any;
+	value: string;
+	scrollTop: number;
+	previousActiveIndex: number;
+}
+
 const factory = create({
-	focus, theme,
 	icache: createICacheMiddleware<ListICache>(),
+	focus,
+	theme,
+	offscreen,
+	node,
 	resource: createResourceMiddleware<ListOption>()
 })
 	.properties<ListProperties>()
@@ -138,30 +114,35 @@ export const List = factory(function List({
 	children,
 	properties,
 	id,
-	middleware: { icache, focus, theme, resource }
+	middleware: { icache, focus, theme, resource, offscreen, node }
 }) {
-
-	const themedCss = theme.classes(css);
-	const { getOrRead, createOptions, find, meta, isLoading } = resource;
 	const {
-		variant = 'flat' as (Variants & keyof typeof themedCss),
 		activeIndex,
-		focusable = true,
 		initialValue,
+		focusable = true,
 		itemsInView = 10,
 		menu = false,
-		above = false,
+		scrollTop: st,
 		onActiveIndexChange,
 		onBlur,
 		onFocus,
 		onRequestClose,
-		onAnimationEnd,
 		onValue,
-		// onHeight,
 		widgetId,
 		theme: themeProp,
-		resource: { template, options = createOptions(id) }
+		variant,
+		resource: {
+			template,
+			options = resource.createOptions((curr, next) => ({ ...curr, ...next }))
+		},
+		classes,
+		height = 'fixed'
 	} = properties();
+	const {
+		get,
+		template: { read }
+	} = resource.template(template);
+
 	const [itemRenderer] = children();
 
 	function setActiveIndex(index: number) {
@@ -172,16 +153,16 @@ export const List = factory(function List({
 		}
 	}
 
-	function setValue(value: string) {
-		icache.set('value', value);
-		onValue(value, icache.get('activeIndex')||0);
+	function setValue(value: ListOption) {
+		icache.set('value', value.value);
+		onValue(value, icache.get('scrollTop')||0);
 	}
 
 	function onKeyDown(event: KeyboardEvent, total: number) {
-		const { disabled } = properties();
-
+		const { disabled, activeIndex } = properties();
 		event.stopPropagation();
-
+		let computedActiveIndex =
+			activeIndex === undefined ? icache.getOrSet('activeIndex', 0) : activeIndex;
 		switch (event.which) {
 			case Keys.Enter:
 			case Keys.Space:
@@ -191,7 +172,7 @@ export const List = factory(function List({
 					const itemDisabled = disabled ? disabled(activeItem) : activeItem.disabled;
 
 					if (!itemDisabled) {
-						setValue(activeItem.value);
+						setValue(activeItem);
 					}
 				}
 				break;
@@ -231,6 +212,7 @@ export const List = factory(function List({
 						}
 						return setTimeout(() => {
 							icache.delete('inputText');
+							icache.delete('previousInputText');
 						}, 800);
 					});
 					icache.set('inputText', (value = '') => {
@@ -241,27 +223,39 @@ export const List = factory(function List({
 		}
 	}
 
-	function renderItems(start: number, count: number, startNode: number) {
+	function renderItems(start: number, count: number) {
 		const renderedItems = [];
-		const metaInfo = meta(template, options(), true);
-		if (metaInfo && metaInfo.total) {
-			const pages: number[] = [];
-			for (let i = 0; i < Math.min(metaInfo.total - start, count); i++) {
+		const { size: resourceRequestSize } = options();
+		const {
+			meta: { total = 0 }
+		} = get(options(), { meta: true, read });
+		if (total) {
+			let pages: number[] = [];
+			for (let i = 0; i < Math.min(total - start, count); i++) {
 				const index = i + startNode;
-				const page = Math.floor(index / count) + 1;
+				const page = Math.floor(index / resourceRequestSize) + 1;
 				if (pages.indexOf(page) === -1) {
 					pages.push(page);
 				}
 			}
-			const pageItems = getOrRead(template, options({ page: pages }));
-			for (let i = 0; i < Math.min(metaInfo.total - start, count); i++) {
+			if (!pages.length) {
+				pages.push(1);
+			}
+			const pageItems = pages.map((page, index) => {
+				if (index === pages.length - 1) {
+					options({ offset: (page - 1) * options().size });
+				}
+				return get({ ...options(), offset: (page - 1) * options().size }, { read });
+			});
+			for (let i = 0; i < Math.min(total - start, count); i++) {
 				const index = i + startNode;
-				const page = Math.floor(index / count) + 1;
+				const page = Math.floor(index / resourceRequestSize) + 1;
 				const pageIndex = pages.indexOf(page);
-				const indexWithinPage = index - (page - 1) * count;
+				const indexWithinPage = index - (page - 1) * resourceRequestSize;
 				const items = pageItems[pageIndex];
 				if (items && items[indexWithinPage]) {
-					renderedItems[i] = renderItem(items[indexWithinPage], index);
+					const { value, label, disabled, divider } = items[indexWithinPage];
+					renderedItems[i] = renderItem({ value, label, disabled, divider }, index);
 				} else if (!items) {
 					renderedItems[i] = renderPlaceholder(index);
 				}
@@ -279,7 +273,9 @@ export const List = factory(function List({
 			onRequestActive: () => {
 				setActiveIndex(index);
 			},
-			disabled: true
+			disabled: true,
+			classes,
+			variant
 		};
 		return menu ? (
 			<MenuItem
@@ -301,10 +297,75 @@ export const List = factory(function List({
 					css,
 					'item'
 				)}
+				dragged={icache.get('dragIndex') === index}
+				draggable={draggable}
+				onDragStart={(event) => onDragStart(event, index)}
+				onDragEnd={onDragEnd}
+				onDragOver={(event) => onDragOver(event, index)}
+				onDrop={(event) => onDrop(event, index)}
+				movedUp={
+					icache.get('dragOverIndex') === index &&
+					icache.get('dragIndex')! < icache.get('dragOverIndex')!
+				}
+				movedDown={
+					icache.get('dragOverIndex') === index &&
+					icache.get('dragIndex')! > icache.get('dragOverIndex')!
+				}
+				collapsed={
+					icache.get('dragIndex') === index && icache.get('dragOverIndex') !== undefined
+				}
 			>
 				<LoadingIndicator />
 			</ListItem>
 		);
+	}
+
+	function onDragStart(event: DragEvent, index: number) {
+		if (!draggable) {
+			return;
+		}
+		icache.set('dragIndex', index);
+		event.dataTransfer!.setData('text/plain', `${index}`);
+	}
+
+	function onDragOver(event: DragEvent, index: number) {
+		const dragIndex = icache.get('dragIndex')!;
+		if (!draggable || dragIndex === undefined) {
+			return;
+		}
+		event.preventDefault();
+		event.dataTransfer!.dropEffect = 'move';
+		let targetIndex: number | undefined = index;
+		if (event.offsetY < 10 && index === dragIndex + 1) {
+			targetIndex = undefined;
+		} else if (event.offsetY > itemHeight - 10 && index === dragIndex - 1) {
+			targetIndex = undefined;
+		}
+		if (icache.get('dragOverIndex') !== targetIndex) {
+			icache.set('dragOverIndex', targetIndex);
+		}
+	}
+
+	function onDragEnd(event: DragEvent) {
+		if (!draggable) {
+			return;
+		}
+		event.preventDefault();
+		icache.set('dragIndex', undefined);
+		icache.set('dragOverIndex', undefined);
+	}
+
+	function onDrop(event: DragEvent, index: number) {
+		if (!draggable) {
+			return;
+		}
+		event.preventDefault();
+		const from = event.dataTransfer && event.dataTransfer.getData('text/plain');
+		if (from === null) {
+			return;
+		}
+		setActiveIndex(index);
+		onMove && onMove(parseInt(from, 10), index);
 	}
 
 	function renderItem(data: ListOption, index: number) {
@@ -320,15 +381,16 @@ export const List = factory(function List({
 			widgetId: `${idBase}-item-${index}`,
 			key: `item-${index}`,
 			onSelect: () => {
-				setValue(value);
+				setValue(data);
 			},
 			active,
 			onRequestActive: () => {
 				setActiveIndex(index);
 			},
-			disabled: itemDisabled
+			disabled: itemDisabled,
+			classes,
+			variant
 		};
-
 		let item: RenderResult;
 
 		if (itemRenderer) {
@@ -340,7 +402,7 @@ export const List = factory(function List({
 					active,
 					selected
 				},
-				itemProps
+				{ ...itemProps, theme: themeProp }
 			);
 		} else {
 			const children = label || value;
@@ -358,12 +420,31 @@ export const List = factory(function List({
 			) : (
 				<ListItem
 					{...itemProps}
-					selected={selected}
 					theme={theme.compose(
 						listItemCss,
 						css,
 						'item'
 					)}
+					animated={true}
+					selected={selected}
+					dragged={icache.get('dragIndex') === index}
+					draggable={draggable}
+					onDragStart={(event) => onDragStart(event, index)}
+					onDragEnd={onDragEnd}
+					onDragOver={(event) => onDragOver(event, index)}
+					onDrop={(event) => onDrop(event, index)}
+					movedUp={
+						icache.get('dragOverIndex') === index &&
+						icache.get('dragIndex')! < icache.get('dragOverIndex')!
+					}
+					movedDown={
+						icache.get('dragOverIndex') === index &&
+						icache.get('dragIndex')! > icache.get('dragOverIndex')!
+					}
+					collapsed={
+						icache.get('dragIndex') === index &&
+						icache.get('dragOverIndex') !== undefined
+					}
 				>
 					{children}
 				</ListItem>
@@ -373,13 +454,14 @@ export const List = factory(function List({
 		return divider ? [item, <hr classes={themedCss.divider} />] : item;
 	}
 
-	let { value: selectedValue } = properties();
+	let { value: selectedValue, draggable, onMove } = properties();
 
 	if (selectedValue === undefined) {
 		if (initialValue !== undefined && initialValue !== icache.get('initial')) {
 			icache.set('initial', initialValue);
 			icache.set('value', initialValue);
 		}
+
 		selectedValue = icache.get('value');
 	}
 
@@ -393,7 +475,7 @@ export const List = factory(function List({
 			onRequestActive: () => {},
 			onActive: () => {},
 			scrollIntoView: false,
-			widgetId: 'offscreen',
+			widgetId: 'offcreen',
 			theme: themeProp
 		};
 
@@ -403,6 +485,7 @@ export const List = factory(function List({
 					selected: false,
 					active: false,
 					value: 'offscreen',
+					label: 'offscreen',
 					disabled: false
 				},
 				offscreenItemProps
@@ -412,46 +495,59 @@ export const List = factory(function List({
 		) : (
 			<ListItem {...offscreenItemProps}>offscreen</ListItem>
 		);
-		const itemHeight = icache.getOrSet('itemHeight', offscreenHeight(offscreenMenuItem));
+
+		const itemHeight = icache.getOrSet(
+			'itemHeight',
+			offscreen(() => offscreenMenuItem, (node) => node.getBoundingClientRect().height)
+		);
+
 		itemHeight && icache.set('menuHeight', itemsInView * itemHeight);
 	}
 
-	const nodePadding = Math.min(itemsInView, 20);
 	const menuHeight = icache.get('menuHeight');
 	const idBase = widgetId || `menu-${id}`;
-	const rootStyles = menuHeight ? { maxHeight: `${menuHeight}px` } : {};
+	let rootStyles: Partial<CSSStyleDeclaration> = {};
+	if (menuHeight) {
+		rootStyles =
+			height === 'fixed' ? { height: `${menuHeight}px` } : { maxHeight: `${menuHeight}px` };
+	}
 	const shouldFocus = focus.shouldFocus();
+	const themedCss = theme.classes(css);
 	const itemHeight = icache.getOrSet('itemHeight', 0);
-	let scrollTop = icache.getOrSet('scrollTop', 0);
-
+	let scrollTop = icache.getOrSet('scrollTop', st||0);
+	const nodePadding = Math.min(itemsInView, 20);
 	const renderedItemsCount = itemsInView + 2 * nodePadding;
-	options({ size: renderedItemsCount });
 	let computedActiveIndex =
 		activeIndex === undefined ? icache.getOrSet('activeIndex', 0) : activeIndex;
 	const inputText = icache.get('inputText');
-	const requestedInputText = icache.get('requestedInputText');
-	if (inputText || requestedInputText) {
-		const findOptions = {
-			options: options(),
-			start: computedActiveIndex + 1,
-			type: 'start' as const,
-			query: { value: inputText || requestedInputText }
-		};
-		if (!isLoading(template, findOptions)) {
-			const foundItem = find(template, findOptions);
-			if (!foundItem) {
-				if (inputText && (!requestedInputText || inputText !== requestedInputText)) {
-					icache.set('requestedInputText', inputText);
-				} else {
-					icache.delete('requestedInputText');
-				}
-			} else {
-				icache.delete('requestedInputText');
-			}
-			if (foundItem && computedActiveIndex !== foundItem.index) {
-				setActiveIndex(foundItem.index);
+	const {
+		meta: { total = 0 }
+	} = get(options(), { meta: true, read });
+	if (inputText && inputText !== icache.get('previousInputText') && total) {
+		const items = get({ ...options(), offset: 0, size: total });
+		const first = items.slice(0, computedActiveIndex);
+		const second = items.slice(computedActiveIndex);
+		let foundIndex = computedActiveIndex;
+		for (let i = 1; i < second.length; i++) {
+			const item = second[i];
+			if (item && item.label.toLowerCase().indexOf(inputText.toLowerCase()) === 0) {
+				foundIndex = foundIndex + i;
+				break;
 			}
 		}
+		if (foundIndex === computedActiveIndex) {
+			for (let i = 0; i < first.length; i++) {
+				const item = first[i];
+				if (item && item.label.toLowerCase().indexOf(inputText.toLowerCase()) === 0) {
+					foundIndex = i;
+					break;
+				}
+			}
+		}
+		if (foundIndex !== computedActiveIndex) {
+			setActiveIndex(foundIndex);
+		}
+		icache.set('previousInputText', inputText);
 	}
 
 	const previousActiveIndex = icache.get('previousActiveIndex');
@@ -469,7 +565,12 @@ export const List = factory(function List({
 		}
 
 		if (icache.get('scrollTop') !== scrollTop) {
-			icache.set('scrollTop', scrollTop);
+			if (typeof icache.get('scrollTop') === 'number' && scrollTop === 0) {
+				const n = node.get('root');
+				n && n.scrollTo({top:icache.get('scrollTop')||0, left:0});
+			} else {
+				icache.set('scrollTop', scrollTop);
+			}
 		}
 
 		icache.set('previousActiveIndex', computedActiveIndex);
@@ -478,38 +579,28 @@ export const List = factory(function List({
 	const startNode = Math.max(0, Math.floor(scrollTop / itemHeight) - nodePadding);
 	const offsetY = startNode * itemHeight;
 
-	const items = renderItems(startNode, renderedItemsCount, startNode);
-	const metaInfo = meta(template, options(), true);
-
-	if (!metaInfo || metaInfo.total === undefined) {
-		return;
-	}
-
-	const total = metaInfo.total;
-// const totalContentHeight = total * itemHeight;
-
-
+	const items = renderItems(startNode, renderedItemsCount);
+	const totalContentHeight = total * itemHeight;
 	return (
 		<div
 			key="root"
 			classes={[
 				theme.variant(),
-				(themedCss as any)[variant],
 				theme.sized(ui),
-				theme.spaced(ui),
-				theme.colored(colors), // TODO
-				theme.animated(themedCss),
-				above ? themedCss.above : null,
+				theme.sized(themedCss),
+				theme.colored(colors),
+				theme.spaced(ui, false),
+				theme.animated(themedCss, true),
 				themedCss.root,
 				fixedCss.root
 			]}
 			tabIndex={focusable ? 0 : -1}
 			onkeydown={(e) => {
-				onKeyDown(e, total);
+				total && onKeyDown(e, total);
 			}}
-			onpointerdown={focusable ? undefined : (event) => event.preventDefault()}
 			focus={() => shouldFocus}
-			onfocus={() => { onFocus && onFocus() }}
+			onfocus={onFocus}
+			onpointerdown={focusable ? undefined : (event) => event.preventDefault()}
 			onblur={onBlur}
 			scrollTop={scrollTop}
 			onscroll={(e) => {
@@ -518,9 +609,6 @@ export const List = factory(function List({
 					icache.set('scrollTop', newScrollTop);
 				}
 			}}
-			onanimationend={(e:any) => {
-				e.pseudoElement === '' && onAnimationEnd && onAnimationEnd();
-			}}
 			styles={rootStyles}
 			role={menu ? 'menu' : 'listbox'}
 			aria-orientation="vertical"
@@ -528,11 +616,21 @@ export const List = factory(function List({
 			id={idBase}
 		>
 			<div
-				classes={[fixedCss.transformer, themedCss.transformer]}
-				styles={{ transform: `translateY(${offsetY}px)` }}
-				key="transformer"
+				classes={fixedCss.wrapper}
+				styles={{
+					height: `${totalContentHeight}px`
+				}}
+				key="wrapper"
 			>
-				{items}
+				<div
+					classes={fixedCss.transformer}
+					styles={{
+						transform: `translateY(${offsetY}px)`
+					}}
+					key="transformer"
+				>
+					{items}
+				</div>
 			</div>
 		</div>
 	);

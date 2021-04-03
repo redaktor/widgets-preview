@@ -1,19 +1,34 @@
 .root {
 	width: 100%;
-	max-height: 1024px;
+	background-size: cover;
+}
+.activity, .object, .actor {
+	width: 100%;
+	background-size: cover;
 	position: relative;
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;
 	background-color: var(--surface, #fff);
-	color: var(--text-filled, #000);
 	transition: background-color, border-color var(--ui-dpd-1) var(--ui-easing);
-	overflow: visible;
-	border-radius: var(--ui-border-radius-emphasized, 0.25rem);
 	box-shadow: var(--ui-dp-2);
+}
+.activity {
+	background-color: var(--ui-header);
+	border-top-left-radius: var(--ui-border-radius-emphasized, 0.25rem);
+	border-top-right-radius: var(--ui-border-radius-emphasized, 0.25rem);
+}
+.object, .actor {
+	max-height: 1024px;
 	padding-left: var(--plr);
 	padding-right: var(--plr);
-	background-size: cover;
+	border-radius: var(--ui-border-radius-emphasized, 0.25rem);
+	overflow: visible;
+}
+.activity + .object,
+.activity + .actor {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 }
 .hasMedia {
 }
@@ -34,13 +49,16 @@
 
 }
 .smallTitle {
-	composes: sans h5 from './_typo.css';
+	composes: serif p from './_typo.css';
 }
 .largeTitle {
-	composes: sans cardsName from './_typo.css';
+	composes: sans h3 from './_typo.css';
 }
-
-.root:not(.note) .title {
+.heroTitle {
+	composes: serif p from './_typo.css';
+}
+.object:not(.note) .title,
+.actor .title {
 	font-weight: var(--weight-semibold, 500);
 }
 /* A card can have an ActivityPub "major" type*/
@@ -59,6 +77,40 @@
 .publicPost,
 .privatePost,
 .groupPost {
+}
+
+.image .title::before,
+.audio .title::before,
+.video .title::before,
+.place .title::before,
+.page .title::before {
+	display: inline-block;
+	font-family: 'redaktor' !important;
+	speak: never;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	width: 16px;
+	margin-left: -16px;
+	color: var(--text-muted);
+	vertical-align: baseline;
+}
+.image .title::before {
+	content: "\49";
+}
+.audio .title::before {
+	content: "\55";
+}
+.video .title::before {
+	content: "\56";
+}
+.place .title::before {
+	content: "\50";
+}
+.page .title::before {
+	content: "\53";
 }
 
 @media screen and (min-width: 360px) {
@@ -84,6 +136,9 @@
 .media:not(.baselined) {
 	margin: 0 0 var(--line) 0;
 }
+.note .media {
+	order: 7;
+}
 
 .activities {
 	composes: sans s from './_typo.css';
@@ -100,25 +155,37 @@
 	display: flex;
 	position: relative;
 	align-items: baseline;
-	height: var(--line3);
-	padding: 0 !important;
+	padding: 0 var(--p) 0 var(--p) !important;
 	box-sizing: border-box;
 	order: 3;
+	z-index: 3;
 }
-.event .attributions {
-	margin-top: 0 !important;
+.attributions.hasAvatar {
+	padding: 0 var(--lineHalf) 0 var(--lineHalf) !important;
 }
-
+.summary {
+	display: flex;
+	height: var(--line2);
+	margin-right: var(--line);
+  list-style: none;
+	cursor: pointer;
+}
+.summary::-webkit-details-marker {
+  display: none;
+}
+.summary:focus {
+	outline: none;
+}
 .titleWrapper {
-	padding: var(--line) var(--p) 0 var(--p);
+	padding: 0 var(--p) 0 var(--p);
 	order: 4;
+	z-index: 2;
 }
 .article .titleWrapper {
 	--mlr: calc(var(--p) - var(--lineHalf));
 	margin: var(--line) var(--mlr) var(--pt) var(--mlr);
 	padding: 0 var(--lineHalf);
 	background: var(--surface, #fff);
-	z-index: 2;
 	order: 1;
 }
 .article.hasBookmark .titleWrapper,
@@ -139,14 +206,15 @@
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
 	max-width: 64ch;
-	padding: var(--line) var(--p) var(--line) var(--p);
+	padding: 0 var(--p) var(--line) var(--p);
 	order: 5;
 }
 .event .contentWrapper {
 	order: 1;
 	padding-bottom: 0;
 }
-.root:not(.article) .titleWrapper + .contentWrapper {
+.object:not(.article) .titleWrapper + .contentWrapper,
+.actor .titleWrapper + .contentWrapper {
 	padding-top: 0;
 }
 .contentWrapper:first-child {
@@ -157,11 +225,12 @@
 	order: 6;
 }
 
-.activityBtn {
-	position: relative !important;
-	border-bottom-left-radius: 0 !important;
-	border-bottom-right-radius: 0 !important;
-	order: 7;
+.root .activityBtn {
+	position: relative;
+	margin-top: calc(var(--m) + var(--pt));
+	margin-bottom: calc(var(--m) - var(--pt));
+	font-weight: var(--weight-semibold, 500);
+	order: 9;
 }
 .activityBtn:not(:hover):not(:focus) {
 	background-color: var(--bg) !important;
@@ -176,7 +245,7 @@
 	padding: 0;
 	margin: 0;
 	height: var(--line2);
-	order: 7;
+	order: 9;
 }
 details[open] + .actionWrapper,
 .contentWrapper + .actionWrapper,
@@ -184,10 +253,9 @@ details[open] + .actionWrapper,
 	display: flex;
 }
 
-.root:not(.article) .attributions {
+.object:not(.article) .attributions {
 	margin: var(--line) 0 0 0;
 }
-
 .hasBookmark:not(.article):not(.hasMedia) .attributions,
 .hasTopics:not(.article):not(.hasMedia) .attributions,
 .hasBookmark:not(.article):not(.hasMedia) .activities,
@@ -195,90 +263,248 @@ details[open] + .actionWrapper,
 	margin: var(--line2) 0 0 0;
 }
 
-.root:not(.article) .activities + .attributions,
+.activity .attributions,
+.object:not(.article) .activities + .attributions,
 .hasBookmark:not(.article):not(.hasMedia) .activities + .attributions,
 .hasTopics:not(.article):not(.hasMedia) .activities + .attributions  {
 	margin: 0;
 }
-
-
-.hasAvatar .attributions {
-	padding: 0 var(--lineHalf) 0 var(--lineHalf) !important;
-}
-.article .attributions,
-.media .attributions,
-.header + .attributions {
-	margin: 0;
-}
-.attributions.wellKnown {
-}
-.publicPost .attributions {
-	--toColor: var(--ui-public, green);
-}
-.groupPost .attributions {
-	--toColor: var(--ui-group, yellow);
-}
-.privatePost .attributions {
-	--toColor: var(--ui-private, red);
-}
-.attributions.wellKnown::after {
-	opacity: 0.8;
-}
-.attributions > i {
-	margin: 0;
-	padding: 0;
-	font-size: inherit !important;
+.event .attributions {
+	margin-top: 0 !important;
 }
 .metaWrapper {
 	position: relative;
 	flex-grow: 1;
+	min-width: 0;
 	max-width: calc(100% - 56px);
+}
+.activity .metaWrapper {
+	margin: 0;
+}
+.actor .metaWrapper,
+.object .metaWrapper {
 	padding-right: 16px;
 }
+.meAvatar,
 .avatar {
 	z-index: 0;
-	margin-right: 8px;
-	width: 38px;
+	margin-right: var(--grid-base,8px);
+	width: var(--line2);
+	margin-left: calc(var(--line) * -1);
 }
+.attributions[open] + .acted {
+	display: none;
+}
+.attributions[open] .avatar {
+	width: calc(var(--line3) - var(--pt));
+	margin-left: calc((var(--line) - var(--pt)) * -1);
+}
+.attributions[open] .avatar > * {
+	--h: calc(var(--line3) - var(--pt)) !important;
+}
+.summary:focus .avatar > div:first-child {
+	border: 1px solid var(--text-muted);
+}
+.activityIcon {
+	--actcolor: var(--r-grey, #808080);
+	composes: icon from './icon.m.css';
+	min-width: var(--line2, 48px);
+	min-height: var(--line3, 48px);
+	position: absolute;
+	right: 0px;
+}
+.activityIcon i {
+	/* privacy icon */
+	padding-left: calc(var(--lineHalf) - 0.5px);
+}
+.activityIcon::before {
+	/* font-size: var(--line2, 32px);
+  position: absolute;
+  top: calc(var(--line, 16px) + 2px); */
+	color: var(--text-muted);
+  opacity: 0.8;
+}
+.like {
+	composes: red from './_color.m.css';
+}
+.like .activityIcon::before {
+	color: var(--m-200, var(--r-red, red));
+	content: '\6c';
+}
+/*'Activity'|'Create'|'Delete'|'Add'|'Remove'|'Update'|'Announce'
+'Like'|'Dislike'|'View'|'Read'|'Listen'|
+'Accept'|'Reject'|'Follow'|'Invite'|'Move'|
+'Join'|'Leave'|
 
+
+'Travel'|'Arrive'|
+'Offer'|'Question'|
+'Undo'
+'Block'|'Flag'|'Ignore'|
+'TentativeReject'|'TentativeAccept'
+*/
 .byline {
 }
 .kicker {
-	color: var(--ui-kicker);
+	color: var(--kicker);
 	margin: 0 0 calc(var(--mb) - var(--line)) 0 !important;
 }
-.name,
+.actorName,
+.petname {
+	font-weight: var(--weight-semibold, 500);
+}
+.handle {
+	padding-left: var(--line2);
+}
+.actorName,
 .petname,
-.time {
-	color: var(--text-muted);
+.handle {
 	margin: 0 !important;
 }
-.name,
+.petname + .handle {
+	opacity: 0.4;
+}
+
+.actorName,
 .petname,
 .kicker,
-.time {
+.handle,
+.acted {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	z-index: 1;
 }
-.name,
+.root .actorName,
 .petname,
-.name + .time {
+.actorName + .handle {
 	padding: 0;
 }
-.name,
+.acted,
 .kicker,
-.time,
+.handle,
 .topic {
 	composes: sans s from './_typo.css';
 }
-.name,
+.metaWrapper,
+.actorName {
+	composes: sans m from './_typo.css';
+}
+.actorName,
+.handle {
+	color: var(--text-muted);
+}
+.summary:hover .actorName,
+.attributions[open] .actorName {
+	color: var(--text);
+}
+.acted {
+	composes: primary from './_color.m.css';
+	color: var(--text-muted, #333);
+	order: 3;
+}
+.root .acted {
+	margin-left: calc(var(--line) * 1.5 + var(--grid-base,8px));
+	margin-top: calc(var(--line) * -1);
+}
+.wellKnown + .acted {
+	color: var(--text, #000);
+}
+.attributions[open] ~ .acted {
+	padding-left: var(--lineHalf);
+}
+/*
+.followAction,
+.unfollowAction {
+	display: flex;
+	align-items: baseline;
+}
+*/
+p.actorDetails {
+	padding-left: 44px;
+	margin-bottom: calc(var(--mb) - var(--line));
+}
+details.followAction {
+	padding-left: 44px;
+	min-height: var(--line3);
+}
+details.followAction > * {
+	display:inline-block !important;
+}
+summary.followBtn {
+	float: right;
+	min-width: 100%;
+	margin-top: var(--line);
+}
+.followAction input {
+	padding-right: var(--lineHalf);
+	font-weight: 500;
+}
+.followBtn button,
+.followBtn button::before {
+	margin-bottom: 0 !important;
+	border-bottom-left-radius: 0px !important;
+}
+/* ACTS AS DETAILS / SUMMARY FOR unlock */
+.followBtn button {
+	pointer-events: none;
+}
+.followAction[open] .followBtn button {
+	pointer-events: all;
+}
+
+.followAction[open] .followBtn {
+	min-width: 38.2%;
+}
+/*
+.followAction label {
+	margin-top: calc(var(--line) * -1);
+	background-color: var(--ui-header) !important;
+}
+*/
+.unfollowAction {
+	margin-top: var(--line);
+}
+.unfollowAction button {
+	margin-bottom: 0 !important;
+}
+
+.attributions[open] {
+	margin-bottom: var(--pt) !important;
+}
+.followerLabel {
+	font-weight: var(--weight-semibold,500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.root .trustChip {
+	margin-top: calc(var(--pt) + var(--ui-border-width-emphasized,2px)) !important;
+	margin-bottom: calc(var(--mb) - var(--pt)) !important;
+}
+.me.trustChip {
+	margin-top: var(--line) !important;
+}
+
+.root .verbIcon {
+
+}
+.root .privacyIcon {
+	position: absolute;
+	right: var(--lineHalf);
+	top: var(--pt);
+}
+.actorName {
+	padding: 0 !important;
+}
+.actorName,
 .kicker,
 .topic {
 	font-weight: var(--weight-semibold, 500);
 }
-.petname + .name {
+.petname + .actorName {
 	font-weight: var(--weight, 400);
 }
 .petname {
@@ -286,10 +512,11 @@ details[open] + .actionWrapper,
 	font-weight: var(--weight-bold, 700);
 	color: var(--text);
 	margin-bottom: calc(var(--mb, 16px) - var(--line)) !important;
+	padding-top: 0px !important;
 }
 .petname::before {
 	content: '\40\2009';
-	color: var(--text-muted);
+	color: var(--color-redaktor);
 	font-family: 'redaktor' !important;
 	speak: never;
 	font-style: normal;
@@ -299,10 +526,6 @@ details[open] + .actionWrapper,
 	line-height: 1;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-}
-.handle {
-	composes: primary from './_color.m.css';
-	color: var(--text-flat);
 }
 .privacy {
 }
@@ -320,18 +543,47 @@ details[open] + .actionWrapper,
 .hasMore .responsiveTypo {
 	margin-bottom: calc(var(--mb, 16px) - var(--line, 15px));
 }
+.article .attributions,
+.media .attributions,
+.header + .attributions {
+	margin: 0;
+}
+.attributions.wellKnown {
+}
+.publicPost .activity {
+	--toColor: var(--ui-public, green);
+}
+.groupPost .activity {
+	--toColor: var(--ui-group, yellow);
+}
+.privatePost .activity {
+	--toColor: var(--ui-private, red);
+}
 
-.attributions::after {
+.attributions.wellKnown::after {
+	opacity: 0.8;
+}
+.attributions > i {
+	margin: 0;
+	padding: 0;
+	font-size: inherit !important;
+}
+.root .activity::before {
 	content: '';
 	display: block;
-	width: 100%;
+	width: 40px;
 	height: 1px;
 	background: var(--ui-border);
 	position: absolute;
-	bottom: 0;
-	left: 0;
+	right: 0px;
 	opacity: 0.618;
-	background: linear-gradient(90deg, var(--bg) 4px, var(--toColor) 50%, var(--bg) 100%);
+	background: linear-gradient(90deg, transparent 0%, var(--toColor) 50%, transparent 100%);
+}
+.object .activity::before {
+	bottom: 0;
+}
+.activity .activity::before {
+	top: -2px;
 }
 details summary + .contentWrapper {
 	padding-top: 0 !important;
@@ -346,10 +598,12 @@ details summary + .contentWrapper {
 	border-radius: 0 !important;
 	margin: 0 !important;
 }
+/*
 .actionButtons > button > i,
 .activityBtn > i {
 	--size: 1.6666em;
 }
+*/
 .actionButtons:hover {
 	cursor: pointer;
 }
@@ -1098,7 +1352,7 @@ details summary + .contentWrapper {
 	width: var(--p);
 	padding: calc(var(--lineHalf) + var(--pt)) 0;
 	position: absolute;
-	top: -8px;
+	top: calc(var(--grid-base,8px) * -1);
 	right: var(--lineHalf);
 	text-align: center;
 	border-top-left-radius: 3px;
@@ -1108,10 +1362,10 @@ details summary + .contentWrapper {
 .bookmark:before {
 	height: 0px;
 	width: 0px;
-	right: -8px;
+	right: calc(var(--grid-base,8px) * -1);
 	top: 0px;
-	border-bottom: 8px solid #555;
-	border-right: 8px solid transparent;
+	border-bottom: var(--grid-base,8px) solid #555;
+	border-right: var(--grid-base,8px) solid transparent;
 }
 .bookmark:before,
 .bookmark:after {
@@ -1119,11 +1373,11 @@ details summary + .contentWrapper {
 	position: absolute;
 }
 .bookmark:after {
-	--pHalf: calc(var(--p) * 0.5);
-	height: 0;
+	--pHalf: calc(var(--p) * 0.5 + 0.1px);
 	width: 0;
-	bottom: calc(var(--p) * -0.5);
+	height: 0;
 	left: 0;
+	bottom: calc(var(--p) * -0.5 + 0.1px);
 	border-left: var(--pHalf) solid var(--bg, #f47530);
 	border-right: var(--pHalf) solid var(--bg, #f47530);
 	border-bottom: var(--pHalf) solid transparent;

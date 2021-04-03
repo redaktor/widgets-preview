@@ -5,24 +5,39 @@
 	--r-light: #dddddd;
 	--r-dark: #1c191b;
 	--r-red: #dc0005;
-	--r-deep_orange: #ff2800;
+	--r-deepOrange: #ff2800;
 	--r-orange: #ff7a00;
 	--r-amber: #ffaf00;
 	--r-yellow: #fadc00;
 	--r-lime: #dfdc00;
-	--r-light_green: #95cc0d;
+	--r-lightGreen: #95cc0d;
 	--r-green: #13b20b;
 	--r-teal: #339985;
 	--r-cyan: #00b1cc;
-	--r-light_blue: #6da7d1;
+	--r-lightBlue: #6da7d1;
 	--r-blue: #0d7ecc;
 	--r-indigo: #3b4eb8;
-	--r-deep_purple: rebeccapurple;
+	--r-deepPurple: rebeccapurple;
 	--r-purple: #c30c70;
 	--r-pink: #eb2f59;
 	--r-brown: #7a5653;
-	--r-blue_grey: #617c8f;
+	--r-blueGrey: #617c8f;
 	--r-grey: #a3a3a3;
+
+	--r-primary: #ff7a00;
+	--r-secondary: #c30c70;
+
+	/* defaults for dark */
+	--ui-dp-l-1: 5%;
+	--ui-dp-l-2: 7%;
+	--ui-dp-l-3: 8%;
+	--ui-dp-l-4: 9%;
+	--ui-dp-l-6: 11%;
+	--ui-dp-l-8: 12%;
+	--ui-dp-l-12: 14%;
+	--ui-dp-l-16: 15%;
+	--ui-dp-l-24: 16%;
+	--ui-dp-l: 20%;
 
 	/*-------------------
         Site Colors
@@ -82,7 +97,8 @@
 /*-------------------
     Material Colors
 --------------------*/
-.red {
+.red,
+.error {
 	--m-50: #ffeee1;
 	--m-100: #ffd0be;
 	--m-200: #ff9e81;
@@ -97,12 +113,14 @@
 	--m-a200: #e91c2a;
 	--m-a400: #e9001f;
 	--m-a700: #bb0000;
+	--m-dark: #820000; /* HSB :: B = m-900 - 10 */
 	--m-h: 358.63636363;
 	--m-h900: 0;
 	--m-s: 100%;
 	--m-l: 43.1372%;
 }
-.deep_orange {
+.deepOrange,
+.settings {
 	--m-50: #ffeee0;
 	--m-100: #ffd6c4;
 	--m-200: #ffad8c;
@@ -117,12 +135,14 @@
 	--m-a200: #ff4c25;
 	--m-a400: #ff0000;
 	--m-a700: #da0000;
+	--m-dark: #a30000;
 	--m-h: 9.4117647;
 	--m-h900: 0;
 	--m-s: 100%;
 	--m-l: 50%;
 }
-.orange {
+.orange,
+.primary {
 	--m-50: #fff1d8;
 	--m-100: #ffe1c5;
 	--m-200: #ffc48d;
@@ -137,12 +157,14 @@
 	--m-a200: #fb8f34;
 	--m-a400: #fd7002;
 	--m-a700: #fa4512;
-	--m-h: 28.70588235;
+	--m-dark: #ba2003;
+	--m-h: 29;
 	--m-h900: 10;
 	--m-s: 100%;
 	--m-l: 50%;
 }
-.amber {
+.amber,
+.warning {
 	--m-50: #fff5d3;
 	--m-100: #ffedcb;
 	--m-200: #ffdc97;
@@ -157,6 +179,7 @@
 	--m-a200: #ffc639;
 	--m-a400: #ffb200;
 	--m-a700: #fd9908;
+	--m-dark: #cf5403;
 	--m-h: 41.17647058;
 	--m-h900: 24;
 	--m-s: 100%;
@@ -177,12 +200,14 @@
 	--m-a200: #fbef00;
 	--m-a400: #fadc00;
 	--m-a700: #fcc700;
+	--m-dark: #e57400;
 	--m-h: 52.8;
 	--m-h900: 30;
 	--m-s: 100%;
 	--m-l: 49.0196%;
 }
-.lime {
+.lime,
+.success {
 	--m-50: #fffad3;
 	--m-100: #fdf7d0;
 	--m-200: #f9f0a7;
@@ -197,12 +222,13 @@
 	--m-a200: #ffff03;
 	--m-a400: #daff00;
 	--m-a700: #c4eb00;
+	--m-dark: #8b8c00;
 	--m-h: 59.19282511;
 	--m-h900: 60;
 	--m-s: 100%;
 	--m-l: 43.7255%;
 }
-.light_green {
+.lightGreen {
 	--m-50: #f4fdd6;
 	--m-100: #ebf5cd;
 	--m-200: #d6ec9b;
@@ -217,6 +243,7 @@
 	--m-a200: #c2ff0f;
 	--m-a400: #86ff00;
 	--m-a700: #73e600;
+	--m-dark: #4b7a00;
 	--m-h: 77.27748691;
 	--m-h900: 84;
 	--m-s: 88.01843318%;
@@ -237,6 +264,7 @@
 	--m-a200: #00f48a;
 	--m-a400: #00ea44;
 	--m-a700: #00cb00;
+	--m-dark: #006100;
 	--m-h: 117.1257485;
 	--m-h900: 120;
 	--m-s: 88.35978836%;
@@ -257,12 +285,14 @@
 	--m-a200: #83ffd5;
 	--m-a400: #56ebaf;
 	--m-a700: #45c2a0;
+	--m-dark: #005243;
 	--m-h: 168.23529411;
 	--m-h900: 170;
 	--m-s: 50%;
 	--m-l: 40%;
 }
-.cyan {
+.cyan,
+.info {
 	--m-50: #c8ffff;
 	--m-100: #b0f6ff;
 	--m-200: #67e9ff;
@@ -277,12 +307,13 @@
 	--m-a200: #00f2f8;
 	--m-a400: #07daf8;
 	--m-a700: #00adcc;
+	--m-dark: #006675;
 	--m-h: 187.94117647;
 	--m-h900: 188;
 	--m-s: 100%;
 	--m-l: 40%;
 }
-.light_blue {
+.lightBlue {
 	--m-50: #d8feff;
 	--m-100: #c3f1ff;
 	--m-200: #a6deff;
@@ -297,6 +328,7 @@
 	--m-a200: #8bc0dd;
 	--m-a400: #6fafdc;
 	--m-a700: #5d92c8;
+	--m-dark: #2a5f80;
 	--m-h: 205.2;
 	--m-h900: 204;
 	--m-s: 52.08333333%;
@@ -317,6 +349,7 @@
 	--m-a200: #2972d8;
 	--m-a400: #0063d8;
 	--m-a700: #004ed9;
+	--m-dark: #003f7a;
 	--m-h: 204.5026178;
 	--m-h900: 210;
 	--m-s: 88.01843318%;
@@ -337,12 +370,13 @@
 	--m-a200: #4f68fe;
 	--m-a400: #3356ff;
 	--m-a700: #2d4aff;
+	--m-dark: #001c69;
 	--m-h: 230.88;
 	--m-h900: 224;
 	--m-s: 51.44032922%;
 	--m-l: 47.647%;
 }
-.deep_purple {
+.deepPurple {
 	--m-50: #fff1ff;
 	--m-100: #ecccff;
 	--m-200: #d59aff;
@@ -357,12 +391,14 @@
 	--m-a200: #8241db;
 	--m-a400: #7303dc;
 	--m-a700: #6900c6;
+	--m-dark: #270052;
 	--m-h: 270;
 	--m-h900: 269;
 	--m-s: 50%;
 	--m-l: 40%;
 }
-.purple {
+.purple,
+.secondary {
 	--m-50: #ffecfc;
 	--m-100: #ffcae3;
 	--m-200: #ff90c8;
@@ -377,6 +413,7 @@
 	--m-a200: #ff04a2;
 	--m-a400: #ff0097;
 	--m-a700: #ff009b;
+	--m-dark: #6e0034;
 	--m-h: 327.21311475;
 	--m-h900: 332;
 	--m-s: 88.4057971%;
@@ -397,6 +434,7 @@
 	--m-a200: #ff4a77;
 	--m-a400: #f5254c;
 	--m-a700: #c81f58;
+	--m-dark: #910025;
 	--m-h: 346.59574468;
 	--m-h900: 345;
 	--m-s: 82.45614035%;
@@ -413,12 +451,17 @@
 	--m-700: #603e3b;
 	--m-800: #543330;
 	--m-900: #472826;
+	--m-a100: #ff8365;
+	--m-a200: #ff4c25;
+	--m-a400: #ff0000;
+	--m-a700: #da0000;
+	--m-dark: #472826;
 	--m-h: 4.61538462;
 	--m-h900: 4;
 	--m-s: 19.02439024%;
 	--m-l: 40.196%;
 }
-.blue_grey {
+.blueGrey {
 	--m-50: #e0fdff;
 	--m-100: #cae6fb;
 	--m-200: #aecadf;
@@ -433,13 +476,15 @@
 	--m-a200: #2972d8;
 	--m-a400: #0063d8;
 	--m-a700: #004ed9;
+	--m-dark: #2b4352;
 	--m-h: 204.78260869;
 	--m-h900: 204;
 	--m-s: 19.16666666%;
 	--m-l: 47.0588%;
 }
-:root,
-.grey {
+
+.grey,
+.neutral {
 	--m-50: #f9f9f9;
 	--m-100: #ececeb;
 	--m-200: #d9d9d9;
@@ -454,33 +499,31 @@
 	--m-a200: #2972d8;
 	--m-a400: #0063d8;
 	--m-a700: #004ed9;
+	--m-dark: #525252;
 	--m-h: 0;
 	--m-h900: 0;
 	--m-s: 0%;
 	--m-l: 63.9215%;
 }
-
-.settings {
-	composes: deep_orange;
+.dark {
+	--m-h: 0;
+	--m-s: 0%;
+	--ui-fill-text: var(--full-black, #000);
+	--m-800: #3d3d3d;
+	--m-900: #333333;
 }
-.error {
-	composes: red;
-}
-.warning {
-	composes: amber;
-}
-.success {
-	composes: lime;
-}
-.info {
-	composes: cyan;
-}
-.primary {
-	composes: orange;
-}
-.secondary {
-	composes: purple;
-}
-.neutral {
-	composes: grey;
+.light {
+	--m-h: 0;
+	--m-s: 0%;
+	--ui-dp-l-1: 9%;
+	--ui-dp-l-2: 11%;
+	--ui-dp-l-3: 12%;
+	--ui-dp-l-4: 13%;
+	--ui-dp-l-6: 15%;
+	--ui-dp-l-8: 16%;
+	--ui-dp-l-12: 18%;
+	--ui-dp-l-16: 19%;
+	--ui-dp-l-24: 20%;
+	--ui-dp-l: 24%;
+	--ui-fill-text: var(--full-black, #000);
 }

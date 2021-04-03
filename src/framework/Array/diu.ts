@@ -1,4 +1,3 @@
-//import { diuFN, resultSet } from '../core';
 import { each } from '../Collection/each';
 import { makeUniq, uniqBy, uniqWith } from '../Collection/unique';
 import { flatten } from './flat';

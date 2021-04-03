@@ -1,5 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { icache } from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
 import Progress from '@dojo/widgets/progress';
 import Button from '@dojo/widgets/button';
 
@@ -9,7 +10,7 @@ export default factory(function ProgressWithChangingvalues({ middleware: { icach
 	const max = 100;
 	const step = 10;
 	const value = icache.getOrSet<number>('value', 0);
-	return (
+	return (<Example spaced={true}>
 		<div>
 			<Progress value={value} max={max} />
 			<div>
@@ -21,5 +22,5 @@ export default factory(function ProgressWithChangingvalues({ middleware: { icach
 				</Button>
 			</div>
 		</div>
-	);
+	</Example>);
 });

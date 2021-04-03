@@ -2,8 +2,7 @@ import { RenderResult } from '@dojo/framework/core/interfaces';
 import { focus } from '@dojo/framework/core/middleware/focus';
 import { i18n } from '@dojo/framework/core/middleware/i18n';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { createResourceMiddleware, ResourceMeta } from '@dojo/framework/core/middleware/resources';
-/*import { createDataMiddleware } from '@dojo/framework/core/middleware/data';*/
+import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
 import { uuid } from '@dojo/framework/core/util';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { Keys } from '../common/util';
@@ -14,7 +13,8 @@ import {
 	ItemRendererProperties,
 	List,
 	ListOption,
-	defaultTransform as listTransform
+	ListItemProperties,
+	MenuItemProperties
 } from '../list';
 import theme from '../middleware/theme';
 import { PopupPosition } from '../popup';
@@ -23,13 +23,13 @@ import * as listCss from '../theme/default/list.m.css';
 import * as labelCss from '../theme/default/label.m.css';
 import * as iconCss from '../theme/default/icon.m.css';
 import * as css from '../theme/default/select.m.css';
-import bundle from './select.nls';
-// import { find } from '@dojo/framework/shim/array';
+import bundle from './nls/Select';
 import LoadingIndicator from '../loading-indicator';
+import { find } from '@dojo/framework/shim/array';
 
 export interface SelectProperties {
 	/** Callback called when user selects a value */
-	onValue(value: string): void;
+	onValue(value: ListOption): void;
 	/** The initial selected value */
 	initialValue?: string;
 	/** Controlled value property */
@@ -54,12 +54,13 @@ export interface SelectProperties {
 
 export interface SelectChildren {
 	/** Custom renderer for item contents */
-	items?(properties: ItemRendererProperties): RenderResult;
+	items?(
+		item: ItemRendererProperties,
+		props: ListItemProperties & MenuItemProperties
+	): RenderResult;
 	/** The label to show */
 	label?: RenderResult;
 }
-
-export const defaultTransform = listTransform;
 
 interface SelectICache {
 	dirty: boolean;
@@ -70,24 +71,29 @@ interface SelectICache {
 	triggerId: string;
 	valid: boolean;
 	value: string;
-	meta?: ResourceMeta;
 }
 
 const icache = createICacheMiddleware<SelectICache>();
 
-const factory = create({ icache, focus, theme, i18n, resource: createResourceMiddleware<ListOption>() })
+const factory = create({
+	icache,
+	focus,
+	theme,
+	i18n,
+	resource: createResourceMiddleware<ListOption>()
+})
 	.properties<SelectProperties>()
 	.children<SelectChildren | undefined>();
 
 export const Select = factory(function Select({
-	id,
 	children,
 	properties,
 	middleware: { icache, focus, theme, i18n, resource }
 }) {
-	const { createOptions, isLoading, meta, find } = resource;
 	const {
 		classes,
+		variant,
+		theme: themeProp,
 		disabled,
 		helperText,
 		initialValue,
@@ -98,10 +104,17 @@ export const Select = factory(function Select({
 		position,
 		required,
 		name,
-		resource: { template, options = createOptions(id) }
+		resource: {
+			template,
+			options = resource.createOptions((curr, next) => ({ ...curr, ...next }))
+		}
 	} = properties();
-	const [{ items, label } = { items: undefined, label: undefined }] = children();
+	const {
+		get,
+		template: { read }
+	} = resource.template(template);
 
+	const [{ items, label } = { items: undefined, label: undefined }] = children();
 	let { value } = properties();
 
 	if (value === undefined) {
@@ -120,10 +133,11 @@ export const Select = factory(function Select({
 	let valid = icache.get('valid');
 	const dirty = icache.get('dirty');
 	const { messages } = i18n.localize(bundle);
-	const metaInfo = icache.set('meta', (current) => {
-		const newMeta = meta(template, options());
-		return newMeta || current;
-	});
+	const expanded = icache.get('expanded');
+	const {
+		meta: { total, status },
+		data
+	} = get(options(), { read, meta: true });
 
 	if (required && dirty) {
 		const isValid = value !== undefined;
@@ -142,7 +156,8 @@ export const Select = factory(function Select({
 				disabled && themedCss.disabled,
 				valid === true && themedCss.valid,
 				valid === false && themedCss.invalid,
-				shouldFocus === true && themedCss.focused
+				shouldFocus === true && themedCss.focused,
+				expanded && themedCss.expanded
 			]}
 			key="root"
 		>
@@ -154,6 +169,7 @@ export const Select = factory(function Select({
 						'label'
 					)}
 					classes={classes}
+					variant={variant}
 					disabled={disabled}
 					forId={triggerId}
 					valid={valid}
@@ -176,6 +192,9 @@ export const Select = factory(function Select({
 					}
 				}}
 				position={position}
+				theme={themeProp}
+				classes={classes}
+				variant={variant}
 			>
 				{{
 					trigger: (toggleOpen) => {
@@ -188,17 +207,18 @@ export const Select = factory(function Select({
 						}
 
 						let valueOption: ListOption | undefined;
-						if (value) {
-							valueOption = (
-								find(template, {
-									options: options(),
-									start: 0,
-									query: { value },
-									type: 'exact'
-								}) || {
-									item: undefined
+						if (value && data) {
+							let found = find(data, (item) => {
+								return Boolean(item.value && item.value.value === value);
+							});
+							if (found) {
+								valueOption = found.value;
+							} else {
+								const items = get(options({ query: { value } }), { read });
+								if (items) {
+									valueOption = items[0];
 								}
-							).item;
+							}
 						}
 
 						return (
@@ -208,7 +228,9 @@ export const Select = factory(function Select({
 								focus={() => focusNode === 'trigger' && shouldFocus}
 								aria-controls={menuId}
 								aria-haspopup="listbox"
-								aria-expanded={icache.getOrSet('expanded', false)}
+								aria-expanded={
+									icache.getOrSet('expanded', false) ? 'true' : 'false'
+								}
 								key="trigger"
 								type="button"
 								id={triggerId}
@@ -226,7 +248,9 @@ export const Select = factory(function Select({
 									}
 								}}
 							>
-								<span classes={themedCss.value}>
+								<span
+									classes={[themedCss.value, expanded && themedCss.valueExpanded]}
+								>
 									{(valueOption && valueOption.label) || value || (
 										<span classes={themedCss.placeholder}>{placeholder}</span>
 									)}
@@ -240,6 +264,7 @@ export const Select = factory(function Select({
 											'icon'
 										)}
 										classes={classes}
+										variant={variant}
 									/>
 								</span>
 							</button>
@@ -251,18 +276,25 @@ export const Select = factory(function Select({
 							close();
 						}
 
-						return metaInfo === undefined && isLoading(template, options()) ? (
-							<LoadingIndicator key="loading" />
+						return total === undefined && status === 'reading' ? (
+							<LoadingIndicator
+								key="loading"
+								theme={themeProp}
+								variant={variant}
+								classes={classes}
+							/>
 						) : (
 							<div key="menu-wrapper" classes={themedCss.menuWrapper}>
 								<List
 									key="menu"
+									height="auto"
 									focus={() => focusNode === 'menu' && shouldFocus}
-									resource={resource}
-									onValue={(value: string) => {
+									resource={resource({ template, options })}
+									onValue={(value) => {
 										focus.focus();
 										closeMenu();
-										value !== icache.get('value') && icache.set('value', value);
+										value.value !== icache.get('value') &&
+											icache.set('value', value.value);
 										onValue(value);
 									}}
 									onRequestClose={closeMenu}
@@ -275,6 +307,7 @@ export const Select = factory(function Select({
 										'menu'
 									)}
 									classes={classes}
+									variant={variant}
 									widgetId={menuId}
 								>
 									{items}
@@ -288,6 +321,9 @@ export const Select = factory(function Select({
 				key="helperText"
 				text={valid === false ? messages.requiredMessage : helperText}
 				valid={valid}
+				classes={classes}
+				variant={variant}
+				theme={themeProp}
 			/>
 		</div>
 	);

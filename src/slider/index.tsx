@@ -1,26 +1,21 @@
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import focus from '@dojo/framework/core/middleware/focus';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import theme from '@dojo/framework/core/middleware/theme';
 import { create, tsx } from '@dojo/framework/core/vdom';
-import { formatAriaProperties } from '../common/util';
-import Label from '../label/index';
-import * as css from '../theme/default/slider.m.css';
+import { theme, formatAriaProperties } from '../middleware/theme';
+import progressMiddleware from '../progress/middleware';
+import Ticks from '../progress/ticks';
+import Output, { OutputDisplay } from '../progress/output';
+import { ProgressProperties } from '../progress';
+
+import * as ui from '../theme/material/_ui.m.css';
+import * as colors from '../theme/material/_color.m.css';
+import * as css from '../theme/material/progress.m.css';
 import * as fixedCss from './styles/slider.m.css';
 
-export interface SliderProperties {
-	/** Custom aria attributes */
-	aria?: { [key: string]: string | null };
+export interface SliderProperties extends ProgressProperties {
 	/** Set the disabled property of the control */
 	disabled?: boolean;
-	/** Adds the label element after (true) or before (false) */
-	labelAfter?: boolean;
-	/** Hides the label from view while still remaining accessible for screen readers */
-	labelHidden?: boolean;
-	/** The maximum value for the slider */
-	max?: number;
-	/** The minimum value for the slider */
-	min?: number;
 	/** The name of the input element */
 	name?: string;
 	/** Handler for when the element is blurred */
@@ -32,29 +27,17 @@ export interface SliderProperties {
 	/** Handler for when the pointer moves over the element */
 	onOver?(): void;
 	/** Handler for when the value of the widget changes */
-	onValue?(value?: number): void;
-	/** If the rendered output should be displayed as a tooltip */
-	outputIsTooltip?: boolean;
+	onValue?(value: number): void;
 	/** Makes the slider readonly (it may be focused but not changed) */
 	readOnly?: boolean;
 	/** If the slider must be set */
 	required?: boolean;
-	/** Toggles visibility of slider output */
-	showOutput?: boolean;
 	/** Size of the slider increment */
 	step?: number;
 	/** If the value provided by the slider are valid */
 	valid?: boolean;
 	/** The initial value */
 	initialValue?: number;
-	/** A controlled slider value */
-	value?: number;
-	/** Orients the slider vertically, false by default. */
-	vertical?: boolean;
-	/** Length of the vertical slider (only used if vertical is true) */
-	verticalHeight?: string;
-	/** The id used for the form input element */
-	widgetId?: string;
 }
 
 export interface SliderChildren {
@@ -67,11 +50,14 @@ export interface SliderChildren {
 export interface SliderICache {
 	value?: number;
 	initialValue?: number;
+	width?: string;
+	hasCaption?: boolean;
 }
 
 const factory = create({
 	theme,
 	focus,
+	progressMiddleware,
 	icache: createICacheMiddleware<SliderICache>()
 })
 	.properties<SliderProperties>()
@@ -79,27 +65,33 @@ const factory = create({
 
 export const Slider = factory(function Slider({
 	id,
-	middleware: { theme, focus, icache },
+	middleware: { theme, focus, icache, progressMiddleware },
 	properties,
 	children
 }) {
+
+	const themedCss = theme.classes(css);
+
 	const {
 		aria = {},
-		disabled,
-		widgetId = `slider-${id}}`,
-		valid,
-		labelAfter,
-		labelHidden,
+		size = 'l',
+		variant = 'flat',
+		responsive = true,
+		circular = false,
+		rounded = false,
+		outputDisplay = true,
+		markType = false,
 		max = 100,
 		min = 0,
+		marks,
+		outputAlign,
+		onOutput,
+		widgetId = `progress-${id}`,
+		disabled,
+		valid,
 		name,
 		readOnly,
 		required,
-		showOutput = true,
-		step = 1,
-		vertical = false,
-		verticalHeight = '200px',
-		outputIsTooltip = false,
 		theme: themeProp,
 		classes,
 		onOut,
@@ -108,7 +100,6 @@ export const Slider = factory(function Slider({
 		onFocus,
 		onValue
 	} = properties();
-	const [{ output, label } = { output: undefined, label: undefined }] = children();
 
 	const { initialValue = min } = properties();
 	let { value } = properties();
@@ -137,114 +128,105 @@ export const Slider = factory(function Slider({
 		}
 		icache.set('value', value);
 	}
+	const {
+		buffer, step, percent,
+		isIndeterminate, isStep, vertical, lines, cssVar, outputValue
+	} = progressMiddleware.format(icache.get('value'));
 
-	const themeCss = theme.classes(css);
+	const ticks = markType && <Ticks {
+		...{
+			min, max, percent, step, isStep: !!isStep, marks, markType, vertical,
+			onSize: (hasCaption, w) => {
 
-	const percentValue = ((value - min) / (max - min)) * 100;
+				icache.getOrSet('hasCaption', hasCaption, false);
+				icache.set('width', (w > 0 ?
+					`--width: calc(var(--track-h, var(--line, 16px)) + var(--plr,10px) + ${Math.ceil(w)}px);` :
+					''
+				))
 
-	let outputStyles: any = {};
-	if (outputIsTooltip) {
-		outputStyles = vertical ? { top: `${100 - percentValue}%` } : { left: `${percentValue}%` };
-	}
+			}
+		}
+	} />
 
-	const slider = (
-		<div
-			classes={[themeCss.inputWrapper, fixedCss.inputWrapperFixed]}
-			styles={vertical ? { height: verticalHeight } : {}}
-		>
-			<input
-				key="input"
-				{...formatAriaProperties(aria)}
-				classes={[themeCss.input, fixedCss.nativeInput]}
-				disabled={disabled}
-				id={widgetId}
-				focus={focus.shouldFocus}
-				aria-invalid={valid === false ? 'true' : null}
-				max={`${max}`}
-				min={`${min}`}
-				name={name}
-				readOnly={readOnly}
-				aria-readonly={readOnly ? 'true' : null}
-				required={required}
-				step={`${step}`}
-				styles={vertical ? { width: verticalHeight } : {}}
-				type="range"
-				value={`${value}`}
-				onblur={() => onBlur && onBlur()}
-				onfocus={() => onFocus && onFocus()}
-				onpointerenter={() => onOver && onOver()}
-				onpointerleave={() => onOut && onOut()}
-				oninput={(event: Event) => {
-					event.stopPropagation();
-					const value = parseFloat((event.target as HTMLInputElement).value);
-
-					icache.set('value', value);
-					onValue && onValue(value);
-				}}
-			/>
-			<div
-				classes={[themeCss.track, fixedCss.trackFixed]}
-				aria-hidden="true"
-				styles={vertical ? { width: verticalHeight } : {}}
-			>
-				<span
-					classes={[themeCss.fill, fixedCss.fillFixed]}
-					styles={{ width: `${percentValue}%` }}
-				/>
-				<span
-					classes={[themeCss.thumb, fixedCss.thumbFixed]}
-					styles={{ left: `${percentValue}%` }}
-				/>
-			</div>
-			{showOutput ? (
-				<output
-					classes={[themeCss.output, outputIsTooltip ? themeCss.outputTooltip : null]}
-					for={widgetId}
-					styles={outputStyles}
-					tabIndex={-1}
-				>
-					{output ? output(value) : `${value}`}
-				</output>
-			) : null}
-		</div>
-	);
-
-	const content = [
-		label ? (
-			<Label
-				theme={themeProp}
-				classes={classes}
-				disabled={disabled}
-				focused={focus.shouldFocus()}
-				valid={valid}
-				readOnly={readOnly}
-				required={required}
-				hidden={labelHidden}
-				secondary={true}
-				forId={widgetId}
-			>
-				{label}
-			</Label>
-		) : null,
-		slider
-	];
+	const outPos = !outputDisplay || (typeof outputDisplay === 'string' && !(outputDisplay in OutputDisplay)) ? false :
+		(outputDisplay === true ? (!vertical ? 'bottom' : 'right') : outputDisplay);
+	const output = typeof onOutput === 'function' ? onOutput(value||0, percent) : <Output {
+		...{
+			vertical, outputDisplay, outputAlign, widgetId, variant, size,
+			hasCaption: icache.get('hasCaption'),
+			value: outputValue
+		}
+	} />;
+	const defaultDepth = { shaped:1, filled:1, raised:2, outlined:0, flat:0 };
 
 	return (
-		<div
-			key="root"
+		<div key="root"
+			style={`--progress: ${percent}%`}
 			classes={[
 				theme.variant(),
-				themeCss.root,
-				disabled ? themeCss.disabled : null,
-				focus.isFocused('input') ? themeCss.focused : null,
-				valid === false ? themeCss.invalid : null,
-				valid === true ? themeCss.valid : null,
-				readOnly ? themeCss.readonly : null,
-				vertical ? themeCss.vertical : null,
+				themedCss.root,
+				themedCss.slider,
+				theme.shaped(themedCss),
+				theme.sized(ui),
+				theme.colored(colors),
+				theme.spaced(ui),
+				theme.animated(themedCss),
+				circular ? themedCss.circular : (vertical ? css.vertical : css.horizontal),
+				isIndeterminate ? css.indeterminate : css.determinate,
+				rounded && themedCss.rounded,
+				responsive && themedCss.responsive,
+				icache.get('hasCaption') && themedCss.labeled,
+				!!buffer && themedCss.buffer,
+				outPos === 'tooltip' && themedCss.hasTooltip,
+				outPos === 'top' || outPos === 'bottom' ? themedCss.column : themedCss.row,
+
+				disabled ? themedCss.disabled : null,
+				focus.isFocused('input') ? themedCss.focused : null,
+				valid === false ? themedCss.invalid : null,
+				valid === true ? themedCss.valid : null,
+				readOnly ? themedCss.readonly : null,
 				fixedCss.rootFixed
 			]}
 		>
-			{labelAfter ? content.reverse() : content}
+			{outPos === 'top' || outPos === 'left' ? output : null}
+			<div classes={[themedCss.wrapper, fixedCss.wrapperFixed]} {
+				...(buffer||lines||icache.get('width') ? {style: `${cssVar.buffer}${cssVar.lines}${icache.get('width')}`} : {})
+			}>
+				{outPos === 'tooltip' ? output : null}
+				{ isIndeterminate ?
+					<progress classes={[themedCss.progress, theme.elevated(ui, 'filled', defaultDepth)]} /> :
+					<input
+						key="input"
+						{...formatAriaProperties(aria)}
+						classes={[themedCss.range, fixedCss.nativeInput, theme.elevated(ui, 'filled', defaultDepth)]}
+						disabled={disabled}
+						id={widgetId}
+						focus={focus.shouldFocus}
+						aria-invalid={valid === false ? 'true' : 'false'}
+						aria-readonly={readOnly ? 'true' : 'false'}
+						max={`${max}`}
+						min={`${min}`}
+						name={name}
+						readOnly={readOnly}
+						required={required}
+						step={step}
+						type="range"
+						value={`${icache.get('value')||value||initialValue}`}
+						onblur={() => onBlur && onBlur()}
+						onfocus={() => onFocus && onFocus()}
+						onpointerenter={() => onOver && onOver()}
+						onpointerleave={() => onOut && onOut()}
+						oninput={(event: Event) => {
+							event.stopPropagation();
+							const value = Math.max(min, parseFloat((event.target as HTMLInputElement).value));
+							icache.set('value', value);
+							onValue && onValue(value);
+						}}
+					/>
+				}
+				{ticks}
+			</div>
+			{outPos === 'bottom' || outPos === 'right' ? output : null}
 		</div>
 	);
 });

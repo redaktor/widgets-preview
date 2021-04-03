@@ -1,5 +1,6 @@
+.root {
+
+}
 .trigger {
-	position: absolute;
-	padding: 0;
-	margin-right: auto;
+	display: flex;
 }

@@ -73,7 +73,7 @@
 
 .summary:hover {
 	cursor: pointer;
-	background: linear-gradient(90deg, var(--ui-bg-muted) 0%, var(--ui-bg-muted) 24px,
+	background: linear-gradient(90deg, var(--paper) 0%, var(--paper) 24px,
 		var(--surface) 24px, var(--surface) 100%);
 }
 .summary:hover::marker {

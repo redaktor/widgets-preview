@@ -1,6 +1,7 @@
 .root {
-	composes: ui noHover from './_ui.m.css';
+	composes: ui from './_ui.m.css';
 	list-style-type: none;
+	width: 100%;
 }
 .transformer { }
 [draggable] {
@@ -19,6 +20,7 @@
 .outlined { composes: outlined from './_ui.m.css'; }
 .shaped { composes: shaped from './_ui.m.css'; }
 .root.animated {
+	padding-top: 0;
 	box-shadow: none;
 	background: none;
 }
@@ -29,10 +31,12 @@
 .root.flat {
 	color: var(--text);
 }
+/*
 .root.flat,
 .root.flat:hover {
 	background-color: var(--transparent) !important;
 }
+*/
 .root.above,
 .root.above .item:first-child {
 	border-bottom-left-radius: 0;
@@ -47,7 +51,9 @@
 	border-bottom-left-radius: var(--ui-border-radius-emphasized);
 	border-bottom-right-radius: var(--ui-border-radius-emphasized);
 }
-.item { }
+.item {
+	background: var(--ui-bg);
+}
 
 .divider {
 	margin: calc(var(--line) / 2 - var(--ui-border-width, 1px)) 0 calc(var(--line) / 2) 0;

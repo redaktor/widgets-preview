@@ -1,13 +1,77 @@
-import { theme, Variants } from '../middleware/theme';
-import { throttle } from '@dojo/framework/core/util';
 import { create, tsx } from '@dojo/framework/core/vdom';
-import * as css from '../theme/material/list-item.m.css';
+import { throttle } from '@dojo/framework/core/util';
+import Icon from '../icon';
+import theme from '../middleware/theme';
+import * as listItemCss from '../theme/material/list-item.m.css';
+import * as menuItemCss from '../theme/material/menu-item.m.css';
+
+export interface MenuItemProperties {
+	/** Callback used when the item is clicked */
+	onSelect(): void;
+	/** Property to set the active state of the item, indicates it's the current keyboard / mouse navigation target */
+	active?: boolean;
+	/** Callback used when the item wants to request it be made active, to example on pointer move */
+	onRequestActive(): void;
+	/** Property to set the disabled state of the item */
+	disabled?: boolean;
+	/** The id to apply to this widget top level for a11y */
+	widgetId: string;
+}
+
+const menuItemFactory = create({ theme }).properties<MenuItemProperties>();
+
+export const MenuItem = menuItemFactory(function MenuItem({
+	properties,
+	children,
+	middleware: { theme }
+}) {
+	const {
+		onSelect,
+		active = false,
+		onRequestActive,
+		disabled = false,
+		variant = 'flat',
+		widgetId
+	} = properties();
+
+	const themedCss = theme.classes(menuItemCss);
+
+	function select() {
+		!disabled && onSelect();
+	}
+
+	function requestActive() {
+		!disabled && !active && onRequestActive();
+	}
+
+	return (
+		<div
+			id={widgetId}
+			key="root"
+			onpointermove={throttle(() => {
+				requestActive();
+			}, 500)}
+			classes={[
+				theme.variant(),
+				themedCss[variant],
+				theme.animated(themedCss, true),
+				themedCss.root,
+				active && themedCss.active,
+				disabled && themedCss.disabled
+			]}
+			onclick={() => {
+				requestActive();
+				select();
+			}}
+			role="menuitem"
+			aria-disabled={disabled ? 'true' : 'false'}
+		>
+			{children()}
+		</div>
+	);
+});
 
 export interface ListItemProperties {
-	/** The variant for the listItem: 'flat', 'outlined', 'raised', 'shaped'
-	 * 'flat' by default
-	 */
-	variant?: Variants;
 	/** Callback used when the item is clicked */
 	onSelect(): void;
 	/** Property to set the selected state of the item */
@@ -18,27 +82,57 @@ export interface ListItemProperties {
 	onRequestActive(): void;
 	/** Property to set the disabled state of the item */
 	disabled?: boolean;
-	/** Hover / Click item */
-	animated?: boolean;
 	/** The id to apply to this widget top level for a11y */
 	widgetId: string;
+	/** Determines if this item can be reordered */
+	draggable?: boolean;
+	/** Determines if this item is actively being dragged */
+	dragged?: boolean;
+	/** Determines if this item is visually shifted down due to DnD */
+	movedUp?: boolean;
+	/** Determines if this item is visually shifted down due to DnD */
+	movedDown?: boolean;
+	/** Called when dragging begins */
+	onDragStart?: (event: DragEvent) => void;
+	/** Called when dragging ends */
+	onDragEnd?: (event: DragEvent) => void;
+	/** Called when over a dragged item */
+	onDragOver?: (event: DragEvent) => void;
+	/** Called when a holistic drag is complete */
+	onDrop?: (event: DragEvent) => void;
+	/** Determines if this item is visually collapsed during DnD */
+	collapsed?: boolean;
 }
 
-const factory = create({ theme }).properties<ListItemProperties>();
+const listItemFactory = create({ theme }).properties<ListItemProperties>();
 
-export const ListItem = factory(function ListItem({ properties, children, middleware: { theme } }) {
+export const ListItem = listItemFactory(function ListItem({
+	properties,
+	children,
+	middleware: { theme }
+}) {
 	const {
-		variant = 'flat' as (keyof typeof themedCss),
 		onSelect,
 		active = false,
 		onRequestActive,
 		selected = false,
 		disabled = false,
-		animated = false,
-		widgetId
+		spaced = false,
+		widgetId,
+		draggable,
+		dragged,
+		onDragStart,
+		onDragEnd,
+		onDragOver,
+		onDrop,
+		movedUp,
+		movedDown,
+		collapsed,
+		theme: themeProp,
+		variant = 'flat'
 	} = properties();
 
-	const themedCss = theme.classes(css);
+	const themedCss = theme.classes(listItemCss);
 
 	function select() {
 		!disabled && onSelect();
@@ -48,44 +142,52 @@ export const ListItem = factory(function ListItem({ properties, children, middle
 		!disabled && !active && onRequestActive();
 	}
 
-	const itemProps = {
-		id: widgetId,
-		key: 'root',
-		role: 'option',
-		'aria-disabled': disabled,
-		'aria-selected': selected,
-		onpointermove: throttle(() => {
-			requestActive();
-		}, 500),
-		onpointerdown: () => {
-			requestActive();
-			select();
-		},
-		classes: [
-			theme.variant(),
-			(themedCss as any)[variant],
-			themedCss.root,
-			animated && themedCss.animated,
-			selected && themedCss.selected,
-			active && themedCss.active,
-			disabled && themedCss.disabled
-		]
-	}
-
-	return (theme.isJS() ? <div {...itemProps}>{children()}</div> :
-		<virtual>
-			<input
-				key="check"
-				id={'input-'+widgetId}
-				tabIndex={0}
-				checked={selected === true}
-				classes={themedCss.input} type="checkbox"
-			/>
-			<label {...itemProps} for={'input'+widgetId}>
-				{children()}
-			</label>
-		</virtual>
+	return (
+		<div
+			id={widgetId}
+			key="root"
+			onpointermove={throttle(() => {
+				requestActive();
+			}, 500)}
+			classes={[
+				theme.variant(),
+				themedCss[variant],
+				theme.animated(themedCss, true),
+				themedCss.root,
+				spaced && themedCss.height,
+				selected && themedCss.selected,
+				active && themedCss.active,
+				disabled && themedCss.disabled,
+				movedUp && themedCss.movedUp,
+				movedDown && themedCss.movedDown,
+				collapsed && themedCss.collapsed,
+				dragged && themedCss.dragged,
+				draggable && themedCss.draggable
+			]}
+			onclick={() => {
+				requestActive();
+				select();
+			}}
+			role="option"
+			aria-disabled={disabled ? 'true' : 'false'}
+			aria-selected={selected ? 'true' : 'false'}
+			draggable={draggable}
+			ondragenter={(event: DragEvent) => event.preventDefault()}
+			ondragstart={onDragStart}
+			ondragend={onDragEnd}
+			ondragover={onDragOver}
+			ondrop={onDrop}
+			styles={{ visibility: dragged ? 'hidden' : undefined }}
+		>
+			{children()}
+			{draggable && (
+				<Icon
+					type="barsIcon"
+					classes={{ '@dojo/widgets/icon': { icon: [themedCss.dragIcon] } }}
+					theme={themeProp}
+					variant={variant}
+				/>
+			)}
+		</div>
 	);
 });
-
-export default ListItem;

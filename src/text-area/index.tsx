@@ -1,9 +1,11 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
+import Label from '../label/index';
+import * as labelCss from '../theme/material/label.m.css';
 import HelperText from '../helper-text/index';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 // import dimensions from '@dojo/framework/core/middleware/dimensions';
 
-import { theme, formatAriaProperties, ThemeProperties, Variants } from '../middleware/theme';
+import { theme, formatAriaProperties, ThemeProperties } from '../middleware/theme';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as inputCss from '../theme/material/text-input.m.css';
@@ -16,10 +18,7 @@ import { RenderResult } from '@dojo/framework/core/interfaces';
 export interface TextAreaProperties extends ThemeProperties {
 	/** Custom aria attributes */
 	aria?: { [key: string]: string | null };
-	/** The variant for the input: 'flat', 'outlined', 'raised', 'shaped'
-	 * 'flat' by default
-	 */
-	variant?: Variants & (keyof typeof inputCss);
+
 	responsive?: boolean;
 
 	expand?: boolean;
@@ -33,8 +32,6 @@ export interface TextAreaProperties extends ThemeProperties {
 	helperText?: string;
 	/** Hides the label from view while still remaining accessible for screen readers */
 	labelHidden?: boolean;
-
-	labelAnimated?: boolean;
 	/** Maximum number of characters allowed in the input */
 	maxLength?: number | string;
 	/** Minimum number of characters allowed in the input */
@@ -107,7 +104,6 @@ const factory = create({
 	.properties<TextAreaProperties>()
 	.children<RenderResult | undefined>();
 
-
 export const TextArea = factory(function TextArea({
 	id,
 	middleware: { icache, theme, focus, /*dimensions,*/ validity },
@@ -115,6 +111,17 @@ export const TextArea = factory(function TextArea({
 	children
 }) {
 	const themedCss = theme.classes(css);
+	const line = icache.getOrSet('line', 22); // TODO FIXME and do:
+	/*
+	if (!icache.get('line')) {
+		const r = renderer(() => dnode);
+		const div = global.document.createElement('div');
+		div.style.position = 'absolute';
+		global.document.body.appendChild(div);
+		r.mount({ domNode: div, sync: true });
+		const dimensions = div.getBoundingClientRect();
+	}
+	*/
 
 	function callOnValidate(valid: boolean | undefined, message: string) {
 		let { valid: previousValid, onValidate } = properties();
@@ -185,7 +192,6 @@ export const TextArea = factory(function TextArea({
 		wrapText,
 		theme: themeProp,
 		classes,
-		labelAnimated = true,
 		labelHidden,
 		helperText,
 		onValidate
@@ -215,22 +221,20 @@ export const TextArea = factory(function TextArea({
 		children() : void 0) || void 0;
 
 // const [label] = children();
-	const isExpand = theme.isJS() && expand;
+
 	return (
 		<div key="root" classes={[
 			themedCss.root,
-			isExpand ? themedCss.expand : null,
-			isExpand && icache.get('value') ? themedCss.expanded : null,
-			responsive ? themedCss.responsive : null,
-			label && labelAnimated === true ? themedCss.slideLabel : themedCss.staticLabel,
 			theme.variant(),
-			inputCss[variant],
+			theme.shaped(ui),
 			theme.sized(ui),
-			theme.spaced(ui),
 			theme.colored(colors),
-			theme.animated(themedCss)
+			theme.elevated(ui),
+			theme.spaced(ui),
+			theme.animated(themedCss),
+			expand ? themedCss.expand : null,
+			responsive ? themedCss.responsive : null
 		]}>
-			<div key="stub" id={`stub-${id}`} classes={themedCss.stub} />
 			<div
 				key="wrapper"
 				classes={[
@@ -243,12 +247,32 @@ export const TextArea = factory(function TextArea({
 					inputFocused ? themedCss.focused : null
 				]}
 			>
+				{label ? (
+					<Label
+						theme={theme.compose(
+							labelCss,
+							css,
+							'label'
+						)}
+						classes={classes}
+						disabled={disabled}
+						valid={valid}
+						readOnly={readOnly}
+						required={required}
+						hidden={labelHidden}
+						forId={widgetId}
+						focused={inputFocused}
+						active={!!value || inputFocused}
+					>
+						{label}
+					</Label>
+				) : null}
 				<textarea
 					id={widgetId}
 					key="input"
 					{...formatAriaProperties(aria)}
 					classes={themedCss.input}
-					style={isExpand && icache.get('style')}
+					style={expand && icache.get('style')}
 					cols={`${columns}`}
 					disabled={disabled}
 					focus={focus.shouldFocus}
@@ -256,7 +280,7 @@ export const TextArea = factory(function TextArea({
 					maxlength={maxLength ? `${maxLength}` : null}
 					minlength={minLength ? `${minLength}` : null}
 					name={name}
-					placeholder={placeholder ? placeholder : (labelAnimated === true ? ' ' : void 0)}
+					placeholder={placeholder}
 					readOnly={readOnly}
 					aria-readonly={readOnly ? 'true' : null}
 					required={required}
@@ -275,26 +299,9 @@ export const TextArea = factory(function TextArea({
 						const { onValue } = properties();
 						event.stopPropagation();
 						const value = (event.target as HTMLInputElement).value;
-						if (isExpand && !!value.length) {
-							const input: any = document.getElementById(widgetId);
-							const getStyle = (k: string) => {
-							  return input.currentStyle ?
-									input.currentStyle[k] :
-									(document as any).defaultView.getComputedStyle(input,null).getPropertyValue(k);
-							}
-							const stub: any = document.getElementById(`stub-${id}`);
-							stub.innerHTML = '<br style="line-height: var(--ptb,4px);">' + value;
-							stub.style.width = `${input.offsetWidth}px`;
-							stub.style.visibility = 'hidden';
-							stub.style.display = 'block';
-							stub.style['line-height'] = getStyle('line-height');
-							stub.style['font-size'] = getStyle('font-size');
-				      const h = stub.offsetHeight;
-				      stub.style.visibility = 'visible';
-				      stub.style.display = 'none';
-						  icache.set('style', h ? `height: ${h}px;` : 'height: auto;');
-						} else if (!value.length) {
-							icache.set('style', 'height: auto;');
+						if (expand) {
+							let numberOfLineBreaks = (value.match(/\n/g) || []).length + 1;
+						  icache.set('style', `height: ${numberOfLineBreaks * line}px;`);
 						}
 						icache.set('value', value);
 						onValue && onValue(value);
@@ -313,7 +320,7 @@ export const TextArea = factory(function TextArea({
 						event.stopPropagation();
 						/*
 						icache.set('style', 'height: auto;');
-						isExpand && setExpandStyle();
+						expand && setExpandStyle();
 						*/
 						onKeyUp &&
 							onKeyUp(event.which, () => {
@@ -333,24 +340,11 @@ export const TextArea = factory(function TextArea({
 						onOut && onOut();
 					}}
 				/>
-				<b classes={themedCss.border} />
+				<b classes={themedCss.box} />
 				<b classes={themedCss.bg} />
-				{label && (
-					<label
-						classes={themedCss.label}
-						theme={themeProp}
-						disabled={disabled}
-						valid={valid}
-						focused={inputFocused}
-						readOnly={readOnly}
-						required={required}
-						hidden={labelHidden}
-						for={widgetId}
-						active={!!value || inputFocused}
-					>
-						{label}
-					</label>
-				)}
+				{
+					/*this.properties.outlined ? null : v('b', {classes: this.theme(css.box)}),*/
+				}
 			</div>
 			<HelperText
 				text={computedHelperText}

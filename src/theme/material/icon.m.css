@@ -9,250 +9,718 @@
 }
 
 .icon,
-.icon i {
+i.icon {
 	/* use !important to prevent issues with browser extensions that change fonts */
 	font-family: 'redaktor' !important;
+	color: inherit !important;
 	speak: never;
 	font-style: normal;
 	font-weight: normal;
 	font-variant: normal;
 	text-transform: none;
-	line-height: 1;
-
+	line-height: 1 !important;
+	margin-bottom: 0 !important;
+	padding-top: 0 !important;
+	background-color: transparent !important;
 	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+@keyframes bounce {
+	0% {
+		box-shadow: 0px 7px 0 var(--text-muted), 0px 15px 0 var(--text-muted),
+			0px 23px 0 var(--text-muted);
+	}
+	33% {
+		box-shadow: 0px 7px 0 var(--r-primary), 0px 15px 0 var(--text-muted),
+			0px 23px 0 var(--text-muted);
+	}
+	66% {
+		box-shadow: 0px 7px 0 var(--r-primary), 0px 15px 0 var(--r-primary),
+			0px 23px 0 var(--text-muted);
+	}
+	100% {
+		box-shadow: 0px 7px 0 var(--r-primary), 0px 15px 0 var(--r-primary),
+			0px 23px 0 var(--r-primary);
+	}
+}
+/* The icon for the 'more' menu */
 .more {
 	min-width: 52px;
 	min-height: calc(var(--line) - var(--pt));
-	align-self: center;
-	margin-bottom: 0 !important;
-}
-@keyframes bounce {
-	0% {
-		background: rgba(204, 204, 204, 0);
-		box-shadow: 0px -7px 0 rgba(204, 204, 204, 0.48), 0 0 rgba(204, 204, 204, 0.32),
-			0 7px rgba(204, 204, 204, 0.24);
-	}
-	33% {
-		background: rgba(204, 204, 204, 0);
-		box-shadow: 0px -7px 0 var(--text), 0 0 rgba(204, 204, 204, 0.32),
-			0 7px rgba(204, 204, 204, 0.24);
-	}
-	66% {
-		background: var(--text);
-		box-shadow: 0px -7px 0 var(--text), 0 0 var(--text), 0 7px rgba(204, 204, 204, 0.32);
-	}
-	100% {
-		box-shadow: 0px -7px 0 var(--text-muted), 0 0 var(--text-muted), 0 7px var(--text-muted);
-	}
+	align-self: stretch;
 }
 .more::after {
 	content: ' ';
 	display: block;
 	margin: 0 auto;
-	background: var(--text-muted);
 	width: 5px;
 	height: 5px;
 	border-radius: 100%;
-	box-shadow: 0px -7px 0 var(--text-muted), 0px 7px var(--text-muted);
+	box-shadow: 0px 7px 0 var(--text-muted), 0px 15px 0 var(--text-muted),
+		0px 23px 0 var(--text-muted);
 }
 .more:hover::after {
-	animation: bounce var(--ui-dpd-4) 1 var(--ui-easing);
+	animation: bounce var(--ui-dpd-4) 1 var(--ui-easing) forwards;
 }
-
-.mRedaktor span:nth-child(1)::before {
+/* The official logo of redaktor */
+.redaktorLogo span:nth-child(1)::before {
 	content: '\52';
 	color: rgb(62, 55, 60);
 }
-.mRedaktor span:nth-child(2)::before {
-	content: '\54';
+.redaktorLogo span:nth-child(2)::before {
+	content: '\53';
 	margin-left: -1em;
 	color: rgb(255, 122, 0);
 }
-.mRedaktor span:nth-child(3)::before {
-	content: '\57';
+.redaktorLogo span:nth-child(3)::before {
+	content: '\54';
 	margin-left: -1em;
 	color: rgb(62, 55, 60);
 }
 .redaktor::before {
-	content: '\40';
+	content: '@';
 }
-.collection::before {
-	content: '\43';
+/* A follow icon */
+.follow::before {
+	content: 'f';
 }
-.link::before {
-	content: '\4c';
+.unfollow:before {
+  content: "\e901";
 }
-.note::before {
-	content: '\4e';
+/* ActivityPub Announce or 'share' icon */
+.announce::before,
+.share::before {
+	content: 'a';
 }
-.article::before {
-	content: '\41';
+.announced:before {
+  content: "\e902";
 }
-.image::before {
-	content: '\49';
+/* ActivityPub Like icon */
+.like::before {
+	content: 'l';
 }
-.video::before {
-	content: '\56';
+.likeAlt:before {
+  content: "\e903";
 }
-.audio::before {
-	content: '\55';
+/* ActivityPub DisLike (if liked already) icon */
+.dislike::before {
+	content: 'h';
 }
-.place::before {
-	content: '\50';
+.dislikeAlt:before {
+  content: "\e904";
 }
-.map::before {
-	content: '\4d';
+/* ActivityPub Create icon */
+.create::before {
+	content: 'c';
 }
-.event::before {
-	content: '\45';
+/* ActivityPub Update icon */
+.update::before {
+	content: 'u';
 }
-.page::before {
-	content: '\53';
+/* ActivityPub Delete icon / or close ? */
+._delete::before,
+.close::after {
+	content: 'd';
 }
+/* ActivityPub Add icon */
+.add::before {
+	content: '+';
+}
+/* ActivityPub Remove icon */
+.remove::before {
+	content: '-';
+}
+/* ActivityPub Invite icon */
+.invite::before {
+	content: 'i';
+}
+/* ActivityPub Join icon */
+.join::before {
+	content: 'j';
+}
+/* ActivityPub Leave icon */
+.leave::before {
+	content: 'e';
+}
+/* ActivityPub Offer icon */
+.offer::before {
+	content: 'o';
+}
+/* ActivityPub Question icon */
 .question::before {
-	content: '\51';
+	content: 'q';
 }
-.poll::before {
-	content: '\4f';
+/* ActivityPub Move icon */
+.move::before {
+	content: 'm';
+}
+/* ActivityPub Block icon */
+.block::before {
+	content: 'b';
+}
+/* ActivityPub Flag icon */
+.flag::before {
+	content: 'g';
+}
+/* ActivityPub Ignore icon */
+.ignore::before {
+	content: 'x';
+}
+/* ActivityPub View icon */
+.view::before {
+	content: 'v';
+}
+/* ActivityPub Listen icon */
+.listen::before {
+	content: 's';
+}
+/* ActivityPub Read icon */
+.read::before {
+	content: 'r';
+}
+/* ActivityPub Travel icon */
+.travel::before {
+	content: 't';
+}
+/* ActivityPub Arrive icon */
+.arrive::before {
+	content: 'n';
+}
+/* ActivityPub Accept icon */
+.accept::before {
+	content: '5';
+}
+/* ActivityPub TentativeAccept icon */
+.tentativeAccept::before {
+	content: '6';
+}
+/* ActivityPub Reject icon */
+.reject::before {
+	content: '0';
+}
+/* ActivityPub TentativeReject icon */
+.tentativeReject::before {
+	content: '9';
 }
 
+/* ActivityPub Note object icon */
+.note::before {
+	content: 'N';
+}
+/* ActivityPub Article object icon */
+.article::before {
+	content: 'A';
+}
+/* ActivityPub Image object icon */
+.image::before {
+	content: 'I';
+}
+/* ActivityPub Video object icon */
+.video::before {
+	content: 'V';
+}
+/* ActivityPub Audio object icon */
+.audio::before {
+	content: 'U';
+}
+/* ActivityPub Event object icon */
+.event::before {
+	content: 'E';
+}
+/* ActivityPub Place object icon */
+.place::before {
+	content: 'P';
+}
+/* ActivityPub Page object icon */
+.page::before {
+	content: 'G';
+}
+/* ActivityPub Collection object icon */
+.collection::before {
+	content: 'C';
+}
+/* ActivityPub Link object icon */
+.link::before {
+	content: '4';
+}
+/* ActivityPub Mention Link @ icon */
+.mention:before {
+  content: "\e905";
+}
+/* External Links icon */
+.linkExt:before {
+  content: "\e906";
+}
+/* Globe icon */
+.globe::before {
+	content: '1';
+}
+/* Public icon */
 .public::before {
 	color: var(--ui-public);
-	content: '\70';
+	content: '1';
 }
+/* Group icon */
 .group::before {
 	color: var(--ui-group);
-	content: '\67';
+	content: '2';
 }
+/* Private icon */
 .private::before {
 	color: var(--ui-private);
-	content: '\72';
+	content: '3';
+}
+/* Closed (groups, instances) icon */
+.closed:before {
+  content: "\e907";
+}
+/* Bookmark icon */
+.bookmark::before {
+	--icon-color: var(--r-red, red);
+	content: '8';
+}
+/* Topic icon */
+.topic:before {
+  content: "\f127";
+}
+/* Chat icon */
+.chat::before {
+	content: '7';
+}
+/* Code block icon */
+.code::before {
+	content: 'L';
+}
+/* Code inline icon */
+.codeInline:before {
+  content: "\e908";
 }
 
-.view::before {
-	content: '\76';
+/* Follower States */
+.followFollower::before,
+.followAtoB::before {
+	content: '<';
 }
-.share::before {
-	content: '\73';
+.followFollowing::before,
+.followBtoA::before {
+	content: '>';
 }
-.bookmark::before {
-	content: '\62';
+.followMutual::before {
+	content: '!';
 }
-.create::before {
-	content: '\63';
+
+.map::before {
+	content: '*';
 }
-.update::before {
-	content: '\75';
+.mapAeroNautical:before {
+	content: '"';
 }
-.close::after,
-._delete::before {
-	content: '\64';
+.mapBike:before {
+	content: '§';
+}
+.mapHike:before {
+	content: '$';
+}
+.mapHobby:before {
+	content: '%';
+}
+.mapHumanitarian:before {
+	content: '^';
+}
+.mapPublicTransport:before {
+	content: '_';
+}
+.mapSat:before {
+	content: '°';
+}
+.mapStreet:before {
+	content: '.';
+}
+.mapTopo:before {
+	content: "'";
+}
+
+.mapOSM span:nth-child(1):before {
+  content: "\2f";
+  color: rgb(0, 0, 0);
+}
+.mapOSM span:nth-child(2):before {
+  content: "\3a";
+  margin-left: -1.1455078125em;
+  color: rgb(204, 204, 204);
+}
+.mapOSM span:nth-child(3):before {
+  content: "\3d";
+  margin-left: -1.1455078125em;
+  color: rgb(204, 204, 204);
+}
+.mapOSM span:nth-child(4):before {
+  content: "\42";
+  margin-left: -1.1455078125em;
+  color: rgb(0, 0, 0);
+}
+.mapOSM span:nth-child(5):before {
+  content: "\44";
+  margin-left: -1.1455078125em;
+  color: rgb(0, 0, 0);
+}
+.mapOSM span:nth-child(6):before {
+  content: "\46";
+  margin-left: -1.1455078125em;
+  color: rgb(204, 204, 204);
+}
+.mapOSM span:nth-child(7):before {
+  content: "\48";
+  margin-left: -1.1455078125em;
+  color: rgb(26, 23, 27);
+}
+.mapOSM span:nth-child(8):before {
+  content: "\4a";
+  margin-left: -1.1455078125em;
+  color: rgb(0, 0, 0);
+}
+.mapOSM span:nth-child(9):before {
+  content: "\4b";
+  margin-left: -1.1455078125em;
+  color: rgb(0, 0, 0);
+}
+.poll::before {
+	content: 'Q';
+}
+.inReplyTo::before,
+.comment:before {
+  content: "\e909";
+}
+.reply:before {
+  content: "\e90a";
+}
+.announceSystem::before,
+.shareSystem::before {
+	content: 'z';
+}
+.login:before {
+  content: "(";
+}
+.logout:before {
+  content: ")";
+}
+.trending:before {
+  content: "#";
+}
+.order::before {
+	content: ',';
+}
+.stack::before {
+	content: '?';
+}
+.bullhorn:before {
+  content: "\e91a";
+}
+.bell:before {
+  content: "\e951";
+}
+.bellMuted:before {
+  content: "\e90b";
+}
+.bellStrong:before {
+  content: "\e90c";
+}
+.calendar:before {
+  content: "\e953";
+}
+.pin:before {
+  content: "\e90d";
+}
+.display:before,
+.desktop:before {
+  content: "\e956";
+}
+.mobile:before {
+  content: "\e958";
+}
+.tablet:before {
+  content: "\e95a";
+}
+.undo:before {
+  content: "\e965";
+}
+.redo:before {
+  content: "\e966";
+}
+.refresh:before {
+  content: "\e90e";
+}
+.enlarge:before {
+  content: "\e90f";
+}
+.shrink:before {
+  content: "\e910";
+}
+.download:before {
+  content: "\e911";
+}
+.upload:before {
+  content: "\e912";
+}
+/* A clock icon */
+.clock:before {
+	content: '\e94e';
+}
+.timezone:before {
+  content: "\e913";
+}
+.history:before,
+.timing:before {
+  content: "\e914";
+}
+
+/* A down icon */
+.down:before {
+	content: '\f078';
+}
+/* An up icon */
+.up:before {
+	content: '\f077';
+}
+/* A left icon */
+.left:before {
+	content: '\f053';
+}
+/* A right icon */
+.right:before {
+	content: '\f054';
+}
+/* A down icon in the same styling as the alternative up icon */
+.caretDown:before {
+	content: '\f0d7';
+}
+/* An alternative up icon */
+.caretUp:before {
+	content: '\f0d8';
+}
+/* A close icon */
+.closeIcon:before {
+	content: '\f00d';
+}
+/* A cancel icon */
+.cancel:before {
+  content: "\ea0d";
+}
+/* A plus icon */
+.plus:before {
+	content: '\f067';
+}
+/* A minus icon */
+.minus:before {
+	content: '\f068';
+}
+/* A checkmark icon */
+.check:before {
+	content: '\f00c';
+}
+/* A search icon */
+.search:before {
+	content: '\f002';
+}
+/* A bar icon */
+.bars:before {
+	content: '\f0c9';
+}
+/* A settings icon */
+.settings:before {
+	content: '\f013';
+}
+/* An admin wrench icon */
+.admin:before {
+  content: "\e915";
+}
+/* An alert icon */
+.alert:before {
+	content: '\f06a';
+}
+/* A help icon */
+.help:before {
+	content: '\f059';
+}
+/* An info icon */
+.info:before {
+	content: '\f05a';
+}
+/* A checked box icon */
+.checkboxChecked:before,
+.checkedBox:before {
+	content: '\ea52';
+}
+/* A phone icon */
+.phone:before {
+	content: '\f095';
+}
+/* An edit icon */
+.edit:before {
+	content: '\f040';
+}
+.edited:before {
+  content: "\e917";
+}
+/* A date icon */
+.date:before {
+	content: '\f133';
+}
+/* A link icon */
+.linkIcon:before {
+	content: '\f127';
+}
+/* A location icon */
+.mapMarker:before,
+.location:before {
+	content: '\f041';
+}
+/* A secure icon */
+.lock:before,
+.secure:before {
+	content: '\f023';
+}
+/* A mail icon */
+.mail:before {
+	content: '\f0e0';
+}
+/* An eye icon */
+.eye:before {
+	content: '\f06e';
+}
+/* An eye icon with a slash through it (indicating not visible) */
+.eyeSlash:before {
+	content: '\f070';
+}
+/* A star icon */
+.star:before {
+	content: '\e900';
+}
+
+.moreIcon:before {
+  content: "\26";
+}
+.trash:before,
+.bin:before {
+  content: "\e918";
+}
+.lab:before {
+  content: "\e919";
+}
+.pLeft:before {
+  content: "\e91b";
+}
+.pCenter:before {
+  content: "\e91c";
+}
+.pJustify:before {
+  content: "\e91d";
+}
+.pRight:before {
+  content: "\e91e";
+}
+.indentDecrease:before {
+  content: "\e91f";
+}
+.indentIncrease:before {
+  content: "\e920";
+}
+.grid:before {
+  content: "\e921";
+}
+.flex:before {
+  content: "\e922";
+}
+.order:before {
+  content: "\2c";
+}
+.ol:before {
+  content: "\e923";
+}
+.ul:before {
+  content: "\e924";
+}
+.filter:before {
+  content: "\e925";
+}
+.sortAmountDesc:before {
+  content: "\e926";
+}
+.sortAmountAsc:before {
+  content: "\e927";
+}
+.sortAlphaAsc:before {
+  content: "\e928";
+}
+.sortAlphaDesc:before {
+  content: "\e929";
+}
+.sortNumericAsc:before {
+  content: "\e92b";
+}
+.sortNumericDesc:before {
+  content: "\e92a";
+}
+.zoomIn:before {
+  content: "\e92c";
+}
+.zoomOut:before {
+  content: "\e92d";
+}
+.play:before {
+  content: "\e92e";
+}
+.pause:before {
+  content: "\e92f";
+}
+.mic:before {
+  content: "\e930";
+}
+.volumeMute:before {
+  content: "\e931";
+}
+.volumeLow:before {
+  content: "\e932";
+}
+.volumeMedium:before {
+  content: "\e933";
+}
+.volumeHigh:before {
+  content: "\e934";
+}
+.eyedropper:before {
+  content: "\e935";
+}
+.keyboard:before {
+  content: "\e936";
+}
+.headline:before {
+  content: "\e937";
+}
+.bold:before {
+  content: "\e938";
+}
+.italic:before {
+  content: "\e939";
+}
+.quote:before {
+  content: "\e93a";
+}
+.quoteAll:before {
+  content: "\e93b";
+}
+/* 'Delete' = 'delete'
+'Follow' = 2 actors
+'Activity' = ' '
+
+'Accept'|'Arrive'|'Block'|'Dislike'|
+'Flag'|'Ignore'|'Invite'|'Join'|'Leave'|
+'Move'|'Offer'|'Question'|'Reject'|'Remove'|
+'TentativeReject'|'TentativeAccept'|'Travel'|'Undo'|'Update'  */
+.activity::before {
+	content: '•';
 }
 .close {
 	position: relative;
-}
-.like::before {
-	content: '\6c';
-}
-.comment::before {
-	content: '\6e';
-}
-.code::before {
-	content: '\3b';
-}
-.chat::before {
-	content: '\6d';
-}
-.followAtoB::before {
-	content: '\31';
-}
-.followBtoA::before {
-	content: '\32';
-}
-.followMutual::before {
-	content: '\33';
-}
-.join::before {
-	content: '\34';
-}
-.shareSystem::before {
-	content: '\35';
-}
-.order::before {
-	content: '\36';
-}
-.move::before {
-	content: '\37';
-}
-.stack::before {
-	content: '\38';
-}
-
-.osm span:nth-child(1):before {
-	content: '\e900';
-}
-.osm span:nth-child(2):before {
-	content: '\e901';
-	margin-left: -0.9140625em;
-	color: rgb(204, 204, 204);
-}
-.osm span:nth-child(3):before {
-	content: '\e902';
-	margin-left: -0.9140625em;
-	color: rgb(204, 204, 204);
-}
-.osm span:nth-child(4):before {
-	content: '\e903';
-	margin-left: -0.9140625em;
-}
-.osm span:nth-child(5):before {
-	content: '\e904';
-	margin-left: -0.9140625em;
-}
-.osm span:nth-child(6):before {
-	content: '\e905';
-	margin-left: -0.9140625em;
-	color: rgb(204, 204, 204);
-}
-.osm span:nth-child(7):before {
-	content: '\e906';
-	margin-left: -0.9140625em;
-}
-.osm span:nth-child(8):before {
-	content: '\e907';
-	margin-left: -0.9140625em;
-}
-.osm span:nth-child(9):before {
-	content: '\e908';
-	margin-left: -0.9140625em;
-}
-.streets:before {
-	content: '\e90a';
-}
-.sat:before {
-	content: '\e909';
-}
-.topo:before {
-	content: '\e90c';
-}
-.publicTransport:before {
-	content: '\e90e';
-}
-.bike:before {
-	content: '\e90f';
-}
-.hike:before {
-	content: '\e910';
-}
-.humanitarian:before {
-	content: '\e911';
-}
-.aeroNautical:before {
-	content: '\e90d';
-}
-.hobby:before {
-	content: '\e918';
 }

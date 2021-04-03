@@ -1,66 +1,122 @@
-import * as css from '../theme/default/accordion.m.css';
-import * as titlePaneCss from '../theme/default/title-pane.m.css';
-import TitlePane, { TitlePaneProperties, TitlePaneChildren } from '../title-pane';
-import theme from '../middleware/theme';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import { theme, ThemeProperties, Variants, formatAriaProperties } from '../middleware/theme';
+import TitlePane, { TitlePaneProperties, TitlePaneChildren } from '../title-pane';
+import * as ui from '../theme/material/_ui.m.css';
+import * as colors from '../theme/material/_color.m.css';
+import * as css from '../theme/material/accordion.m.css';
+import * as titlePaneCss from '../theme/material/title-pane.m.css';
 
-export interface AccordionPaneProperties {
-	/* If true, only one TitlePane can be opened at a given time */
+/* TODO
+What icon will you choose to indicate expansion?
+What icon will you choose to indicate collapsing?
+Where exactly will you place the icon?
+How do you design a category title?  free children node
+What if there isn’t enough space to display all items?
+Should you have a “collapse all/open all” link or button?
+color transparent/opaque
+*/
+
+export interface AccordionPaneProperties extends ThemeProperties {
+	/** If true, only one TitlePane can be opened at a given time */
 	exclusive?: boolean;
-}
-
-export interface AccordionPaneChildren {
-	(
-		onOpen: (key: string) => TitlePaneProperties['onOpen'],
-		onClose: (key: string) => TitlePaneProperties['onClose'],
-		open: (key: string) => TitlePaneProperties['open']
-	): RenderResult;
+	/** Animated Icon, default 'plusMinus' */
+	icon?: 'plusMinus'|'plusClose'|'chevron';
+	/** Icon before title */
+	iconLeft?: boolean;
+	/** The pane names */
+	panes: string[];
+	rounded?: boolean;
+	responsive?: boolean;
 }
 
 interface AccordionPaneICache {
-	openKeys: {
-		[key: string]: boolean;
-	};
+	openIndexes: Set<number>;
 }
-
-const paneFactory = create({ theme })
-	.properties<TitlePaneProperties>()
-	.children<TitlePaneChildren>();
-
-export const Pane = paneFactory(function Pane({ children, middleware: { theme }, properties }) {
-	return (
-		<TitlePane
-			{...properties()}
-			theme={theme.compose(
-				titlePaneCss,
-				css,
-				'pane'
-			)}
-		>
-			{children()[0]}
-		</TitlePane>
-	);
-});
-
 const icache = createICacheMiddleware<AccordionPaneICache>();
 
 const factory = create({
 	icache,
 	theme
-})
-	.properties<AccordionPaneProperties>()
-	.children<AccordionPaneChildren>();
+}).properties<AccordionPaneProperties>()
+	.children<RenderResult>();
 
-export const Accordion = factory(function LoadingIndicator({
+export const Accordion = factory(function Accordion({
 	middleware: { icache, theme },
 	properties,
 	children
 }) {
-	const classes = theme.classes(css);
+	const themedCss = theme.classes(css);
+	const {
+		exclusive,
+		panes,
+		responsive = true,
+		spaced = false,
+		rounded = false,
+		iconLeft = false,
+		icon = 'plusMinus'
+	} = properties();
+
+	const openIndexes = icache.getOrSet('openIndexes', new Set());
+
+	const onOpen = (index: number) => {
+		if (exclusive) {
+			icache.set('openIndexes', new Set([index]));
+		} else {
+			const openIndexes = icache.getOrSet('openIndexes', new Set());
+			openIndexes.add(index);
+			icache.set('openIndexes', openIndexes);
+		}
+	};
+
+	const onClose = (index: number) => {
+		const openIndexes = icache.getOrSet('openIndexes', new Set());
+		openIndexes.delete(index);
+		icache.set('openIndexes', openIndexes);
+	};
+
+	return (
+		<div classes={[
+			theme.variant(),
+			themedCss.root,
+			theme.shaped(ui),
+			theme.sized(ui),
+			theme.elevated(ui),
+			theme.colored(colors),
+			theme.animated(themedCss),
+			rounded && themedCss.rounded,
+			responsive && themedCss.responsive
+		]}>
+			{panes.map((paneName, index) => <TitlePane
+				key={`pane-${index}`}
+				open={openIndexes.has(index)}
+				onOpen={() => {
+					onOpen(index);
+				}}
+				onClose={() => {
+					onClose(index);
+				}}
+				theme={theme.compose(
+					titlePaneCss,
+					css,
+					'pane'
+				)}
+				name={paneName}
+				icon={icon}
+				iconLeft={iconLeft}
+				spaced={spaced}
+			>
+				{children()[index]}
+			</TitlePane>)}
+		</div>
+	);
+});
+
+/*
+	const themedCss = theme.classes(css);
 	const [renderer] = children();
-	const { exclusive } = properties();
+	const { rounded = false, responsive = false, exclusive = false } = properties();
 
 	const onOpen = (key: string) => {
 		return () => {
@@ -86,7 +142,18 @@ export const Accordion = factory(function LoadingIndicator({
 		return !!openKeys[key];
 	};
 
-	return <div classes={[theme.variant(), classes.root]}>{renderer(onOpen, onClose, open)}</div>;
+	return <div themedCss={[
+		theme.variant(),
+		theme.sized(ui),
+		theme.spaced(ui),
+		theme.colored(colors),
+		theme.animated(themedCss),
+		themedCss.root,
+		rounded && themedCss.rounded,
+		responsive && themedCss.responsive,
+	]}>
+		{renderer(onOpen, onClose, open)}
+	</div>;
 });
-
+*/
 export default Accordion;

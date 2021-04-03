@@ -10,7 +10,7 @@ export default factory(function FullyControlled({ middleware: { icache } }) {
 	return (
 		<virtual>
 			<Calendar
-				value={date}
+				start={date}
 				month={0}
 				year={2019}
 				onValue={(date) => {

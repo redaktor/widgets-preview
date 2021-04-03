@@ -6,7 +6,11 @@
       "_polyfill/intersection-observer.js"
     ]
   },
-	"extends": "./node_modules/@dojo/parade/parade.json",	
+	"extends": "./node_modules/@dojo/parade/parade.json",
+  "build-app": {
+    "locale": "en",
+    "supportedLocales": [ "de" ]
+  },
 	"build-theme": {
 		"themes": ["dojo", "material"]
 	},
@@ -14,10 +18,12 @@
 		"prefix": "redaktor",
 		"widgets": [
 			"src/accordion",
+			"src/audio",
 			"src/avatar",
 			"src/breadcrumb-group",
 			"src/button",
 			"src/calendar",
+		        "src/calendarInput",
 			"src/card",
 			"src/checkbox",
 			"src/checkbox-group",
@@ -25,6 +31,7 @@
 			"src/constrained-input",
 			"src/context-menu",
 			"src/context-popup",
+     			"src/combobox",
 			"src/date-input",
 			"src/dialog",
 			"src/email-input",
@@ -41,6 +48,7 @@
 			"src/native-select",
 			"src/number-input",
 			"src/outlined-button",
+			"src/paged",
 			"src/pagination",
 			"src/password-input",
 			"src/popup",

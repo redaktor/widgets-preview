@@ -2,16 +2,12 @@
 .wrapper { composes: wrapper from './text-input.m.css'; }
 .inner { composes: inner from './text-input.m.css'; }
 .input { composes: input from './text-input.m.css'; }
-.border { composes: border from './text-input.m.css'; }
+.box { composes: box from './text-input.m.css'; }
 .responsive { composes: responsive from './text-input.m.css'; }
 .enabled { composes: enabled from './text-input.m.css'; }
 .disabled { composes: disabled from './text-input.m.css'; }
 .valid { composes: valid from './text-input.m.css'; }
 .invalid { composes: invalid from './text-input.m.css'; }
-.label {
-	composes: label from './text-input.m.css';
-	top: var(--line);
-}
 .slideLabel { composes: slideLabel from './text-input.m.css'; }
 .staticLabel { composes: staticLabel from './text-input.m.css'; }
 .shaped { }
@@ -21,14 +17,9 @@
 /* Added to a required input */
 .required {
 }
-.root:not(.expanded) {
-	margin-bottom: calc(var(--line) - var(--mt) + var(--ptb)*2) !important;
-}
-.root.expanded {
-  margin-bottom: calc(var(--line) - var(--ui-border-width-emphasized)) !important;
-}
-.root .wrapper {
-	margin-bottom: 0;
+/* TODO nojs for expand ? */
+.root {
+  margin-bottom: var(--line);
 }
 .root:not(.expand) .wrapper {
 	overflow: auto;
@@ -36,33 +27,26 @@
 }
 .expand .wrapper {
   height: auto;
+  margin-bottom: var(--pt);
 }
 .fixed .wrapper {
   height: auto;
+  margin-bottom: var(--pt);
   padding-right: var(--ui-border-width-emphasized);
 }
-.root .stub,
+
 .root .input {
   box-sizing: border-box;
-  padding: var(--pt) var(--plr) 0 var(--plr);
+  padding: 0;
 	width: 100%;
 	height: 100%;
-  position: relative;
-  border: none;
-	overflow: hidden;
-	white-space: pre-wrap;
-	word-wrap: break-word;
-}
-.root.expanded .input {
-	padding-top: calc(var(--line) + var(--ptb));
-}
-.root .stub {
-	display: none;
-}
-.root .input {
 	z-index: 9;
-  transition: none !important;
+  /* no resize transition */
+  position: relative;
+  transition: none;
+  border: none;
 }
+
 .input::placeholder {
 	font-size: var(--small-size);
 	padding-top: var(--pt);
@@ -80,10 +64,10 @@
 .outlined.slideLabel .input:not(:placeholder-shown) ~ label {
   top: calc(var(--pt) - (var(--mb) * var(--small-size)) - var(--line));
 }
-.root .border {
+.root .box {
 	bottom: calc(var(--ui-border-width-emphasized) * -1);
 }
-.root .border::before {
+.root .box::before {
   display: none;
 }
 
@@ -114,6 +98,6 @@
 	border-color: var(--ui-error);
 }
 
-.root.expand:not(.outlined) .input:focus:not(:invalid) ~ .border::after {
+.root.expand:not(.outlined) .input:focus:not(:invalid) ~ .box::after {
   border-top: var(--ui-border-width-emphasized) dotted var(--root-bg);
 }

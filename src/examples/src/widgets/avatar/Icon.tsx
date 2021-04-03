@@ -1,21 +1,22 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
+import Example from '../../Example';
 import Avatar from '@dojo/widgets/avatar';
 import Icon from '@dojo/widgets/icon';
 
 const factory = create();
 
 export default factory(function Basic() {
-	return (
+	return (<Example spaced={true}>
 		<div styles={{ width: '400px', display: 'flex', justifyContent: 'space-around' }}>
-			<Avatar variant="circle">
-				<Icon type="secureIcon" />
+			<Avatar shape="circle">
+				<Icon type="announce" />
 			</Avatar>
-			<Avatar variant="rounded">
-				<Icon type="secureIcon" />
+			<Avatar shape="rounded">
+				<Icon type="like" />
 			</Avatar>
-			<Avatar variant="square">
-				<Icon type="secureIcon" />
+			<Avatar shape="square">
+				<Icon type="follow" />
 			</Avatar>
 		</div>
-	);
+	</Example>);
 });

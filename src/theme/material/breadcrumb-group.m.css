@@ -1,16 +1,19 @@
 .root {
-	color: var(--mdc-theme-text-secondary-on-background);
-	composes: mdc-typography mdc-typography--body1 from '@material/typography/dist/mdc.typography.css';
+	color: var(--text);
 }
 
 .listItem,
 .listItem::before {
-	margin-right: var(--mdc-grid-base);
+	margin-right: 4px;
 }
-.listItem::last-child {
+.listItem:last-child {
 	margin-right: 0;
 }
-
-.current {
-	color: var(--mdc-theme-text-primary-on-background);
+.breadcrumb {
+	padding-top: 0;
+	margin-bottom: 0;
+}
+.current .breadcrumb {
+	color: var(--text-flat);
+	font-weight: var(--weight-semibold);
 }

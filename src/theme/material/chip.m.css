@@ -1,10 +1,33 @@
+.root {
+	--iplr: calc(var(--plr, 4px) / 2);
+	composes: uiClick from './_ui.m.css';
+	transition: background-color, border-color var(--ui-dpd-1) var(--ui-easing);
+	cursor: pointer;
+	overflow: hidden;
+	padding-left: var(--plr);
+	padding-right: var(--plr);
+	background-size: cover;
+	font-weight: var(--weight-semibold,500);
+}
+.inline {
+	margin-top: calc(var(--line) - var(--pt)) !important;
+	margin-bottom: calc((var(--line) - var(--mb)) * -1) !important;
+}
+.disabled { composes: disabled from './_ui.m.css'; }
+.flat { composes: flat from './_ui.m.css'; }
+.filled { composes: filled from './_ui.m.css'; }
+.raised { composes: raised from './_ui.m.css'; }
+.outlined { composes: outlined from './_ui.m.css'; }
+.shaped { composes: shaped from './_ui.m.css'; }
 
 .root,
 .root::before {
 	/* see button.m.css */
-	border-radius: calc(var(--ptb) * 2 + var(--size)) !important;
+	border-radius: calc(var(--pt) * 2 + var(--size)) !important;
 }
-
+.root.flat {
+	background-color: var(--ui-flat-off);
+}
 .iconWrapper,
 .closeIconWrapper {
 	margin: 0;
@@ -27,9 +50,10 @@
 	color: var(--text-inverse);
 }
 
-.iconWrapper { }
+.iconWrapper {
+	margin-right: var(--iplr, 2px);
+}
 .closeIconWrapper {
-	--iplr: calc(var(--plr, 4px) / 2);
 	margin-left: var(--mlr, 4px);
 	padding-left: var(--iplr, 2px);
 	padding-right: var(--iplr, 2px);

@@ -20,6 +20,7 @@
 	right: 0;
 	z-index: 9000;
 }
+.debug > .debugBaseLine,
 input:checked + .debugBaseLine {
 	opacity: 1;
 }

@@ -2,16 +2,22 @@ import { RenderResult } from '@dojo/framework/core/interfaces';
 import dimensions from '@dojo/framework/core/middleware/dimensions';
 import focus from '@dojo/framework/core/middleware/focus';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import { theme, ThemeProperties } from '../middleware/theme';
 import { create, tsx } from '@dojo/framework/core/vdom';
 
 import Icon from '../icon';
-import theme from '../middleware/theme';
-import * as css from '../theme/default/title-pane.m.css';
+import * as ui from '../theme/material/_ui.m.css';
+import * as colors from '../theme/material/_color.m.css';
+import * as css from '../theme/material/title-pane.m.css';
 import * as fixedCss from './styles/title-pane.m.css';
 
-export interface TitlePaneProperties {
+export interface TitlePaneProperties extends ThemeProperties {
 	/** If false the pane will not collapse in response to clicking the title */
 	closeable?: boolean;
+	/** Animated Icon */
+	icon?: 'plusMinus'|'plusClose'|'chevron';
+	/** Icon before title */
+	iconLeft?: boolean;
 	/** 'aria-level' for the title's DOM node */
 	headingLevel?: number;
 	/** If true the pane is opened and content is visible initially */
@@ -22,6 +28,8 @@ export interface TitlePaneProperties {
 	onClose?(): void;
 	/** Called when the title of an open pane is clicked */
 	onOpen?(): void;
+	/** The displayed title name for this pane */
+	name: string;
 }
 
 export interface TitlePaneICache {
@@ -41,9 +49,11 @@ const factory = create({
 	focus,
 	icache: createICacheMiddleware<TitlePaneICache>(),
 	theme
-})
-	.properties<TitlePaneProperties>()
-	.children<TitlePaneChildren>();
+}).properties<TitlePaneProperties>();
+
+/* TODO in span
+	<Icon type={open ? 'remove' : 'add'} theme={themeProp} />
+*/
 
 export const TitlePane = factory(function TitlePane({
 	id,
@@ -51,18 +61,22 @@ export const TitlePane = factory(function TitlePane({
 	properties,
 	middleware: { dimensions, focus, icache, theme }
 }) {
-	const themeCss = theme.classes(css);
+	const themedCss = theme.classes(css);
 	const {
+		icon,
+		iconLeft = false,
 		closeable = true,
+		spaced = false,
 		headingLevel,
 		initialOpen,
 		onClose,
 		onOpen,
+		name,
 		theme: themeProp
 	} = properties();
-	const { content, title } = children()[0];
-
 	let { open } = properties();
+	const iconClass: (keyof typeof themedCss)|null = icon ? icon : null;
+	// const firstRender = icache.get('open') === undefined;
 
 	if (open === undefined) {
 		open = icache.get('open');
@@ -75,62 +89,56 @@ export const TitlePane = factory(function TitlePane({
 		}
 	}
 
+	// theme.variant() === 'dark-m__root__266c963sO1y'
 	return (
-		<div
+		<details
+			open={open}
 			classes={[
 				theme.variant(),
-				themeCss.root,
-				open ? themeCss.open : null,
+				theme.animated(themedCss),
+				spaced ? themedCss.spaced : null,
+				iconLeft ? themedCss.iconLeft : themedCss.iconRight,
+				themedCss.root,
 				fixedCss.rootFixed
 			]}
 		>
-			<div
+			<summary
 				aria-level={headingLevel ? `${headingLevel}` : null}
 				classes={[
-					themeCss.title,
-					closeable ? themeCss.closeable : null,
-					fixedCss.titleFixed,
-					closeable ? fixedCss.closeableFixed : null
+					themedCss.title,
+					theme.sized(ui),
+					theme.colored(colors),
+					closeable ? themedCss.closeable : null,
+					closeable ? fixedCss.closeableFixed : null,
+					ui.uiVar
 				]}
 				role="heading"
-			>
-				<button
-					aria-controls={`${id}-content`}
-					aria-expanded={`${open}`}
-					disabled={!closeable}
-					classes={[fixedCss.titleButtonFixed, themeCss.titleButton]}
-					focus={focus.isFocused('title-button')}
-					key="title-button"
-					onclick={(event: MouseEvent) => {
-						event.stopPropagation();
-						icache.set('open', !open);
-						if (open) {
-							onClose && onClose();
-						} else {
-							onOpen && onOpen();
-						}
-					}}
-					type="button"
-				>
-					<span classes={themeCss.arrow}>
-						<Icon type={open ? 'downIcon' : 'rightIcon'} theme={themeProp} />
-					</span>
-					{title}
-				</button>
-			</div>
-			<div
-				aria-hidden={open ? null : 'true'}
-				aria-labelledby={`${id}-title`}
-				classes={[themeCss.content, themeCss.contentTransition, fixedCss.contentFixed]}
-				id={`${id}-content`}
-				key="content"
-				styles={{
-					marginTop: open ? '0px' : `-${dimensions.get('content').offset.height}px`
+				disabled={!closeable}
+				focus={focus.isFocused('summary')}
+				key="summary"
+				onclick={(event: MouseEvent) => {
+					event.stopPropagation();
+					icache.set('open', !open);
+					if (open) {
+						onClose && onClose();
+					} else {
+						onOpen && onOpen();
+					}
 				}}
 			>
-				{content}
+				<div classes={[themedCss.title, themedCss.titleWrapper]}>
+					{iconClass && <div classes={[themedCss.iconWrapper, themedCss[iconClass]]} />}
+					{name}
+				</div>
+			</summary>
+			<div
+				classes={[themedCss.content, themedCss.contentTransition, fixedCss.contentFixed]}
+				id={`${id}-content`}
+				key="content"
+			>
+				{children()}
 			</div>
-		</div>
+		</details>
 	);
 });
 

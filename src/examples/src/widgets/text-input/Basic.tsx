@@ -1,14 +1,15 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
 import TextInput from '@dojo/widgets/text-input';
 import { ExampleProperties } from '@dojo/widgets/common/util';
 
 const factory = create({ icache }).properties<ExampleProperties>();
 
-const Example = factory(function Basic({ properties, middleware: { icache } }) {
+const Basic = factory(function Basic({ properties, middleware: { icache } }) {
 	const { variant = 'flat' } = properties();
-	return (
-		<virtual>
+	return (<Example spaced={true}>
+		<span>
 			<TextInput
 				responsive={true}
 				size='xs'
@@ -60,8 +61,8 @@ const Example = factory(function Basic({ properties, middleware: { icache } }) {
 				}}
 			>Label</TextInput><br />
 			<p>The latest text input is: "{icache.getOrSet('value', '')}"</p>
-		</virtual>
-	);
+		</span>
+	</Example>);
 });
 
-export default Example;
+export default Basic;

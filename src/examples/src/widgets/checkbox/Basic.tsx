@@ -1,5 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
+import Example from '../../Example';
 import Checkbox from '@dojo/widgets/checkbox';
 import { ExampleProperties } from '@dojo/widgets/common/util';
 
@@ -8,10 +9,9 @@ const factory = create({ icache }).properties<ExampleProperties>();
 export default factory(function Basic({ properties, middleware: { icache } }) {
 	const singleChecked = icache.getOrSet('singleChecked', true);
 	const checked = icache.getOrSet('checked', false);
-	const { variant = 'flat' } = properties();
-	return (
-		<div>
-
+	const { variant = 'filled' } = properties();
+	return (<Example spaced={true}>
+		<span>
 			<Checkbox variant={variant} size="m" checked={singleChecked}
 				onValue={(singleChecked) => { icache.set('singleChecked', singleChecked); }}>
 				Sample M checkbox that starts checked
@@ -51,6 +51,6 @@ export default factory(function Basic({ properties, middleware: { icache } }) {
 
 			<p>Lorem <Checkbox variant={variant} color="amber">Checkbox M</Checkbox></p>
 			<p>Lorem Ipsum</p>
-		</div>
-	);
+			</span>
+		</Example>);
 });
