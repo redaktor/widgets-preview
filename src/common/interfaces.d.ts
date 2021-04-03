@@ -248,7 +248,7 @@ url 	Identifies one or more links to representations of the object
 	image?: ActivityPubImage | ActivityPubLink | (ActivityPubImage | ActivityPubLink)[];
 	mediaType?: string; /* Functional - TODO TS: MIME Media Type */
 
-	attributedTo?: AP | ActivityPubActor | ActivityPubActor[] | RedaktorActor | RedaktorActor[];
+	attributedTo?: AP | ActivityPubActor | RedaktorActor | (ActivityPubActor | RedaktorActor)[];
 	generator?: AP;
 	published?: dateTime; /* Functional */
 	updated?: dateTime; /* Functional */
@@ -291,7 +291,7 @@ export interface ActivityPubBaseNormalized extends ActivityPubBase {
 	icon?: (ActivityPubImage | ActivityPubLink)[];
 	image?: (ActivityPubImage | ActivityPubLink)[];
 
-	attributedTo?: APnormalized | ActivityPubActor | ActivityPubActor[];
+	attributedTo?: (ActivityPubActor | RedaktorActor)[];
 	generator?: APnormalized;
 
 	name?: string[];
@@ -352,14 +352,14 @@ export interface ActivityPubActor extends ActivityPubBase {
 }
 export interface RedaktorActor extends ActivityPubActor {
 	petName?: string; /* seeAlso preferredUsername as self-proposed name */
-	edgeNames?: RedaktorActor[];
+	edgeNames?: (ActivityPubActor | RedaktorActor)[];
 	handle?: string;
 	follow?: boolean | 'follower' | 'mutual' | 'me';
 }
 export interface ActivityPubActivity extends ActivityPubBase {
 	type: ActivityPubActivityTypes | [ActivityPubActivityTypes, ...(ActivityPubActivityTypes | string)[]];
 	object?: AP;
-	actor?: ActivityPubActor | ActivityPubLink | (ActivityPubActor | ActivityPubLink)[];
+	actor?: ActivityPubActor | RedaktorActor | ActivityPubLink | (ActivityPubActor | RedaktorActor | ActivityPubLink)[];
 	instrument?: AP;
 	origin?: AP;
 	target?: AP;
@@ -372,7 +372,7 @@ export interface ActivityPubActivity extends ActivityPubBase {
 export interface ActivityPubActivityNormalized extends ActivityPubBaseNormalized {
 	type: [ActivityPubActivityTypes, ...(ActivityPubActivityTypes | string)[]];
 	object?: APnormalized;
-	actor?: (ActivityPubActor | ActivityPubLink)[];
+	actor?: (ActivityPubActor | RedaktorActor | ActivityPubLink)[];
 	instrument?: APnormalized;
 	origin?: APnormalized;
 	target?: APnormalized;
