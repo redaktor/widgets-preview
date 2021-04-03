@@ -248,7 +248,7 @@ url 	Identifies one or more links to representations of the object
 	image?: ActivityPubImage | ActivityPubLink | (ActivityPubImage | ActivityPubLink)[];
 	mediaType?: string; /* Functional - TODO TS: MIME Media Type */
 
-	attributedTo?: AP | ActivityPubActor | ActivityPubActor[];
+	attributedTo?: AP | ActivityPubActor | ActivityPubActor[] | RedaktorActor | RedaktorActor[];
 	generator?: AP;
 	published?: dateTime; /* Functional */
 	updated?: dateTime; /* Functional */

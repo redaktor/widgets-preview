@@ -42,14 +42,20 @@
 	box-shadow: var(--ui-dp-2);
 	z-index: 9;
 }
+
 .profiles {
 	display: flex;
+	flex-wrap: wrap;
 }
-.profiles details {
+.profiles > input,
+.profiles > details {
 	display: none;
 	order: 2;
 }
-.profiles input:checked + details {
+.profiles > label {
+	order: 3;
+}
+.profiles > input:checked + details {
 	display: block;
 	width: 100%;
 	order: 1;

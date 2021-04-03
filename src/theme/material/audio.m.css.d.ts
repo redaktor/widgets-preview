@@ -6,6 +6,7 @@ export const media: string;
 export const poster: string;
 export const name: string;
 export const profiles: string;
+export const preview: string;
 export const paged: string;
 export const pager: string;
 export const prev: string;

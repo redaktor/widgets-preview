@@ -438,40 +438,24 @@ export const Audio = factory(function Audio({
 		>
 			<Icon type="download" />
 		</button>
-
-		<div>
-			<label for="_1">1</label>
-			<label for="_2">2</label>
-			<label for="_3">3</label>
-		</div>
 		<div classes={themedCss.profiles}>
-			<input id="_1" type="radio" name="test" checked />
+			<label classes={themedCss.preview} for="_1"><Avatar size="s">AA</Avatar></label>
+			<input type="radio" id="_1" name="test" />
 			{APo.attributedTo && APo.attributedTo.map((attrO: any) => {
 				return isActor(attrO) &&
 				<Profile {...{...attrO}} classes={{
 					'@dojo/widgets/card': { avatar: [themedCss.avatar] }
 				}} />})
 			}
-			<input id="_2" type="radio" name="test" />
-			<Profile {...{
-		    "@context": "https://www.w3.org/ns/activitystreams",
-		    id: "https://b.example.com/",
-		    handle: "@b@example.com",
-		    name: "BB",
-		    summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
-		    type: "Person"
-		  }} classes={{
-					'@dojo/widgets/card': { avatar: [themedCss.avatar] }
-				}} />
-			<input id="_3" type="radio" name="test" />
+			<label classes={themedCss.preview} for="_2"><Avatar size="s">BB</Avatar></label>
+			<input type="radio" id="_2" name="test" />
 			{APo.attributedTo && APo.attributedTo.map((attrO: any) => {
 				return isActor(attrO) &&
-				<Profile {...{...attrO}} classes={{
+				<Profile {...{...attrO, name: 'BB'}} classes={{
 					'@dojo/widgets/card': { avatar: [themedCss.avatar] }
 				}} />})
 			}
 		</div>
-
 	</div>
 
 });
