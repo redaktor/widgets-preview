@@ -86,7 +86,7 @@
     "@material/top-app-bar": "5.1.0",
     "@material/typography": "5.1.0",
     "cldr-data": "36.0.0",
-    "codecov": "3.5.0",
+    "codecov": "3.7.1",
     "cpx": "1.5.0",
     "cross-spawn": "6.0.5",
     "execa": "^0.9.0",
