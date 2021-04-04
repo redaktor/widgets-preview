@@ -47,18 +47,64 @@
 	display: flex;
 	flex-wrap: wrap;
 }
+.closeProfiles {
+	position: absolute;
+	opacity: 0;
+	display: none;
+	height: 0px;
+	width: 0px;
+	z-index: -1;
+	pointer-events: none;
+}
+.profiles > input:checked + label {
+	order: 1;
+}
+.profiles > label {
+	order: 2;
+}
 .profiles > input,
 .profiles > details {
 	display: none;
-	order: 2;
-}
-.profiles > label {
 	order: 3;
 }
-.profiles > input:checked + details {
+.profiles > input:checked + label + details {
 	display: block;
 	width: 100%;
-	order: 1;
+	order: 4;
+}
+/* Close button for multiple actors in attributedTo */
+.profiles > input:checked + label .avatarsContent {
+	position: relative;
+	visibility: hidden;
+}
+.profiles > input:not(.closeProfiles):checked ~ .closeProfiles {
+	display: inline-block;
+	height: var(--h, 32px);
+	width: var(--h, 32px);
+	z-index: 99;
+	pointer-events: all;
+}
+.profiles > input:checked + label .avatarsContent::before {
+	visibility: visible;
+  content: 'd';
+	position: absolute;
+	display: flex !important;
+	font-family: 'redaktor' !important;
+	color: inherit !important;
+	line-height: 1 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	speak: never;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 .paged,

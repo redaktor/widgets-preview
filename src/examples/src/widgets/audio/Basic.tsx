@@ -52,14 +52,21 @@ const exampleData: AudioProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
   type: "Audio",
   id: "#0",
-  attributedTo: {
+  attributedTo: [{
     "@context": "https://www.w3.org/ns/activitystreams",
     id: "https://amy.example.com/",
     handle: "@amy@example.com",
     name: "Amy",
     summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
     type: "Person"
-  },
+  }, {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    id: "https://ben.example.com/",
+    handle: "@ben@example.com",
+    name: "Ben",
+    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+    type: "Person"
+  }],
   name: ["The Government's Secret Campaign Against Cats","Special Episode","Super"],
   summary: "Article 10 Easy Ways To Make Tin Foil Hats Stronger. Proof That Cats Are Exactly What You Are Looking For",
   image: {type: "Link", href: "card-photo-2-3.3G_muD46.jpg"},

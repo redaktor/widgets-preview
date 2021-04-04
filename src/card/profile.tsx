@@ -1,7 +1,6 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { RedaktorActor, ActivityPubActivity } from '../common/interfaces';
-import words from '../framework/String/words';
 import { isLinkOrImage, getActorName, normalizeActivityPub } from '../common/activityPubUtil';
 import Button from '../button';
 import Chip from '../chip';
@@ -19,6 +18,7 @@ export interface ProfileProperties extends RedaktorActor {
 	activityType?: string;
 	onChangePetname?: (v: string) => any;
 	onFollow?: (ap: ActivityPubActivity) => any;
+	open?: boolean;
 }
 interface ProfileICache {
 	open: boolean;
@@ -47,11 +47,13 @@ export const Profile = factory(function Profile({ children, properties, middlewa
 		byline,
 		summary,
 		follow: f,
-		petName: p
+		petName: p,
+		open = false
 	} = normalizeActivityPub(properties());
 
 	const preferredUsername = getActorName(properties());
 	icache.getOrSet('preferredUsername', preferredUsername);
+	icache.getOrSet('open', open);
 
 	const follow = icache.getOrSet('follow', f||false);
 	const petName = icache.getOrSet('petName', p);
@@ -79,21 +81,15 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 		return names
 	}
 
-	const avatarFromStr = () => {
-		const prefName = icache.get('preferredUsername')||['?']
-		const s = prefName[0]||'?';
-		const w = words(s);
-		return !w.length ? '' : <Avatar spaced={false}>
-			{w.length < 2 ? s.substr(0,2) : `${w[0].charAt(0)}${w[1].charAt(0)}`}
-		</Avatar>
-	}
-	let avatarImg = icon ?
+	const avatarImg = icon ?
 		(Array.isArray(icon) ? icon[0] : isLinkOrImage(icon) && icon) :
 		(Array.isArray(image) ? image[0] : isLinkOrImage(image) && image);
 	const avatarSrc = avatarImg ?
 		(typeof avatarImg === 'string') ? avatarImg : (avatarImg.url||avatarImg.href) :
 		null;
-	const avatar = avatarSrc ? <Avatar spaced={false} src={avatarSrc} /> : avatarFromStr();
+		const prefName = icache.get('preferredUsername') || ['?'];
+		const avatar = !avatarSrc ? <Avatar spaced={false} name={prefName[0]} /> :
+			<Avatar spaced={false} src={avatarSrc} />;
 	const followVerb = !follow ? '' :
 		(follow === true ? 'followed' : (follow === 'follower' ? 'follows you' : 'mutual')) ||
 		'';
@@ -104,6 +100,7 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 			avatar ? themedCss.hasAvatar : null,
 			petName ? themedCss.wellKnown : null
 		]}
+		open={open}
 		>
 			<summary
 				classes={themedCss.summary}
