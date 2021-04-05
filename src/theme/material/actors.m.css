@@ -1,0 +1,242 @@
+.root {
+
+}
+
+.actors {
+	display: flex;
+	flex-wrap: wrap;
+}
+.closeActors {
+	position: absolute;
+	opacity: 0;
+	display: none;
+	height: 0px;
+	width: 0px;
+	z-index: -1;
+	pointer-events: none;
+}
+.actors > input:checked + label {
+	order: 1;
+}
+.actors > label {
+	order: 2;
+}
+.actors > input,
+.actors > details {
+	display: none;
+	order: 3;
+}
+.actors > input:checked + label + details {
+	display: block;
+	width: 100%;
+	order: 4;
+}
+/* Close button for multiple actors in attributedTo */
+.actors > input:checked + label .avatarsContent {
+	position: relative;
+	visibility: hidden;
+}
+.actors > input:not(.closeActors):checked ~ .closeActors {
+	display: inline-block;
+	height: var(--h, 32px);
+	width: var(--h, 32px);
+	z-index: 99;
+	pointer-events: all;
+	cursor: pointer;
+}
+.actors > input:checked + label .avatarsContent::before {
+	visibility: visible;
+  content: 'd';
+	position: absolute;
+	display: flex !important;
+	font-family: 'redaktor' !important;
+	color: inherit !important;
+	line-height: 1 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	speak: never;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.attributions {
+	composes: h3 from './_typo.css';
+	--toColor: var(--ui-border, gray);
+	--btnColor: var(--ui-bg, black);
+	display: flex;
+	position: relative;
+	align-items: baseline;
+	padding: 0 var(--p) 0 var(--p) !important;
+	box-sizing: border-box;
+	order: 3;
+	z-index: 3;
+}
+.attributions.hasAvatar {
+	padding: 0 var(--lineHalf) 0 var(--lineHalf) !important;
+}
+.attributions[open] {
+	margin-bottom: var(--pt) !important;
+}
+.attributions[open] .avatar {
+	width: calc(var(--line3) - var(--pt));
+	margin-left: calc((var(--line) - var(--pt)) * -1);
+}
+.attributions[open] .avatar > * {
+	--h: calc(var(--line3) - var(--pt)) !important;
+}
+.meAvatar,
+.avatar {
+	z-index: 0;
+	margin-right: var(--grid-base,8px);
+	width: var(--line2);
+	margin-left: calc(var(--line) * -1);
+}
+.attributions.wellKnown {
+
+}
+.attributions.wellKnown::after {
+	opacity: 0.8;
+}
+.summary {
+	display: flex;
+	height: var(--line2);
+	margin-right: var(--line);
+  list-style: none;
+	cursor: pointer;
+}
+.summary::-webkit-details-marker {
+  display: none;
+}
+.summary:focus {
+	outline: none;
+}
+
+.handle {
+	composes: sans s from './_typo.css';
+}
+.metaWrapper,
+.actorName {
+	composes: sans m from './_typo.css';
+}
+.metaWrapper {
+	position: relative;
+	flex-grow: 1;
+	min-width: 0;
+	max-width: calc(100% - 56px);
+}
+.actorName,
+.petname,
+.handle {
+	margin: 0 !important;
+}
+.actorName,
+.handle {
+	color: var(--text-muted);
+}
+.actorName,
+.petname {
+	font-weight: var(--weight-semibold, 500);
+}
+.handle {
+	padding-left: var(--line2);
+}
+.petname + .handle {
+	opacity: 0.4;
+}
+
+.actorName,
+.petname,
+.handle {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	z-index: 1;
+}
+.root .actorName,
+.petname,
+.actorName + .handle {
+	padding: 0;
+}
+
+
+.summary:hover .actorName,
+.attributions[open] .actorName {
+	color: var(--text);
+}
+
+p.actorDetails {
+	padding-left: 44px;
+	margin-bottom: calc(var(--mb) - var(--line));
+}
+details.followAction {
+	padding-left: 44px;
+	min-height: var(--line3);
+}
+details.followAction > * {
+	display:inline-block !important;
+}
+summary.followBtn {
+	float: right;
+	min-width: 100%;
+	margin-top: var(--line);
+}
+.followAction input {
+	padding-right: var(--lineHalf);
+	font-weight: 500;
+}
+.followBtn button,
+.followBtn button::before {
+	margin-bottom: 0 !important;
+	border-bottom-left-radius: 0px !important;
+}
+/* ACTS AS DETAILS / SUMMARY FOR unlock */
+.followBtn button {
+	pointer-events: none;
+}
+.followAction[open] .followBtn button {
+	pointer-events: all;
+}
+
+.followAction[open] .followBtn {
+	min-width: 38.2%;
+}
+/*
+.followAction label {
+	margin-top: calc(var(--line) * -1);
+	background-color: var(--ui-header) !important;
+}
+*/
+.unfollowAction {
+	margin-top: var(--line);
+}
+.unfollowAction button {
+	margin-bottom: 0 !important;
+}
+
+.followerLabel {
+	font-weight: var(--weight-semibold,500);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.root .trustChip {
+	margin-top: calc(var(--pt) + var(--ui-border-width-emphasized,2px)) !important;
+	margin-bottom: calc(var(--mb) - var(--pt)) !important;
+}
+.me.trustChip {
+	margin-top: var(--line) !important;
+}
+
+.responsiveTypo {
+	composes: cards from './_typo.css';
+}

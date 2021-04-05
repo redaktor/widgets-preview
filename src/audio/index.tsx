@@ -1,7 +1,7 @@
 import { tsx, create, node } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { uuid } from '@dojo/framework/core/util';
-import { ActivityPubObject, ActivityPubObjectNormalized, RedaktorActor } from '../common/interfaces';
+import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
 import resize from '@dojo/framework/core/middleware/resize';
 import theme from '../middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
@@ -14,10 +14,9 @@ import {
 */
 import focus from '@dojo/framework/core/middleware/focus';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import { normalizeActivityPub, isActor } from '../common/activityPubUtil';
+import { normalizeActivityPub } from '../common/activityPubUtil';
 import Paged from '../paged';
-import Avatar from '../avatar';
-import Profile from '../card/profile';
+import AttributedTo from '../attributedTo';
 import Slider from '../slider';
 import Icon from '../icon';
 import bundle from './nls/Audio';
@@ -438,45 +437,7 @@ export const Audio = factory(function Audio({
 		>
 			<Icon type="download" />
 		</button>
-
-		{
-			(APo.attributedTo && APo.attributedTo.length === 1) && isActor(APo.attributedTo[0]) &&
-				<Profile {...{...APo.attributedTo[0]}}
-					classes={{
-						'@dojo/widgets/card': { avatar: [themedCss.avatar] }
-					}}
-				/>
-		}
-		{
-			(APo.attributedTo && APo.attributedTo.length > 1) &&
-			<div classes={themedCss.profiles}>
-				{APo.attributedTo.map((attrO: RedaktorActor, i) => {
-
-					// TODO src for label -> image Avatar
-					const name = attrO.name ? attrO.name[0] : '';
-					return isActor(attrO) &&
-						<virtual>
-							<input type="radio" id={`${widgetId}_attr${i}`} name={widgetId} />
-							<label for={`${widgetId}_attr${i}`}>
-								<Avatar
-									size="s"
-									name={name}
-									classes={{
-										'@dojo/widgets/avatar': { content: [themedCss.avatarsContent] }
-									}}
-								/>
-							</label>
-							<Profile {...{...attrO}}
-								open={true}
-								classes={{
-									'@dojo/widgets/card': { avatar: [themedCss.avatar] }
-								}}
-							/>
-						</virtual>
-				})}
-				<input type="radio" id={`${widgetId}_closeProfiles`} classes={themedCss.closeProfiles} name={widgetId} />
-			</div>
-		}
+		<AttributedTo {...APo} />
 	</div>
 
 });

@@ -83,6 +83,7 @@
 	width: var(--h, 32px);
 	z-index: 99;
 	pointer-events: all;
+	cursor: pointer;
 }
 .profiles > input:checked + label .avatarsContent::before {
 	visibility: visible;

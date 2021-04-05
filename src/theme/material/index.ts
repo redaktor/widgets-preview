@@ -1,4 +1,5 @@
 import * as accordionPane from './accordion.m.css';
+import * as actors from './actors.m.css';
 import * as audio from './audio.m.css';
 import * as avatar from './avatar.m.css';
 import * as breadcrumbGroup from './breadcrumb-group.m.css';
@@ -56,6 +57,8 @@ import * as light from './variants/light.m.css';
 export default {
 	theme: {
 		'@dojo/widgets/accordion': accordionPane,
+		'@dojo/widgets/actor': actors,
+		'@dojo/widgets/attributedTo': actors,
 		'@dojo/widgets/audio': audio,
 		'@dojo/widgets/avatar': avatar,
 		'@dojo/widgets/breadcrumb-group': breadcrumbGroup,

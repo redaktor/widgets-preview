@@ -18,6 +18,7 @@
 		"prefix": "redaktor",
 		"widgets": [
 			"src/accordion",
+			"src/actor",
 			"src/audio",
 			"src/avatar",
 			"src/breadcrumb-group",
