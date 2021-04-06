@@ -20,16 +20,18 @@
 }
 .actors > label {
 	order: 2;
+	height: var(--line2);
+	margin: 0;
 }
 .actors > input,
 .actors > details {
-	display: none;
 	order: 3;
+	display: none;
 }
 .actors > input:checked + label + details {
+	order: 4;
 	display: block;
 	width: 100%;
-	order: 4;
 }
 /* Close button for multiple actors in attributedTo */
 .actors > input:checked + label .avatarsContent {

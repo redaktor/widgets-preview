@@ -17,6 +17,7 @@ import i18n from '@dojo/framework/core/middleware/i18n';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Paged from '../paged';
 import AttributedTo from '../attributedTo';
+import Button from '../button';
 import Slider from '../slider';
 import Icon from '../icon';
 import bundle from './nls/Audio';
@@ -58,7 +59,6 @@ export interface AudioProperties extends ActivityPubObject {
 	poster?: string;
 	editable?: boolean;
 	fullscreen?: boolean;
-	cacheWidth?: (width: number) => any;
 	currentTime?: number;
 	autoPlay?: boolean;
 	muted?: boolean;
@@ -138,7 +138,7 @@ const factory = create({
 	/*, resource */
 })
 	.properties<AudioProperties>()
-	.children<AudioChildren | undefined>();
+	.children<AudioChildren | RenderResult | undefined>();
 
 export const Audio = factory(function Audio({
 	middleware: { icache, node, i18n, theme, focus, resize /*, resource */ },
@@ -170,7 +170,7 @@ export const Audio = factory(function Audio({
 	const audio = (node.get('audio') as HTMLAudioElement);
 
 	const dim = resize.get('media');
-	let smallViewport = dim && dim.width < 300;
+	const smallViewport = dim && dim.width < 300;
 	let mml = 0;
 	if (icache.get('l')) {
 		const lh = ((dim && dim.height)||0) / icache.get('l');
@@ -284,12 +284,18 @@ export const Audio = factory(function Audio({
 	if (icache.get('hasTracks') && audio) {
 		audio.textTracks.onaddtrack = (e: TrackEvent) => {
 			/*
+			A media element cannot have more than one track with the same kind, srclang, and label.
+			VTT CSS Extensions https://w3c.github.io/webvtt/#css-extensions
 			kind: "subtitles"
 			label: "English"
 			language: "en"
 			mode: "showing"
 			*/
-			console.log(e.track)
+			console.log('onaddtrack .track', e.track);
+		}
+		audio.onloadedmetadata = (e: Event) => {
+			console.log('onloadedmetadata', e);
+
 		}
 	}
 	const sources = !!APo.url && !!APo.url.length && APo.url.map((_src) => {
@@ -335,13 +341,11 @@ export const Audio = factory(function Audio({
 			<noscript>
 				<video controls={true} {...playerProps}>{sources}{children()}</video>
 			</noscript>
-			{!icache.get('hasTracks') && <virtual>
-				{!!posterSrc && <img src={posterSrc} classes={themedCss.poster} />}
-				<audio key="audio" {...playerProps}>{sources}{children()}</audio>
-			</virtual>}
-			{icache.get('hasTracks') && <virtual>
-				<video key="audio" {...playerProps} poster={posterSrc}>{sources}{children()}</video>
-			</virtual>}
+			{!!posterSrc && <img src={posterSrc} classes={themedCss.poster} />}
+			{!icache.get('hasTracks') ?
+				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :
+				<video key="audio" {...playerProps}>{sources}{children()}</video>
+			}
 			{icache.get('paused') && APo.name && <Paged property="name">
 				{ APo.name.map((_name, i) => <h5 key={`name${i}`} classes={themedCss.name}>{_name}</h5>) }
 			</Paged>}
@@ -427,19 +431,24 @@ export const Audio = factory(function Audio({
 				</div>
 			</div>
 		</div>
-		<button
-			tabIndex={0}
-			type="button"
-			title={messages.download}
-			aria-label={messages.download}
-			classes={themedCss.download}
-			onclick={handleDownload}
-		>
-			<Icon type="download" />
-		</button>
 		<AttributedTo {...APo} />
 	</div>
 
 });
 
 export default Audio;
+/*
+<div classes={themedCss.row}>
+	<Button size="xs">Captions</Button>
+</div>
+<button
+	tabIndex={0}
+	type="button"
+	title={messages.download}
+	aria-label={messages.download}
+	classes={themedCss.download}
+	onclick={handleDownload}
+>
+	<Icon type="download" />
+</button>
+*/

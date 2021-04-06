@@ -9,13 +9,8 @@ import { Keys } from '../common/util';
 import HelperText from '../helper-text';
 import Icon from '../icon';
 import Label from '../label';
-import {
-	ItemRendererProperties,
-	List,
-	ListOption,
-	ListItemProperties,
-	MenuItemProperties
-} from '../list';
+import { ItemRendererProperties, List, ListOption } from '../list';
+import { ListItemProperties, MenuItemProperties } from '../list/Listitem';
 import theme from '../middleware/theme';
 import { PopupPosition } from '../popup';
 import TriggerPopup from '../trigger-popup';
@@ -139,7 +134,7 @@ export const Select = factory(function Select({
 		data
 	} = get(options(), { read, meta: true });
 
-	if (required && dirty) {
+	if (required && (dirty || value !== undefined)) {
 		const isValid = value !== undefined;
 		if (isValid !== valid) {
 			icache.set('valid', isValid);

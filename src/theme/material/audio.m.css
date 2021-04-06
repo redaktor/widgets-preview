@@ -23,6 +23,18 @@
 	object-fit: cover;
 	object-position: 50%;
 }
+.audio.video {
+	margin-bottom: var(--line2);
+}
+.video::cue {
+	color: #fff;
+	font-family: inherit;
+	font-size: 16px;
+	line-height: 20px;
+	text-shadow: 1px 1px 1px #000;
+	outline: 1px solid rgba(0,0,0,0.64);
+	background-color: rgba(0,0,0,0.64);
+}
 .media .poster {
 	z-index: -1;
 }
@@ -135,16 +147,6 @@
 .prev i,
 .next i {
 	vertical-align: middle;
-}
-
-.video::cue {
-	color: #fff;
-	font-family: inherit;
-	font-size: 16px;
-	line-height: 20px;
-	text-shadow: 1px 1px 1px #000;
-	outline: 1px solid rgba(0,0,0,0.64);
-	background-color: rgba(0,0,0,0.64);
 }
 .header {
 

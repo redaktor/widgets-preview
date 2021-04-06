@@ -66,6 +66,48 @@ const exampleData: AudioProperties = {
     name: "Ben",
     summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
     type: "Person"
+  }, {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    id: "https://ben.example.com/",
+    handle: "@ben@example.com",
+    name: "Ben",
+    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+    type: "Person"
+  }, {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    id: "https://ben.example.com/",
+    handle: "@ben@example.com",
+    name: "Ben",
+    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+    type: "Person"
+  }, {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    id: "https://ben.example.com/",
+    handle: "@ben@example.com",
+    name: "Ben",
+    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+    type: "Person"
+  }, {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    id: "https://ben.example.com/",
+    handle: "@ben@example.com",
+    name: "Ben",
+    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+    type: "Person"
+  }, {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    id: "https://ben.example.com/",
+    handle: "@ben@example.com",
+    name: "Ben",
+    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+    type: "Person"
+  }, {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    id: "https://ben.example.com/",
+    handle: "@ben@example.com",
+    name: "Ben",
+    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+    type: "Person"
   }],
   name: ["The Government's Secret Campaign Against Cats","Special Episode","Super"],
   summary: "Article 10 Easy Ways To Make Tin Foil Hats Stronger. Proof That Cats Are Exactly What You Are Looking For",
@@ -79,12 +121,12 @@ const exampleData: AudioProperties = {
 
 const factory = create();
 const ogg = 'https://upload.wikimedia.org/wikipedia/commons/8/86/20090724NIHWiki.ogg';
-const mp3 = 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3';
+const mp3 = 'http://localhost:9999/sample.mp3';
 const vtt = 'http://localhost:9999/sample.vtt';
 export default factory(function Basic() {
 	return (
 		<Example spaced={true}>
-			<div styles={{ width: '50%' }}>
+			<div styles={{ width: '299px' }}>
 				<Audio {...exampleData} url={[ogg,mp3]}>
           <track label="English" src={vtt} kind="subtitles" srclang="en" default />
         </Audio>
