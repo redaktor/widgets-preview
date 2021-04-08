@@ -24,6 +24,8 @@ export interface ButtonProperties extends ThemeProperties {
 	disabled?: boolean;
 	/** The name of the button */
 	name?: string;
+	/** The title of the button */
+	title?: string;
 	/** Handler for events triggered by button losing focus */
 	onBlur?(): void;
 	/** Handler for events triggered by a button click */
@@ -91,6 +93,7 @@ export const Button = factory(function Button({
 		disabled,
 		widgetId,
 		name,
+		title,
 		pressed,
 		type = 'button',
 		value,
@@ -125,6 +128,7 @@ export const Button = factory(function Button({
 			id={idBase}
 			focus={focus.shouldFocus()}
 			name={name}
+			title={title}
 			type={type}
 			value={value}
 			onblur={() => onBlur && onBlur()}
@@ -144,9 +148,9 @@ export const Button = factory(function Button({
 				return onDown && onDown(evt)
 			}}
 			onpointerup={() => onUp && onUp()}
-			{...formatAriaProperties(aria)}
 			onanimationend="this.blur()"
-			aria-pressed={typeof pressed === 'boolean' ? pressed.toString() : null}
+			{...formatAriaProperties(aria)}
+			aria-pressed={typeof pressed === 'boolean' ? (pressed ? 'true' : 'false') : undefined}
 		>
 			{children()}
 		</button>

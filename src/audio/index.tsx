@@ -17,6 +17,7 @@ import i18n from '@dojo/framework/core/middleware/i18n';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Paged from '../paged';
 import AttributedTo from '../attributedTo';
+import AudioAvatar from '../audioAvatar';
 import Button from '../button';
 import Slider from '../slider';
 import Icon from '../icon';
@@ -85,6 +86,7 @@ export interface AudioIcache {
 	volume: number;
 	speed?: number;
 	speedControl: boolean;
+	isPicInPic: boolean;
 	hasTracks: boolean;
 	dragging: boolean;
 }
@@ -272,10 +274,11 @@ export const Audio = factory(function Audio({
 	const playerProps: any = {
 		id: icache.get('id'),
 		alt: !!APo.summary && !!APo.summary.length ? APo.summary[0]||'' : '',
-		classes: [themedCss.audio, icache.get('hasTracks') ? themedCss.video : null],
+		classes: [themedCss.audio, icache.get('hasTracks') || icache.get('isPicInPic') ? themedCss.video : null],
 		preload: autoPlay ? 'auto' : 'none',
 		onplay: onPlay && onPlay(icache.get('currentTime')||0),
 		onpause: onPause && onPause(icache.get('currentTime')||0),
+		onended: togglePlay,
 		onprogress: handleProgress,
 		onloadeddata: handleLoadedData,
 		ontimeupdate: setTime,
@@ -338,11 +341,14 @@ export const Audio = factory(function Audio({
 			]}
 			style={`--mml: ${mml};`}
 		>
+			<div classes={themedCss.audioAvatarWrapper}>
+				<AudioAvatar audioElement={audio} size={smallViewport ? 'l' : 'xl'}>SL</AudioAvatar>
+			</div>
 			<noscript>
 				<video controls={true} {...playerProps}>{sources}{children()}</video>
 			</noscript>
 			{!!posterSrc && <img src={posterSrc} classes={themedCss.poster} />}
-			{!icache.get('hasTracks') ?
+			{!icache.get('hasTracks') && !icache.get('isPicInPic') ?
 				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :
 				<video key="audio" {...playerProps}>{sources}{children()}</video>
 			}
@@ -414,19 +420,16 @@ export const Audio = factory(function Audio({
 						size="s"
 					/>
 					{!icache.get('speedControl') &&
-						<button
-							tabIndex={0}
-							type="button"
-							title={icache.get('muted') ? messages.unmute : messages.mute}
-							aria-label={icache.get('muted') ? messages.unmute : messages.mute}
-							classes={[themedCss.mute, icache.get('muted') && themedCss.muted]}
-							onclick={toggleMute}
+						<Button
+							variant="flat"
+							size="xs"
+							onClick={toggleMute}
 						>
 							<Icon type={
 								(icache.get('muted') || vol < 0.05) ? 'volumeMute' :
 								(vol > 0.75 ? 'volumeHigh' : (vol > 0.3 ? 'volumeMedium' : 'volumeLow'))
 							} />
-						</button>
+						</Button>
 					}
 				</div>
 			</div>
@@ -438,6 +441,28 @@ export const Audio = factory(function Audio({
 
 export default Audio;
 /*
+	<button
+		tabIndex={0}
+		type="button"
+		title={icache.get('muted') ? messages.unmute : messages.mute}
+		aria-label={icache.get('muted') ? messages.unmute : messages.mute}
+		classes={[themedCss.mute, icache.get('muted') && themedCss.muted]}
+		onclick={toggleMute}
+	>
+
+<button onclick={() => {
+	icache.set('isPicInPic', true);
+	try {
+		const doc: any = document;
+		if (audio !== doc.pictureInPictureElement) {
+			(audio as any).requestPictureInPicture();
+		} else {
+			doc.exitPictureInPicture();
+		}
+	} catch {}
+}}>P</button>
+
+
 <div classes={themedCss.row}>
 	<Button size="xs">Captions</Button>
 </div>

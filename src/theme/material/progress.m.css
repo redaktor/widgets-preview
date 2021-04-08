@@ -507,6 +507,8 @@ input.range::-ms-thumb:active {
 	opacity: 0.5;
 	left: var(--progress, 0%);
 	right: var(--buffer, 50%);
+	/* needed for Safari: */
+	max-width: calc(100% - var(--progress, 0%));
 }
 .indeterminate .wrapper::after {
 	left: 0;

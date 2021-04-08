@@ -47,6 +47,16 @@ import Map from '@dojo/widgets/map';
 	>
 		<Map mapId="75a3ce8990674a5ebd5b9ab66bdab893" center={[51.568255, 6.743474]} />
 	</div>
+
+
+  , {
+    "@context": "https://www.w3.org/ns/activitystreams",
+    id: "https://ben.example.com/",
+    handle: "@ben@example.com",
+    name: "Ben",
+    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+    type: "Person"
+  }
 */
 const exampleData: AudioProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
@@ -58,55 +68,6 @@ const exampleData: AudioProperties = {
     handle: "@amy@example.com",
     name: "Amy",
     summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
-    type: "Person"
-  }, {
-    "@context": "https://www.w3.org/ns/activitystreams",
-    id: "https://ben.example.com/",
-    handle: "@ben@example.com",
-    name: "Ben",
-    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
-    type: "Person"
-  }, {
-    "@context": "https://www.w3.org/ns/activitystreams",
-    id: "https://ben.example.com/",
-    handle: "@ben@example.com",
-    name: "Ben",
-    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
-    type: "Person"
-  }, {
-    "@context": "https://www.w3.org/ns/activitystreams",
-    id: "https://ben.example.com/",
-    handle: "@ben@example.com",
-    name: "Ben",
-    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
-    type: "Person"
-  }, {
-    "@context": "https://www.w3.org/ns/activitystreams",
-    id: "https://ben.example.com/",
-    handle: "@ben@example.com",
-    name: "Ben",
-    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
-    type: "Person"
-  }, {
-    "@context": "https://www.w3.org/ns/activitystreams",
-    id: "https://ben.example.com/",
-    handle: "@ben@example.com",
-    name: "Ben",
-    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
-    type: "Person"
-  }, {
-    "@context": "https://www.w3.org/ns/activitystreams",
-    id: "https://ben.example.com/",
-    handle: "@ben@example.com",
-    name: "Ben",
-    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
-    type: "Person"
-  }, {
-    "@context": "https://www.w3.org/ns/activitystreams",
-    id: "https://ben.example.com/",
-    handle: "@ben@example.com",
-    name: "Ben",
-    summary: "B Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
     type: "Person"
   }],
   name: ["The Government's Secret Campaign Against Cats","Special Episode","Super"],

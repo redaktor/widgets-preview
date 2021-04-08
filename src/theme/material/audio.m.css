@@ -9,6 +9,9 @@
 .audio {
 	width: 100%;
 }
+video:picture-in-picture {
+
+}
 .audio:not(.video) {
 	height: var(--line2);
 }
@@ -24,7 +27,12 @@
 	object-position: 50%;
 }
 .audio.video {
-	margin-bottom: var(--line2);
+	height: calc(100% - var(--line));
+	margin-bottom: var(--line);
+	z-index: 2;
+}
+.paused .audio.video {
+	opacity: 0.5;
 }
 .video::cue {
 	color: #fff;
@@ -37,7 +45,23 @@
 }
 .media .poster {
 	z-index: -1;
+	transition: opacity 4s var(--ui-easing-leave, ease-in-out);
 }
+.media:not(.mediaFresh) .poster {
+	z-index: 2;
+	opacity: 0;
+}
+
+.audioAvatarWrapper {
+	z-index: 1;
+}
+.media.mediaFresh .audioAvatarWrapper {
+	opacity: 0.64;
+}
+.media:not(.mediaFresh) .audioAvatarWrapper {
+	opacity: 1;
+}
+
 .audio,
 .name {
 	composes: m from './_typo.css';
@@ -46,7 +70,7 @@
 	font-weight: var(--weight-semibold, 500);
 	--plr: var(--line);
 	position: absolute;
-	bottom: calc(var(--pt) + var(--line) * var(--mml));
+	bottom: 0px;
 	left: 0px;
 	background-color: var(--bg, #666);
 	width: 100%;
@@ -54,109 +78,16 @@
 	box-shadow: var(--ui-dp-2);
 	z-index: 9;
 }
-
-.profiles {
-	display: flex;
-	flex-wrap: wrap;
-}
-.closeProfiles {
-	position: absolute;
-	opacity: 0;
-	display: none;
-	height: 0px;
-	width: 0px;
-	z-index: -1;
-	pointer-events: none;
-}
-.profiles > input:checked + label {
-	order: 1;
-}
-.profiles > label {
-	order: 2;
-}
-.profiles > input,
-.profiles > details {
-	display: none;
-	order: 3;
-}
-.profiles > input:checked + label + details {
-	display: block;
-	width: 100%;
-	order: 4;
-}
-/* Close button for multiple actors in attributedTo */
-.profiles > input:checked + label .avatarsContent {
-	position: relative;
-	visibility: hidden;
-}
-.profiles > input:not(.closeProfiles):checked ~ .closeProfiles {
-	display: inline-block;
-	height: var(--h, 32px);
-	width: var(--h, 32px);
-	z-index: 99;
-	pointer-events: all;
-	cursor: pointer;
-}
-.profiles > input:checked + label .avatarsContent::before {
-	visibility: visible;
-  content: 'd';
-	position: absolute;
-	display: flex !important;
-	font-family: 'redaktor' !important;
-	color: inherit !important;
-	line-height: 1 !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	speak: never;
-	font-style: normal;
-	font-weight: normal;
-	font-variant: normal;
-	text-transform: none;
-	justify-content: center;
-	align-items: center;
-	width: 100%;
-	height: 100%;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-}
-
-.paged,
-.pager {
-  display: none;
-}
-.pager:checked + .paged {
-  display: inline-block;
-}
-.prev,
-.next {
-	display: inline-block;
-	min-width: var(--touch-target-min, var(--line2, 32px));
-	margin: 0;
-	padding: 0;
-	text-align: center;
-	float: right;
-	cursor: pointer;
-}
-.prev {
-	margin-right: 4px;
-}
-.prev:hover,
-.next:hover {
-	color: var(--ui-filled, #eee);
-}
-.prev i,
-.next i {
-	vertical-align: middle;
-}
-.header {
-
-}
 .mediaFresh .name {
 	--plr: calc(var(--line) * 2.5);
 	bottom: calc(var(--pt) + var(--line) + (var(--line) * var(--mml)));
 }
+
+.header {
+
+}
+
 .media {
-	margin-bottom: calc(var(--line) * var(--mml,0));
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -174,10 +105,13 @@
 .media:not(.mediaFresh) {
 	border-top-left-radius: var(--ui-border-radius-emphasized, 0.25rem);
 	border-top-right-radius: var(--ui-border-radius-emphasized, 0.25rem);
+	margin-bottom: calc(var(--line) * var(--mml,0) - var(--line));
 }
 .mediaFresh {
 	border-radius: 50%;
+	margin-bottom: calc(var(--line) * var(--mml,0) - var(--line) - var(--pt));
 }
+
 .mediaFresh ~ details:not(details[open]) > summary .avatar {
 	position: absolute;
 	top: -100%;
@@ -198,29 +132,40 @@
 }
 .playPause {
 	display: flex;
-	justify-content: center;
-	align-items: center;
 	width: 100%;
 	height: 100%;
 	z-index: 8;
 	position: absolute;
-	padding: 0;
+	padding: 0 0 var(--line) 0;
 	margin: 0;
+}
+.mediaFresh .playPause {
+	justify-content: center;
+	align-items: center;
+}
+.media:not(.mediaFresh) .playPause {
+	justify-content: flex-start;
+	align-items: flex-start;
+	padding-left: var(--line);
+	padding-top: var(--line);
 }
 .playPause::after {
 	content: "";
 	display: block;
-	width: var(--line3);
-	height: var(--line3);
+	width: var(--line2);
+	height: var(--line2);
 	border-color: transparent transparent transparent var(--ui-filled, #eee);
-	transition: all 100ms ease-in-out;
+	transition: all var(--ui-dpd-0, 100ms) ease-in-out;
+}
+.mediaFresh .playPause::after {
+	border-color: transparent transparent transparent var(--ui-bg, #eee);
 }
 .root:not(.paused) .playPause:hover::after {
 	border-style: double;
 	border-width:0px 0px 0px var(--line2);
 }
 .media .playPause:hover::after {
-	border-color: transparent transparent transparent var(--ui-filled-hover, #fff);
+	border-color: transparent transparent transparent var(--text, #fff);
 }
 .name:hover ~ .playPause::after,
 .name:hover ~ .playPause:hover::after {
@@ -228,7 +173,7 @@
 }
 .paused .playPause::after {
 	border-style: solid;
-	border-width: var(--line2) 0 var(--line2) var(--line4);
+	border-width: var(--line) 0 var(--line) var(--line2);
 }
 .controls {
 	height: var(--line3);
@@ -260,6 +205,12 @@
 	min-width: 96px;
 	width: 38.2%;
 	padding-top: var(--pt);
+}
+.volume div:first-child {
+	margin-top: 1px;
+}
+.volume > button {
+	margin-left: 12px;
 }
 .mute,
 .speed,
@@ -301,11 +252,12 @@
 	align-items: flex-start;
 }
 .smallViewport .speedControl {
-	position: absolute;
-	right: 0px;
-	bottom: 0px;
 	z-index: 99;
 	justify-content: flex-end;
+	min-width: 16px;
+}
+.smallViewport .volume {
+	min-width: var(--touch-target-min, var(--line2, 32px));
 }
 .play { }
 .pause { }

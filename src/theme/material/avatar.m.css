@@ -1,8 +1,10 @@
 .root {
 	composes: uiVar from './_ui.m.css';
+	--ah: var(--h,80px);
 	display: flex !important;
 	padding: 0 !important;
-	width: var(--h);
+	width: var(--ah);
+	min-height: var(--ah);
 	position: relative;
 	overflow: hidden;
 	text-align: center;
@@ -13,6 +15,10 @@
 	line-height: 1;
 	flex-shrink: 0;
 	font-weight: var(-weight-semibold, 500);
+}
+.root.audio {
+	--ah: calc(var(--h,80px) + var(--line2,16px));
+	overflow: visible;
 }
 .root::after {
   content: "";
@@ -29,7 +35,16 @@
 .root.rounded {
 	border-radius: var(--ui-border-radius-emphasized);
 }
-
+.canvasWrapper {
+	--canvh: calc(var(--ah) * 2);
+	position: absolute;
+	pointer-events: none;
+	left: -50%;
+	top: -50%;
+}
+.canvasWrapper canvas {
+	background: transparent;
+}
 .content {
-	
+
 }
