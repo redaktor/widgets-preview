@@ -158,6 +158,7 @@ video:picture-in-picture {
 	transition: all var(--ui-dpd-0, 100ms) ease-in-out;
 }
 .mediaFresh .playPause::after {
+	margin-top: var(--mb); /* TODO */
 	border-color: transparent transparent transparent var(--ui-bg, #eee);
 }
 .root:not(.paused) .playPause:hover::after {

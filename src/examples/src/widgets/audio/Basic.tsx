@@ -64,9 +64,9 @@ const exampleData: AudioProperties = {
   id: "#0",
   attributedTo: [{
     "@context": "https://www.w3.org/ns/activitystreams",
-    id: "https://amy.example.com/",
-    handle: "@amy@example.com",
-    name: "Amy",
+    id: "https://alyssa.example.com/",
+    handle: "@alyssa@example.com",
+    name: "Alyssa",
     summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
     type: "Person"
   }],
