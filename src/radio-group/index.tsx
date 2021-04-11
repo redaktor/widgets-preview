@@ -1,13 +1,14 @@
-import * as css from '../theme/default/radio-group.m.css';
+import * as css from '../theme/material/radio-group.m.css';
 import theme from '@dojo/framework/core/middleware/theme';
-import { Radio } from '../radio/index';
+import { Radio, RadioProperties } from '../radio/';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { radioGroup } from './middleware';
 
 type RadioOptions = { value: string; label?: string }[];
 
-export interface RadioGroupProperties {
+export interface RadioGroupProperties extends RadioProperties {
+	vertical?: boolean;
 	/** Initial value of the radio group */
 	initialValue?: string;
 	/** Controlled value property */
@@ -15,7 +16,7 @@ export interface RadioGroupProperties {
 	/** The name attribute for this form group */
 	name: string;
 	/** Callback for the current value */
-	onValue(value: string): void;
+	onValue(value: any): void;
 	/** Object containing the values / labels to create radios for */
 	options: RadioOptions;
 }
@@ -39,10 +40,10 @@ export const RadioGroup = factory(function({
 	properties,
 	middleware: { radioGroup, theme }
 }) {
-	const { name, options, onValue, value, initialValue } = properties();
+	const { vertical, name, options, onValue, value, initialValue, ...radioProps } = properties();
 	const [{ radios, label } = { radios: undefined, label: undefined }] = children();
 	const radio = radioGroup(onValue, initialValue || '', value);
-	const { root, legend } = theme.classes(css);
+	const themedCss = theme.classes(css);
 
 	function renderRadios() {
 		if (radios) {
@@ -51,7 +52,7 @@ export const RadioGroup = factory(function({
 		return options.map(({ value, label }) => {
 			const { checked } = radio(value);
 			return (
-				<Radio spaced={true} checked={checked()} name={name} onValue={checked} value={value}>
+				<Radio {...radioProps} spaced={true} checked={checked()} name={name} onValue={checked} value={value}>
 					{label || value}
 				</Radio>
 			);
@@ -59,8 +60,8 @@ export const RadioGroup = factory(function({
 	}
 
 	return (
-		<fieldset key="root" classes={[theme.variant(), root]} name={name}>
-			{label && <legend classes={legend}>{label}</legend>}
+		<fieldset key="root" classes={[theme.variant(), themedCss.root, vertical && themedCss.vertical]} name={name}>
+			{label && <legend classes={themedCss.legend}>{label}</legend>}
 			{renderRadios()}
 		</fieldset>
 	);

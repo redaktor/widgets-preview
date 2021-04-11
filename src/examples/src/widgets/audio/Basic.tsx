@@ -90,6 +90,11 @@ export default factory(function Basic() {
 			<div styles={{ width: '299px' }}>
 				<Audio {...exampleData} url={[ogg,mp3]}>
           <track label="English" src={vtt} kind="subtitles" srclang="en" default />
+          <track label="English captions" src={vtt} kind="captions" srclang="en" />
+          <track label="Deutsche captions" src={vtt} kind="captions" srclang="de" />
+          <track label="Spanish captions" src={vtt} kind="captions" srclang="es" />
+          <track label="English chapters" src={vtt} kind="chapters" srclang="en" />
+          <track label="Deutsche Beschreibung" src={vtt} kind="descriptions" srclang="de" />
         </Audio>
 			</div>
 		</Example>

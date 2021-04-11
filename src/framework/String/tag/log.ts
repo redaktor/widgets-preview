@@ -35,7 +35,7 @@ const prefixes: any = {
   neutral:'*',
   muted:  '*'
 }
-//type Prefix = keyof typeof prefixes;
+// type Prefix = keyof typeof prefixes;
 const types: {[k: string]: Color} = {
   _string: 'G',
   _number: 'B',
@@ -57,14 +57,14 @@ const prefixFns = Object.keys(prefixes).reduce((o: any, prefix: any) => {
 
 export function _(strings: TemplateStringsArray, ...values: any[]) {
   const browserColors: string[] = [];
-  const s = strings.reduce((result, string, i) => {
+  const s = strings.reduce((result, s, i) => {
     let v = Array.isArray(values[i]) ? values[i].join(' ') : values[i];
-    const color = Object.keys(colorCodes).filter(k => endsWith(string, `${k}`))[0];
+    const color = Object.keys(colorCodes).filter(k => endsWith(s, `${k}`))[0];
     if (color) {
-      string = string.slice(0, 0 - color.length);
+      s = s.slice(0, 0 - color.length);
       v = coloredStr(v, <Color>color, browserColors)
     }
-    return `${result}${string}${v ? `${v}` : ''}`;
+    return `${result}${s}${v ? `${v}` : ''}`;
   }, '');
   return [s, ...browserColors]
 }
@@ -78,7 +78,7 @@ export const {
   reset, message, success, warning, error, list, input, output, neutral, muted
 } = prefixFns;
 export function info(...strings: string[]) {
-  //strings = strings.map(s => _`${s}`[0]);
+  // strings = strings.map(s => _`${s}`[0]);
   log`G${` ╚════╝`}`;
   log`G${` ╔════╗`}`;
   log`G${` ║    ║`}`;
@@ -140,7 +140,7 @@ export function syntaxColor(v: string, color?: string) {
   if (typeof color === 'string' && colorCodes.hasOwnProperty(color)) {
     return coloredStr(v, <Color>color);
   }
-  var cType = types._number;
+  let cType = types._number;
   if (/^"/.test(v)) {
     cType = /:$/.test(v) ? types._key : types._string;
   } else if (/true|false/.test(v)) {
@@ -169,13 +169,13 @@ export function _log(logArr: any, doPadding: boolean = false, includeFn: boolean
   logArr.forEach((o: any) => {
     const isPrefix = prefixes.hasOwnProperty(Object.keys(o)[0]);
     let prefix = ':';
-    if (typeof o != 'object' || Object.keys(o).length > 1 || !isPrefix) {
+    if (typeof o !== 'object' || Object.keys(o).length > 1 || !isPrefix) {
       console.log(':', o);
     } else {
       const key = Object.keys(o)[0];
       const isSyntax = !(colorCodes.hasOwnProperty(key));
       prefix = prefixes.hasOwnProperty(key) ? prefixes[key] : ' ';
-      if (typeof o[key] != 'object') {
+      if (typeof o[key] !== 'object') {
         if (isSyntax) {
           syntaxLog(prefix, '', o[key], includeFn);
         } else {
@@ -186,10 +186,10 @@ export function _log(logArr: any, doPadding: boolean = false, includeFn: boolean
           syntaxLog(prefix, '', v, includeFn);
         });
       } else {
-        for (var logKey in o[key]) {
-          var k: string = logKey;
+        for (let logKey in o[key]) {
+          let k: string = logKey;
           const v: any = o[key][k];
-          if (typeof v != 'function' && doPadding) {
+          if (typeof v !== 'function' && doPadding) {
             k = new Array(Object.keys(o[key]).reduce((a,b) => {
               return a.length > b.length ? a : b;
             }).length + 1).join(' ');
@@ -199,6 +199,6 @@ export function _log(logArr: any, doPadding: boolean = false, includeFn: boolean
         }
       }
     }
-    //if (prefix != '<' && prefix != '>') { console.log(' '); }
+    // if (prefix != '<' && prefix != '>') { console.log(' '); }
   });
 }

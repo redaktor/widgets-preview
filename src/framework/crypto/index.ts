@@ -10,7 +10,7 @@
  */
 import has from '@dojo/framework/core/has';
 import { warning } from '../String/tag/log';
-//import { _ as log } from '../String/tag/log';
+// import { _ as log } from '../String/tag/log';
 import * as _crypto from 'crypto';
 export const crypto: (typeof _crypto) = has('host-node') ? _crypto : require('crypto-browserify');
 /**

@@ -12,7 +12,13 @@ const messages = {
 	mute: 'Mute sound',
 	unmute: 'Unmute sound',
 	speed: 'Change playback rate',
-	download: 'Download file'
+	quality: 'Change playback quality',
+	download: 'Download file',
+	captionsTrack: 'Captions',
+	subtitlesTrack: 'Subtitles',
+	descriptionsTrack: 'Descriptions',
+	descriptionsAbbrev: 'Desc',
+	chaptersTrack: 'Chapters'
 };
 
 export default { locales, messages };

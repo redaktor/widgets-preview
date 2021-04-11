@@ -1,23 +1,24 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { checkboxGroup } from './middleware';
-import { Checkbox } from '../checkbox/index';
+import { Checkbox, CheckboxProperties } from '../checkbox/index';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import theme from '@dojo/framework/core/middleware/theme';
-import * as css from '../theme/default/checkbox-group.m.css';
+import * as css from '../theme/material/checkbox-group.m.css';
 
 type CheckboxOptions = { value: string; label?: string }[];
 
-export interface CheckboxGroupProperties {
+export interface CheckboxGroupProperties extends CheckboxProperties {
+	vertical?: boolean;
 	/** The name attribute for this form group */
 	name: string;
 	/** Object containing the values / labels to create checkboxes for */
 	options: CheckboxOptions;
 	/** Callback for the current value */
-	onValue(value: string[]): void;
+	onValue(value: string[]|any): void;
 	/** Initial value of the checkbox group */
-	initialValue?: string[];
+	initialValue?: string[]|any;
 	/** A controlled value for the checkbox group */
-	value?: string[];
+	value?: string[]|any;
 }
 
 export interface CheckboxGroupChildren {
@@ -39,11 +40,11 @@ export const CheckboxGroup = factory(function({
 	properties,
 	middleware: { checkboxGroup, theme }
 }) {
-	const { name, options, onValue, initialValue, value } = properties();
+	const { vertical, name, options, onValue, initialValue, value, ...cbProps } = properties();
 	const [{ checkboxes, label } = { checkboxes: undefined, label: undefined }] = children();
 
 	const checkbox = checkboxGroup(onValue, initialValue, value);
-	const { root, legend } = theme.classes(css);
+	const themedCss = theme.classes(css);
 
 	function renderCheckboxes() {
 		if (checkboxes) {
@@ -52,7 +53,7 @@ export const CheckboxGroup = factory(function({
 		return options.map(({ value, label }) => {
 			const { checked } = checkbox(value);
 			return (
-				<Checkbox spaced={true} name={name} value={value} checked={checked()} onValue={checked}>
+				<Checkbox {...cbProps} spaced={true} name={name} value={value} checked={checked()} onValue={checked}>
 					{label || value}
 				</Checkbox>
 			);
@@ -60,8 +61,8 @@ export const CheckboxGroup = factory(function({
 	}
 
 	return (
-		<fieldset key="root" classes={[theme.variant(), root]} name={name}>
-			{label && <legend classes={legend}>{label}</legend>}
+		<fieldset key="root" classes={[theme.variant(), themedCss.root, vertical && themedCss.vertical]} name={name}>
+			{label && <legend classes={themedCss.legend}>{label}</legend>}
 			{renderCheckboxes()}
 		</fieldset>
 	);

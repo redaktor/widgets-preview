@@ -1,5 +1,7 @@
 export const root: string;
 export const smallViewport: string;
+export const menuOpen: string;
+export const trackMenu: string;
 export const audio: string;
 export const video: string;
 export const media: string;

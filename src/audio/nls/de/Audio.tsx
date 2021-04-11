@@ -4,5 +4,11 @@ export default {
 	mute: 'Ton aus',
 	unmute: 'Ton an',
 	speed: 'Abspielgeschwindigkeit ändern',
-	download: 'Datei herunterladen'
+	quality: 'Qualität ändern',
+	download: 'Datei herunterladen',
+	captionsTrack: 'Beschriftung',
+	subtitlesTrack: 'Untertitel',
+	descriptionsTrack: 'Beschreibung',
+	descriptionsAbbrev: 'Desk',
+	chaptersTrack: 'Kapitel'
 };

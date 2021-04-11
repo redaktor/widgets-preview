@@ -5,6 +5,13 @@
 	padding: 0 !important;
 }
 .smallViewport { }
+.menuOpen { }
+.trackMenu {
+	width:100%;
+	margin-bottom: var(--line4);
+	z-index: 99;
+}
+
 /* TODO nojs : */
 .audio {
 	width: 100%;
@@ -181,6 +188,17 @@ video:picture-in-picture {
 	border-style: solid;
 	border-width: var(--line) 0 var(--line) var(--line2);
 }
+
+.menuOpen .audioAvatarWrapper,
+.menuOpen .playPause,
+.menuOpen .name {
+	display: none;
+}
+.menuOpen .audio.video {
+	opacity: 0.64;
+	z-index: -1;
+}
+
 .controls {
 	height: var(--line3);
 }
@@ -258,7 +276,7 @@ video:picture-in-picture {
 	align-items: flex-start;
 }
 .smallViewport .speedControl {
-	z-index: 99;
+	z-index: 90;
 	justify-content: flex-end;
 	min-width: 16px;
 }

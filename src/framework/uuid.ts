@@ -1,5 +1,3 @@
-// import crypto from './crypto';
-
 export function uuid4(): string {
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 		const r = (Math.random() * 16) | 0,
@@ -21,7 +19,7 @@ export default function uuid(
 }
 
 /* NONCE - if fixed variable length */
-/*
+/* // import crypto from './crypto';
 export function nonce(lengthOrMin: number = 64, maxLength?: number): string {
   let length = lengthOrMin;
   if (!!maxLength && typeof maxLength === 'number') {

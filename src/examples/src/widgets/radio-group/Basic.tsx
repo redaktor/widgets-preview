@@ -12,6 +12,7 @@ const App = factory(function({ properties, middleware: { icache } }) {
 		<span>
 			<RadioGroup
 				name="standard"
+				vertical={true}
 				options={[{ value: 'cat' }, { value: 'dog' }, { value: 'fish' }]}
 				onValue={(value) => {
 					set('standard', value);

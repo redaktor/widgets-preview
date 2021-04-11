@@ -38,6 +38,7 @@ const icache = createICacheMiddleware<AvatarICache>();
 const factory = create({ theme, node, dimensions, icache }).properties<AvatarProperties>();
 
 export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, dimensions, icache }, properties, children }) {
+	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
 	const {
 		audioElement: audio,
@@ -67,34 +68,34 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 
 
 	const ctx = canvas && (canvas as HTMLCanvasElement).getContext('2d');
-	icache.getOrSet('canVisualise', false, false);
-	icache.getOrSet('animId', 0);
+	getOrSet('canVisualise', false, false);
+	getOrSet('animId', 0);
 	/**
 	 * Set audio audioCtx analyser.
 	 */
 	const setAnalyser = () => {
-		if (!icache.get('audioCtx')) {
-			icache.set('audioCtx', new ((window as any).AudioContext || (window as any).webkitAudioContext)(), false);
-			icache.set('analyser', icache.get('audioCtx').createAnalyser(), false);
-		}
-		if (!icache.get('audioCtx')) {
-			console.log('No AudioContext');
-			return
-		}
 		try {
-			const source = icache.get('audioCtx').createMediaElementSource(audio);
-			source.connect(icache.get('analyser'));
-			icache.get('analyser').connect(icache.get('audioCtx').destination);
-			icache.set('canVisualise', true);
+			if (!get('audioCtx')) {
+				set('audioCtx', new ((window as any).AudioContext || (window as any).webkitAudioContext)(), false);
+				set('analyser', get('audioCtx').createAnalyser(), false);
+			}
+			if (!get('audioCtx')) {
+				console.log('No AudioContext');
+				return
+			}
+			const source = get('audioCtx').createMediaElementSource(audio);
+			source.connect(get('analyser'));
+			get('analyser').connect(get('audioCtx').destination);
+			set('canVisualise', true);
 		} catch (e) {
 			console.log(e.toString());
 		}
   }
 
-	const wh = () => [
-		(dimensions.get('root').offset.width * 2)||100,
-		(dimensions.get('root').offset.height * 2)||100
-	];
+	const wh = () => {
+		const {width, height} = dimensions.get('root').offset;
+		return [(width * 2)||100, (height * 2)||100];
+	}
   /**
    * Canvas gradient. Vertical, from top down
    */
@@ -112,12 +113,12 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 
   const _setCanvas = () => {
 		if (!ctx || !canvFillColor) { return }
-		const [w, h] = wh();
-    ctx.clearRect(0, 0, w, h);
+		const {width, height} = dimensions.get('canvas').offset;
+    ctx.clearRect(0, 0, width, height);
     (ctx as any).fillStyle = Array.isArray(canvFillColor)
       ? fillGradient(canvFillColor)
       : canvFillColor
-    !!ctx && ctx.fillRect(0, 0, w, h)
+    !!ctx && ctx.fillRect(0, 0, width, height)
   }
 
   const _setBarColor = (cx: number, cy: number) => {
@@ -143,14 +144,14 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
     const cy = h / 2; // center Y
     const r = radius ? radius : Math.round(w / 2 * 0.5);
     const arcStep = Math.ceil(lineWidth + lineSpace);
-    const frqBits = icache.get('analyser').frequencyBinCount;
+    const frqBits = get('analyser').frequencyBinCount;
     const data = new Uint8Array(frqBits);
     const step = ((lineWidth + lineSpace) / data.length) * (2 * Math.PI);
     const barLen = barLength > 0 ? barLength : (w / 2) - r;
     let angle = Math.PI * 1.5; // TODO this._rotate() // start from top
 
     _setCanvas();
-    icache.get('analyser').getByteFrequencyData(data);
+    get('analyser').getByteFrequencyData(data);
 /*
     // contour outline
     if (this.outlineWidth > 0) {
@@ -183,33 +184,36 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
       !!ctx && ctx.lineTo(bLen * Math.cos(angle) + cx, bLen * Math.sin(angle) + cy);
       !!ctx && ctx.stroke();
     });
-		icache.set('animId', requestAnimationFrame(paint), false);
+		set('animId', requestAnimationFrame(paint), false)
 	}
 
 	if (!!audio) {
-		const audioCtx = icache.get('audioCtx');
+		const restart = () => {
+			const audioCtx = get('audioCtx');
+			if (!audioCtx || audioCtx.state === 'closed') { return }
+			audioCtx.close();
+    	cancelAnimationFrame(get('animId')||0);
+			set('audioCtx',null,false);
+			set('canVisualise',false);
+		}
 	  audio.addEventListener('canplay', setAnalyser);
 		audio.addEventListener('play', () => {
-	    if (!icache.get('canVisualise')) { setAnalyser() }
-			icache.set('animId', requestAnimationFrame(paint));
+			const audioCtx = get('audioCtx');
+	    if (!audioCtx || !get('canVisualise')) { setAnalyser() }
 			if (!!audioCtx && audioCtx.state === 'suspended') { // not defined for waveform
+				set('animId', requestAnimationFrame(paint), false);
 	      audioCtx.resume();
 	    }
 	  });
 		audio.addEventListener('pause', () => {
-			if (!!audioCtx) {
+			const audioCtx = get('audioCtx');
+			if (!!audioCtx && audioCtx.state === 'running') {
 	      audioCtx.suspend();
-	      cancelAnimationFrame(icache.get('animId')||0)
+				cancelAnimationFrame(get('animId')||0);
 	    }
 		});
-		audio.addEventListener('ended', () => {
-			if (!!audioCtx) {
-	      audioCtx.close();
-	      cancelAnimationFrame(icache.get('animId')||0);
-				icache.set('audioCtx',null,false);
-				icache.set('canVisualise',false);
-	    }
-		});
+		audio.addEventListener('seeked', restart);
+		audio.addEventListener('ended', restart);
 	}
 
 	return (<div

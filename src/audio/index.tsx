@@ -18,6 +18,7 @@ import { normalizeActivityPub } from '../common/activityPubUtil';
 import Paged from '../paged';
 import AttributedTo from '../attributedTo';
 import AudioAvatar from '../audioAvatar';
+import RadioGroup from '../radio-group';
 import Button from '../button';
 import Slider from '../slider';
 import Icon from '../icon';
@@ -56,6 +57,12 @@ The notion of "context" used is intentionally vague. The intended function is to
 as a means of grouping objects and activities that share a common originating context
 or purpose. An example could be all activities relating to a common project or event.
 */
+
+/* TODO state store:
+store the last used
+- volume
+- visibility of captions, subtitles, descriptions
+*/
 export interface AudioProperties extends ActivityPubObject {
 	poster?: string;
 	editable?: boolean;
@@ -73,6 +80,21 @@ export interface AudioProperties extends ActivityPubObject {
 	/** `id` set on the root button DOM node */
 	widgetId?: string;
 }
+
+interface TextTrack {
+	index: number;
+	language: string;
+	label: string;
+}
+/* per spec
+"A media element cannot have more than one track with the same kind, srclang and label"
+*/
+type TT = Map<string, TextTrack>;
+export interface TextTracks {
+	[k: string]: any,
+	captions:TT, subtitles:TT, descriptions:TT, chapters:TT, metadata:TT
+}
+
 export interface AudioIcache {
 	l: any;
 	id: string;
@@ -84,11 +106,14 @@ export interface AudioIcache {
 	paused: boolean;
 	muted: boolean;
 	volume: number;
-	speed?: number;
+	speed: number;
 	speedControl: boolean;
 	isPicInPic: boolean;
-	hasTracks: boolean;
 	dragging: boolean;
+	hasTracks: boolean;
+	tracks: TextTracks;
+	trackMenu: RenderResult;
+	trackMenuOpen: boolean;
 }
 export interface AudioChildren {
 	/** Optional Header */
@@ -147,6 +172,7 @@ export const Audio = factory(function Audio({
 	properties,
 	children
 }) {
+	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
 	const { messages } = i18n.localize(bundle);
 	const {
@@ -157,41 +183,44 @@ export const Audio = factory(function Audio({
 	const APo: ActivityPubObjectNormalized = _rest;
 
 	const tracks = (children() as any || []).filter((c: any) => c.tag === 'track');
-	icache.set('hasTracks', !!tracks.length, false);
-	icache.getOrSet('l', theme.line(), false);
-	icache.getOrSet('id', widgetId, false);
-	icache.getOrSet('buffer', 0, false);
-	icache.getOrSet('currentTime', 0, false);
-	icache.getOrSet('fresh', true, false);
-	icache.getOrSet('muted', muted, false);
-	icache.getOrSet('volume', Math.min(Math.max(0, volume), 1), false);
-	icache.getOrSet('speed', Math.min(Math.max(0.2, speed), 2), false);
-	icache.getOrSet('speedControl', false, false);
-	icache.getOrSet('paused', !autoPlay);
-	if (!icache.get('paused') && icache.get('fresh')) { icache.set('fresh', false) }
+	set('hasTracks', !!tracks.length, false);
+	getOrSet('trackMenu', '', false);
+	getOrSet('l', theme.line(), false);
+	getOrSet('id', widgetId, false);
+	getOrSet('buffer', 0, false);
+	getOrSet('currentTime', 0, false);
+	getOrSet('fresh', true, false);
+	getOrSet('muted', muted, false);
+	getOrSet('volume', Math.min(Math.max(0, volume), 1), false);
+	getOrSet('speed', Math.min(Math.max(0.2, speed), 2), false);
+	getOrSet('speedControl', false, false);
+	getOrSet('trackMenuOpen', false, false);
+	getOrSet('paused', !autoPlay);
+	if (!get('paused') && get('fresh')) { set('fresh', false) }
+
 	const audio = (node.get('audio') as HTMLAudioElement);
 
 	const dim = resize.get('media');
 	const smallViewport = dim && dim.width < 300;
 	let mml = 0;
-	if (icache.get('l')) {
-		const lh = ((dim && dim.height)||0) / icache.get('l');
+	if (get('l')) {
+		const lh = ((dim && dim.height)||0) / get('l');
 		mml = (Math.max(0, Math.ceil(lh)) - lh);
 	}
 
   const togglePlay = (e?: Event) => {
 		e && e.preventDefault();
 		e && e.stopPropagation();
-		icache.set('paused', !icache.get('paused'));
-		!!audio && audio[!icache.get('paused') ? 'play' : 'pause']();
-		if (!icache.get('paused') && onPlay) {
-			onPlay(icache.get('currentTime')||0)
+		set('paused', !get('paused'));
+		!!audio && audio[!get('paused') ? 'play' : 'pause']();
+		if (!get('paused') && onPlay) {
+			onPlay(get('currentTime')||0)
 		} else if (onPause) {
-			onPause(icache.get('currentTime')||0)
+			onPause(get('currentTime')||0)
 		}
   }
   const toggleMute = () => {
-    audio.muted = icache.set('muted', !icache.get('muted'));
+    audio.muted = set('muted', !get('muted'));
   }
 
 	const handleDownload = () => {
@@ -212,23 +241,69 @@ export const Audio = factory(function Audio({
   	});
 		*/
   }
+	const handleLoadedMetadata = () => {
+		let trackMenu: RenderResult = [];
+		if (!!audio && audio.textTracks && audio.textTracks.length) {
+			const textTracks: any = {
+				captions:(new Map()),
+				subtitles:(new Map()),
+				descriptions:(new Map()),
+				chapters:(new Map()),
+				metadata:(new Map())
+			};
+			const l = audio.textTracks.length;
+			let i;
+			for (i = 0; i < l; i++) {
+				const {kind, label, language, mode} = audio.textTracks[i];
+				textTracks[kind] && textTracks[kind].set(`${kind}-${language}`, {
+					value: i, label, language, mode
+				});
+			}
+			/*
+			const btnCount = textTracks && (
+				Number(!!textTracks.captions.size) + Number(!!textTracks.subtitles.size) +
+				Number(!!textTracks.descriptions.size) + Number(!!textTracks.chapters.size)
+			);
+			console.log('onloadedmetadata', Array.from(textTracks.captions.values()));
+			*/
 
+			trackMenu = textTracks &&
+				<div key={`tracksMenu`} classes={themedCss.trackMenu}>
+					{Object.keys(textTracks).map((k) => {
+						return k === 'metadata' || !textTracks[k].size ? '' :
+							<RadioGroup
+								name={k}
+								size="s"
+								vertical={true}
+								options={Array.from(textTracks[k].values())}
+								onValue={(value) => { console.log('standard', value); }}
+							>
+								{{
+									label: (messages as any)[`${k}Track`]
+								}}
+							</RadioGroup>
+					}
+				)}
+				</div>
+		}
+		set('trackMenu', trackMenu);
+	}
 	const handleLoadedData = () => {
 		const { autoPlay, currentTime, muted = false, volume = 1, speed = 1 } = properties();
-		icache.set('duration', audio.duration, false);
+		set('duration', audio.duration, false);
 		if (currentTime) {
 			audio.currentTime = currentTime;
 		}
-		audio.muted = icache.get('muted')||muted;
-		audio.volume = icache.get('volume')||volume;
-		audio.playbackRate = icache.get('speed')||speed;
+		audio.muted = get('muted')||muted;
+		audio.volume = get('volume')||volume;
+		audio.playbackRate = get('speed')||speed;
 		autoPlay && togglePlay();
 	}
 
 	const handleProgress = () => {
     const lastTimeRange = audio.buffered.length - 1;
     if (lastTimeRange > -1) {
-			icache.set('buffer', Math.ceil(audio.buffered.end(lastTimeRange) / audio.duration * 100));
+			set('buffer', Math.ceil(audio.buffered.end(lastTimeRange) / audio.duration * 100));
     }
   }
 	const handleKeyDown = (e: KeyboardEvent) => {
@@ -252,7 +327,7 @@ export const Audio = factory(function Audio({
 	const seekBy = (time: number) => {
     const currentTime = audio.currentTime + time;
     if (!isNaN(currentTime)) {
-			icache.set('currentTime', currentTime);
+			set('currentTime', currentTime);
 			audio.currentTime = currentTime;
     }
   }
@@ -264,42 +339,42 @@ export const Audio = factory(function Audio({
 	*/
 	const setTime = (v: number) => {
 		if (typeof v === 'number') { audio.currentTime = v; }
-		icache.set('currentTime', audio.currentTime);
+		set('currentTime', audio.currentTime);
 	}
 
 	/*
 		classNames('audio-player', { editable })
 	*/
-	const vol = icache.get('volume')||0;
+	const vol = get('volume')||0;
 	const playerProps: any = {
-		id: icache.get('id'),
+		id: get('id'),
 		alt: !!APo.summary && !!APo.summary.length ? APo.summary[0]||'' : '',
-		classes: [themedCss.audio, icache.get('hasTracks') || icache.get('isPicInPic') ? themedCss.video : null],
+		classes: [themedCss.audio, get('hasTracks') || get('isPicInPic') ? themedCss.video : null],
 		preload: autoPlay ? 'auto' : 'none',
-		onplay: onPlay && onPlay(icache.get('currentTime')||0),
-		onpause: onPause && onPause(icache.get('currentTime')||0),
+		onplay: onPlay && onPlay(get('currentTime')||0),
+		onpause: onPause && onPause(get('currentTime')||0),
 		onended: togglePlay,
 		onprogress: handleProgress,
+		onloadedmetadata: handleLoadedMetadata,
 		onloadeddata: handleLoadedData,
 		ontimeupdate: setTime,
+		onseeked: () => { setTimeout(togglePlay,1) },
 		crossOrigin: 'anonymous'
 	};
-	if (icache.get('hasTracks') && audio) {
-		audio.textTracks.onaddtrack = (e: TrackEvent) => {
-			/*
-			A media element cannot have more than one track with the same kind, srclang, and label.
-			VTT CSS Extensions https://w3c.github.io/webvtt/#css-extensions
-			kind: "subtitles"
-			label: "English"
-			language: "en"
-			mode: "showing"
-			*/
-			console.log('onaddtrack .track', e.track);
-		}
-		audio.onloadedmetadata = (e: Event) => {
-			console.log('onloadedmetadata', e);
 
-		}
+	if (get('hasTracks') && !!audio) {
+		/*
+		VTT CSS Extensions https://w3c.github.io/webvtt/#css-extensions
+		kind: "subtitles"
+		label: "English"
+		language: "en"
+		mode: "showing"
+		*/
+		/*
+		audio.textTracks.addEventListener('addtrack', (e: TrackEvent) => {
+			// TODO : begin to cache media
+		});
+		*/
 	}
 	const sources = !!APo.url && !!APo.url.length && APo.url.map((_src) => {
 		if (typeof _src === 'object' && !!_src.href && !!_src.mediaType) {
@@ -311,7 +386,7 @@ export const Audio = factory(function Audio({
 		}
 	});
 	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
-;
+	const menuOpen = get('trackMenuOpen');
 	return <div
 		key="root"
 		classes={[
@@ -322,25 +397,28 @@ export const Audio = factory(function Audio({
 			theme.colored(colors),
 			theme.elevated(ui),
 			theme.animated(themedCss),
-			icache.get('paused') && themedCss.paused,
-			smallViewport && themedCss.smallViewport
+			get('paused') && themedCss.paused,
+			smallViewport && themedCss.smallViewport,
+			menuOpen && themedCss.menuOpen
 		]}
-		onMouseEnter={onMouseEnter && onMouseEnter(icache.get('currentTime')||0)}
-		onMouseLeave={onMouseLeave && onMouseLeave(icache.get('currentTime')||0)}
+		onMouseEnter={onMouseEnter && onMouseEnter(get('currentTime')||0)}
+		onMouseLeave={onMouseLeave && onMouseLeave(get('currentTime')||0)}
 		onKeyDown={handleKeyDown}
 		aria-label="Audio Player"
 		role="region"
 	>
+		<Button onClick={() => { set('trackMenuOpen', !menuOpen) }}>C</Button>
 		<div
 			key="media"
 			classes={[
 				themedCss.media,
 				/* TODO isJS */
 				/* theme.isJS() && */
-				icache.get('fresh') && themedCss.mediaFresh
+				get('fresh') && themedCss.mediaFresh
 			]}
 			style={`--mml: ${mml};`}
 		>
+			{ menuOpen && get('trackMenu') }
 			<div classes={themedCss.audioAvatarWrapper}>
 				<AudioAvatar audioElement={audio} size={smallViewport ? 'l' : 'xl'}>SL</AudioAvatar>
 			</div>
@@ -348,29 +426,35 @@ export const Audio = factory(function Audio({
 				<video controls={true} {...playerProps}>{sources}{children()}</video>
 			</noscript>
 			{!!posterSrc && <img src={posterSrc} classes={themedCss.poster} />}
-			{!icache.get('hasTracks') && !icache.get('isPicInPic') ?
+			{!get('hasTracks') && !get('isPicInPic') ?
 				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :
 				<video key="audio" {...playerProps}>{sources}{children()}</video>
 			}
-			{icache.get('paused') && APo.name && <Paged property="name">
+			{!menuOpen && get('paused') && APo.name && <Paged property="name">
 				{ APo.name.map((_name, i) => <h5 key={`name${i}`} classes={themedCss.name}>{_name}</h5>) }
 			</Paged>}
-			<button
-				type="button"
-				title={icache.get('paused') ? messages.play : messages.pause}
-				aria-controls={icache.get('id')}
-				aria-label={icache.get('paused') ? messages.play : messages.pause}
-				classes={themedCss.playPause} onclick={togglePlay}
-			/>
+			{!menuOpen &&
+				<button
+					type="button"
+					title={get('paused') ? messages.play : messages.pause}
+					aria-controls={get('id')}
+					aria-label={get('paused') ? messages.play : messages.pause}
+					classes={themedCss.playPause} onclick={togglePlay}
+				/>
+			}
 		</div>
+
 		<div classes={themedCss.controls}>
 			<Slider
 				key="progress"
 				max={audio ? audio.duration : 100}
-				value={icache.get('currentTime')||0}
-				buffer={icache.get('buffer')||0}
+				value={get('currentTime')||0}
+				buffer={get('buffer')||0}
 				size="s"
-				onValue={setTime}
+				onValue={(n) => {
+					togglePlay();
+					setTime(n);
+				}}
 				classes={{
 					'@dojo/widgets/progress': { root: [themedCss.progress] }
 				}}
@@ -378,10 +462,10 @@ export const Audio = factory(function Audio({
 			<div classes={themedCss.row}>
 				<p classes={themedCss.caption}>
 					<span classes={themedCss.time}>
-						{formatTime(Math.floor(icache.get('currentTime')||0))}{smallViewport ? '' : ' '}
+						{formatTime(Math.floor(get('currentTime')||0))}{smallViewport ? '' : ' '}
 					</span>
 					<span classes={themedCss.duration}>
-						/{smallViewport ? '' : ' '}{formatTime(Math.floor(icache.get('duration')||0))}
+						/{smallViewport ? '' : ' '}{formatTime(Math.floor(get('duration')||0))}
 					</span>
 				</p>
 				<button
@@ -389,44 +473,46 @@ export const Audio = factory(function Audio({
 					type="button"
 					title={messages.speed}
 					aria-label={messages.speed}
-					classes={[themedCss.speedControl, icache.get('muted') && themedCss.muted]}
-					onclick={() => icache.set('speedControl', !icache.get('speedControl'))}
+					classes={[themedCss.speedControl, get('muted') && themedCss.muted]}
+					onclick={() => set('speedControl', !get('speedControl'))}
 				>
-					{icache.get('speed')}x
+					{get('speed')}x
 				</button>
 				<div classes={themedCss.volume}>
 					<Slider
 						key="volumeOrSpeed"
-						max={icache.get('speedControl') ? 2 : 1}
+						max={get('speedControl') ? 2 : 1}
 						step={0.1}
-						markType={icache.get('speedControl') ? 'dot' : void 0}
-						marks={icache.get('speedControl') ? {1:'|'} : void 0}
-						color={(icache.get('muted') || vol < 0.05) ? 'warning' : 'grey'}
+						markType={get('speedControl') ? 'dot' : void 0}
+						marks={get('speedControl') ? {1:'|'} : void 0}
+						color={(get('muted') || vol < 0.05) ? 'warning' : 'grey'}
 						value={
-							icache.get('speedControl') ?
-								icache.get('speed') :
-								(icache.get('muted') ? 0 : vol)
+							get('speedControl') ?
+								get('speed') :
+								(get('muted') ? 0 : vol)
 						}
 						onValue={(v) => {
-							if (icache.get('speedControl')) {
-								audio.playbackRate = icache.set('speed', Math.max(0.2,v))||1;
+							if (get('speedControl')) {
+								audio.playbackRate = set('speed', Math.max(0.2,v))||1;
 							} else {
 								if (vol >= 0.05) {
-									icache.set('muted', false, false);
+									set('muted', false, false);
 								}
-								audio.volume = icache.set('volume', v);
+								audio.volume = set('volume', v);
 							}
 						}}
 						size="s"
 					/>
-					{!icache.get('speedControl') &&
+					{!get('speedControl') &&
 						<Button
 							variant="flat"
 							size="xs"
 							onClick={toggleMute}
+							title={get('muted') ? messages.unmute : messages.mute}
+							aria={{label: get('muted') ? messages.unmute : messages.mute}}
 						>
 							<Icon type={
-								(icache.get('muted') || vol < 0.05) ? 'volumeMute' :
+								(get('muted') || vol < 0.05) ? 'volumeMute' :
 								(vol > 0.75 ? 'volumeHigh' : (vol > 0.3 ? 'volumeMedium' : 'volumeLow'))
 							} />
 						</Button>
@@ -441,17 +527,8 @@ export const Audio = factory(function Audio({
 
 export default Audio;
 /*
-	<button
-		tabIndex={0}
-		type="button"
-		title={icache.get('muted') ? messages.unmute : messages.mute}
-		aria-label={icache.get('muted') ? messages.unmute : messages.mute}
-		classes={[themedCss.mute, icache.get('muted') && themedCss.muted]}
-		onclick={toggleMute}
-	>
-
 <button onclick={() => {
-	icache.set('isPicInPic', true);
+	set('isPicInPic', true);
 	try {
 		const doc: any = document;
 		if (audio !== doc.pictureInPictureElement) {

@@ -3,13 +3,13 @@ import * as css from '../theme/material/radio.m.css';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import Checkbox, { CheckboxBaseProperties } from '../checkbox';
 
-export interface SwitchProperties extends CheckboxBaseProperties {
+export interface RadioProperties extends CheckboxBaseProperties {
 	/** The icon for the button: 'checkmark', 'dot' TODO
 	 * 'checkmark' by default for plain checkbox
 	 */
 	icon?: 'checkmark' | 'dot';
 }
-const factory = create().properties<SwitchProperties>()
+const factory = create().properties<RadioProperties>()
 	.children<RenderResult | undefined>();
 
 const myClasses = {
