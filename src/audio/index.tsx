@@ -255,7 +255,7 @@ export const Audio = factory(function Audio({
 			let i;
 			for (i = 0; i < l; i++) {
 				const {kind, label, language, mode} = audio.textTracks[i];
-				textTracks[kind] && textTracks[kind].set(`${kind}-${language}`, {
+				textTracks[kind] && textTracks[kind].set(`${kind}-${label}-${language}`, {
 					value: i, label, language, mode
 				});
 			}
@@ -264,7 +264,6 @@ export const Audio = factory(function Audio({
 				Number(!!textTracks.captions.size) + Number(!!textTracks.subtitles.size) +
 				Number(!!textTracks.descriptions.size) + Number(!!textTracks.chapters.size)
 			);
-			console.log('onloadedmetadata', Array.from(textTracks.captions.values()));
 			*/
 
 			trackMenu = textTracks &&
@@ -277,12 +276,15 @@ export const Audio = factory(function Audio({
 								vertical={true}
 								options={Array.from(textTracks[k].values())}
 								onValue={(i) => {
-									console.log('value', i, audio.textTracks[i].kind);
+
 									textTracks[audio.textTracks[i].kind].forEach((t: any) => {
 										audio.textTracks[t.value].mode = 'hidden';
+										console.log('hidden', audio.textTracks[t.value]);
 									});
-									if (i > -1) {
+
+									if (i > -1) { // i -1 = hide all
 										audio.textTracks[i].mode = 'showing';
+										console.log('showing', audio.textTracks[i]);
 									}
 								}}
 							>
