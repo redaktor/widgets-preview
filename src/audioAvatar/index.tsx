@@ -48,15 +48,18 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 		shape = 'circle',
 		variant = 'filled' as (keyof typeof buttonCss)
 	} = properties();
-	let { barColors } = properties();
 
 	const canvas = node.get('canvas');
+	const ctx = canvas && (canvas as HTMLCanvasElement).getContext('2d');
+
+	let { barColors } = properties();
 	if (!barColors) {
 		barColors = [
 			canvas && getComputedStyle(canvas).getPropertyValue('--m-800') || '#e03c05',
 			canvas && getComputedStyle(canvas).getPropertyValue('--m-500') || '#ff7a00'
 		];
 	}
+
 	const c = children();
 	const avatarStr = (s: string) => {
 		const w = words(s);
@@ -66,8 +69,6 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 	const content = !src && !!name ? avatarStr(name) :
 		(c.length === 1 ? c.map((c0) => typeof c0 === 'string' ? avatarStr(c0) : c0) : c);
 
-
-	const ctx = canvas && (canvas as HTMLCanvasElement).getContext('2d');
 	getOrSet('canVisualise', false, false);
 	getOrSet('animId', 0);
 	/**
@@ -184,7 +185,7 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
       !!ctx && ctx.lineTo(bLen * Math.cos(angle) + cx, bLen * Math.sin(angle) + cy);
       !!ctx && ctx.stroke();
     });
-		set('animId', requestAnimationFrame(paint), false)
+		!audio.paused && set('animId', requestAnimationFrame(paint), false)
 	}
 
 	if (!!audio) {
@@ -192,11 +193,13 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 			const audioCtx = get('audioCtx');
 			if (!audioCtx || audioCtx.state === 'closed') { return }
 			audioCtx.close();
-    	cancelAnimationFrame(get('animId')||0);
 			set('audioCtx',null,false);
 			set('canVisualise',false);
+    	cancelAnimationFrame(get('animId')||0);
 		}
 	  audio.addEventListener('canplay', setAnalyser);
+		audio.addEventListener('seeked', restart);
+		audio.addEventListener('ended', restart);
 		audio.addEventListener('play', () => {
 			const audioCtx = get('audioCtx');
 	    if (!audioCtx || !get('canVisualise')) { setAnalyser() }
@@ -212,8 +215,6 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 				cancelAnimationFrame(get('animId')||0);
 	    }
 		});
-		audio.addEventListener('seeked', restart);
-		audio.addEventListener('ended', restart);
 	}
 
 	return (<div

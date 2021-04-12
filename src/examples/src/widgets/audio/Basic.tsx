@@ -81,20 +81,23 @@ const exampleData: AudioProperties = {
 }
 
 const factory = create();
-const ogg = 'https://upload.wikimedia.org/wikipedia/commons/8/86/20090724NIHWiki.ogg';
-const mp3 = 'http://localhost:9999/sample.mp3';
-const vtt = 'http://localhost:9999/sample.vtt';
+const ogg = 'http://localhost:9999/sampleData/nihWikimedia.ogg';
+const mp3 = 'http://localhost:9999/sampleData/nihWikimedia.mp3';
+const vttEn = 'http://localhost:9999/sampleData/nihWikimedia_en.vtt';
+const vttDe = 'http://localhost:9999/sampleData/nihWikimedia_de.vtt';
+const vttEs = 'http://localhost:9999/sampleData/nihWikimedia_es.vtt';
+const vttChapters = 'http://localhost:9999/sampleData/nihWikimedia_CHA_en.vtt';
+const vtt = 'http://localhost:9999/sampleData/nihWikimedia_SUB_en.vtt';
 export default factory(function Basic() {
 	return (
 		<Example spaced={true}>
 			<div styles={{ width: '299px' }}>
 				<Audio {...exampleData} url={[ogg,mp3]}>
-          <track label="English" src={vtt} kind="subtitles" srclang="en" default />
-          <track label="English captions" src={vtt} kind="captions" srclang="en" />
-          <track label="Deutsche captions" src={vtt} kind="captions" srclang="de" />
-          <track label="Spanish captions" src={vtt} kind="captions" srclang="es" />
-          <track label="English chapters" src={vtt} kind="chapters" srclang="en" />
-          <track label="Deutsche Beschreibung" src={vtt} kind="descriptions" srclang="de" />
+          <track label="English captions" src={vttEn} kind="captions" srclang="en" default />
+          <track label="Deutsche Übersetzung" src={vttDe} kind="captions" srclang="de" />
+          <track label="Traducción Española" src={vttEs} kind="captions" srclang="en" />
+          <track label="English subtitles" src={vtt} kind="subtitles" srclang="es" />
+          <track label="Chapters" src={vttChapters} kind="chapters" srclang="en" />
         </Audio>
 			</div>
 		</Example>

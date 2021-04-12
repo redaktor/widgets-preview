@@ -276,7 +276,15 @@ export const Audio = factory(function Audio({
 								size="s"
 								vertical={true}
 								options={Array.from(textTracks[k].values())}
-								onValue={(value) => { console.log('standard', value); }}
+								onValue={(i) => {
+									console.log('value', i, audio.textTracks[i].kind);
+									textTracks[audio.textTracks[i].kind].forEach((t: any) => {
+										audio.textTracks[t.value].mode = 'hidden';
+									});
+									if (i > -1) {
+										audio.textTracks[i].mode = 'showing';
+									}
+								}}
 							>
 								{{
 									label: (messages as any)[`${k}Track`]
@@ -358,7 +366,7 @@ export const Audio = factory(function Audio({
 		onloadedmetadata: handleLoadedMetadata,
 		onloadeddata: handleLoadedData,
 		ontimeupdate: setTime,
-		onseeked: () => { setTimeout(togglePlay,1) },
+		onseeked: togglePlay,
 		crossOrigin: 'anonymous'
 	};
 
