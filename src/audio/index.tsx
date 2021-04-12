@@ -224,7 +224,7 @@ export const Audio = factory(function Audio({
   }
 
 	const handleDownload = () => {
-		/*
+		/* TODO - transkripts / WebVTT
   	fetch(url).then(res => res.blob()).then(blob => {
     	const element   = document.createElement('a');
     	const objectURL = URL.createObjectURL(blob);
@@ -259,12 +259,8 @@ export const Audio = factory(function Audio({
 					value: i, label, language, mode
 				});
 			}
-			/*
-			const btnCount = textTracks && (
-				Number(!!textTracks.captions.size) + Number(!!textTracks.subtitles.size) +
-				Number(!!textTracks.descriptions.size) + Number(!!textTracks.chapters.size)
-			);
-			*/
+
+			/* TODO sorting of languages: userLocale, Int locale, en, ...others  */
 
 			trackMenu = textTracks &&
 				<div key={`tracksMenu`} classes={themedCss.trackMenu}>
@@ -279,12 +275,10 @@ export const Audio = factory(function Audio({
 
 									textTracks[audio.textTracks[i].kind].forEach((t: any) => {
 										audio.textTracks[t.value].mode = 'hidden';
-										console.log('hidden', audio.textTracks[t.value]);
 									});
 
-									if (i > -1) { // i -1 = hide all
+									if (i > -1) { // TODO i -1 = hide all
 										audio.textTracks[i].mode = 'showing';
-										console.log('showing', audio.textTracks[i]);
 									}
 								}}
 							>
@@ -417,7 +411,7 @@ export const Audio = factory(function Audio({
 		aria-label="Audio Player"
 		role="region"
 	>
-		<Button onClick={() => { set('trackMenuOpen', !menuOpen) }}>C</Button>
+		<Button onClick={() => { set('trackMenuOpen', !menuOpen) }}>Captions</Button>
 		<div
 			key="media"
 			classes={[
