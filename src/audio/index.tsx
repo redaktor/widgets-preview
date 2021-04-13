@@ -380,6 +380,18 @@ export const Audio = factory(function Audio({
 		});
 		*/
 	}
+/*
+	const multiline = (s?: string, isSummary = false) => !s ? (void 0) : (
+		<p>
+			{s.split('\n').map((item) => (
+				<virtual>
+					{item}
+					<br />
+				</virtual>
+			))}
+		</p>
+	);
+*/
 	const sources = !!APo.url && !!APo.url.length && APo.url.map((_src) => {
 		if (typeof _src === 'object' && !!_src.href && !!_src.mediaType) {
 			return <source src={_src.href} type={_src.mediaType} />
@@ -525,6 +537,11 @@ export const Audio = factory(function Audio({
 			</div>
 		</div>
 		<AttributedTo {...APo} />
+		<div classes={themedCss.contentWrapper}>
+			{APo.summary && <Paged property="summary">
+				{ APo.summary.map((_summ) => <p classes={themedCss.summary}>{_summ}</p>) }
+			</Paged>}
+		</div>
 	</div>
 
 });

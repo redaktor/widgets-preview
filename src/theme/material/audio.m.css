@@ -70,7 +70,9 @@ video:picture-in-picture {
 }
 
 .audio,
-.name {
+.name,
+.summary,
+.content {
 	composes: m from './_typo.css';
 }
 .name {
@@ -284,6 +286,18 @@ video:picture-in-picture {
 }
 .play { }
 .pause { }
+
+
+.contentWrapper {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	max-width: 64ch;
+	padding: 0 var(--p) var(--line) var(--p);
+	order: 5;
+}
 
 .footer {
 

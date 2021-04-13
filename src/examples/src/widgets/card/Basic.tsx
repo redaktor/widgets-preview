@@ -62,12 +62,12 @@ const exampleData: any = {
   ​
   privacy: "private",
   published: "1m ago",
-  summary: "Article 10 Easy Ways To Make Tin Foil Hats Stronger. Proof That Cats Are Exactly What You Are Looking For",
+  summary: "10 Easy Ways To Make Tin Foil Hats Stronger.",
   ​
   topic: false,
   aspectRatio: "3:2",
   bookmark: { color: [149, 204, 13], name: "testbook" },
-  content: null,
+  content: "Article content, Proof That Cats Are Exactly What You Are Looking For",
   kicker: 'a kicker',​
 
   actionButtons: {}
@@ -100,6 +100,7 @@ const types = ['Article','Note','Audio','Document','Event','Image','Page',
 'Collection','OrderedCollection','CollectionPage','OrderedCollectionPage'];
 const cards = types.map((t) => {
 	const o = JSON.parse(JSON.stringify({...exampleData}));
+  console.log(o);
 	o.object.type = t;
 	if (t === 'Note' || t === 'Audio' || t === 'Image' || t === 'Video') {
 		o.kicker = null;

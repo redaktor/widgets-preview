@@ -71,7 +71,7 @@ const exampleData: AudioProperties = {
     type: "Person"
   }],
   name: ["The Government's Secret Campaign Against Cats","Special Episode","Super"],
-  summary: "Article 10 Easy Ways To Make Tin Foil Hats Stronger. Proof That Cats Are Exactly What You Are Looking For",
+  summary: ["10 Easy Ways To Make Tin Foil Hats Stronger. Proof That Cats Are Exactly What You Are Looking For","summary2"],
   image: {type: "Link", href: "card-photo-2-3.3G_muD46.jpg"},
   privacy: "public",
   published: "23m ago",

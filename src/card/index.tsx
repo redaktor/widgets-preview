@@ -193,7 +193,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 	/* Activity */
 	const { type: verb = 'Announce', published = 'just now' } = activity;
 	const _irreg: any = {leave:'left', read:'read', activity:'did', question:'asked'};
-	const _verb = lowerCase(verb);
+	const _verb = lowerCase(Array.isArray(verb) ? verb[0] : verb);
 	const cssVerb = _verb === 'delete' ? '_delete' : _verb;
 	const past = !_verb ? '•' : _irreg.hasOwnProperty(_verb) ? _irreg[_verb] : (
 		_verb.charAt(_verb.length-1) === 'e' ? `${_verb}d` : `${_verb}ed`
@@ -211,7 +211,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 
 	let { header, content: cContent, actionButtons, actionIcons } =
 		children()[0] || ({} as CardChildren);
-
+console.log(name, s, c, cContent, objectRest);
 /* TODO MULTIPLE ALLOVER FIXME */
 	const majorType = Array.isArray(type) ? type[0] : type;
 	const cssType = lowerCase(majorType);
@@ -236,8 +236,8 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 	);
 
 
-	const summary = multiline(s, true) || '';
-	const content = !cContent && c ? (multiline(c) || '') : cContent;
+	const summary = multiline(Array.isArray(s) ? s[0] : s, true) || '';
+	const content = !cContent && c ? (multiline(Array.isArray(c) ? c[0] : c) || '') : cContent;
 
 	/* TODO e.g. Document -> Note */
 	const bookmark: ColoredItem|null = b === true ? { name: '', color: [255,122,0] } :
@@ -253,7 +253,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 		(privacy === 'public' ? themedCss.publicPost :
 		(privacy === 'group' ? themedCss.groupPost : themedCss.privatePost));
 
-	const aspectRatioClass = cssType === 'audio' ? themedCss.m1by1 : 
+	const aspectRatioClass = cssType === 'audio' ? themedCss.m1by1 :
 		(aspectRatios[ar] ? aspectRatios[ar] : themedCss.m16by9);
 
 	const titleClass = { image: 1, audio: 1, video: 1, chat: 1 }.hasOwnProperty(cssType) ?
@@ -262,6 +262,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 
 
 	const renderObject = () => {
+		console.log(summary, cContent, content)
 		return <div classes={[
 		themedCss.object,
 		(themedCss as any)[cssType],

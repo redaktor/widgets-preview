@@ -18,6 +18,15 @@
 .prev {
 	margin-right: 4px;
 }
+.prev::after,
+.next::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: var(--touch-target-min, var(--line2, 32px));
+  left: 0;
+  top: calc(var(--touch-target-min, var(--line2, 32px)) * -0.25);
+}
 .prev:hover,
 .next:hover {
 	color: var(--ui-filled, #eee);
