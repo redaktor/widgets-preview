@@ -4,7 +4,9 @@
 	background-size: cover;
 	padding: 0 !important;
 }
-.smallViewport { }
+.mini { }
+.medium { }
+.large { }
 .menuOpen { }
 .trackMenu {
 	width: 100%;
@@ -71,9 +73,14 @@ video:picture-in-picture {
 
 .audio,
 .name,
-.summary,
-.content {
+.mediumTypo {
 	composes: m from './_typo.css';
+}
+.miniTypo{
+	composes: s from './_typo.css';
+}
+.largeTypo {
+	composes: l from './_typo.css';
 }
 .name {
 	font-weight: var(--weight-semibold, 500);
@@ -258,8 +265,8 @@ video:picture-in-picture {
 	margin: 0 0 0 calc(var(--grid-base) * 2);
 	padding: 0;
 }
-.smallViewport .mute,
-.smallViewport .speed {
+.mini .mute,
+.mini .speed {
 	margin: 0 0 0 var(--grid-base);
 }
 .mute.muted,
@@ -276,12 +283,12 @@ video:picture-in-picture {
 	justify-content: center;
 	align-items: flex-start;
 }
-.smallViewport .speedControl {
+.mini .speedControl {
 	z-index: 90;
 	justify-content: flex-end;
 	min-width: 16px;
 }
-.smallViewport .volume {
+.mini .volume {
 	min-width: var(--touch-target-min, var(--line2, 32px));
 }
 .play { }

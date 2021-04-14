@@ -2,8 +2,8 @@ import { tsx, create, node } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { uuid } from '@dojo/framework/core/util';
 import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
-import resize from '@dojo/framework/core/middleware/resize';
 import theme from '../middleware/theme';
+import breakpoints from '../middleware/breakpoint';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 /*
 import {
@@ -11,8 +11,8 @@ import {
 	createResourceMiddleware,
 	defaultFilter
 } from '@dojo/framework/core/middleware/resources';
-*/
 import focus from '@dojo/framework/core/middleware/focus';
+*/
 import i18n from '@dojo/framework/core/middleware/i18n';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Paged from '../paged';
@@ -160,15 +160,14 @@ const factory = create({
 	node,
 	i18n,
 	theme,
-	focus,
-	resize
+	breakpoints
 	/*, resource */
 })
 	.properties<AudioProperties>()
 	.children<AudioChildren | RenderResult | undefined>();
 
 export const Audio = factory(function Audio({
-	middleware: { icache, node, i18n, theme, focus, resize /*, resource */ },
+	middleware: { icache, node, i18n, theme, breakpoints /*, resource */ },
 	properties,
 	children
 }) {
@@ -199,14 +198,6 @@ export const Audio = factory(function Audio({
 	if (!get('paused') && get('fresh')) { set('fresh', false) }
 
 	const audio = (node.get('audio') as HTMLAudioElement);
-
-	const dim = resize.get('media');
-	const smallViewport = dim && dim.width < 300;
-	let mml = 0;
-	if (get('l')) {
-		const lh = ((dim && dim.height)||0) / get('l');
-		mml = (Math.max(0, Math.ceil(lh)) - lh);
-	}
 
   const togglePlay = (e?: Event) => {
 		e && e.preventDefault();
@@ -403,6 +394,13 @@ export const Audio = factory(function Audio({
 	});
 	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
 	const menuOpen = get('trackMenuOpen');
+
+	const {breakpoint: vp = '_m', contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
+	const lh = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
+	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
+	const typoClass = vp === '_xs' ? themedCss.miniTypo : (vp === '_l' || vp === '_xl' ?
+		themedCss.largeTypo : themedCss.mediumTypo);
+
 	return <div
 		key="root"
 		classes={[
@@ -414,7 +412,9 @@ export const Audio = factory(function Audio({
 			theme.elevated(ui),
 			theme.animated(themedCss),
 			get('paused') && themedCss.paused,
-			smallViewport && themedCss.smallViewport,
+			vp === '_xs' && themedCss.mini,
+			vp === '_s' || vp === '_m' && themedCss.medium,
+			vp === '_l' || vp === '_xl' && themedCss.large,
 			menuOpen && themedCss.menuOpen
 		]}
 		onMouseEnter={onMouseEnter && onMouseEnter(get('currentTime')||0)}
@@ -436,7 +436,7 @@ export const Audio = factory(function Audio({
 		>
 			{ menuOpen && get('trackMenu') }
 			<div classes={themedCss.audioAvatarWrapper}>
-				<AudioAvatar audioElement={audio} size={smallViewport ? 'l' : 'xl'}>SL</AudioAvatar>
+				<AudioAvatar audioElement={audio} size={vp === '_xs' ? 'l' : 'xl'}>SL</AudioAvatar>
 			</div>
 			<noscript>
 				<video controls={true} {...playerProps}>{sources}{children()}</video>
@@ -447,7 +447,7 @@ export const Audio = factory(function Audio({
 				<video key="audio" {...playerProps}>{sources}{children()}</video>
 			}
 			{!menuOpen && get('paused') && APo.name && <Paged property="name">
-				{ APo.name.map((_name, i) => <h5 key={`name${i}`} classes={themedCss.name}>{_name}</h5>) }
+				{APo.name.map((_name, i) => <h5 key={`name${i}`} classes={themedCss.name}>{_name}</h5>)}
 			</Paged>}
 			{!menuOpen &&
 				<button
@@ -478,10 +478,10 @@ export const Audio = factory(function Audio({
 			<div classes={themedCss.row}>
 				<p classes={themedCss.caption}>
 					<span classes={themedCss.time}>
-						{formatTime(Math.floor(get('currentTime')||0))}{smallViewport ? '' : ' '}
+						{formatTime(Math.floor(get('currentTime')||0))}{vp === '_xs' ? '' : ' '}
 					</span>
 					<span classes={themedCss.duration}>
-						/{smallViewport ? '' : ' '}{formatTime(Math.floor(get('duration')||0))}
+						/{vp === '_xs' ? '' : ' '}{formatTime(Math.floor(get('duration')||0))}
 					</span>
 				</p>
 				<button
@@ -539,7 +539,11 @@ export const Audio = factory(function Audio({
 		<AttributedTo {...APo} />
 		<div classes={themedCss.contentWrapper}>
 			{APo.summary && <Paged property="summary">
-				{ APo.summary.map((_summ) => <p classes={themedCss.summary}>{_summ}</p>) }
+				{ APo.summary.map((_summ) =>
+						<p classes={[themedCss.summary, typoClass]}>
+							{_summ}
+						</p>
+				)}
 			</Paged>}
 		</div>
 	</div>
