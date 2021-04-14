@@ -401,6 +401,10 @@ export const Audio = factory(function Audio({
 	const typoClass = vp === '_xs' ? themedCss.miniTypo : (vp === '_l' || vp === '_xl' ?
 		themedCss.largeTypo : themedCss.mediumTypo);
 
+const {contentRect: dimContentDetails = {height: 0}} = breakpoints.get('contentDetails')||{};
+const {contentRect: dimContent = {height: 0}} = breakpoints.get('content')||{};
+console.log(dimContentDetails.height, dimContent.height);
+
 	return <div
 		key="root"
 		classes={[
@@ -541,18 +545,21 @@ export const Audio = factory(function Audio({
 		</div>
 		<AttributedTo {...APo} />
 		<div classes={themedCss.contentWrapper}>
-			{APo.summary && <Paginated property="summary">
+			{APo.summary && <Paginated key="summary" property="summary">
 				{ APo.summary.map((_summary) =>
 						<p classes={[themedCss.summary, typoClass]}>
 							{_summary}
 						</p>
 				)}
 			</Paginated>}
-			{APo.content && APo.content.map((_content) =>
-				<p classes={[themedCss.content, typoClass]}>
-					{_content}
-				</p>
-			)}
+			{APo.content && <details key="contentDetails" classes={themedCss.contentDetails}>
+				<summary key="content" classes={themedCss.contentSummary}>
+					<p classes={[themedCss.content, typoClass]}>
+						<a href="#">Test</a>
+						{APo.content.map((_content) => <span>{_content} <hr /></span>)}
+					</p>
+				</summary>
+			</details>}
 		</div>
 	</div>
 

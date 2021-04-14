@@ -103,6 +103,19 @@ video:picture-in-picture {
   -webkit-line-clamp: 14;
   -webkit-box-orient: vertical;
 }
+
+.contentDetails[open] .content {
+	display: inline-block;
+	-webkit-line-clamp: none;
+}
+.contentSummary {
+  list-style: none;
+}
+.contentSummary::marker,
+.contentSummary::-webkit-details-marker {
+	display: none;
+}
+
 .mediaFresh .names {
 	--plr: calc(var(--line) * 2.5);
 	bottom: calc(var(--pt) + var(--line) + (var(--line) * var(--mml)));

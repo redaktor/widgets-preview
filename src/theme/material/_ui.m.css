@@ -333,6 +333,16 @@ p:not(.ui) > .ui.s {
 	vertical-align: baseline;
 }
 
+a {
+	color: var(--link,#6da7d1);
+}
+a:hover {
+	color: var(--link-hover,#7fb9e4);
+}
+a:active {
+	color: var(--link-active,#6fafdc);
+}
+
 /* Typo */
 .strongTypo {
 	font-weight: var(--weight-bold);

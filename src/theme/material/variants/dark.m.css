@@ -33,6 +33,9 @@
 	--kicker: #e53e8d;
 	--kicker-muted: #a40057;
 	--nut: #7a95a9;
+	--link: #33c3de;
+  --link-hover: #07daf8;
+  --link-active: #00f2f8;
 	--border: #444a52;
 	--border-muted: var(--full-black);
 	--border-hover: #525252;

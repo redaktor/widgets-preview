@@ -62,12 +62,6 @@
 	--color-vk: #4d7198;
 
 	/*--ui-focus            : var(--m-a400, #c30c70);*/
-	/* Links TODO FIXME states */
-	/*
-  --link                : var(--text-blue);
-  --link-hover          : var(--header-blue);
-  --link-active         : var(--text-green);
-	*/
 	/* special .underlined class ... */
 	--link-underline-hover: none;
 	--link-underline: none;
