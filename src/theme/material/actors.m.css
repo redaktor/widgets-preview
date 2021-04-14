@@ -76,13 +76,16 @@
 	display: flex;
 	position: relative;
 	align-items: baseline;
-	padding: 0 var(--p) 0 var(--p) !important;
 	box-sizing: border-box;
 	order: 3;
 	z-index: 3;
 }
+.root .attributions {
+	margin-bottom: 0px;
+	padding: 0px var(--p) 0px var(--p);
+}
 .attributions.hasAvatar {
-	padding: 0 var(--lineHalf) 0 var(--lineHalf) !important;
+	padding: 0px var(--lineHalf) 0px var(--lineHalf) !important;
 }
 .attributions[open] {
 	margin-bottom: var(--pt) !important;

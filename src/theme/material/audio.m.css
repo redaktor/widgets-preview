@@ -72,7 +72,6 @@ video:picture-in-picture {
 }
 
 .audio,
-.name,
 .mediumTypo {
 	composes: m from './_typo.css';
 }
@@ -82,8 +81,7 @@ video:picture-in-picture {
 .largeTypo {
 	composes: l from './_typo.css';
 }
-.name {
-	font-weight: var(--weight-semibold, 500);
+.names {
 	--plr: var(--line);
 	position: absolute;
 	bottom: 0px;
@@ -94,7 +92,18 @@ video:picture-in-picture {
 	box-shadow: var(--ui-dp-2);
 	z-index: 9;
 }
-.mediaFresh .name {
+.name {
+	font-weight: var(--weight-semibold, 500);
+}
+.summary { }
+.content {
+	composes: serif from './_typo.css';
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 14;
+  -webkit-box-orient: vertical;
+}
+.mediaFresh .names {
 	--plr: calc(var(--line) * 2.5);
 	bottom: calc(var(--pt) + var(--line) + (var(--line) * var(--mml)));
 }
@@ -125,7 +134,7 @@ video:picture-in-picture {
 }
 .mediaFresh {
 	border-radius: 50%;
-	margin-bottom: calc(var(--line) * var(--mml,0) - var(--line) - var(--pt));
+	margin-bottom: calc(var(--line) * var(--mml,0) - var(--line));
 }
 
 .mediaFresh ~ details:not(details[open]) > summary .avatar {

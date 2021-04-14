@@ -1,19 +1,22 @@
-.paged,
+.root,
 .pager {
   display: none;
 }
-.pager:checked + .paged {
-  display: inline-block;
+.pager:checked + .root {
+  display: grid;
+  grid-template-columns: auto var(--touch-target-min, var(--line2, 32px));
 }
 .prev,
 .next {
-	display: inline-block;
-	min-width: var(--touch-target-min, var(--line2, 32px));
-	margin: 0;
-	padding: 0;
-	text-align: center;
-	float: right;
-	cursor: pointer;
+  position: relative;
+  display: flex;
+  width: var(--touch-target-min, var(--line2, 32px));
+  margin: 0;
+  align-items: flex-end;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  padding-bottom: calc(var(--mb) + 3px);
 }
 .prev {
 	margin-right: 4px;

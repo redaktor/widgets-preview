@@ -15,7 +15,7 @@ import focus from '@dojo/framework/core/middleware/focus';
 */
 import i18n from '@dojo/framework/core/middleware/i18n';
 import { normalizeActivityPub } from '../common/activityPubUtil';
-import Paged from '../paged';
+import Paginated from '../paginated';
 import AttributedTo from '../attributedTo';
 import AudioAvatar from '../audioAvatar';
 import RadioGroup from '../radio-group';
@@ -446,9 +446,12 @@ export const Audio = factory(function Audio({
 				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :
 				<video key="audio" {...playerProps}>{sources}{children()}</video>
 			}
-			{!menuOpen && get('paused') && APo.name && <Paged property="name">
-				{APo.name.map((_name, i) => <h5 key={`name${i}`} classes={themedCss.name}>{_name}</h5>)}
-			</Paged>}
+			{!menuOpen && get('paused') && APo.name && <div classes={themedCss.names}>
+				<Paginated property="name">
+					{APo.name.map((_name, i) =>
+						<h5 key={`name${i}`} classes={[themedCss.name, typoClass]}>{_name}</h5>)}
+				</Paginated>
+			</div>}
 			{!menuOpen &&
 				<button
 					type="button"
@@ -538,13 +541,18 @@ export const Audio = factory(function Audio({
 		</div>
 		<AttributedTo {...APo} />
 		<div classes={themedCss.contentWrapper}>
-			{APo.summary && <Paged property="summary">
-				{ APo.summary.map((_summ) =>
+			{APo.summary && <Paginated property="summary">
+				{ APo.summary.map((_summary) =>
 						<p classes={[themedCss.summary, typoClass]}>
-							{_summ}
+							{_summary}
 						</p>
 				)}
-			</Paged>}
+			</Paginated>}
+			{APo.content && APo.content.map((_content) =>
+				<p classes={[themedCss.content, typoClass]}>
+					{_content}
+				</p>
+			)}
 		</div>
 	</div>
 
