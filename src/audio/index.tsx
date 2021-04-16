@@ -26,6 +26,8 @@ import bundle from './nls/Audio';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/audio.m.css';
+
+import MD from '../MD/';
 /*
 {
   "@context": "https://www.w3.org/ns/activitystreams",
@@ -401,10 +403,6 @@ export const Audio = factory(function Audio({
 	const typoClass = vp === '_xs' ? themedCss.miniTypo : (vp === '_l' || vp === '_xl' ?
 		themedCss.largeTypo : themedCss.mediumTypo);
 
-const {contentRect: dimContentDetails = {height: 0}} = breakpoints.get('contentDetails')||{};
-const {contentRect: dimContent = {height: 0}} = breakpoints.get('content')||{};
-console.log(dimContentDetails.height, dimContent.height);
-
 	return <div
 		key="root"
 		classes={[
@@ -544,6 +542,9 @@ console.log(dimContentDetails.height, dimContent.height);
 			</div>
 		</div>
 		<AttributedTo {...APo} />
+
+		<MD content={'# Hello, *world*!'} />
+
 		<div classes={themedCss.contentWrapper}>
 			{APo.summary && <Paginated key="summary" property="summary">
 				{ APo.summary.map((_summary) =>
