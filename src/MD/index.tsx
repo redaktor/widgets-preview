@@ -2,8 +2,8 @@ import { create, tsx } from '@dojo/framework/core/vdom';
 import * as unified from 'unified';
 import * as parse from 'remark-parse';
 import * as remarkRehype from 'remark-rehype';
-import * as remarkGFM from 'remark-gfm';
 
+import remarkGFM from './gfm';
 import filter from './rehypeFilter';
 import childrenToDojo from './astToDojo';
 // @ts-ignore remove when typed
