@@ -66,7 +66,11 @@ export const MD = factory(function MD({ properties, id, children }) {
     throw new TypeError('Expected a `root` node')
   }
 
-	const options = { ...properties(), children: content };
+	const options = {
+		linkTarget: '_blank',
+		...properties(),
+		children: content
+	};
 
   return classes ?
   <div classes={classes}>

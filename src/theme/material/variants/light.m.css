@@ -41,6 +41,9 @@
 	--link: #00b1cc;
   --link-hover: #07daf8;
   --link-active: #00f2f8;
+	--mention: #339985;
+  --mention-hover: #56ebaf;
+  --mention-active: #83ffd5;
 	--border: #adadad;
 	--border-muted: #e7e6e2;
 	--border-hover: #e0e0e0;

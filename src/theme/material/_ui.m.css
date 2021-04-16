@@ -342,6 +342,16 @@ a:hover {
 a:active {
 	color: var(--link-active,#6fafdc);
 }
+a[rel~=contact] {
+	color: var(--mention,#4db09b);
+}
+a[rel~=contact]:hover {
+	color: var(--mention-hover,#56ebaf);
+}
+a[rel~=contact]:active {
+	color: var(--mention-active,#83ffd5);
+}
+/*4db09b 56ebaf 83ffd5*/
 
 /* Typo */
 .strongTypo {

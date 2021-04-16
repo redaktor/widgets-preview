@@ -1,4 +1,5 @@
 import { tsx, v } from '@dojo/framework/core/vdom';
+import { MDProperties } from './';
 const svg = require('property-information/svg');
 const find = require('property-information/find');
 const spaces = require('space-separated-tokens');
@@ -44,7 +45,7 @@ interface Schema {
   space?: string;
 }
 interface Context {
-  options: any;
+  options: MDProperties;
   schema: Schema;
   listDepth: number;
 }
@@ -166,22 +167,26 @@ export default function childrenToDojo(context: Context, node: any): any[] {
     child = node.children[childIndex];
 
     if (child.type === 'element') {
-
-      /* Mentions: ActivityPub like handles (inline) */
-      if (isHandle(child, childIndex)) {
-        if (!!children[childIndex-1]) {
-          children[childIndex-1] = children[childIndex-1].slice(0, -1);
+      if (child.tagName === 'a') {
+        child.properties.title = !!child.properties.title ? child.properties.title :
+          child.properties.href;
+        child.properties.rel = 'noopener noreferrer';
+        /* Mentions: ActivityPub like handles (inline) */
+        if (isHandle(child, childIndex)) {
+          child.properties.rel += ' contact';
+          if (!!children[childIndex-1]) {
+            children[childIndex-1] = children[childIndex-1].slice(0, -1);
+          }
+          if (typeof child.children[0].value === 'string') {
+            child.children[0].value = `@${child.children[0].value}`;
+          }
+          if (typeof child.properties.href === 'string' && child.properties.href.indexOf('mailto:') === 0) {
+            // TODO WEBFINGER for client and replace by propper URL
+            child.properties.href = child.properties.href.replace('mailto:','https://');
+          }
+          // console.log(child, children[childIndex-1]);
         }
-        if (typeof child.children[0].value === 'string') {
-          child.children[0].value = `@${child.children[0].value}`;
-        }
-        if (typeof child.properties.href === 'string' && child.properties.href.indexOf('mailto:') === 0) {
-          // TODO WEBFINGER for client and replace by propper URL
-          child.properties.href = child.properties.href.replace('mailto:','https://');
-        }
-        // console.log(child, children[childIndex-1]);
       }
-
       children.push(toDojo(context, child, childIndex, node))
     } else if (child.type === 'text') {
       children.push(child.value)
@@ -199,7 +204,7 @@ export default function childrenToDojo(context: Context, node: any): any[] {
  * @param {number} index
  * @param {Element|Root} parent
  */
-export function toDojo(context: any, node: any, index: number, parent: any) {
+export function toDojo(context: Context, node: any, index: number, parent: any) {
   const options = context.options;
   const parentSchema = context.schema;
   const name = node.tagName;
@@ -243,13 +248,7 @@ export function toDojo(context: any, node: any, index: number, parent: any) {
       ? options.components[name]
       : name
   const basic = typeof component === 'string' || component === <virtual />
-/* TODO
-  if (!ReactIs.isValidElementType(component)) {
-    throw new TypeError(
-      `Component for name \`${name}\` not defined or is not renderable`
-    )
-  }
-*/
+
   properties.key = [
     name,
     position.start.line,
