@@ -114,6 +114,7 @@
     "prop-types": "^15.7.2",
     "property-information": "^5.0.0",
     "remark-parse": "^9.0.0",
+    "remark-gfm": "^1.0.0",
     "remark-rehype": "^8.0.0",
     "space-separated-tokens": "^1.1.0",
     "style-to-object": "^0.3.0",

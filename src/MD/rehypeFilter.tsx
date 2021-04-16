@@ -34,20 +34,12 @@ export default function rehypeFilter(options: any) {
     ? transform
     : undefined
 
-  function transform(tree: any /* Root */) {
+  function transform(tree: any /*Root*/) {
     visit(tree, 'element', onelement)
   }
 
-  /**
-   * @param {Element} node
-   * @param {number} index
-   * @param {Element|Root} parent
-   * @returns {number|void}
-   */
-  function onelement(node: any, index: number, parent: any) {
-    /** @type {boolean} */
-    let remove;
-
+  function onelement(node: any /*node*/, index: number, parent: any /*Element|Root*/) {
+    let remove = false;
     if (options.allowedElements) {
       remove = !options.allowedElements.includes(node.tagName)
     } else if (options.disallowedElements) {

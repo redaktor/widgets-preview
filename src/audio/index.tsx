@@ -543,21 +543,18 @@ export const Audio = factory(function Audio({
 		</div>
 		<AttributedTo {...APo} />
 
-		<MD content={'# Hello, *world*!'} />
-
 		<div classes={themedCss.contentWrapper}>
 			{APo.summary && <Paginated key="summary" property="summary">
 				{ APo.summary.map((_summary) =>
 						<p classes={[themedCss.summary, typoClass]}>
-							{_summary}
+							<MD content={_summary} />
 						</p>
 				)}
 			</Paginated>}
 			{APo.content && <details key="contentDetails" classes={themedCss.contentDetails}>
 				<summary key="content" classes={themedCss.contentSummary}>
 					<p classes={[themedCss.content, typoClass]}>
-						<a href="#">Test</a>
-						{APo.content.map((_content) => <span>{_content} <hr /></span>)}
+						{APo.content.map((_content) => <span><MD content={_content} /><hr /></span>)}
 					</p>
 				</summary>
 			</details>}

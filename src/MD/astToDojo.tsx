@@ -83,7 +83,6 @@ interface Context {
  * @property {Element} node
  * @property {string} key
  * @property {ReactNode[]} children
- * @property {Position?} [sourcePosition] Passed when `options.rawSourcePos` is given
  * @property {number} [index] Passed when `options.includeElementIndex` is given
  * @property {number} [siblingCount] Passed when `options.includeElementIndex` is given
  *
@@ -140,8 +139,6 @@ interface Context {
 
 /**
  * @typedef {Object} TransformOptions
- * @property {boolean} [sourcePos=false]
- * @property {boolean} [rawSourcePos=false]
  * @property {boolean} [skipHtml=false]
  * @property {boolean} [includeElementIndex=false]
  * @property {false|TransformLink} [transformLinkUri]
@@ -310,14 +307,6 @@ export function toDojo(context: any, node: any, index: number, parent: any) {
     properties.isHeader = Boolean(parent.tagName === 'thead')
   }
 
-  // If `sourcePos` is given, pass source information (line/column info from markdown source).
-  if (options.sourcePos) {
-    properties['data-sourcepos'] = flattenPosition(position)
-  }
-
-  if (!basic && options.rawSourcePos) {
-    properties.sourcePosition = node.position
-  }
 
   // If `includeElementIndex` is given, pass node index info to components.
   if (!basic && options.includeElementIndex) {
@@ -414,18 +403,4 @@ function parseStyle(value: string) {
 
 function styleReplacer(_: any, $1: string) {
   return $1.toUpperCase()
-}
-
-function flattenPosition(pos: any) {
-  return [
-    pos.start.line,
-    ':',
-    pos.start.column,
-    '-',
-    pos.end.line,
-    ':',
-    pos.end.column
-  ]
-    .map((d) => String(d))
-    .join('')
 }
