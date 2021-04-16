@@ -154,13 +154,34 @@ const own = {}.hasOwnProperty
  * @param {Element|Root} node
  */
 export default function childrenToDojo(context: Context, node: any): any[] {
-  const children = [];
+  const children: any[] = [];
   let childIndex = -1;
   let child;
 
+  const isHandle = (c: any, i: number) =>
+    (c.tagName === 'a' && !!i && node.children[i-1] && node.children[i-1].type === 'text' &&
+      node.children[i-1].value && node.children[i-1].value.slice(-1) === '@');
+
   while (++childIndex < node.children.length) {
     child = node.children[childIndex];
+
     if (child.type === 'element') {
+
+      /* Mentions: ActivityPub like handles (inline) */
+      if (isHandle(child, childIndex)) {
+        if (!!children[childIndex-1]) {
+          children[childIndex-1] = children[childIndex-1].slice(0, -1);
+        }
+        if (typeof child.children[0].value === 'string') {
+          child.children[0].value = `@${child.children[0].value}`;
+        }
+        if (typeof child.properties.href === 'string' && child.properties.href.indexOf('mailto:') === 0) {
+          // TODO WEBFINGER for client and replace by propper URL
+          child.properties.href = child.properties.href.replace('mailto:','https://');
+        }
+        // console.log(child, children[childIndex-1]);
+      }
+
       children.push(toDojo(context, child, childIndex, node))
     } else if (child.type === 'text') {
       children.push(child.value)

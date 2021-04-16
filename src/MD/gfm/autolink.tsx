@@ -27,10 +27,13 @@ let code = 48;
 while (code < 123) {
   text[code] = emailAutolink;
   code++;
-  // Jump from `:` -> `A`
-  if (code === 58) { code = 65 }
-  // Jump from `[` -> `a`
-  else if (code === 91) { code = 97 }
+  if (code === 58) {
+    // Jump from `:` -> `A`
+    code = 65
+  } else if (code === 91) {
+    // Jump from `[` -> `a`
+    code = 97
+  }
 }
 // `+`
 text[43] = emailAutolink;
