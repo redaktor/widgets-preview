@@ -96,15 +96,18 @@ video:picture-in-picture {
 	font-weight: var(--weight-semibold, 500);
 }
 .summary { }
+
 .content {
 	composes: serif from './_typo.css';
   display: -webkit-box;
   overflow: hidden;
   -webkit-line-clamp: 14;
   -webkit-box-orient: vertical;
+	/* TODO only needed for Safari 13/14 */
+	height: calc(var(--line) * 14 + var(--pt));
 }
-
 .contentDetails[open] .content {
+	height: auto;
 	display: inline-block;
 	-webkit-line-clamp: none;
 }

@@ -553,9 +553,9 @@ export const Audio = factory(function Audio({
 			</Paginated>}
 			{APo.content && <details key="contentDetails" classes={themedCss.contentDetails}>
 				<summary key="content" classes={themedCss.contentSummary}>
-					<p classes={[themedCss.content, typoClass]}>
+					<div classes={[themedCss.content, typoClass]}>
 						{APo.content.map((_content) => <span><MD content={_content} /><hr /></span>)}
-					</p>
+					</div>
 				</summary>
 			</details>}
 		</div>
