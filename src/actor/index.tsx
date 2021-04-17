@@ -102,22 +102,22 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 		]}
 		open={open}
 		>
-			<summary
-				classes={themedCss.summary}
-				onclick={() => icache.set('open', !icache.get('open'))}
-			>
-				<span classes={themedCss.avatar}>{avatar}</span>
-				<div classes={themedCss.metaWrapper}>
-					{petName ?
-						<h2 classes={themedCss.petname}>{petName}</h2> :
-						(icache.get('preferredUsername') ?
-							<h5 classes={themedCss.actorName}>{icache.get('preferredUsername')}</h5> :
-							''
-						)
-					}
-					{byline && <span>{byline}</span>}
+			<summary onclick={() => icache.set('open', !icache.get('open'))} >
+				<div classes={themedCss.summary}>
+					<span classes={themedCss.avatar}>{avatar}</span>
+					<div classes={themedCss.metaWrapper}>
+						{petName ?
+							<h2 classes={themedCss.petname}>{petName}</h2> :
+							(icache.get('preferredUsername') ?
+								<h5 classes={themedCss.actorName}>{icache.get('preferredUsername')}</h5> :
+								''
+							)
+						}
+						{byline && <span>{byline}</span>}
+					</div>
 				</div>
 			</summary>
+
 			{handle ? <span classes={themedCss.handle}>{handle}</span> : ''}
 			{summary && icache.get('open') && !icache.get('edgeNamesVisible') &&
 				<p classes={[themedCss.responsiveTypo, themedCss.actorDetails]}>

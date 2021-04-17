@@ -95,8 +95,18 @@ video:picture-in-picture {
 .name {
 	font-weight: var(--weight-semibold, 500);
 }
-.summary { }
+.root .summary {
+	padding: 0;
+}
 
+.contentMoreInput {
+	display: none;
+}
+.contentMoreInput:checked + .content {
+	display: inline-block;
+	-webkit-line-clamp: unset;
+	height: auto;
+}
 .content {
 	composes: serif from './_typo.css';
   display: -webkit-box;
@@ -106,19 +116,26 @@ video:picture-in-picture {
 	/* TODO only needed for Safari 13/14 */
 	height: calc(var(--line) * 14 + var(--pt));
 }
-.contentDetails[open] .content {
-	height: auto;
-	display: inline-block;
-	-webkit-line-clamp: none;
+.root .more {
+	cursor: pointer;
+	padding: 0;
+	margin: 0 1ch 0 0;
+	font-size: inherit;
+	font-weight: inherit;
 }
-.contentSummary {
-  list-style: none;
+.more::before {
+	content: '\f078';
+	font-family: 'redaktor' !important;
 }
-.contentSummary::marker,
-.contentSummary::-webkit-details-marker {
-	display: none;
+.contentMoreInput:checked + .content + label .more::before {
+	content: '\f077';
 }
-
+.more::after {
+	content: '';
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
 .mediaFresh .names {
 	--plr: calc(var(--line) * 2.5);
 	bottom: calc(var(--pt) + var(--line) + (var(--line) * var(--mml)));

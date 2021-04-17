@@ -48,6 +48,8 @@ export interface ButtonProperties extends ThemeProperties {
 	value?: string;
 	/** `id` set on the root button DOM node */
 	widgetId?: string;
+	/** labelFor forces a label element with the for="" attribute and role="button" */
+	labelFor?: string;
 }
 /* We make sure that the event has offsetX and offsetY
 // (some Pointer Events polyfills do not)
@@ -87,6 +89,7 @@ export const Button = factory(function Button({
 
 	const {
 		aria = {},
+		labelFor,
 		animated = true,
 		group,
 		responsive,
@@ -108,52 +111,47 @@ export const Button = factory(function Button({
 	const themedCss = theme.classes(css);
 	const idBase = widgetId || `button-${id}`;
 
-	return (
-		<button
-			key="root"
-			classes={[
-				theme.variant(),
-				themedCss.root,
-				theme.shaped(themedCss),
-				theme.sized(ui),
-				theme.colored(colors),
-				theme.elevated(ui),
-				theme.animated(themedCss),
-				group ? themedCss.group : theme.spaced(ui),
-				responsive || group ? themedCss.responsive : null,
-				disabled ? themedCss.disabled : null,
-				pressed ? themedCss.pressed : null
-			]}
-			disabled={disabled}
-			id={idBase}
-			focus={focus.shouldFocus()}
-			name={name}
-			title={title}
-			type={type}
-			value={value}
-			onblur={() => onBlur && onBlur()}
-			onclick={(event: MouseEvent) => {
-				event.stopPropagation();
-				onClick && onClick();
-			}}
-			onfocus={() => onFocus && onFocus()}
-			onpointerenter={() => onOver && onOver()}
-			onpointerleave={() => onOut && onOut()}
-			onpointerdown={(event: PointerEvent) => {
-				// TODO: not fired in Safari 12
-				event.stopPropagation();
-				const devs: PointerDevices = !animated ? [] :
-					(Array.isArray(animated) ? animated : devicesAll);
-				const evt = setClickDimensions(event, devs, dimensions.get('root'));
-				return onDown && onDown(evt)
-			}}
-			onpointerup={() => onUp && onUp()}
-			onanimationend="this.blur()"
-			{...formatAriaProperties(aria)}
-			aria-pressed={typeof pressed === 'boolean' ? (pressed ? 'true' : 'false') : undefined}
-		>
-			{children()}
-		</button>
+	aria.pressed = typeof pressed === 'boolean' ? (pressed ? 'true' : 'false') : null;
+	const buttonProps = {
+		classes: [
+			theme.variant(),
+			themedCss.root,
+			theme.shaped(themedCss),
+			theme.sized(ui),
+			theme.colored(colors),
+			theme.elevated(ui),
+			theme.animated(themedCss),
+			group ? themedCss.group : theme.spaced(ui),
+			responsive || group ? themedCss.responsive : null,
+			disabled ? themedCss.disabled : null,
+			pressed ? themedCss.pressed : null
+		],
+		id: idBase, name, title, type, value, disabled,
+		focus: focus.shouldFocus(),
+		onblur: () => onBlur && onBlur(),
+		onclick: (event: MouseEvent) => {
+			event.stopPropagation();
+			onClick && onClick();
+		},
+		onfocus: () => onFocus && onFocus(),
+		onpointerenter: () => onOver && onOver(),
+		onpointerleave: () => onOut && onOut(),
+		onpointerdown: (event: PointerEvent) => {
+			// TODO: not fired in Safari 12
+			event.stopPropagation();
+			const devs: PointerDevices = !animated ? [] :
+				(Array.isArray(animated) ? animated : devicesAll);
+			const evt = setClickDimensions(event, devs, dimensions.get('root'));
+			return onDown && onDown(evt)
+		},
+		onpointerup: () => onUp && onUp(),
+		onanimationend: "this.blur()",
+		...formatAriaProperties(aria)
+	}
+
+	return (labelFor ?
+		<label role="button" for={labelFor} key="root" {...buttonProps}>{children()}</label> :
+		<button key="root" {...buttonProps}>{children()}</button>
 	);
 });
 

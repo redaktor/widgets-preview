@@ -86,7 +86,7 @@ i.icon {
 	content: 'f';
 }
 .unfollow:before {
-  content: "\e901";
+  content: '\e901';
 }
 /* ActivityPub Announce or 'share' icon */
 .announce::before,
@@ -94,21 +94,21 @@ i.icon {
 	content: 'a';
 }
 .announced:before {
-  content: "\e902";
+  content: '\e902';
 }
 /* ActivityPub Like icon */
 .like::before {
 	content: 'l';
 }
 .likeAlt:before {
-  content: "\e903";
+  content: '\e903';
 }
 /* ActivityPub DisLike (if liked already) icon */
 .dislike::before {
 	content: 'h';
 }
 .dislikeAlt:before {
-  content: "\e904";
+  content: '\e904';
 }
 /* ActivityPub Create icon */
 .create::before {
@@ -246,11 +246,11 @@ i.icon {
 }
 /* ActivityPub Mention Link @ icon */
 .mention:before {
-  content: "\e905";
+  content: '\e905';
 }
 /* External Links icon */
 .linkExt:before {
-  content: "\e906";
+  content: '\e906';
 }
 /* Globe icon */
 .globe::before {
@@ -273,7 +273,7 @@ i.icon {
 }
 /* Closed (groups, instances) icon */
 .closed:before {
-  content: "\e907";
+  content: '\e907';
 }
 /* Bookmark icon */
 .bookmark::before {
@@ -282,7 +282,7 @@ i.icon {
 }
 /* Topic icon */
 .topic:before {
-  content: "\f127";
+  content: '\f127';
 }
 /* Chat icon */
 .chat::before {
@@ -294,7 +294,7 @@ i.icon {
 }
 /* Code inline icon */
 .codeInline:before {
-  content: "\e908";
+  content: '\e908';
 }
 
 /* Follower States */
@@ -342,46 +342,46 @@ i.icon {
 }
 
 .mapOSM span:nth-child(1):before {
-  content: "\2f";
+  content: '\2f';
   color: rgb(0, 0, 0);
 }
 .mapOSM span:nth-child(2):before {
-  content: "\3a";
+  content: '\3a';
   margin-left: -1.1455078125em;
   color: rgb(204, 204, 204);
 }
 .mapOSM span:nth-child(3):before {
-  content: "\3d";
+  content: '\3d';
   margin-left: -1.1455078125em;
   color: rgb(204, 204, 204);
 }
 .mapOSM span:nth-child(4):before {
-  content: "\42";
+  content: '\42';
   margin-left: -1.1455078125em;
   color: rgb(0, 0, 0);
 }
 .mapOSM span:nth-child(5):before {
-  content: "\44";
+  content: '\44';
   margin-left: -1.1455078125em;
   color: rgb(0, 0, 0);
 }
 .mapOSM span:nth-child(6):before {
-  content: "\46";
+  content: '\46';
   margin-left: -1.1455078125em;
   color: rgb(204, 204, 204);
 }
 .mapOSM span:nth-child(7):before {
-  content: "\48";
+  content: '\48';
   margin-left: -1.1455078125em;
   color: rgb(26, 23, 27);
 }
 .mapOSM span:nth-child(8):before {
-  content: "\4a";
+  content: '\4a';
   margin-left: -1.1455078125em;
   color: rgb(0, 0, 0);
 }
 .mapOSM span:nth-child(9):before {
-  content: "\4b";
+  content: '\4b';
   margin-left: -1.1455078125em;
   color: rgb(0, 0, 0);
 }
@@ -390,23 +390,23 @@ i.icon {
 }
 .inReplyTo::before,
 .comment:before {
-  content: "\e909";
+  content: '\e909';
 }
 .reply:before {
-  content: "\e90a";
+  content: '\e90a';
 }
 .announceSystem::before,
 .shareSystem::before {
 	content: 'z';
 }
 .login:before {
-  content: "(";
+  content: '(';
 }
 .logout:before {
-  content: ")";
+  content: ')';
 }
 .trending:before {
-  content: "#";
+  content: '#';
 }
 .order::before {
 	content: ',';
@@ -415,64 +415,64 @@ i.icon {
 	content: '?';
 }
 .bullhorn:before {
-  content: "\e91a";
+  content: '\e91a';
 }
 .bell:before {
-  content: "\e951";
+  content: '\e951';
 }
 .bellMuted:before {
-  content: "\e90b";
+  content: '\e90b';
 }
 .bellStrong:before {
-  content: "\e90c";
+  content: '\e90c';
 }
 .calendar:before {
-  content: "\e953";
+  content: '\e953';
 }
 .pin:before {
-  content: "\e90d";
+  content: '\e90d';
 }
 .display:before,
 .desktop:before {
-  content: "\e956";
+  content: '\e956';
 }
 .mobile:before {
-  content: "\e958";
+  content: '\e958';
 }
 .tablet:before {
-  content: "\e95a";
+  content: '\e95a';
 }
 .undo:before {
-  content: "\e965";
+  content: '\e965';
 }
 .redo:before {
-  content: "\e966";
+  content: '\e966';
 }
 .refresh:before {
-  content: "\e90e";
+  content: '\e90e';
 }
 .enlarge:before {
-  content: "\e90f";
+  content: '\e90f';
 }
 .shrink:before {
-  content: "\e910";
+  content: '\e910';
 }
 .download:before {
-  content: "\e911";
+  content: '\e911';
 }
 .upload:before {
-  content: "\e912";
+  content: '\e912';
 }
 /* A clock icon */
 .clock:before {
 	content: '\e94e';
 }
 .timezone:before {
-  content: "\e913";
+  content: '\e913';
 }
 .history:before,
 .timing:before {
-  content: "\e914";
+  content: '\e914';
 }
 
 /* A down icon */
@@ -505,7 +505,7 @@ i.icon {
 }
 /* A cancel icon */
 .cancel:before {
-  content: "\ea0d";
+  content: '\ea0d';
 }
 /* A plus icon */
 .plus:before {
@@ -533,7 +533,7 @@ i.icon {
 }
 /* An admin wrench icon */
 .admin:before {
-  content: "\e915";
+  content: '\e915';
 }
 /* An alert icon */
 .alert:before {
@@ -561,7 +561,7 @@ i.icon {
 	content: '\f040';
 }
 .edited:before {
-  content: "\e917";
+  content: '\e917';
 }
 /* A date icon */
 .date:before {
@@ -599,116 +599,116 @@ i.icon {
 }
 
 .moreIcon:before {
-  content: "\26";
+  content: '\26';
 }
 .trash:before,
 .bin:before {
-  content: "\e918";
+  content: '\e918';
 }
 .lab:before {
-  content: "\e919";
+  content: '\e919';
 }
 .pLeft:before {
-  content: "\e91b";
+  content: '\e91b';
 }
 .pCenter:before {
-  content: "\e91c";
+  content: '\e91c';
 }
 .pJustify:before {
-  content: "\e91d";
+  content: '\e91d';
 }
 .pRight:before {
-  content: "\e91e";
+  content: '\e91e';
 }
 .indentDecrease:before {
-  content: "\e91f";
+  content: '\e91f';
 }
 .indentIncrease:before {
-  content: "\e920";
+  content: '\e920';
 }
 .grid:before {
-  content: "\e921";
+  content: '\e921';
 }
 .flex:before {
-  content: "\e922";
+  content: '\e922';
 }
 .order:before {
-  content: "\2c";
+  content: '\2c';
 }
 .ol:before {
-  content: "\e923";
+  content: '\e923';
 }
 .ul:before {
-  content: "\e924";
+  content: '\e924';
 }
 .filter:before {
-  content: "\e925";
+  content: '\e925';
 }
 .sortAmountDesc:before {
-  content: "\e926";
+  content: '\e926';
 }
 .sortAmountAsc:before {
-  content: "\e927";
+  content: '\e927';
 }
 .sortAlphaAsc:before {
-  content: "\e928";
+  content: '\e928';
 }
 .sortAlphaDesc:before {
-  content: "\e929";
+  content: '\e929';
 }
 .sortNumericAsc:before {
-  content: "\e92b";
+  content: '\e92b';
 }
 .sortNumericDesc:before {
-  content: "\e92a";
+  content: '\e92a';
 }
 .zoomIn:before {
-  content: "\e92c";
+  content: '\e92c';
 }
 .zoomOut:before {
-  content: "\e92d";
+  content: '\e92d';
 }
 .play:before {
-  content: "\e92e";
+  content: '\e92e';
 }
 .pause:before {
-  content: "\e92f";
+  content: '\e92f';
 }
 .mic:before {
-  content: "\e930";
+  content: '\e930';
 }
 .volumeMute:before {
-  content: "\e931";
+  content: '\e931';
 }
 .volumeLow:before {
-  content: "\e932";
+  content: '\e932';
 }
 .volumeMedium:before {
-  content: "\e933";
+  content: '\e933';
 }
 .volumeHigh:before {
-  content: "\e934";
+  content: '\e934';
 }
 .eyedropper:before {
-  content: "\e935";
+  content: '\e935';
 }
 .keyboard:before {
-  content: "\e936";
+  content: '\e936';
 }
 .headline:before {
-  content: "\e937";
+  content: '\e937';
 }
 .bold:before {
-  content: "\e938";
+  content: '\e938';
 }
 .italic:before {
-  content: "\e939";
+  content: '\e939';
 }
 .quote:before {
-  content: "\e93a";
+  content: '\e93a';
 }
 .quoteAll:before {
-  content: "\e93b";
+  content: '\e93b';
 }
 /* 'Delete' = 'delete'
 'Follow' = 2 actors

@@ -402,6 +402,7 @@ export const Audio = factory(function Audio({
 	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
 	const typoClass = vp === '_xs' ? themedCss.miniTypo : (vp === '_l' || vp === '_xl' ?
 		themedCss.largeTypo : themedCss.mediumTypo);
+	const contentID = uuid();
 
 	return <div
 		key="root"
@@ -425,7 +426,7 @@ export const Audio = factory(function Audio({
 		aria-label="Audio Player"
 		role="region"
 	>
-		<Button onClick={() => { set('trackMenuOpen', !menuOpen) }}>Captions</Button>
+		<Button variant="flat" onClick={() => { set('trackMenuOpen', !menuOpen) }}>Captions</Button>
 		<div
 			key="media"
 			classes={[
@@ -546,18 +547,19 @@ export const Audio = factory(function Audio({
 		<div classes={themedCss.contentWrapper}>
 			{APo.summary && <Paginated key="summary" property="summary">
 				{ APo.summary.map((_summary) =>
-						<p classes={[themedCss.summary, typoClass]}>
+						<div classes={[themedCss.summary, typoClass]}>
 							<MD content={_summary} />
-						</p>
+						</div>
 				)}
 			</Paginated>}
-			{APo.content && <details key="contentDetails" classes={themedCss.contentDetails}>
-				<summary key="content" classes={themedCss.contentSummary}>
-					<div classes={[themedCss.content, typoClass]}>
-						{APo.content.map((_content) => <span><MD content={_content} /><hr /></span>)}
-					</div>
-				</summary>
-			</details>}
+			{APo.content && <virtual>
+				<input id={contentID} type="checkbox" key="contentDetails" classes={themedCss.contentMoreInput} />
+				<div classes={[themedCss.content, typoClass]}>
+					{APo.content.map((_content) => <virtual><MD content={_content} /><hr /></virtual>)}
+				</div>
+				<Button labelFor={contentID} size="s" variant="flat"><span classes={themedCss.more} />read more</Button>
+			</virtual>}
+			<p>Test</p>
 		</div>
 	</div>
 
