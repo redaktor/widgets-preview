@@ -58,6 +58,7 @@ import Map from '@dojo/widgets/map';
     type: "Person"
   }
 */
+
 const exampleData: AudioProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
   type: "Audio",
@@ -70,7 +71,7 @@ const exampleData: AudioProperties = {
     summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
     type: "Person"
   }],
-  name: ["The Government's Secret Campaign Against Cats","Special Episode","Super"],
+  name: ["The Government's Secret Campaign Against CatsThe Government's Secret Campaign Against CatsThe Government's Secret Campaign Against CatsThe Government's Secret Campaign Against Cats","Special Episode","Super"],
   summary: ["10 Easy Ways To Make Tin Foil Hats Stronger. Proof That Cats Are Exactly What You Are Looking For","summary2"],
   content: [`Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Parkett. \nParsed handle @sl@sl.de – handle @sl@sl.de – link-handle @https://localhost:9999 – link https://localhost:9999 \n Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Parkett. Dies sind Sätze mit Zeichen bis zu 500 LOREM IPSUM dolor sit amet, consectetur adipiscing elit.
 
@@ -89,13 +90,13 @@ const exampleData: AudioProperties = {
 }
 
 const factory = create();
-const ogg = 'http://localhost:9999/sampleData/nihWikimedia.ogg';
-const mp3 = 'http://localhost:9999/sampleData/nihWikimedia.mp3';
-const vttEn = 'http://localhost:9999/sampleData/nihWikimedia_en.vtt';
-const vttDe = 'http://localhost:9999/sampleData/nihWikimedia_de.vtt';
-const vttEs = 'http://localhost:9999/sampleData/nihWikimedia_es.vtt';
-const vttChapters = 'http://localhost:9999/sampleData/nihWikimedia_CHA_en.vtt';
-const vtt = 'http://localhost:9999/sampleData/nihWikimedia_SUB_en.vtt';
+const ogg = 'http://localhost:9999/assets/nihWikimedia.ogg';
+const mp3 = 'http://localhost:9999/assets/nihWikimedia.mp3';
+const vttEn = 'http://localhost:9999/assets/nihWikimedia_en.vtt';
+const vttDe = 'http://localhost:9999/assets/nihWikimedia_de.vtt';
+const vttEs = 'http://localhost:9999/assets/nihWikimedia_es.vtt';
+const vttChapters = 'http://localhost:9999/assets/nihWikimedia_CHA_en.vtt';
+const vtt = 'http://localhost:9999/assets/nihWikimedia_SUB_en.vtt';
 export default factory(function Basic() {
 	return (
 		<Example spaced={true}>

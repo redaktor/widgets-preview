@@ -1,6 +1,7 @@
 /*
 id, url
-inReplyTo, audience, to, cc, bto, bcc,
+audience, to, cc, bto, bcc
+inReplyTo, replies
 
 ** Wer
 		actor, attributedTo, generator
@@ -20,9 +21,11 @@ inReplyTo, audience, to, cc, bto, bcc,
 		instrument
 ** mitResultat
 		result
+** inKontext
+    context
 ** mitContent
-		name, summary, source, content, icon, image, mediaType,
-		attachment, tag, replies
+		mediaType, name, summary, source, content, icon, image,
+		attachment, tag
 
 preview
 height, width

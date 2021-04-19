@@ -30,25 +30,27 @@ export const Paginated = factory(function Paginated({ properties, children, midd
 	const idBase = `${widgetId}_${property}`;
 
 	const ids: any = c.map((node: any, i: number) => node.properties.id || `${idBase}_${i}`);
-	return c.map((node: any, i: number, a: RenderResult[]) => {
-		if (!node.properties.id) {
-			node.properties.id = node.properties.id || `${idBase}_${i}`;
-		}
-		return <virtual>
-			{!i ?
-				<input id={ids[i]} key={`${idBase}_${i}`} type="radio" classes={themedCss.pager} name={idBase} checked={true} /> :
-				<input id={ids[i]} key={`${idBase}_${i}`} type="radio" classes={themedCss.pager} name={idBase} />
+	return <div classes={[themedCss.root]}>
+		{c.map((node: any, i: number, a: RenderResult[]) => {
+			if (!node.properties.id) {
+				node.properties.id = node.properties.id || `${idBase}_${i}`;
 			}
-			<div classes={[themedCss.root]}>
-				{node}
-				{
-					i === a.length-1 && a.length > 2 ?
-						<label role="button" classes={themedCss.prev} for={ids[0]}><Icon type="left" /><Icon type="left" /></label> :
-						((i < a.length-1) ? <label role="button" classes={themedCss.next} for={ids[i+1]}><Icon type="right" /></label> :
-							(!!i ? <label role="button" classes={themedCss.prev} for={ids[i-1]}><Icon type="left" /></label> : ''))
+			return <virtual>
+				{!i ?
+					<input id={ids[i]} key={`${idBase}_${i}`} type="radio" classes={themedCss.input} name={idBase} checked={true} /> :
+					<input id={ids[i]} key={`${idBase}_${i}`} type="radio" classes={themedCss.input} name={idBase} />
 				}
-			</div>
-		</virtual>
-	});
+				<div classes={[themedCss.pane]}>
+					{node}
+					{
+						i === a.length-1 && a.length > 2 ?
+							<label role="button" classes={themedCss.prev} for={ids[0]}><Icon type="left" /><Icon type="left" /></label> :
+							((i < a.length-1) ? <label role="button" classes={themedCss.next} for={ids[i+1]}><Icon type="right" /></label> :
+								(!!i ? <label role="button" classes={themedCss.prev} for={ids[i-1]}><Icon type="left" /></label> : ''))
+					}
+				</div>
+			</virtual>
+		})}
+	</div>
 });
 export default Paginated;

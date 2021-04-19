@@ -86,7 +86,7 @@ video:picture-in-picture {
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
-	background-color: var(--bg, #666);
+	background-color: rgba(0,0,0,0.64);
 	width: 100%;
 	padding: var(--pt) var(--plr) var(--pt) var(--plr);
 	box-shadow: var(--ui-dp-2);
@@ -97,47 +97,14 @@ video:picture-in-picture {
 }
 .root .summary {
 	padding: 0;
+	margin-bottom: calc(var(--mb) - var(--line));
 }
 
-.contentMoreInput {
-	display: none;
-}
-.contentMoreInput:checked + .content {
-	display: inline-block;
-	-webkit-line-clamp: unset;
-	height: auto;
-}
 .content {
 	composes: serif from './_typo.css';
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-line-clamp: 14;
-  -webkit-box-orient: vertical;
-	/* TODO only needed for Safari 13/14 */
-	height: calc(var(--line) * 14 + var(--pt));
-}
-.root .more {
-	cursor: pointer;
-	padding: 0;
-	margin: 0 1ch 0 0;
-	font-size: inherit;
-	font-weight: inherit;
-}
-.more::before {
-	content: '\f078';
-	font-family: 'redaktor' !important;
-}
-.contentMoreInput:checked + .content + label .more::before {
-	content: '\f077';
-}
-.more::after {
-	content: '';
-	position: absolute;
-	width: 100%;
-	height: 100%;
 }
 .mediaFresh .names {
-	--plr: calc(var(--line) * 2.5);
+	--plr: calc(var(--line) * 2);
 	bottom: calc(var(--pt) + var(--line) + (var(--line) * var(--mml)));
 }
 

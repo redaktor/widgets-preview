@@ -110,18 +110,20 @@
 .attributions.wellKnown::after {
 	opacity: 0.8;
 }
+.attributions summary {
+	list-style: none;
+	cursor: pointer;
+}
+.attributions summary::-webkit-details-marker {
+  display: none;
+}
+.attributions summary:focus {
+	outline: none;
+}
 .summary {
 	display: flex;
 	height: var(--line2);
 	margin-right: var(--line);
-  list-style: none;
-	cursor: pointer;
-}
-.summary::-webkit-details-marker {
-  display: none;
-}
-.summary:focus {
-	outline: none;
 }
 
 .handle {

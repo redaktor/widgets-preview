@@ -1,6 +1,7 @@
 import { tsx, create, node } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { uuid } from '@dojo/framework/core/util';
+import { clampStrings } from '../framework/String/split';
 import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
@@ -16,6 +17,7 @@ import focus from '@dojo/framework/core/middleware/focus';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Paginated from '../paginated';
+import Collapsed from '../collapsed';
 import AttributedTo from '../attributedTo';
 import AudioAvatar from '../audioAvatar';
 import RadioGroup from '../radio-group';
@@ -402,7 +404,6 @@ export const Audio = factory(function Audio({
 	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
 	const typoClass = vp === '_xs' ? themedCss.miniTypo : (vp === '_l' || vp === '_xl' ?
 		themedCss.largeTypo : themedCss.mediumTypo);
-	const contentID = uuid();
 
 	return <div
 		key="root"
@@ -451,7 +452,7 @@ export const Audio = factory(function Audio({
 			}
 			{!menuOpen && get('paused') && APo.name && <div classes={themedCss.names}>
 				<Paginated property="name">
-					{APo.name.map((_name, i) =>
+					{clampStrings(APo.name, 100).map((_name, i) =>
 						<h5 key={`name${i}`} classes={[themedCss.name, typoClass]}>{_name}</h5>)}
 				</Paginated>
 			</div>}
@@ -545,20 +546,22 @@ export const Audio = factory(function Audio({
 		<AttributedTo {...APo} />
 
 		<div classes={themedCss.contentWrapper}>
-			{APo.summary && <Paginated key="summary" property="summary">
-				{ APo.summary.map((_summary) =>
+			{
+				APo.summary && <Paginated key="summary" property="summary">
+					{APo.summary.map((_summary) =>
 						<div classes={[themedCss.summary, typoClass]}>
 							<MD content={_summary} />
 						</div>
-				)}
-			</Paginated>}
-			{APo.content && <virtual>
-				<input id={contentID} type="checkbox" key="contentDetails" classes={themedCss.contentMoreInput} />
-				<div classes={[themedCss.content, typoClass]}>
-					{APo.content.map((_content) => <virtual><MD content={_content} /><hr /></virtual>)}
-				</div>
-				<Button labelFor={contentID} size="s" variant="flat"><span classes={themedCss.more} />read more</Button>
-			</virtual>}
+					)}
+				</Paginated>
+			}
+			{
+				APo.content && <Collapsed>
+					<div classes={[themedCss.content, typoClass]}>
+						{APo.content.map((_content) => <virtual><MD content={_content} /><hr /></virtual>)}
+					</div>
+				</Collapsed>
+			}
 			<p>Test</p>
 		</div>
 	</div>
@@ -593,4 +596,24 @@ export default Audio;
 >
 	<Icon type="download" />
 </button>
+
+
+generator
+location
+
+instrument
+Identifies one or more objects used (or to be used) in the completion of an Activity.
+
+result
+Describes the result of the activity. For instance, if a particular action results in the creation
+of a new resource, the result property can be used to describe that new resource.
+
+context
+Identifies the context within which the object exists or an activity was performed.
+The notion of "context" used is intentionally vague. The intended function is to serve
+as a means of grouping objects and activities that share a common originating context or purpose.
+An example could be all activities relating to a common project or event.
+
+attachment
+origin/target
 */

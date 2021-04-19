@@ -36,9 +36,9 @@
 	--link: #33c3de;
   --link-hover: #07daf8;
   --link-active: #00f2f8;
-	--mention: #4db09b;
-  --mention-hover: #56ebaf;
-  --mention-active: #83ffd5;
+	--mention: #ffaf00;
+  --mention-hover: #ffb200;
+  --mention-active: #ffc639;
 	--border: #444a52;
 	--border-muted: var(--full-black);
 	--border-hover: #525252;

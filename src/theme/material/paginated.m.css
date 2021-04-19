@@ -1,8 +1,11 @@
-.root,
-.pager {
+.root {
+  display: grid;
+}
+.pane,
+.input {
   display: none;
 }
-.pager:checked + .root {
+.input:checked + .pane {
   display: grid;
   grid-template-columns: auto var(--touch-target-min, var(--line2, 32px));
 }
@@ -11,12 +14,12 @@
   position: relative;
   display: flex;
   width: var(--touch-target-min, var(--line2, 32px));
-  margin: 0;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: center;
   text-align: center;
+  margin: 0;
+  padding-top: var(--pt);
   cursor: pointer;
-  padding-bottom: calc(var(--mb) + 3px);
 }
 .prev {
 	margin-right: 4px;
