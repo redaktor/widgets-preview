@@ -5,6 +5,7 @@ const find = require('property-information/find');
 const spaces = require('space-separated-tokens');
 const commas = require('comma-separated-tokens');
 import * as style from 'style-to-object';
+import * as asCSS from '../theme/material/_as.m.css';
 const hASTtoDojo = {
   "classId": "classId",
   "dataType": "datatype",
@@ -159,6 +160,8 @@ export default function childrenToDojo(context: Context, node: any): any[] {
   let childIndex = -1;
   let child;
 
+  const isTag = (c: any) =>
+    (c.tagName === 'a' && c.properties.href && c.properties.href.indexOf('/tags') === 0);
   const isHandle = (c: any, i: number) =>
     (c.tagName === 'a' && !!i && node.children[i-1] && node.children[i-1].type === 'text' &&
       node.children[i-1].value && node.children[i-1].value.slice(-1) === '@');
@@ -168,12 +171,23 @@ export default function childrenToDojo(context: Context, node: any): any[] {
 
     if (child.type === 'element') {
       if (child.tagName === 'a') {
+        console.log(child);
         child.properties.title = !!child.properties.title ? child.properties.title :
           child.properties.href;
-        child.properties.rel = 'noopener noreferrer';
+        if (!!child.properties.rel) {
+          child.properties.rel += ' noopener noreferrer'
+        } else {
+          child.properties.rel = 'noopener noreferrer'
+        }
+        /* Hashtags */
+        if (isTag(child)) {
+          child.properties.rel += ' tag';
+          child.properties.classes = [asCSS.hashtag];
+        }
         /* Mentions: ActivityPub like handles (inline) */
         if (isHandle(child, childIndex)) {
           child.properties.rel += ' contact';
+          child.properties.classes = [asCSS.mention];
           if (!!children[childIndex-1]) {
             children[childIndex-1] = children[childIndex-1].slice(0, -1);
           }
@@ -185,6 +199,7 @@ export default function childrenToDojo(context: Context, node: any): any[] {
             child.properties.href = child.properties.href.replace('mailto:','https://');
           }
           // console.log(child, children[childIndex-1]);
+          console.log(child.properties);
         }
       }
       children.push(toDojo(context, child, childIndex, node))

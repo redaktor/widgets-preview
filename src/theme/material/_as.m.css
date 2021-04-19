@@ -1,12 +1,9 @@
-.mention,
 .mention[rel~=contact] {
 	color: var(--mention,#4db09b);
 }
-.mention:hover,
 .mention[rel~=contact]:hover {
 	color: var(--mention-hover,#56ebaf);
 }
-.mention:active,
 .mention[rel~=contact]:active {
 	color: var(--mention-active,#83ffd5);
 }
@@ -15,8 +12,14 @@ pre.ellipsis {
 	text-shadow: none;
 	color: var(--r-secondary,#c30c70);
 }
-.hashtag {
-
+.hashtag[rel~=tag] {
+	color: var(--hashtag,#aecadf);
+}
+.hashtag[rel~=tag]:hover {
+	color: var(--hashtag-hover,#cae6fb);
+}
+.hashtag[rel~=tag]:active {
+	color: var(--hashtag-active,#6f97d7);
 }
 .topic {
 

@@ -3,12 +3,11 @@ import hashtagRegex from '../framework/String/regex/regexHashTag';
 const tagRegex = /#[a-z\d_]{2,40}\b/gi;
 
 function replaceTag(value: string, match: any) {
-  if (!value || !value.match(/[#＃]/) || !hashtagRegex.test(value) || /[:]/.test(value)) {
+  if (!value || !value.match(/[#＃]/) || !hashtagRegex.test(value)) {
     return false
   }
   return {
     type: 'link',
-    rel: 'tag',
     title: value,
     url: `/tags/${value.substr(1).toLowerCase()}`,
     children: [{type: 'text', value}]

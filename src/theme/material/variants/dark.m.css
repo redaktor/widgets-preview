@@ -39,6 +39,9 @@
 	--mention: #ffaf00;
   --mention-hover: #ffb200;
   --mention-active: #ffc639;
+	--hashtag: var(--r-primary, #ff7a00);
+	--hashtag-hover: #fd7002;
+	--hashtag-active: #fd7002;
 	--border: #444a52;
 	--border-muted: var(--full-black);
 	--border-hover: #525252;
