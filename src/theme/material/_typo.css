@@ -430,12 +430,13 @@ p > i,
 p > em {
   line-height: 0;
 }
-
+pre {
+  text-shadow: none;
+}
 *:not(pre) > code { /* TODO inline code */
   background: var(--ui-bg);
   color: var(--text);
   border-radius: var(--ui-border-radius-emphasized);
-  text-shadow: 0 1px var(--ui-status);
   padding: calc(var(--pt, 8px) / 3) calc(var(--pt, 8px) / 1.618) !important;
 }
 

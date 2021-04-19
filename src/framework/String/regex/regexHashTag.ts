@@ -1,2 +1,2 @@
-const hashTag:RegExp = /^#[a-z0-9_]{2,}$/;
+const hashTag:RegExp = /^#[a-z\d_]{2,}$/i;
 export default hashTag;

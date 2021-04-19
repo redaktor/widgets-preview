@@ -82,13 +82,12 @@ video:picture-in-picture {
 	composes: l from './_typo.css';
 }
 .names {
-	--plr: var(--line);
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
 	background-color: rgba(0,0,0,0.64);
 	width: 100%;
-	padding: var(--pt) var(--plr) var(--pt) var(--plr);
+	padding: var(--pt) var(--line) var(--pt) var(--line);
 	box-shadow: var(--ui-dp-2);
 	z-index: 9;
 }
@@ -104,7 +103,7 @@ video:picture-in-picture {
 	composes: serif from './_typo.css';
 }
 .mediaFresh .names {
-	--plr: calc(var(--line) * 2);
+	padding: var(--pt) var(--line) var(--pt) var(--line2);
 	bottom: calc(var(--pt) + var(--line) + (var(--line) * var(--mml)));
 }
 
@@ -184,7 +183,7 @@ video:picture-in-picture {
 	transition: all var(--ui-dpd-0, 100ms) ease-in-out;
 }
 .mediaFresh .playPause::after {
-	margin-top: var(--mb); /* TODO */
+	margin-top: calc(var(--line) / 2);
 	--playcolor: var(--ui-bg, #eee);
 }
 .root:not(.paused) .playPause:hover::after {

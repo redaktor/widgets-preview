@@ -3,7 +3,8 @@ import * as unified from 'unified';
 import * as parse from 'remark-parse';
 import * as remarkRehype from 'remark-rehype';
 
-import remarkGFM from './gfm';
+import * as remarkGFM from 'remark-gfm';
+import remarkHashtags from './remarkHashtag';
 import filter from './rehypeFilter';
 import childrenToDojo from './astToDojo';
 // @ts-ignore remove when typed
@@ -49,7 +50,7 @@ export const MD = factory(function MD({ properties, id, children }) {
 	const {
 		content,
 		classes = [],
-		remarkPlugins = [remarkGFM],
+		remarkPlugins = [remarkHashtags, remarkGFM],
 		rehypePlugins = [],
 	} = properties();
 

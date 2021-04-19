@@ -1,7 +1,4 @@
-import global from '@dojo/framework/shim/global';
-import is from '../framework/is';
-import dateTimeR from '../framework/String/regex/regexXSDdateTime';
-import durationR from '../framework/String/regex/regexXSDduration';
+import { tsx } from '@dojo/framework/core/vdom';
 import {
 	ActivityPubActors, ActivityPubActivities, ActivityPubObjects, ActivityPubLinks
 } from './activityPub';
@@ -9,7 +6,12 @@ import {
 	RedaktorActor, ActivityPubActor, ActivityPubActivity, ActivityPubObject,
 	ActivityPubObjectNormalized, ActivityPubLinkObject, LangMap
 } from './interfaces';
-
+import global from '@dojo/framework/shim/global';
+import is from '../framework/is';
+import realCharacters from '../framework/String/split';
+import dateTimeR from '../framework/String/regex/regexXSDdateTime';
+import durationR from '../framework/String/regex/regexXSDduration';
+import * as asCSS from '../theme/material/_as.m.css';
 
 export const isAP = (o:any, type?:string) => {
 	const hasType = (typeof o === 'object' && o.type && (typeof o.type === 'string' || Array.isArray(o.type)));
@@ -48,6 +50,33 @@ export function getActorName({ petName: pet, preferredUsername: p, name: n, id }
 function toArray(v: any) {
 	return Array.isArray(v) ? JSON.parse(JSON.stringify(v)) : [v];
 }
+
+export function clampStrings(s: string | string[], length: number) {
+  if (typeof s === 'string') { s = [s] }
+  const splitEvery = (n: number, xs: any[], y: any[] = []): any[] =>
+    xs.length===0 ? y : splitEvery(n, xs.slice(n), y.concat([xs.slice(0, n)]));
+  return s.reduce((a: any[], _s) => {
+    const _a = realCharacters(_s);
+    if (_a.length <= length) { return a.concat([_s]) }
+    return a.concat(splitEvery(length, _a).map((r, i) => {
+			const ellipsis = [
+				!!i ? <pre classes={asCSS.ellipsis}>[…] </pre> : '',
+				!!i ? '' : <pre classes={asCSS.ellipsis}> […]</pre>
+			];
+			return <virtual>
+				{ellipsis[0]}
+				{r.join('')}
+				{ellipsis[1]}
+			</virtual>
+		}));
+/*
+		<virtual>
+			{`${!!i ? {<pre classes={asCSS.ellipsis}>[…] </pre>} : ''}${r.join('')}${!!i ? '' : <pre classes={asCSS.ellipsis}> […]</pre>}`}
+		</virtual>))
+		*/
+  }, [])
+}
+
 export function normalizeActivityPub(ap: APall, language?: string, includeBcc: boolean = false): ActivityPubObjectNormalized {
 	/* TODO
 

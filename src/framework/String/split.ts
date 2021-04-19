@@ -138,15 +138,4 @@ export function substring(s: string, start: number, length: number) {
   return chars.slice(start, endIndex).join('')
 }
 
-export function clampStrings(s: string | string[], length: number) {
-  if (typeof s === 'string') { s = [s] }
-  const splitEvery = (n: number, xs: any[], y: any[] = []): any[] =>
-    xs.length===0 ? y : splitEvery(n, xs.slice(n), y.concat([xs.slice(0, n)]));
-  return s.reduce((a: string[], _s) => {
-    const _a = realCharacters(_s);
-    if (_a.length <= length) { return a.concat([_s]) }
-    return a.concat(splitEvery(length, _a).map((r, i) => `${!!i ? '[…]' : ''}${r.join('')}${!!i ? '' : '[…]'}`))
-  }, [])
-}
-
 export default realCharacters;
