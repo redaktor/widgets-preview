@@ -171,7 +171,6 @@ export default function childrenToDojo(context: Context, node: any): any[] {
 
     if (child.type === 'element') {
       if (child.tagName === 'a') {
-        console.log(child);
         child.properties.title = !!child.properties.title ? child.properties.title :
           child.properties.href;
         if (!!child.properties.rel) {
@@ -198,8 +197,6 @@ export default function childrenToDojo(context: Context, node: any): any[] {
             // TODO WEBFINGER for client and replace by propper URL
             child.properties.href = child.properties.href.replace('mailto:','https://');
           }
-          // console.log(child, children[childIndex-1]);
-          console.log(child.properties);
         }
       }
       children.push(toDojo(context, child, childIndex, node))

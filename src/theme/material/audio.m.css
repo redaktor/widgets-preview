@@ -40,7 +40,7 @@ video:picture-in-picture {
 	margin-bottom: var(--line);
 	z-index: 2;
 }
-.paused .audio.video {
+.paused:not(.menuOpen) .audio.video {
 	opacity: 0.5;
 }
 .video::cue {

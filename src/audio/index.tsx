@@ -21,6 +21,7 @@ import Collapsed from '../collapsed';
 import AttributedTo from '../attributedTo';
 import AudioAvatar from '../audioAvatar';
 import RadioGroup from '../radio-group';
+import Chip from '../chip';
 import Button from '../button';
 import Slider from '../slider';
 import Icon from '../icon';
@@ -256,7 +257,7 @@ export const Audio = factory(function Audio({
 			}
 
 			/* TODO sorting of languages: userLocale, Int locale, en, ...others  */
-
+console.log(Array.from(textTracks.captions.values()));
 			trackMenu = textTracks &&
 				<div key={`tracksMenu`} classes={themedCss.trackMenu}>
 					{Object.keys(textTracks).map((k) => {
@@ -265,13 +266,19 @@ export const Audio = factory(function Audio({
 								name={k}
 								size="s"
 								vertical={true}
-								options={Array.from(textTracks[k].values())}
+								options={Array.from(textTracks[k].values()).map((v: any) => {
+									v.label = <virtual>
+										<Chip color="secondary" size="xs" spaced={true}>
+											{{ label: ` ${v.language} ` }}
+										</Chip>
+										{v.label}
+									</virtual>
+									return v
+								})}
 								onValue={(i) => {
-
 									textTracks[audio.textTracks[i].kind].forEach((t: any) => {
 										audio.textTracks[t.value].mode = 'hidden';
 									});
-
 									if (i > -1) { // TODO i -1 = hide all
 										audio.textTracks[i].mode = 'showing';
 									}
@@ -536,7 +543,7 @@ export const Audio = factory(function Audio({
 		<div classes={themedCss.contentWrapper}>
 			{
 				APo.summary && <Paginated key="summary" property="summary">
-					{APo.summary.map((_summary) =>
+					{clampStrings(APo.summary, 500).map((_summary) =>
 						<div classes={[themedCss.summary, typoClass]}>
 							<MD content={_summary} />
 						</div>
