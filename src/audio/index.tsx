@@ -252,20 +252,21 @@ export const Audio = factory(function Audio({
 			for (i = 0; i < l; i++) {
 				const {kind, label, language, mode} = audio.textTracks[i];
 				textTracks[kind] && textTracks[kind].set(`${kind}-${label}-${language}`, {
-					value: i, label, language, mode
+					value: i.toString(), label, language, mode
 				});
 			}
 
 			/* TODO sorting of languages: userLocale, Int locale, en, ...others  */
 console.log(Array.from(textTracks.captions.values()));
 			trackMenu = textTracks &&
-				<div key={`tracksMenu`} classes={themedCss.trackMenu}>
+				<div key="tracksMenu" classes={themedCss.trackMenu}>
 					{Object.keys(textTracks).map((k) => {
 						return k === 'metadata' || !textTracks[k].size ? '' :
 							<RadioGroup
 								name={k}
 								size="s"
 								vertical={true}
+								initialValue="0"
 								options={Array.from(textTracks[k].values()).map((v: any) => {
 									v.label = <virtual>
 										<Chip color="secondary" size="xs" spaced={true}>
@@ -273,6 +274,7 @@ console.log(Array.from(textTracks.captions.values()));
 										</Chip>
 										{v.label}
 									</virtual>
+									console.log(v);
 									return v
 								})}
 								onValue={(i) => {
@@ -434,7 +436,7 @@ console.log(Array.from(textTracks.captions.values()));
 			style={`--mml: ${mml};`}
 		>
 			{ menuOpen && get('trackMenu') }
-			<div classes={themedCss.audioAvatarWrapper}>
+			<div key="avatar" classes={themedCss.audioAvatarWrapper}>
 				<AudioAvatar audioElement={audio} size={vp === '_xs' ? 'l' : 'xl'}>SL</AudioAvatar>
 			</div>
 			<noscript>
@@ -543,8 +545,8 @@ console.log(Array.from(textTracks.captions.values()));
 		<div classes={themedCss.contentWrapper}>
 			{
 				APo.summary && <Paginated key="summary" property="summary">
-					{clampStrings(APo.summary, 500).map((_summary) =>
-						<div classes={[themedCss.summary, typoClass]}>
+					{clampStrings(APo.summary, 500).map((_summary, i) =>
+						<div key={`summary${i}`} classes={[themedCss.summary, typoClass]}>
 							<MD content={_summary} />
 						</div>
 					)}
@@ -553,7 +555,9 @@ console.log(Array.from(textTracks.captions.values()));
 			{
 				APo.content && <Collapsed>
 					<div classes={[themedCss.content, typoClass]}>
-						{APo.content.map((_content) => <virtual><MD content={_content} /><hr /></virtual>)}
+						{APo.content.map((_content, i) => <virtual>
+							<MD key={`content${i}`} content={_content} /><hr />
+						</virtual>)}
 					</div>
 				</Collapsed>
 			}

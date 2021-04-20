@@ -10,6 +10,7 @@
 .menuOpen { }
 .trackMenu {
 	width: 100%;
+	padding: var(--line) var(--grid-base) 0 var(--grid-base);
 	margin-bottom: var(--line4);
 	z-index: 99;
 }
@@ -37,6 +38,7 @@ video:picture-in-picture {
 }
 .audio.video {
 	height: calc(100% - var(--line));
+	padding: 0 var(--grid-base) 0 var(--grid-base);
 	margin-bottom: var(--line);
 	z-index: 2;
 }
