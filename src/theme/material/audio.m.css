@@ -58,7 +58,7 @@ video:picture-in-picture {
 	z-index: -1;
 	transition: opacity 4s var(--ui-easing-leave, ease-in-out);
 }
-.media:not(.mediaFresh) .poster {
+.root:not(.fresh) .poster {
 	z-index: 2;
 	opacity: 0;
 }
@@ -66,10 +66,10 @@ video:picture-in-picture {
 .audioAvatarWrapper {
 	z-index: 1;
 }
-.media.mediaFresh .audioAvatarWrapper {
+.fresh .audioAvatarWrapper {
 	opacity: 0.64;
 }
-.media:not(.mediaFresh) .audioAvatarWrapper {
+.root:not(.fresh) .audioAvatarWrapper {
 	opacity: 1;
 }
 
@@ -101,21 +101,32 @@ video:picture-in-picture {
 	margin-bottom: calc(var(--mb) - var(--line));
 }
 
-.content {
+.content,
+.freshDuration {
 	composes: serif from './_typo.css';
 }
-.mediaFresh .names {
+.root .freshDuration {
+	padding: 0;
+}
+.fresh .names {
 	padding: var(--pt) var(--line) var(--pt) var(--line2);
 	bottom: calc(var(--pt) + var(--line) + (var(--line) * var(--mml)));
 }
-
+.mediaFreshTop,
 .mediaTop {
 	position: absolute;
 	width: 100%;
 	display: flex;
-	justify-content: flex-end;
 	z-index: 6;
 }
+
+.mediaFreshTop {
+	justify-content: flex-start;
+}
+.mediaTop {
+	justify-content: flex-end;
+}
+
 .header {
 	z-index: 3;
 }
@@ -135,17 +146,17 @@ video:picture-in-picture {
 	width: 100%;
 	cursor: pointer;
 }
-.media:not(.mediaFresh) {
+.media:not(.fresh .media) {
 	border-top-left-radius: var(--ui-border-radius-emphasized, 0.25rem);
 	border-top-right-radius: var(--ui-border-radius-emphasized, 0.25rem);
 	margin-bottom: calc(var(--line) * var(--mml,0) - var(--line));
 }
-.mediaFresh {
+.fresh .media {
 	border-radius: 50%;
 	margin-bottom: calc(var(--line) * var(--mml,0) - var(--line));
 }
 
-.mediaFresh ~ details:not(details[open]) > summary .avatar {
+.fresh .media ~ details:not(details[open]) > summary .avatar {
 	position: absolute;
 	top: -100%;
 }
@@ -155,7 +166,7 @@ video:picture-in-picture {
 	margin-top: calc(100% - var(--line2));
 	max-width: calc(100vh - var(--line2));
 }
-.media.mediaFresh::before {
+.fresh .media::before {
 	margin-top: 100%;
 	max-width: 100vh;
 }
@@ -172,11 +183,11 @@ video:picture-in-picture {
 	padding: 0 0 var(--line) 0;
 	margin: 0;
 }
-.mediaFresh .playPause {
+.fresh .playPause {
 	justify-content: center;
 	align-items: center;
 }
-.media:not(.mediaFresh) .playPause {
+.root:not(.fresh) .playPause {
 	justify-content: flex-start;
 	align-items: flex-start;
 	padding-left: var(--line);
@@ -191,7 +202,7 @@ video:picture-in-picture {
 	border-color: transparent transparent transparent var(--playcolor, #eee);
 	transition: all var(--ui-dpd-0, 100ms) ease-in-out;
 }
-.mediaFresh .playPause::after {
+.fresh .playPause::after {
 	margin-top: calc(var(--line) / 2);
 	--playcolor: var(--ui-bg, #eee);
 }
@@ -206,8 +217,8 @@ video:picture-in-picture {
 .name:hover ~ .playPause:hover::after {
 	--playcolor: var(--ui-filled, #eee);
 }
-.mediaFresh .name:hover ~ .playPause::after,
-.mediaFresh .name:hover ~ .playPause:hover::after {
+.fresh .name:hover ~ .playPause::after,
+.fresh .name:hover ~ .playPause:hover::after {
 	--playcolor: var(--ui-bg, #eee);
 }
 .paused .playPause::after {
@@ -227,9 +238,12 @@ video:picture-in-picture {
 .controls {
 	height: var(--line3);
 }
-.mediaFresh + .controls {
+.fresh .mediaTop,
+.root:not(.fresh) .mediaFreshTop,
+.fresh .media + .controls {
 	display: none;
 }
+
 .progress {
 	min-height: var(--line) !important;
 }

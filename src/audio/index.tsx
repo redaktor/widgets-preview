@@ -188,6 +188,9 @@ export const Audio = factory(function Audio({
 
 	const APo: ActivityPubObjectNormalized = _rest;
 
+	const audio = (node.get('audio') as HTMLAudioElement);
+	console.log(audio);
+
 	const tracks = (children() as any || []).filter((c: any) => c.tag === 'track');
 	set('hasTracks', !!tracks.length, false);
 	getOrSet('trackMenu', '', false);
@@ -206,8 +209,6 @@ export const Audio = factory(function Audio({
 	getOrSet('tracksVisible', {captions: '', subtitles: '', descriptions: '', chapters: '', metadata: ''});
 	if (!get('paused') && get('fresh')) { set('fresh', false) }
 
-	const audio = (node.get('audio') as HTMLAudioElement);
-if (audio) {console.log(audio.textTracks)}
   const togglePlay = (e?: Event) => {
 		e && e.preventDefault();
 		e && e.stopPropagation();
@@ -242,6 +243,7 @@ if (audio) {console.log(audio.textTracks)}
 		*/
   }
 	const handleLoadedMetadata = () => {
+		set('duration', audio.duration, false);
 		let trackMenu: RenderResult = [];
 		if (!!audio && audio.textTracks && audio.textTracks.length) {
 			const textTracks: any = {
@@ -309,7 +311,6 @@ if (audio) {console.log(audio.textTracks)}
 	}
 	const handleLoadedData = () => {
 		const { autoPlay, currentTime, muted = false, volume = 1, speed = 1 } = properties();
-		set('duration', audio.duration, false);
 		if (currentTime) {
 			audio.currentTime = currentTime;
 		}
@@ -369,7 +370,7 @@ if (audio) {console.log(audio.textTracks)}
 		id: get('id'),
 		alt: !!APo.summary && !!APo.summary.length ? APo.summary[0]||'' : '',
 		classes: [themedCss.audio, get('hasTracks') || get('isPicInPic') ? themedCss.video : null],
-		preload: autoPlay ? 'auto' : 'none',
+		preload: autoPlay ? 'auto' : 'metadata',
 		onplay: onPlay && onPlay(get('currentTime')||0),
 		onpause: onPause && onPause(get('currentTime')||0),
 		onended: togglePlay,
@@ -406,7 +407,7 @@ if (audio) {console.log(audio.textTracks)}
 	});
 	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
 	const menuOpen = get('trackMenuOpen');
-
+	const formattedDuration = formatTime(Math.floor(get('duration')||0));
 	const {breakpoint: vp = '_m', contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
 	const lh = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
 	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
@@ -423,6 +424,7 @@ if (audio) {console.log(audio.textTracks)}
 			theme.colored(colors),
 			theme.elevated(ui),
 			theme.animated(themedCss),
+			get('fresh') && themedCss.fresh,
 			get('paused') && themedCss.paused,
 			vp === '_xs' && themedCss.mini,
 			vp === '_s' || vp === '_m' && themedCss.medium,
@@ -435,6 +437,10 @@ if (audio) {console.log(audio.textTracks)}
 		aria-label="Audio Player"
 		role="region"
 	>
+		<div classes={themedCss.mediaFreshTop}>
+			<Icon type="listen" spaced={true} />
+			<i classes={themedCss.freshDuration}>{formattedDuration}</i>
+		</div>
 		<div classes={themedCss.mediaTop}>
 			<Button
 				title={messages.captions}
@@ -451,7 +457,6 @@ if (audio) {console.log(audio.textTracks)}
 				themedCss.media,
 				/* TODO isJS */
 				/* theme.isJS() && */
-				get('fresh') && themedCss.mediaFresh
 			]}
 			style={`--mml: ${mml};`}
 		>
@@ -505,7 +510,7 @@ if (audio) {console.log(audio.textTracks)}
 						{formatTime(Math.floor(get('currentTime')||0))}{vp === '_xs' ? '' : ' '}
 					</span>
 					<span classes={themedCss.duration}>
-						/{vp === '_xs' ? '' : ' '}{formatTime(Math.floor(get('duration')||0))}
+						/{vp === '_xs' ? '' : ' '}{formattedDuration}
 					</span>
 				</p>
 				<button

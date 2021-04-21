@@ -100,7 +100,7 @@ const types = ['Article','Note','Audio','Document','Event','Image','Page',
 'Collection','OrderedCollection','CollectionPage','OrderedCollectionPage'];
 const cards = types.map((t) => {
 	const o = JSON.parse(JSON.stringify({...exampleData}));
-  console.log(o);
+  // console.log(o);
 	o.object.type = t;
 	if (t === 'Note' || t === 'Audio' || t === 'Image' || t === 'Video') {
 		o.kicker = null;
