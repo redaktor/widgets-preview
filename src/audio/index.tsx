@@ -96,10 +96,11 @@ interface TextTrack {
 */
 type TT = Map<string, TextTrack>;
 export interface TextTracks {
-	[k: string]: any,
 	captions:TT, subtitles:TT, descriptions:TT, chapters:TT, metadata:TT
 }
-
+export interface VisibleTracks {
+	captions: string; subtitles: string; descriptions: string; chapters: string; metadata: string;
+};
 export interface AudioIcache {
 	l: any;
 	id: string;
@@ -119,6 +120,7 @@ export interface AudioIcache {
 	tracks: TextTracks;
 	trackMenu: RenderResult;
 	trackMenuOpen: boolean;
+	tracksVisible: VisibleTracks | {};
 }
 export interface AudioChildren {
 	/** Optional Header */
@@ -200,6 +202,7 @@ export const Audio = factory(function Audio({
 	getOrSet('speedControl', false, false);
 	getOrSet('trackMenuOpen', false, false);
 	getOrSet('paused', !autoPlay);
+	getOrSet('tracksVisible', {captions: '', subtitles: '', descriptions: '', chapters: '', metadata: ''});
 	if (!get('paused') && get('fresh')) { set('fresh', false) }
 
 	const audio = (node.get('audio') as HTMLAudioElement);
@@ -251,13 +254,15 @@ export const Audio = factory(function Audio({
 			let i;
 			for (i = 0; i < l; i++) {
 				const {kind, label, language, mode} = audio.textTracks[i];
+				if (mode === 'showing') {
+					icache.set('tracksVisible', {...icache.get('tracksVisible'), [kind]: i.toString()})
+				}
 				textTracks[kind] && textTracks[kind].set(`${kind}-${label}-${language}`, {
 					value: i.toString(), label, language, mode
 				});
 			}
-
 			/* TODO sorting of languages: userLocale, Int locale, en, ...others  */
-console.log(Array.from(textTracks.captions.values()));
+			const tracksVisible: any = icache.get('tracksVisible');
 			trackMenu = textTracks &&
 				<div key="tracksMenu" classes={themedCss.trackMenu}>
 					{Object.keys(textTracks).map((k) => {
@@ -266,10 +271,10 @@ console.log(Array.from(textTracks.captions.values()));
 								name={k}
 								size="s"
 								vertical={true}
-								initialValue="0"
+								initialValue={tracksVisible[k]}
 								options={Array.from(textTracks[k].values()).map((v: any) => {
 									v.label = <virtual>
-										<Chip color="secondary" size="xs" spaced={true}>
+										<Chip color="neutral" size="xs" spaced={true}>
 											{{ label: ` ${v.language} ` }}
 										</Chip>
 										{v.label}
@@ -424,7 +429,9 @@ console.log(Array.from(textTracks.captions.values()));
 		aria-label="Audio Player"
 		role="region"
 	>
-		<Button variant="flat" onClick={() => { set('trackMenuOpen', !menuOpen) }}>Captions</Button>
+		<div classes={themedCss.mediaTop}>
+			<Button variant="flat" onClick={() => { set('trackMenuOpen', !menuOpen) }}>Captions</Button>
+		</div>
 		<div
 			key="media"
 			classes={[

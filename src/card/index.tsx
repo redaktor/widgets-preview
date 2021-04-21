@@ -107,6 +107,14 @@ YouTube tags: 30 characters per tag, 500 characters total
 /* ACTIVITY
 actor, object, instrument, origin, result, target
 
+
+instrument
+Identifies one or more objects used (or to be used) in the completion of an Activity.
+
+result
+Describes the result of the activity. For instance, if a particular action results in the creation
+of a new resource, the result property can be used to describe that new resource.
+
 */
 
 interface ColoredItem {

@@ -18,6 +18,7 @@ export const names: string;
 export const name: string;
 export const summary: string;
 export const content: string;
+export const mediaTop: string;
 export const header: string;
 export const avatar: string;
 export const playPause: string;
