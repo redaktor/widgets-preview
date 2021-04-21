@@ -14,6 +14,7 @@ const messages = {
 	speed: 'Change playback rate',
 	quality: 'Change playback quality',
 	download: 'Download file',
+	captions: 'Captions',
 	captionsTrack: 'Captions',
 	subtitlesTrack: 'Subtitles',
 	descriptionsTrack: 'Descriptions',

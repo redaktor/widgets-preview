@@ -6,6 +6,7 @@ export default {
 	speed: 'Abspielgeschwindigkeit ändern',
 	quality: 'Qualität ändern',
 	download: 'Datei herunterladen',
+	captions: 'Beschriftungen',
 	captionsTrack: 'Beschriftung',
 	subtitlesTrack: 'Untertitel',
 	descriptionsTrack: 'Beschreibung',

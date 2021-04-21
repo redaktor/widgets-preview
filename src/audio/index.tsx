@@ -265,7 +265,7 @@ if (audio) {console.log(audio.textTracks)}
 			/* TODO sorting of languages: userLocale, Int locale, en, ...others  */
 			const tracksVisible: any = icache.get('tracksVisible');
 			trackMenu = textTracks &&
-				<div key="tracksMenu" classes={themedCss.trackMenu}>
+				<div key="tracksMenu" role="menu" aria-modal="true" classes={themedCss.trackMenu}>
 					{Object.keys(textTracks).map((k) => {
 						return k === 'metadata' || !textTracks[k].size ? '' :
 							<RadioGroup
@@ -436,7 +436,14 @@ if (audio) {console.log(audio.textTracks)}
 		role="region"
 	>
 		<div classes={themedCss.mediaTop}>
-			<Button variant="flat" onClick={() => { set('trackMenuOpen', !menuOpen) }}>Captions</Button>
+			<Button
+				title={messages.captions}
+				variant="flat"
+				aria-haspopup="menu"
+				onClick={() => { set('trackMenuOpen', !menuOpen) }}
+			>
+				<Icon type="code" />
+			</Button>
 		</div>
 		<div
 			key="media"
