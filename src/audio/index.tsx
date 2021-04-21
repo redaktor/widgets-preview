@@ -202,11 +202,12 @@ export const Audio = factory(function Audio({
 	getOrSet('speedControl', false, false);
 	getOrSet('trackMenuOpen', false, false);
 	getOrSet('paused', !autoPlay);
+
 	getOrSet('tracksVisible', {captions: '', subtitles: '', descriptions: '', chapters: '', metadata: ''});
 	if (!get('paused') && get('fresh')) { set('fresh', false) }
 
 	const audio = (node.get('audio') as HTMLAudioElement);
-
+if (audio) {console.log(audio.textTracks)}
   const togglePlay = (e?: Event) => {
 		e && e.preventDefault();
 		e && e.stopPropagation();
@@ -279,15 +280,20 @@ export const Audio = factory(function Audio({
 										</Chip>
 										{v.label}
 									</virtual>
-									console.log(v);
 									return v
 								})}
-								onValue={(i) => {
-									textTracks[audio.textTracks[i].kind].forEach((t: any) => {
+								onValue={(iStr) => {
+									const i = parseInt(iStr, 10);
+									const track = audio.textTracks[i];
+									textTracks[track.kind].forEach((t: any) => {
 										audio.textTracks[t.value].mode = 'hidden';
 									});
 									if (i > -1) { // TODO i -1 = hide all
 										audio.textTracks[i].mode = 'showing';
+										icache.set('tracksVisible', {
+											...icache.get('tracksVisible'),
+											[track.kind]: iStr}
+										)
 									}
 								}}
 							>
