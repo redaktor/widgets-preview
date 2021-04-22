@@ -71,6 +71,11 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 
 	getOrSet('canVisualise', false, false);
 	getOrSet('animId', 0);
+
+
+	const {width: w, height: h} = dimensions.get('root').offset;
+	const rootWH = [(w * 2)||100, (h * 2)||100];
+	const {width, height} = dimensions.get('canvas').offset;
 	/**
 	 * Set audio audioCtx analyser.
 	 */
@@ -89,19 +94,14 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 			get('analyser').connect(get('audioCtx').destination);
 			set('canVisualise', true);
 		} catch (e) {
-			console.log(e.toString());
+			console.log(`AudioContext: ${e.toString()}`);
 		}
   }
-
-	const wh = () => {
-		const {width, height} = dimensions.get('root').offset;
-		return [(width * 2)||100, (height * 2)||100];
-	}
   /**
    * Canvas gradient. Vertical, from top down
    */
 	const fillGradient = (colorsArray: string[]) => {
-    const [w, h] = wh();
+    const [w, h] = rootWH;
     const gradient = ctx && ctx.createLinearGradient(w / 2, 0, w / 2, h);
     let offset = 0;
     colorsArray.forEach(color => {
@@ -114,7 +114,6 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 
   const _setCanvas = () => {
 		if (!ctx || !canvFillColor) { return }
-		const {width, height} = dimensions.get('canvas').offset;
     ctx.clearRect(0, 0, width, height);
     (ctx as any).fillStyle = Array.isArray(canvFillColor)
       ? fillGradient(canvFillColor)
@@ -124,7 +123,7 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 
   const _setBarColor = (cx: number, cy: number) => {
 		if (!ctx) { return }
-		const [w] = wh();
+		const [w] = rootWH;
     if (!Array.isArray(barColors)) {
       return barColors
     }
@@ -140,7 +139,7 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 
 	const paint = () => {
 		if (!ctx) { return }
-		const [w, h] = wh();
+		const [w, h] = rootWH;
 		const cx = w / 2; // center X
     const cy = h / 2; // center Y
     const r = radius ? radius : Math.round(w / 2 * 0.5);
@@ -153,22 +152,7 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 
     _setCanvas();
     get('analyser').getByteFrequencyData(data);
-/*
-    // contour outline
-    if (this.outlineWidth > 0) {
-      this._drawOutline(r, cx, cy)
-    }
-
-    // draw play progress meter
-    if (this.progress) {
-      this._drawProgress(r, cx, cy)
-    }
-
-    // draw played time
-    if (this.playtime) {
-      this._drawPlaytime(cx, cy)
-    }
-*/
+		
     // circle bar lines
     ctx.lineWidth = barWidth;
     ctx.strokeStyle = _setBarColor(cx, cy)||'';
@@ -197,7 +181,6 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 			set('canVisualise',false);
     	cancelAnimationFrame(get('animId')||0);
 		}
-	  audio.addEventListener('canplay', setAnalyser);
 		audio.addEventListener('seeked', restart);
 		audio.addEventListener('ended', restart);
 		audio.addEventListener('play', () => {

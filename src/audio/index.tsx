@@ -448,7 +448,7 @@ export const Audio = factory(function Audio({
 				aria-haspopup="menu"
 				onClick={() => { set('trackMenuOpen', !menuOpen) }}
 			>
-				<Icon type="code" />
+				<Icon type="code" size="l" />
 			</Button>
 		</div>
 		<div

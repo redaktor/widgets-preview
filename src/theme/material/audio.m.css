@@ -115,8 +115,7 @@ video:picture-in-picture {
 .mediaFreshTop,
 .mediaTop {
 	position: absolute;
-	width: 100%;
-	display: flex;
+	max-width: 100%;
 	z-index: 6;
 }
 
@@ -124,7 +123,7 @@ video:picture-in-picture {
 	justify-content: flex-start;
 }
 .mediaTop {
-	justify-content: flex-end;
+	right: 0px;
 }
 
 .header {
@@ -176,6 +175,8 @@ video:picture-in-picture {
 }
 .playPause {
 	display: flex;
+	justify-content: center;
+	align-items: center;
 	width: 100%;
 	height: 100%;
 	z-index: 5;
@@ -183,28 +184,15 @@ video:picture-in-picture {
 	padding: 0 0 var(--line) 0;
 	margin: 0;
 }
-.fresh .playPause {
-	justify-content: center;
-	align-items: center;
-}
-.root:not(.fresh) .playPause {
-	justify-content: flex-start;
-	align-items: flex-start;
-	padding-left: var(--line);
-	padding-top: var(--line);
-}
 .playPause::after {
-	--playcolor: var(--ui-filled, #eee);
+	--playcolor: var(--ui-bg, #eee);
 	content: "";
 	display: block;
 	width: var(--line2);
 	height: var(--line2);
 	border-color: transparent transparent transparent var(--playcolor, #eee);
 	transition: all var(--ui-dpd-0, 100ms) ease-in-out;
-}
-.fresh .playPause::after {
 	margin-top: calc(var(--line) / 2);
-	--playcolor: var(--ui-bg, #eee);
 }
 .root:not(.paused) .playPause:hover::after {
 	border-style: double;
