@@ -98,17 +98,21 @@ const vttEs = 'http://localhost:9999/assets/nihWikimedia_es.vtt';
 const vttChapters = 'http://localhost:9999/assets/nihWikimedia_CHA_en.vtt';
 const vtt = 'http://localhost:9999/assets/nihWikimedia_SUB_en.vtt';
 export default factory(function Basic() {
+  const audio = (isRow = false) => <Audio {...exampleData} url={[ogg,mp3]} isRow={isRow}>
+    <track label="English captions" src={vttEn} kind="captions" srclang="en" />
+    <track label="Deutsche Übersetzung" src={vttDe} kind="captions" srclang="de" default />
+    <track label="Traducción Española" src={vttEs} kind="captions" srclang="es" />
+    <track label="English subtitles" src={vtt} kind="subtitles" srclang="es" />
+    <track label="Chapters" src={vttChapters} kind="chapters" srclang="en" />
+  </Audio>;
+
 	return (
 		<Example spaced={true}>
-			<div styles={{ width: '45%' }}>
-				<Audio {...exampleData} url={[ogg,mp3]}>
-          <track label="English captions" src={vttEn} kind="captions" srclang="en" />
-          <track label="Deutsche Übersetzung" src={vttDe} kind="captions" srclang="de" default />
-          <track label="Traducción Española" src={vttEs} kind="captions" srclang="es" />
-          <track label="English subtitles" src={vtt} kind="subtitles" srclang="es" />
-          <track label="Chapters" src={vttChapters} kind="chapters" srclang="en" />
-        </Audio>
-			</div>
+      <virtual>
+  			<div styles={{ width: '50%' }}>{audio()}</div>
+        <hr />
+        <div styles={{ width: '100%', marginTop: 'var(--line2)' }}>{audio(true)}</div>
+      </virtual>
 		</Example>
 	);
 });

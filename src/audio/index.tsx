@@ -69,6 +69,7 @@ store the last used
 - visibility of captions, subtitles, descriptions
 */
 export interface AudioProperties extends ActivityPubObject {
+	isRow?: boolean;
 	poster?: string;
 	editable?: boolean;
 	fullscreen?: boolean;
@@ -183,14 +184,12 @@ export const Audio = factory(function Audio({
 	const { messages } = i18n.localize(bundle);
 	const {
 		alt, editable, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId = uuid(),
-		autoPlay = false, muted = false, volume = 1, speed = 1, poster, ..._rest
+		isRow = false, autoPlay = false, muted = false, volume = 1, speed = 1, poster, ..._rest
 	} = normalizeActivityPub(properties());
 
 	const APo: ActivityPubObjectNormalized = _rest;
 
 	const audio = (node.get('audio') as HTMLAudioElement);
-	console.log(audio);
-
 	const tracks = (children() as any || []).filter((c: any) => c.tag === 'track');
 	set('hasTracks', !!tracks.length, false);
 	getOrSet('trackMenu', '', false);
@@ -414,11 +413,18 @@ export const Audio = factory(function Audio({
 	const typoClass = vp === '_xs' ? themedCss.miniTypo : (vp === '_l' || vp === '_xl' ?
 		themedCss.largeTypo : themedCss.mediumTypo);
 
+	const namesPaginated = APo.name && <Paginated property="name">
+			{clampStrings(APo.name, 100).map((_name, i) =>
+				<h5 key={`name${i}`} classes={[themedCss.name, typoClass]}>{_name}</h5>)}
+		</Paginated>
+
+
 	return <div
 		key="root"
 		classes={[
 			theme.variant(),
 			themedCss.root,
+			isRow && themedCss.row,
 			theme.shaped(themedCss),
 			theme.sized(ui),
 			theme.colored(colors),
@@ -448,7 +454,7 @@ export const Audio = factory(function Audio({
 				aria-haspopup="menu"
 				onClick={() => { set('trackMenuOpen', !menuOpen) }}
 			>
-				<Icon type="code" size="l" />
+				<Icon size="xxl" type="code" />
 			</Button>
 		</div>
 		<div
@@ -472,12 +478,7 @@ export const Audio = factory(function Audio({
 				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :
 				<video key="audio" {...playerProps}>{sources}{children()}</video>
 			}
-			{!menuOpen && get('paused') && APo.name && <div classes={themedCss.names}>
-				<Paginated property="name">
-					{clampStrings(APo.name, 100).map((_name, i) =>
-						<h5 key={`name${i}`} classes={[themedCss.name, typoClass]}>{_name}</h5>)}
-				</Paginated>
-			</div>}
+			{!isRow && !menuOpen && get('paused') && <div classes={themedCss.names}>{namesPaginated}</div>}
 			{!menuOpen &&
 				<button
 					type="button"
@@ -504,7 +505,7 @@ export const Audio = factory(function Audio({
 					'@dojo/widgets/progress': { root: [themedCss.progress] }
 				}}
 			/>
-			<div classes={themedCss.row}>
+			<div classes={themedCss.captionRow}>
 				<p classes={themedCss.caption}>
 					<span classes={themedCss.time}>
 						{formatTime(Math.floor(get('currentTime')||0))}{vp === '_xs' ? '' : ' '}
@@ -565,9 +566,9 @@ export const Audio = factory(function Audio({
 				</div>
 			</div>
 		</div>
-		<AttributedTo {...APo} />
-
+		<div classes={themedCss.attributions}><AttributedTo {...APo} /></div>
 		<div classes={themedCss.contentWrapper}>
+			{!!isRow && namesPaginated}
 			{
 				APo.summary && <Paginated key="summary" property="summary">
 					{clampStrings(APo.summary, 500).map((_summary, i) =>
@@ -578,7 +579,7 @@ export const Audio = factory(function Audio({
 				</Paginated>
 			}
 			{
-				APo.content && <Collapsed>
+				APo.content && <Collapsed lines={isRow ? (get('fresh') ? 3 : 1) : 14}>
 					<div classes={[themedCss.content, typoClass]}>
 						{APo.content.map((_content, i) => <virtual>
 							<MD key={`content${i}`} content={_content} /><hr />
@@ -586,7 +587,7 @@ export const Audio = factory(function Audio({
 					</div>
 				</Collapsed>
 			}
-			<p>Test</p>
+			<p>... attachments</p>
 		</div>
 	</div>
 
@@ -607,7 +608,7 @@ export default Audio;
 }}>P</button>
 
 
-<div classes={themedCss.row}>
+<div classes={themedCss.captionRow}>
 	<Button size="xs">Captions</Button>
 </div>
 <button

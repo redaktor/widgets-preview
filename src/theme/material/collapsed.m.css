@@ -8,7 +8,7 @@
   -webkit-box-orient: vertical;
 	/* TODO only needed for Safari 13/14 */
 	height: calc(var(--line) * var(--l,14) + var(--pt));
-	margin-bottom: var(--line);
+	margin-bottom: 0;
 }
 .input:checked + .content {
 	display: inline-block;
