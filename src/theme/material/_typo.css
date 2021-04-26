@@ -161,11 +161,19 @@ html, body { height: 100%; }
   box-sizing: inherit;
 }
 body, div, figure, section, p, h6, h5, h4, h3, h2, h1,
-small, p, ul, ol, li, b, big, i, small, tt, abbr, acronym, cite, code,
+small, p, b, big, i, small, tt, abbr, acronym, cite, code,
 dfn, em, kbd, strong, samp, var, a, bdo, br, img, map, object, q, script, span,
 pre, sub, sup, button, input, label, select, textarea {
-  margin: 0;
-  padding: 0;
+  margin: 0px;
+  padding: 0px;
+}
+ul, ol {
+  margin: 0px 0px var(--line) 0px;
+  padding-top: 0px;
+}
+hr {
+  --mbt: calc((var(--line, 16px) - 1px + var(--mb, 16px)) / 2);
+  margin: var(--mbt) 0px var(--mbt) 0px;
 }
 body {
   font-size: 1em;
@@ -391,7 +399,7 @@ screen and (min-width: 2080px) {
 
   }
 }
-small, p, h5, h4, h3, h2, h1, b, big, i, small, tt, abbr, acronym, cite, code,
+small, p, li, h5, h4, h3, h2, h1, b, big, i, small, tt, abbr, acronym, cite, code,
 dfn, em, kbd, strong, samp, var, a, bdo, img, map, object, q, script, pre,
 sub, sup, button, input, label, select, textarea,
 .small, .p, .p-small, .h6, .h5, .h4, .h3, .h2, .h1, .hero, .xs, .s, .m, .l, .xl, .xxl,
@@ -400,6 +408,9 @@ sub, sup, button, input, label, select, textarea,
   line-height: var(--lh, 24px);
   padding-top: var(--pt, 8px);
   margin-bottom: var(--mb, 16px);
+}
+li {
+  margin-bottom: calc(var(--mb, 16px) - var(--line, 16px));
 }
 small, p, h5, h4, h3, h2, h1, b, big, i, small, tt, abbr, acronym, cite, code,
 dfn, em, kbd, strong, samp, var, a, bdo, img, map, object, q, script, pre,

@@ -77,6 +77,8 @@ const exampleData: AudioProperties = {
 
   ---
 
+  Lorem Ipsum
+
   - a list
   - with another item
 
