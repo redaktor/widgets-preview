@@ -59,12 +59,14 @@ video:picture-in-picture {
 }
 .media .poster {
 	z-index: -1;
-	border-radius: 50%;
 	transition: opacity 4s var(--ui-easing-leave, ease-in-out);
 }
 .root:not(.fresh) .poster {
 	z-index: 2;
 	opacity: 0;
+}
+.row .media .poster {
+	border-radius: 50%;
 }
 
 .audioAvatarWrapper {

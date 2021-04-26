@@ -109,19 +109,20 @@ export interface AudioIcache {
 	currentTime: number;
 	buffer: number;
 	duration: number;
-	fresh: boolean;
-	paused: boolean;
-	muted: boolean;
 	volume: number;
 	speed: number;
-	speedControl: boolean;
-	isPicInPic: boolean;
-	dragging: boolean;
-	hasTracks: boolean;
 	tracks: TextTracks;
 	trackMenu: RenderResult;
-	trackMenuOpen: boolean;
 	tracksVisible: VisibleTracks | {};
+	hasTracks: boolean;
+	isSpeedMenuOpen: boolean;
+	isTrackMenuOpen: boolean;
+	isPicInPic: boolean;
+	isDragging: boolean;
+	isFresh: boolean;
+	isPaused: boolean;
+	isMuted: boolean;
+	isRemaining: boolean;
 }
 export interface AudioChildren {
 	/** Optional Header */
@@ -197,30 +198,32 @@ export const Audio = factory(function Audio({
 	getOrSet('id', widgetId, false);
 	getOrSet('buffer', 0, false);
 	getOrSet('currentTime', 0, false);
-	getOrSet('fresh', true, false);
-	getOrSet('muted', muted, false);
 	getOrSet('volume', Math.min(Math.max(0, volume), 1), false);
 	getOrSet('speed', Math.min(Math.max(0.2, speed), 2), false);
-	getOrSet('speedControl', false, false);
-	getOrSet('trackMenuOpen', false, false);
-	getOrSet('paused', !autoPlay);
+	getOrSet('isSpeedMenuOpen', false, false);
+	getOrSet('isTrackMenuOpen', false, false);
+	getOrSet('isFresh', true, false);
+	getOrSet('isMuted', muted, false);
+	getOrSet('isRemaining', true, false);
+	getOrSet('isPaused', !autoPlay);
+
 
 	getOrSet('tracksVisible', {captions: '', subtitles: '', descriptions: '', chapters: '', metadata: ''});
-	if (!get('paused') && get('fresh')) { set('fresh', false) }
+	if (!get('isPaused') && get('isFresh')) { set('isFresh', false) }
 
   const togglePlay = (e?: Event) => {
 		e && e.preventDefault();
 		e && e.stopPropagation();
-		set('paused', !get('paused'));
-		!!audio && audio[!get('paused') ? 'play' : 'pause']();
-		if (!get('paused') && onPlay) {
+		set('isPaused', !get('isPaused'));
+		!!audio && audio[!get('isPaused') ? 'play' : 'pause']();
+		if (!get('isPaused') && onPlay) {
 			onPlay(get('currentTime')||0)
 		} else if (onPause) {
 			onPause(get('currentTime')||0)
 		}
   }
   const toggleMute = () => {
-    audio.muted = set('muted', !get('muted'));
+    audio.muted = set('isMuted', !get('isMuted'));
   }
 
 	const handleDownload = () => {
@@ -313,7 +316,7 @@ export const Audio = factory(function Audio({
 		if (currentTime) {
 			audio.currentTime = currentTime;
 		}
-		audio.muted = get('muted')||muted;
+		audio.muted = get('isMuted')||muted;
 		audio.volume = get('volume')||volume;
 		audio.playbackRate = get('speed')||speed;
 		autoPlay && togglePlay();
@@ -405,7 +408,7 @@ export const Audio = factory(function Audio({
 		}
 	});
 	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
-	const menuOpen = get('trackMenuOpen');
+	const menuOpen = get('isTrackMenuOpen');
 	const formattedDuration = formatTime(Math.floor(get('duration')||0));
 	const {breakpoint: vp = '_m', contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
 	const lh = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
@@ -430,8 +433,8 @@ export const Audio = factory(function Audio({
 			theme.colored(colors),
 			theme.elevated(ui),
 			theme.animated(themedCss),
-			get('fresh') && themedCss.fresh,
-			get('paused') && themedCss.paused,
+			get('isFresh') && themedCss.fresh,
+			get('isPaused') && themedCss.paused,
 			vp === '_xs' && themedCss.mini,
 			vp === '_s' || vp === '_m' && themedCss.medium,
 			vp === '_l' || vp === '_xl' && themedCss.large,
@@ -452,7 +455,7 @@ export const Audio = factory(function Audio({
 				title={messages.captions}
 				variant="flat"
 				aria-haspopup="menu"
-				onClick={() => { set('trackMenuOpen', !menuOpen) }}
+				onClick={() => { set('isTrackMenuOpen', !menuOpen) }}
 			>
 				<Icon size="xxl" type="code" />
 			</Button>
@@ -478,13 +481,13 @@ export const Audio = factory(function Audio({
 				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :
 				<video key="audio" {...playerProps}>{sources}{children()}</video>
 			}
-			{!isRow && !menuOpen && get('paused') && <div classes={themedCss.names}>{namesPaginated}</div>}
+			{!isRow && !menuOpen && get('isPaused') && <div classes={themedCss.names}>{namesPaginated}</div>}
 			{!menuOpen &&
 				<button
 					type="button"
-					title={get('paused') ? messages.play : messages.pause}
+					title={get('isPaused') ? messages.play : messages.pause}
 					aria-controls={get('id')}
-					aria-label={get('paused') ? messages.play : messages.pause}
+					aria-label={get('isPaused') ? messages.play : messages.pause}
 					classes={themedCss.playPause} onclick={togglePlay}
 				/>
 			}
@@ -507,58 +510,65 @@ export const Audio = factory(function Audio({
 			/>
 			<div classes={themedCss.captionRow}>
 				<p classes={themedCss.caption}>
-					<span classes={themedCss.time}>
-						{formatTime(Math.floor(get('currentTime')||0))}{vp === '_xs' ? '' : ' '}
+					<span classes={themedCss.time} onclick={() => { set('isRemaining', !get('isRemaining')) }}>
+						{
+							get('isRemaining') ?
+							`- ${formatTime(Math.floor((get('duration')||0) - (get('currentTime')||0)))}` :
+							formatTime(Math.floor(get('currentTime')||0))
+						}
+						{vp === '_xs' ? '' : ' '}
 					</span>
-					<span classes={themedCss.duration}>
-						/{vp === '_xs' ? '' : ' '}{formattedDuration}
-					</span>
+					{
+						get('isRemaining') ? '' : <span classes={themedCss.duration}>
+							/{vp === '_xs' ? '' : ' '}{formattedDuration}
+						</span>
+					}
 				</p>
 				<button
 					tabIndex={0}
 					type="button"
 					title={messages.speed}
 					aria-label={messages.speed}
-					classes={[themedCss.speedControl, get('muted') && themedCss.muted]}
-					onclick={() => set('speedControl', !get('speedControl'))}
+					classes={[themedCss.speedControl, get('isMuted') && themedCss.muted]}
+					onclick={() => set('isSpeedMenuOpen', !get('isSpeedMenuOpen'))}
 				>
 					{get('speed')}x
 				</button>
 				<div classes={themedCss.volume}>
 					<Slider
 						key="volumeOrSpeed"
-						max={get('speedControl') ? 2 : 1}
+						max={get('isSpeedMenuOpen') ? 2 : 1}
 						step={0.1}
-						markType={get('speedControl') ? 'dot' : void 0}
-						marks={get('speedControl') ? {1:'|'} : void 0}
-						color={(get('muted') || vol < 0.05) ? 'warning' : 'grey'}
+						markType={get('isSpeedMenuOpen') ? 'dot' : void 0}
+						marks={get('isSpeedMenuOpen') ? {1:'|'} : void 0}
+						color={(get('isMuted') || vol < 0.05) ? 'warning' : 'grey'}
 						value={
-							get('speedControl') ?
+							get('isSpeedMenuOpen') ?
 								get('speed') :
-								(get('muted') ? 0 : vol)
+								(get('isMuted') ? 0 : vol)
 						}
 						onValue={(v) => {
-							if (get('speedControl')) {
+							if (get('isSpeedMenuOpen')) {
 								audio.playbackRate = set('speed', Math.max(0.2,v))||1;
 							} else {
 								if (vol >= 0.05) {
-									set('muted', false, false);
+									set('isMuted', false, false);
 								}
 								audio.volume = set('volume', v);
 							}
 						}}
 						size="s"
 					/>
-					{!get('speedControl') &&
+					{!get('isSpeedMenuOpen') &&
 						<Button
 							variant="flat"
 							size="xs"
 							onClick={toggleMute}
-							title={get('muted') ? messages.unmute : messages.mute}
-							aria={{label: get('muted') ? messages.unmute : messages.mute}}
+							title={get('isMuted') ? messages.unmute : messages.mute}
+							aria={{label: get('isMuted') ? messages.unmute : messages.mute}}
 						>
 							<Icon type={
-								(get('muted') || vol < 0.05) ? 'volumeMute' :
+								(get('isMuted') || vol < 0.05) ? 'volumeMute' :
 								(vol > 0.75 ? 'volumeHigh' : (vol > 0.3 ? 'volumeMedium' : 'volumeLow'))
 							} />
 						</Button>
@@ -579,7 +589,7 @@ export const Audio = factory(function Audio({
 				</Paginated>
 			}
 			{
-				APo.content && <Collapsed lines={isRow ? (get('fresh') ? 3 : 1) : 14}>
+				APo.content && <Collapsed lines={isRow ? (get('isFresh') ? 3 : 1) : 14}>
 					<div classes={[themedCss.content, typoClass]}>
 						{APo.content.map((_content, i) => <virtual>
 							<MD key={`content${i}`} content={_content} /><hr />
