@@ -421,7 +421,7 @@ export const Audio = factory(function Audio({
 				<h5 key={`name${i}`} classes={[themedCss.name, typoClass]}>{_name}</h5>)}
 		</Paginated>
 
-
+console.log(isRow, vp);
 	return <div
 		key="root"
 		classes={[
@@ -519,9 +519,10 @@ export const Audio = factory(function Audio({
 						{vp === '_xs' ? '' : ' '}
 					</span>
 					{
-						get('isRemaining') ? '' : <span classes={themedCss.duration}>
-							/{vp === '_xs' ? '' : ' '}{formattedDuration}
-						</span>
+						get('isRemaining') ? '' :
+							<span classes={themedCss.duration} onclick={() => { set('isRemaining', true) }}>
+								/{vp === '_xs' ? '' : ' '}{formattedDuration}
+							</span>
 					}
 				</p>
 				<button
@@ -576,7 +577,9 @@ export const Audio = factory(function Audio({
 				</div>
 			</div>
 		</div>
-		<div classes={themedCss.attributions}><AttributedTo {...APo} /></div>
+		<div classes={themedCss.attributions}>
+			<AttributedTo {...APo} max={39} />
+		</div>
 		<div classes={themedCss.contentWrapper}>
 			{!!isRow && namesPaginated}
 			{
@@ -589,7 +592,7 @@ export const Audio = factory(function Audio({
 				</Paginated>
 			}
 			{
-				APo.content && <Collapsed lines={isRow ? (get('isFresh') ? 3 : 1) : 14}>
+				APo.content && <Collapsed responsive={!isRow} lines={isRow ? (get('isFresh') ? 2 : 1) : 14}>
 					<div classes={[themedCss.content, typoClass]}>
 						{APo.content.map((_content, i) => <virtual>
 							<MD key={`content${i}`} content={_content} /><hr />
@@ -597,8 +600,9 @@ export const Audio = factory(function Audio({
 					</div>
 				</Collapsed>
 			}
-			<p>... attachments</p>
 		</div>
+		<p classes={themedCss.images}>... images</p>
+		<p classes={themedCss.attachments}>... attachments</p>
 	</div>
 
 });

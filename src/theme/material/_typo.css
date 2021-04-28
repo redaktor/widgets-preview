@@ -172,7 +172,8 @@ ul, ol {
   padding-top: 0px;
 }
 hr {
-  --mbt: calc((var(--line, 16px) - 1px + var(--mb, 16px)) / 2);
+  --mbt: calc(var(--lineHalf, 16px) - 1px);
+  height: 2px;
   margin: var(--mbt) 0px var(--mbt) 0px;
 }
 body {

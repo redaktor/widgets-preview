@@ -159,9 +159,6 @@ export interface RedaktorProperties extends ThemedProperties {
   responsive?: boolean;
 	size?: Sizes;
 	schema?: any; // TODO
-  filled?: boolean;
-  outlined?: boolean;
-  shaped?: boolean;
 }
 export interface RedaktorBaseCSS {
   /* only ENUMS Material and Size TODO */

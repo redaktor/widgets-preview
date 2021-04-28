@@ -5,10 +5,10 @@
 	width: 100%;
 	background-size: cover;
 	padding: 0 !important;
+	margin-bottom: 0 !important;
 }
-.mini { }
-.medium { }
-.large { }
+.xs, .s, .m, .l, .xl, .xxl { }
+.mini, .medium, .large { }
 .menuOpen { }
 
 .trackMenu {
@@ -128,8 +128,8 @@ video:picture-in-picture {
 	max-width: 100%;
 	z-index: 6;
 }
-
 .mediaFreshTop {
+	padding-top: var(--pt);
 	justify-content: flex-start;
 }
 .mediaTop {
@@ -204,6 +204,9 @@ video:picture-in-picture {
 	transition: all var(--ui-dpd-0, 100ms) ease-in-out;
 	margin-top: var(--line);
 }
+.root:not(.row):not(.fresh) .playPause::after {
+	margin-top: var(--lineHalf);
+}
 .root:not(.paused) .media:hover .audioAvatarWrapper {
 	opacity: 0.24;
 }
@@ -262,9 +265,10 @@ video:picture-in-picture {
 
 }
 .time {
-
+	cursor: pointer;
 }
 .duration {
+	cursor: pointer;
 	color: var(--text-muted);
 }
 .volume {
@@ -339,60 +343,64 @@ video:picture-in-picture {
 	padding: 0 var(--p) var(--line) var(--p);
 	order: 5;
 }
-
+.images {
+	background: red;
+	display: flex;
+	flex: 1;
+	min-width: 320px;
+	max-width: 100%;
+	order: 7;
+}
+.attachments {
+	background: green;
+	display: flex;
+	flex: 1;
+	min-width: 320px;
+	max-width: 100%;
+	order: 8;
+}
 .footer {
 
 }
-
-.xs { }
-.s { }
-.m { }
-.l { }
-.xl { }
-.xxl { }
-
-
 
 .root.row {
 	flex-direction: row;
 	flex-wrap: wrap;
 }
-.root.row .mediaFreshTop,
-.root.row .mediaTop {
+.row .mediaFreshTop {
 	min-width: var(--line5);
 	margin-right: var(--grid-base);
 }
-.root.row .media {
-	order: 0;
+.row .media {
 	width: var(--line5);
 	max-height: var(--line5);
 	margin-top: 0;
-	margin-right: var(--grid-base);
+	margin-right: var(--line);
 	background: none;
-	overflow: visible;
+	z-index: 1;
 }
 .row:not(.fresh) .mediaTop {
 	display: none;
 }
-.root.row .media {
+.row .media {
 	order: 3;
 }
-.root.row .attributions {
+.row .controls {
+	order: 2;
+	width: 50%;
+	min-width: 240px;
+}
+.fresh.row .attributions {
 	order: 2;
 	width: calc(100% - var(--line5) - var(--grid-base));
-}
-
-
-.row:not(.fresh) .controls {
-	order: 2;
-	width: 100%;
 }
 .row:not(.fresh) .attributions {
 	order: 1;
 	width: 50%;
 	min-width: 320px;
 }
-.root.row .controls {
-	width: 50%;
-	min-width: 240px;
+.row .contentWrapper {
+	min-width: 48ch;
+	flex: 1;
+	z-index: 2;
 }

@@ -11,6 +11,8 @@ export interface CollapsedProperties extends ThemeProperties {
 	lines?: number;
 	/** Initially expaned, default false */
 	expanded?: boolean;
+	/** full width */
+	responsive?: boolean;
 }
 
 const factory = create({ theme })
@@ -21,6 +23,11 @@ export const Collapsed = factory(function Collapsed({ properties, children, midd
 		lines = 14,
 		expanded = false,
 		property = uuid(),
+		responsive = true,
+		spaced = false,
+		size = 's',
+		color = 'primary',
+		variant = 'flat'
 	} = properties();
 
 	const c = children();
@@ -36,8 +43,8 @@ export const Collapsed = factory(function Collapsed({ properties, children, midd
 		<div classes={[themedCss.content]} style={`--l: ${lines};`}>
 			{children()}
 		</div>
-		<Button labelFor={idBase} size="s" variant="flat" responsive={true}>
-			<span classes={themedCss.more} />read more
+		<Button labelFor={idBase} {...{size, spaced, color, variant, responsive}}>
+			<span classes={themedCss.more} /> read more
 		</Button>
 	</virtual>
 });

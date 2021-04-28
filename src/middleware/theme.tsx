@@ -1,4 +1,5 @@
 import { create } from '@dojo/framework/core/vdom';
+import { ActivityPubObject } from '../common/interfaces';
 import { Sizes, Materials, Spaced, Variants, Elevation, PointerDevices } from '../common/util';
 import coreTheme, { ThemeProperties as CoreProps } from '@dojo/framework/core/middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
@@ -48,6 +49,7 @@ export interface ThemeProperties extends CoreProps {
 interface ThemeIcache {
 	l: number;
 }
+export type ThemedActivityPubObject = ActivityPubObject & ThemeProperties;
 const icache = createICacheMiddleware<ThemeIcache>();
 const factory = create({ coreTheme, icache }).properties<ThemeProperties>();
 export const theme = factory(function({ middleware: { coreTheme, icache }, properties }) {

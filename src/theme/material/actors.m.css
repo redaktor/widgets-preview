@@ -1,10 +1,30 @@
 .root {
 
 }
-
+.spaced {}
+.dense {}
 .actors {
 	display: flex;
 	flex-wrap: wrap;
+}
+
+.actors > .actor {
+	order: 2;
+	height: var(--line2);
+	margin: 0;
+}
+.dense .actors > .actor {
+	margin: 0 -2px 0 0;
+}
+.moreWrapper {
+	order: 9999;
+	padding-top: var(--pt);
+}
+.moreContent {
+	font-weight: var(--weight-bold, 800);
+}
+.moreContentDense {
+	letter-spacing: -1px;
 }
 .closeActors {
 	position: absolute;
@@ -17,11 +37,6 @@
 }
 .actors > input:checked + label {
 	order: 1;
-}
-.actors > label {
-	order: 2;
-	height: var(--line2);
-	margin: 0;
 }
 .actors > input,
 .actors > details {

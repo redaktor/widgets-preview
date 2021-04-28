@@ -113,7 +113,7 @@ export default factory(function Basic() {
       <virtual>
   			<div styles={{ width: '50%' }}>{audio()}</div>
         <hr />
-        <div styles={{ width: '100%', marginTop: 'var(--line2)' }}>{audio(true)}</div>
+        <div styles={{ width: '100%' }}>{audio(true)}</div>
       </virtual>
 		</Example>
 	);
