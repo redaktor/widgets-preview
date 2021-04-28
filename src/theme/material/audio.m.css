@@ -7,9 +7,21 @@
 	padding: 0 !important;
 	margin-bottom: 0 !important;
 }
+.root:not(.row) {
+	max-width: 64ch;
+}
 .xs, .s, .m, .l, .xl, .xxl { }
 .mini, .medium, .large { }
-.menuOpen { }
+
+
+
+.menuOpen, .paused { }
+.measure {
+	position: absolute;
+	width: 100%;
+	height: 1px;
+	top: -1px;
+}
 
 .trackMenu {
 	width: 100%;
@@ -101,7 +113,7 @@ video:picture-in-picture {
 	width: 100%;
 	padding: var(--pt) var(--line) var(--pt) var(--line);
 	box-shadow: var(--ui-dp-2);
-	z-index: 4;
+	z-index: 6;
 }
 .name {
 	font-weight: var(--weight-semibold, 500);
@@ -119,7 +131,7 @@ video:picture-in-picture {
 	padding: 0;
 }
 .fresh .names {
-	padding: var(--pt) var(--line) var(--pt) calc(var(--line) * 2.5);
+	padding: var(--pt) 19% var(--pt) 19%;
 	bottom: calc(var(--pt) + var(--line) + (var(--line) * var(--mml)));
 }
 .root:not(.row) .mediaFreshTop,
@@ -150,7 +162,7 @@ video:picture-in-picture {
 	background-size: cover; /*contain;*/
 	filter: contrast(80%);
 	overflow: hidden;
-
+	z-index: 4;
 	transition: border-radius var(--ui-dpd-16,0.5s) var(--ui-easing);
 	width: 100%;
 	cursor: pointer;
@@ -180,10 +192,9 @@ video:picture-in-picture {
 	max-width: 100vh;
 }
 
-.paused {
-
-}
 .playPause {
+	--bBase: var(--line2);
+	--bHalf: calc(var(--bBase) / 2);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -194,25 +205,24 @@ video:picture-in-picture {
 	padding: 0 0 var(--line) 0;
 	margin: 0;
 }
+.root.row .playPause { --bBase: calc(var(--line) * 1.5); }
+.root.preview .playPause { --bBase: var(--line); }
+
 .playPause::after {
 	--playcolor: var(--ui-bg, #eee);
 	content: "";
 	display: block;
-	width: var(--line2);
-	height: var(--line2);
 	border-color: transparent transparent transparent var(--playcolor, #eee);
 	transition: all var(--ui-dpd-0, 100ms) ease-in-out;
 	margin-top: var(--line);
+	width: var(--bBase);
+	height: var(--bBase);
 }
 .root:not(.row):not(.fresh) .playPause::after {
 	margin-top: var(--lineHalf);
 }
 .root:not(.paused) .media:hover .audioAvatarWrapper {
 	opacity: 0.24;
-}
-.root:not(.paused) .playPause:hover::after {
-	border-style: double;
-	border-width:0px 0px 0px var(--line2);
 }
 .fresh.row .playPause::after {
 	--playcolor: var(--r-primary, #ff7a00);
@@ -230,7 +240,11 @@ video:picture-in-picture {
 }
 .paused .playPause::after {
 	border-style: solid;
-	border-width: var(--line) 0 var(--line) var(--line2);
+	border-width: var(--bHalf) 0 var(--bHalf) var(--bBase);
+}
+.root:not(.paused) .playPause:hover::after {
+	border-style: double;
+	border-width: 0px 0px 0px var(--bBase);
 }
 
 .menuOpen .audioAvatarWrapper,
@@ -239,11 +253,12 @@ video:picture-in-picture {
 	display: none;
 }
 .menuOpen .audio.video {
-	z-index: -1;
+		z-index: -1;
 }
 
 .controls {
 	height: var(--line3);
+	z-index: 7;
 }
 .fresh .mediaTop,
 .root:not(.fresh) .mediaFreshTop,
@@ -304,8 +319,8 @@ video:picture-in-picture {
 	margin: 0 0 0 calc(var(--grid-base) * 2);
 	padding: 0;
 }
-.mini .mute,
-.mini .speed {
+.micro .mute, .xs .mute,
+.micro .speed, .xs .speed {
 	margin: 0 0 0 var(--grid-base);
 }
 .mute.muted,
@@ -322,12 +337,14 @@ video:picture-in-picture {
 	justify-content: center;
 	align-items: flex-start;
 }
-.mini .speedControl {
+.micro .speedControl,
+.xs .speedControl {
 	z-index: 6;
 	justify-content: flex-end;
 	min-width: 16px;
 }
-.mini .volume {
+.micro .volume,
+.xs .volume {
 	min-width: var(--touch-target-min, var(--line2, 32px));
 }
 .play { }
@@ -343,24 +360,23 @@ video:picture-in-picture {
 	padding: 0 var(--p) var(--line) var(--p);
 	order: 5;
 }
-.images {
-	background: red;
+.images,
+.attachments {
 	display: flex;
 	flex: 1;
 	min-width: 320px;
 	max-width: 100%;
+}
+.images {
+	background: red;
 	order: 7;
 }
 .attachments {
 	background: green;
-	display: flex;
-	flex: 1;
-	min-width: 320px;
-	max-width: 100%;
 	order: 8;
 }
 .footer {
-
+	z-index: 6;
 }
 
 .root.row {
@@ -378,6 +394,12 @@ video:picture-in-picture {
 	margin-right: var(--line);
 	background: none;
 	z-index: 1;
+}
+.micro.row .media,
+.xs.row .media {
+	width: 72px;
+	margin-right: var(--grid-base);
+	max-height: 72px;
 }
 .row:not(.fresh) .mediaTop {
 	display: none;
@@ -400,7 +422,11 @@ video:picture-in-picture {
 	min-width: 320px;
 }
 .row .contentWrapper {
-	min-width: 48ch;
+	min-width: 38ch;
 	flex: 1;
 	z-index: 2;
+}
+.micro .row .contentWrapper,
+.xs .row .contentWrapper {
+	min-width: 240px;
 }

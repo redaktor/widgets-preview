@@ -410,18 +410,20 @@ export const Audio = factory(function Audio({
 	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
 	const menuOpen = get('isTrackMenuOpen');
 	const formattedDuration = formatTime(Math.floor(get('duration')||0));
-	const {breakpoint: vp = '_m', contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
+	const {breakpoint: vp = 'm' } = breakpoints.get('measure')||{};
+	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
 	const lh = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
 	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
-	const typoClass = vp === '_xs' ? themedCss.miniTypo : (vp === '_l' || vp === '_xl' ?
+	const isMini = (isRow && (vp === 'micro' || vp === 'xs')) || (!isRow && vp === 'micro');
+	const typoClass = isMini ? themedCss.miniTypo : (vp === 'l' || vp === 'xl' ?
 		themedCss.largeTypo : themedCss.mediumTypo);
+	const audioAvatarSize = vp === 'micro' || vp === 'xs' ? 'l' : 'xl';
 
 	const namesPaginated = APo.name && <Paginated property="name">
 			{clampStrings(APo.name, 100).map((_name, i) =>
 				<h5 key={`name${i}`} classes={[themedCss.name, typoClass]}>{_name}</h5>)}
 		</Paginated>
 
-console.log(isRow, vp);
 	return <div
 		key="root"
 		classes={[
@@ -435,9 +437,7 @@ console.log(isRow, vp);
 			theme.animated(themedCss),
 			get('isFresh') && themedCss.fresh,
 			get('isPaused') && themedCss.paused,
-			vp === '_xs' && themedCss.mini,
-			vp === '_s' || vp === '_m' && themedCss.medium,
-			vp === '_l' || vp === '_xl' && themedCss.large,
+			themedCss[(vp as keyof typeof themedCss)],
 			menuOpen && themedCss.menuOpen
 		]}
 		onMouseEnter={onMouseEnter && onMouseEnter(get('currentTime')||0)}
@@ -446,6 +446,7 @@ console.log(isRow, vp);
 		aria-label="Audio Player"
 		role="region"
 	>
+		<div classes={themedCss.measure} key="measure" />
 		<div classes={themedCss.mediaFreshTop}>
 			<Icon type="listen" spaced={true} />
 			<i classes={themedCss.freshDuration}>{formattedDuration}</i>
@@ -471,7 +472,7 @@ console.log(isRow, vp);
 		>
 			{ menuOpen && get('trackMenu') }
 			<div key="avatar" classes={themedCss.audioAvatarWrapper}>
-				<AudioAvatar audioElement={audio} size={vp === '_xs' ? 'l' : 'xl'}>SL</AudioAvatar>
+				<AudioAvatar audioElement={audio} size={audioAvatarSize}>SL</AudioAvatar>
 			</div>
 			<noscript>
 				<video controls={true} {...playerProps}>{sources}{children()}</video>
@@ -516,12 +517,12 @@ console.log(isRow, vp);
 							`- ${formatTime(Math.floor((get('duration')||0) - (get('currentTime')||0)))}` :
 							formatTime(Math.floor(get('currentTime')||0))
 						}
-						{vp === '_xs' ? '' : ' '}
+						{vp === 'micro' || vp === 'xs' ? '' : ' '}
 					</span>
 					{
 						get('isRemaining') ? '' :
 							<span classes={themedCss.duration} onclick={() => { set('isRemaining', true) }}>
-								/{vp === '_xs' ? '' : ' '}{formattedDuration}
+								/{vp === 'micro' || vp === 'xs' ? '' : ' '}{formattedDuration}
 							</span>
 					}
 				</p>

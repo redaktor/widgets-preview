@@ -111,7 +111,7 @@ export default factory(function Basic() {
 	return (
 		<Example spaced={true}>
       <virtual>
-  			<div styles={{ width: '50%' }}>{audio()}</div>
+  			<div styles={{ width: '66.666%' }}>{audio()}</div>
         <hr />
         <div styles={{ width: '100%' }}>{audio(true)}</div>
       </virtual>
