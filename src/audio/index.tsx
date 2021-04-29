@@ -70,7 +70,6 @@ store the last used
 */
 export interface AudioProperties extends ActivityPubObject {
 	isRow?: boolean;
-	poster?: string;
 	editable?: boolean;
 	fullscreen?: boolean;
 	currentTime?: number;
@@ -85,6 +84,16 @@ export interface AudioProperties extends ActivityPubObject {
 	onMouseLeave?: (currentTime: number) => any;
 	/** `id` set on the root button DOM node */
 	widgetId?: string;
+	/* extra poster instead of image[0] */
+	poster?: string;
+	/* show poster image (poster or image[0]), default true */
+	hasPoster?: boolean;
+	/* show audio controls, default true */
+	hasControls?: boolean;
+	/* show summary and content, default true */
+	hasContent?: boolean;
+	/* show images and attachments, default true */
+	hasAttachment?: boolean;
 }
 
 interface TextTrack {
@@ -185,6 +194,7 @@ export const Audio = factory(function Audio({
 	const { messages } = i18n.localize(bundle);
 	const {
 		alt, editable, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId = uuid(),
+		hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
 		isRow = false, autoPlay = false, muted = false, volume = 1, speed = 1, poster, ..._rest
 	} = normalizeActivityPub(properties());
 
@@ -346,13 +356,6 @@ export const Audio = factory(function Audio({
 				break;
 		}
 	}
-	const seekBy = (time: number) => {
-    const currentTime = audio.currentTime + time;
-    if (!isNaN(currentTime)) {
-			set('currentTime', currentTime);
-			audio.currentTime = currentTime;
-    }
-  }
 
 	/* TODO timeupdate event:
 	Should we debounce ???
@@ -364,6 +367,13 @@ export const Audio = factory(function Audio({
 		set('currentTime', audio.currentTime);
 	}
 
+	const seekBy = (time: number) => {
+		const currentTime = audio.currentTime + time;
+		if (!isNaN(currentTime)) {
+			setTime(currentTime);
+			audio.currentTime = currentTime;
+		}
+	}
 	/*
 		classNames('audio-player', { editable })
 	*/
@@ -477,7 +487,7 @@ export const Audio = factory(function Audio({
 			<noscript>
 				<video controls={true} {...playerProps}>{sources}{children()}</video>
 			</noscript>
-			{!!posterSrc && <img src={posterSrc} classes={themedCss.poster} />}
+			{hasPoster && !!posterSrc && <img src={posterSrc} classes={themedCss.poster} />}
 			{!get('hasTracks') && !get('isPicInPic') ?
 				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :
 				<video key="audio" {...playerProps}>{sources}{children()}</video>
@@ -494,7 +504,7 @@ export const Audio = factory(function Audio({
 			}
 		</div>
 
-		<div classes={themedCss.controls}>
+		{hasControls && <div classes={themedCss.controls}>
 			<Slider
 				key="progress"
 				max={audio ? audio.duration : 100}
@@ -577,33 +587,34 @@ export const Audio = factory(function Audio({
 					}
 				</div>
 			</div>
-		</div>
+		</div>}
+
 		<div classes={themedCss.attributions}>
 			<AttributedTo {...APo} max={39} />
 		</div>
-		<div classes={themedCss.contentWrapper}>
+
+		{hasContent && <div classes={themedCss.contentWrapper}>
 			{!!isRow && namesPaginated}
 			{
 				APo.summary && <Paginated key="summary" property="summary">
 					{clampStrings(APo.summary, 500).map((_summary, i) =>
-						<div key={`summary${i}`} classes={[themedCss.summary, typoClass]}>
-							<MD content={_summary} />
-						</div>
+						<MD classes={[themedCss.summary, typoClass]} content={_summary} />
 					)}
 				</Paginated>
 			}
 			{
 				APo.content && <Collapsed responsive={!isRow} lines={isRow ? (get('isFresh') ? 2 : 1) : 14}>
-					<div classes={[themedCss.content, typoClass]}>
-						{APo.content.map((_content, i) => <virtual>
-							<MD key={`content${i}`} content={_content} /><hr />
-						</virtual>)}
-					</div>
+					{APo.content.map((_content, i) => <virtual>
+						<MD classes={[themedCss.content, typoClass]} key={`content${i}`} content={_content} /><hr />
+					</virtual>)}
 				</Collapsed>
 			}
-		</div>
-		<p classes={themedCss.images}>... images</p>
-		<p classes={themedCss.attachments}>... attachments</p>
+		</div>}
+
+		{hasAttachment && <virtual>
+			<p classes={themedCss.images}>... images</p>
+			<p classes={themedCss.attachments}>... attachments</p>
+		</virtual>}
 	</div>
 
 });

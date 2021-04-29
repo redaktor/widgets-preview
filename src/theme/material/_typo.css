@@ -223,7 +223,7 @@ Typography
 /* xs - hero */
 
 /* 12px */
-.xs {
+.xs, .xs > p {
   --size: 1.0434782608695652rem;
   --lh: 1.75;
   --pt: 0.5em;
@@ -232,7 +232,7 @@ Typography
 
 }
 /* 13px */
-.s, .responsive {
+.s, .s > p, .responsive {
   --size: 1.1304347826086956rem;
   --lh: 1.6153846153846154;
   --pt: 0.46153846153846156em;
@@ -240,7 +240,7 @@ Typography
   --caph: 0.6923076923076923;
 }
 /* 14px */
-.m, .cardsSmall {
+.m, .m > p, .cardsSmall {
   --size: 1.2173913043478262rem;
   --lh: 1.5;
   --pt: 0.39285714285714285em;
@@ -264,7 +264,7 @@ p.serif, .l.serif, .cards.serif {
 */
 
 /* 16px */
-.xl {
+.xl, .xl > p {
   --size: 1.391304347826087rem;
   --lh: 1.3125;
   --pt: 0.3125em;
@@ -272,7 +272,7 @@ p.serif, .l.serif, .cards.serif {
   --caph: 0.6875;
 }
 /* 17px */
-h5, .h5, .xxl {
+h5, .h5, .xxl, .xxl > p {
   --size: 1.4782608695652173rem;
   --lh: 1.2352941176470589;
   --pt: 0.2647058823529412em;

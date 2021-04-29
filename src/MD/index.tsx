@@ -15,7 +15,7 @@ const html = require('property-information/html');
 
 export interface MDProperties {
 	content: string;
-	classes?: string;
+	classes?: string | string[];
 	rehypePlugins?: unified.PluggableList;
 	remarkPlugins?: unified.PluggableList;
 	/* Ignore HTML in Markdown completely */
