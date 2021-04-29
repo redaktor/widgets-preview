@@ -53,4 +53,6 @@ export const contentWrapper: string;
 export const images: string;
 export const attachments: string;
 export const footer: string;
+export const summaryPaginated: string;
+export const contentCollapsed: string;
 export const attributions: string;

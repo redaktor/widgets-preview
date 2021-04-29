@@ -1,3 +1,3 @@
 export const input: string;
-export const content: string;
+export const root: string;
 export const more: string;

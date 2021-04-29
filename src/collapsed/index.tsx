@@ -40,7 +40,7 @@ export const Collapsed = factory(function Collapsed({ properties, children, midd
 			<input id={idBase} type="checkbox" key="contentDetails" classes={themedCss.input} checked={true} /> :
 			<input id={idBase} type="checkbox" key="contentDetails" classes={themedCss.input} />
 		}
-		<div classes={[themedCss.content]} style={`--l: ${lines};`}>
+		<div classes={[themedCss.root]} style={`--l: ${lines};`}>
 			{children()}
 		</div>
 		<Button labelFor={idBase} {...{size, spaced, color, variant, responsive}}>

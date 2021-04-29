@@ -379,6 +379,16 @@ video:picture-in-picture {
 	z-index: 6;
 }
 
+.summaryPaginated,
+.contentCollapsed {
+
+}
+.micro.row .summaryPaginated,
+.xs.row .summaryPaginated,
+.micro.row .contentCollapsed,
+.xs.row .contentCollapsed {
+	margin-left: -72px;
+}
 .root.row {
 	flex-direction: row;
 	flex-wrap: wrap;

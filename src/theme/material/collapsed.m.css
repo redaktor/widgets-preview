@@ -1,7 +1,7 @@
 .input  {
 	display: none;
 }
-.content {
+.root {
   display: -webkit-box;
   overflow: hidden;
   -webkit-line-clamp: var(--l,14);
@@ -10,7 +10,7 @@
 	height: calc(var(--line) * var(--l,14) + var(--pt));
 	margin-bottom: 0;
 }
-.input:checked + .content {
+.input:checked + .root {
 	display: inline-block;
 	-webkit-line-clamp: unset;
 	height: auto;
@@ -26,7 +26,7 @@ label .more {
 	content: '\f078';
 	font-family: 'redaktor' !important;
 }
-.input:checked + .content + label .more::before {
+.input:checked + .root + label .more::before {
 	content: '\f077';
 }
 .more::after {

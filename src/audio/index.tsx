@@ -596,14 +596,19 @@ export const Audio = factory(function Audio({
 		{hasContent && <div classes={themedCss.contentWrapper}>
 			{!!isRow && namesPaginated}
 			{
-				APo.summary && <Paginated key="summary" property="summary">
+				APo.summary && <Paginated key="summary" property="summary" classes={{
+						'@dojo/widgets/paginated': { root: [themedCss.summaryPaginated] }
+					}}
+				>
 					{clampStrings(APo.summary, 500).map((_summary, i) =>
 						<MD classes={[themedCss.summary, typoClass]} content={_summary} />
 					)}
 				</Paginated>
 			}
 			{
-				APo.content && <Collapsed responsive={!isRow} lines={isRow ? (get('isFresh') ? 2 : 1) : 14}>
+				APo.content && <Collapsed responsive={!isRow} lines={isRow ? (get('isFresh') ? 2 : 1) : 14} classes={{
+						'@dojo/widgets/collapsed': { root: [themedCss.contentCollapsed] }
+					}}>
 					{APo.content.map((_content, i) => <virtual>
 						<MD classes={[themedCss.content, typoClass]} key={`content${i}`} content={_content} /><hr />
 					</virtual>)}
