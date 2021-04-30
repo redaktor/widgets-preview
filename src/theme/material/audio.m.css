@@ -95,26 +95,25 @@ video:picture-in-picture {
 	opacity: 1;
 }
 
-.audio,
-.mediumTypo {
-	composes: m from './_typo.css';
-}
-.miniTypo{
-	composes: s from './_typo.css';
-}
-.largeTypo {
-	composes: l from './_typo.css';
-}
 .names {
-	position: absolute;
+	/* position: absolute;
 	bottom: 0px;
 	left: 0px;
 	background-color: rgba(0,0,0,0.64);
 	width: 100%;
 	padding: var(--pt) var(--line) var(--pt) var(--line);
-	box-shadow: var(--ui-dp-2);
+	box-shadow: var(--ui-dp-2); */
 	z-index: 6;
 }
+.kicker {
+	margin-bottom: calc(var(--mb) - var(--line)) !important;
+	color: var(--kicker);
+}
+.byline {
+	margin-top: calc(var(--line) * -1);
+	color: var(--text-muted);
+}
+.kicker,
 .name {
 	font-weight: var(--weight-semibold, 500);
 }
@@ -130,10 +129,12 @@ video:picture-in-picture {
 .root .freshDuration {
 	padding: 0;
 }
+/*
 .fresh .names {
-	padding: var(--pt) 19% var(--pt) 19%;
+	padding: var(--pt) 19.1% var(--pt) 19.1%;
 	bottom: calc(var(--pt) + var(--line) + (var(--line) * var(--mml)));
 }
+*/
 .root:not(.row) .mediaFreshTop,
 .root:not(.row) .mediaTop {
 	position: absolute;
@@ -143,6 +144,7 @@ video:picture-in-picture {
 .mediaFreshTop {
 	padding-top: var(--pt);
 	justify-content: flex-start;
+	z-index: 10;
 }
 .mediaTop {
 	right: 0px;
@@ -164,8 +166,17 @@ video:picture-in-picture {
 	overflow: hidden;
 	z-index: 4;
 	transition: border-radius var(--ui-dpd-16,0.5s) var(--ui-easing);
-	width: 100%;
+	width: 61.8%;
 	cursor: pointer;
+	margin: 0 19.1% 0 19.1%;
+}
+.xs .media {
+	width: 75%;
+	margin: 0 12.5% 0 12.5%;
+}
+.micro .media {
+	width: calc(100% - var(--line));
+	margin: 0 0 0 var(--line);
 }
 .media:not(.fresh .media) {
 	border-top-left-radius: var(--ui-border-radius-emphasized, 0.25rem);
@@ -367,6 +378,10 @@ video:picture-in-picture {
 	min-width: 320px;
 	max-width: 100%;
 }
+.micro .images,
+.micro .attachments {
+	min-width: 240px;
+}
 .images {
 	background: red;
 	order: 7;
@@ -383,12 +398,6 @@ video:picture-in-picture {
 .contentCollapsed {
 
 }
-.micro.row .summaryPaginated,
-.xs.row .summaryPaginated,
-.micro.row .contentCollapsed,
-.xs.row .contentCollapsed {
-	margin-left: -72px;
-}
 .root.row {
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -404,17 +413,6 @@ video:picture-in-picture {
 	margin-right: var(--line);
 	background: none;
 	z-index: 1;
-}
-.micro.row .media,
-.xs.row .media {
-	width: 72px;
-	margin-right: var(--grid-base);
-	max-height: 72px;
-}
-.row:not(.fresh) .mediaTop {
-	display: none;
-}
-.row .media {
 	order: 3;
 }
 .row .controls {
@@ -422,19 +420,33 @@ video:picture-in-picture {
 	width: 50%;
 	min-width: 240px;
 }
+.row .contentWrapper {
+	min-width: 38ch;
+	flex: 1;
+	z-index: 2;
+}
+.fresh.micro.row .media,
+.fresh.xs.row .media {
+	width: 72px;
+	max-height: 72px;
+	margin-top: calc(var(--line) * -1);
+	margin-right: var(--grid-base);
+}
+.fresh.xs.row .summaryPaginated,
+.fresh.xs.row .contentCollapsed {
+	margin-left: -72px;
+}
 .fresh.row .attributions {
 	order: 2;
 	width: calc(100% - var(--line5) - var(--grid-base));
+}
+.row:not(.fresh) .mediaTop {
+	display: none;
 }
 .row:not(.fresh) .attributions {
 	order: 1;
 	width: 50%;
 	min-width: 320px;
-}
-.row .contentWrapper {
-	min-width: 38ch;
-	flex: 1;
-	z-index: 2;
 }
 .micro.row .contentWrapper,
 .xs.row .contentWrapper {

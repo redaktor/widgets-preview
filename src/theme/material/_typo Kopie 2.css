@@ -1,0 +1,573 @@
+/* maven-pro-regular - latin-ext_latin */
+@font-face {
+  font-family: 'Maven Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./fonts/maven-pro-v21-latin-ext_latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./fonts/maven-pro-v21-latin-ext_latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/maven-pro-v21-latin-ext_latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/maven-pro-v21-latin-ext_latin-regular.svg#MavenPro') format('svg'); /* Legacy iOS */
+}
+/* maven-pro-500 - latin-ext_latin */
+@font-face {
+  font-family: 'Maven Pro';
+  font-style: normal;
+  font-weight: 500;
+  src: url('./fonts/maven-pro-v21-latin-ext_latin-500.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./fonts/maven-pro-v21-latin-ext_latin-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/maven-pro-v21-latin-ext_latin-500.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-500.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-500.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/maven-pro-v21-latin-ext_latin-500.svg#MavenPro') format('svg'); /* Legacy iOS */
+}
+/* maven-pro-700 - latin-ext_latin */
+@font-face {
+  font-family: 'Maven Pro';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./fonts/maven-pro-v21-latin-ext_latin-700.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('./fonts/maven-pro-v21-latin-ext_latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/maven-pro-v21-latin-ext_latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-700.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/maven-pro-v21-latin-ext_latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/maven-pro-v21-latin-ext_latin-700.svg#MavenPro') format('svg'); /* Legacy iOS */
+}
+
+/* merriweather-300 - latin-ext_latin */
+@font-face {
+  font-family: 'Merriweather';
+  font-style: normal;
+  font-weight: 300;
+  src: url('./fonts/merriweather-v21-latin-ext_latin-300.eot'); /* IE9 Compat Modes */
+  src: local('Merriweather Light'), local('Merriweather-Light'),
+       url('./fonts/merriweather-v21-latin-ext_latin-300.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/merriweather-v21-latin-ext_latin-300.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/merriweather-v21-latin-ext_latin-300.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/merriweather-v21-latin-ext_latin-300.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/merriweather-v21-latin-ext_latin-300.svg#Merriweather') format('svg'); /* Legacy iOS */
+}
+/* merriweather-300italic - latin-ext_latin */
+@font-face {
+  font-family: 'Merriweather';
+  font-style: italic;
+  font-weight: 300;
+  src: url('./fonts/merriweather-v21-latin-ext_latin-300italic.eot'); /* IE9 Compat Modes */
+  src: local('Merriweather Light Italic'), local('Merriweather-LightItalic'),
+       url('./fonts/merriweather-v21-latin-ext_latin-300italic.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/merriweather-v21-latin-ext_latin-300italic.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/merriweather-v21-latin-ext_latin-300italic.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/merriweather-v21-latin-ext_latin-300italic.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/merriweather-v21-latin-ext_latin-300italic.svg#Merriweather') format('svg'); /* Legacy iOS */
+}
+/* merriweather-italic - latin-ext_latin */
+@font-face {
+  font-family: 'Merriweather';
+  font-style: italic;
+  font-weight: 400;
+  src: url('./fonts/merriweather-v21-latin-ext_latin-italic.eot'); /* IE9 Compat Modes */
+  src: local('Merriweather Italic'), local('Merriweather-Italic'),
+       url('./fonts/merriweather-v21-latin-ext_latin-italic.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/merriweather-v21-latin-ext_latin-italic.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/merriweather-v21-latin-ext_latin-italic.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/merriweather-v21-latin-ext_latin-italic.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/merriweather-v21-latin-ext_latin-italic.svg#Merriweather') format('svg'); /* Legacy iOS */
+}
+/* merriweather-700 - latin-ext_latin */
+@font-face {
+  font-family: 'Merriweather';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./fonts/merriweather-v21-latin-ext_latin-700.eot'); /* IE9 Compat Modes */
+  src: local('Merriweather Bold'), local('Merriweather-Bold'),
+       url('./fonts/merriweather-v21-latin-ext_latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('./fonts/merriweather-v21-latin-ext_latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+       url('./fonts/merriweather-v21-latin-ext_latin-700.woff') format('woff'), /* Modern Browsers */
+       url('./fonts/merriweather-v21-latin-ext_latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('./fonts/merriweather-v21-latin-ext_latin-700.svg#Merriweather') format('svg'); /* Legacy iOS */
+}
+/*--------------------------------------------------------------
+  Typography
+--------------------------------------------------------------*/
+/* 1.067 rythm for "Maven Pro": 11.5px / 1.826086956521739 */
+/* 1.067 rythm for "Merriweather": 11.5px / 1.826086956521739 */
+/*@ import url('https://fonts.googleapis.com/css?family=Merriweather:300,300i,700|Maven+Pro:400,500,900');*/
+/* TYPO examples
+// https://codepen.io/sebilasse/pen/BdaPzN?editors=1010
+// https://jsfiddle.net/jnf1p2kd/1/
+*/
+
+:root {
+  --import-webfonts 	: true;
+  --font-name-sans    : 'Maven+Pro';
+  --font-name-serif   : 'Merriweather';
+  --font-variant-sans : '400,500,400i';
+  --font-variant-serif: '300,700,300i';
+  --font-sans         : 'Maven Pro', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  --font-serif        : 'Merriweather', Georgia, 'Palatino', 'Palatino Linotype', 'Book Antiqua', serif;
+  --font-icon         : 'redaktor';
+  --google-Subset     : 'latin';
+  --google-Protocol   : 'https://';
+
+  --base-size         : 11.5px;
+  --base-line         : 1.826086956521739;
+  --base-line-start   : -1px;
+  /* derived, do not touch */
+  --lines-below: 1;
+  --small-size: 1.4444444444444444rem;
+  --small-running-size: 1;
+
+
+  --size: 1.3043478260869565rem;
+  --lh: 1.4;
+  --pt: 0.3333333333333333em;
+  --mb: 1.0666666666666667em;
+  --caph: 0.7333333333333333;
+
+  /* do not touch */
+  --line: calc(var(--base-size) * var(--base-line));
+  --line2: calc(var(--line) * 2);
+  --line3: calc(var(--line) * 3);
+  --line4: calc(var(--line) * 4);
+  --line5: calc(var(--line) * 5);
+  --lineHalf: calc(var(--line) / 2);
+  /*---   debug  ---*/
+  --color-baseline-dark: rgba(255, 175, 0, 0.4);
+  --color-baseline-light: rgba(255, 122, 0, 0.32);
+  --color-baseline: var(--color-baseline-dark);
+  --color-baseline-xl: rgba(0, 255, 0, 1);
+  --color: rgba(0, 0, 0, 0.87);
+
+  font-size: var(--base-size);
+  line-height: var(--base-line);
+  color: var(--color);
+  box-sizing: border-box;
+}
+/*
+RESET THE BROWSER STYLES,
+only necessary here TODO FIXME
+*/
+html, body { height: 100%; }
+*, *:after, *:before {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  -webkit-box-sizing: inherit;
+  -moz-box-sizing: inherit;
+  box-sizing: inherit;
+}
+body, div, figure, section, p, h6, h5, h4, h3, h2, h1,
+small, p, b, big, i, small, tt, abbr, acronym, cite, code,
+dfn, em, kbd, strong, samp, var, a, bdo, br, img, map, object, q, script, span,
+pre, sub, sup, button, input, label, select, textarea {
+  margin: 0px;
+  padding: 0px;
+}
+ul, ol {
+  margin: 0px 0px var(--line) 0px;
+  padding-top: 0px;
+}
+hr {
+  --mbt: calc(var(--lineHalf, 16px) - 1px);
+  height: 2px;
+  margin: var(--mbt) 0px var(--mbt) 0px;
+}
+body {
+  font-size: 1em;
+  font-display: optional;
+  -webkit-font-smoothing: subpixel-antialiased;
+  font-feature-settings: 'kern' 1,'onum' 1,'liga' 1;
+  text-rendering: optimizeLegibility;
+  background-clip: content-box;
+  /*border: rgb(248, 244, 243) solid var(--line);
+  border-image: none 1 stretch 100% 0;*/
+}
+@supports (font-variant-ligatures: common-ligatures) {
+  body {
+    font-feature-settings: normal;
+    font-variant-ligatures: common-ligatures;
+  }
+}
+/*--------------------------------------------------------------
+Typography
+--------------------------------------------------------------*/
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: baseline;
+}
+
+/* RYTHM AND SIZE */
+:root, .sans, input, textarea {
+  --lineHeight: 1.826086956521739; /*
+  --gridColor: rgba(255, 0, 0, 0.5);*/
+  font-family: var(--font-sans);
+  line-height: var(--lineHeight);
+  box-sizing: border-box;
+  --weight: 400;
+  --weight-semibold: 500;
+  --weight-bold: 700;
+}
+.serif, .p, .p-small {
+  --weight: 300;
+  --weight-semibold: 700;
+  --weight-bold: 700;
+  font-family: var(--font-serif);
+}
+
+
+/* xs - hero */
+
+/* 12px */
+.xs, .xs > p {
+  --size: 1.0434782608695652rem;
+  --lh: 1.75;
+  --pt: 0.5em;
+  --mb: 1.25em;
+  --caph: 0.75;
+
+}
+/* 13px */
+.s, .s > p, .responsive {
+  --size: 1.1304347826086956rem;
+  --lh: 1.6153846153846154;
+  --pt: 0.46153846153846156em;
+  --mb: 1.1538461538461537em;
+  --caph: 0.6923076923076923;
+}
+/* 14px */
+.m, .m > p, .cardsSmall {
+  --size: 1.2173913043478262rem;
+  --lh: 1.5;
+  --pt: 0.39285714285714285em;
+  --mb: 1.1071428571428572em;
+  --caph: 0.7142857142857143;
+}
+/* 15px */
+p, .l, .cards {
+  --size: 1.3043478260869565rem;
+  --lh: 1.4;
+  --pt: 0.3333333333333333em;
+  --mb: 1.0666666666666667em;
+  --caph: 0.7333333333333333;
+}
+/*
+p.serif, .l.serif, .cards.serif {
+  --pt: 0.36666666666666664em;
+  --mb: 1.0333333333333332em;
+  --caph: 0.6666666666666666;
+}
+*/
+
+/* 16px */
+.xl, .xl > p {
+  --size: 1.391304347826087rem;
+  --lh: 1.3125;
+  --pt: 0.3125em;
+  --mb: 1em;
+  --caph: 0.6875;
+}
+/* 17px */
+h5, .h5, .xxl, .xxl > p {
+  --size: 1.4782608695652173rem;
+  --lh: 1.2352941176470589;
+  --pt: 0.2647058823529412em;
+  --mb: 0.9705882352941178em;
+  --caph: 0.7058823529411765;
+}
+/* 18px */
+h4, .h4, .text-2xl {
+  --size: 1.565217391304348rem;
+  --lh: 1.1666666666666667;
+}
+h4:not(.serif), .h4:not(.serif), .text-2xl {
+  --pt: 0.22222222222222227em;
+  --mb: 0.9444444444444444em;
+  --caph: 0.7222222222222222;
+}
+h4.serif, .h4.serif {
+  --pt: 0.25000000000000006em;
+  --mb: 0.9166666666666667em;
+  --caph: 0.6666666666666666;
+}
+
+/* 19px */
+h3, .h3, .cardsName, .text-3xl {
+  --size: 1.6521739130434783rem;
+  --lh: 1.1052631578947367;
+  --pt: 0.21052631578947362em;
+  --mb: 0.894736842105263em;
+  --caph: 0.6842105263157895;
+}
+
+/* 22px */
+.wide {
+  --size: 1.9130434782608696rem;
+  --lh: 1.9090909090909087;
+  --pt: 0.6136363636363635em;
+  --mb: 1.2954545454545452em;
+  --caph: 0.6818181818181818;
+}
+
+/* 29px */
+h2, .h2, .text-4xl {
+  --size: 2.5217391304347827rem;
+  --lh: 1.4482758620689653;
+  --pt: 0.3793103448275861em;
+  --mb: 1.0689655172413792em;
+  --caph: 0.6896551724137931;
+}
+/* 37px */
+h1, .h1 {
+  --size: 3.217391304347826rem;
+  --lh: 1.135135135135135;
+}
+h1:not(.serif), .h1:not(.serif) {
+  --pt: 0.21621621621621617em;
+  --mb: 0.9189189189189189em;
+  --caph: 0.7027027027027027;
+}
+h1.serif, .h1.serif {
+  --pt: 0.22972972972972971em;
+  --mb: 0.9054054054054054em;
+  --caph: 0.6756756756756757;
+}
+/* 42px */
+.hero {
+  --size: 3.652173913043478rem;
+  --lh: 1.4999999999999996;
+  --pt: 0.40476190476190455em;
+  --mb: 1.095238095238095em;
+  --caph: 0.6904761904761905;
+}
+
+
+
+@media screen and (min-width: 1900px) {
+  .responsive { /* l */
+    --size: 1.4782608695652173rem;
+    --lh: 1.2352941176470589;
+    --pt: 0.2647058823529412em;
+    --mb: 0.9705882352941178em;
+    --caph: 0.7058823529411765;
+  }
+}
+
+@media screen and (max-width: 572px),
+screen and (min-width: 712px),
+screen and (min-width: 940px) {
+  .cards { /* p-small */
+    --size: 1.2173913043478262rem;
+    --lh: 1.5;
+    --pt: 0.39285714285714285em;
+    --mb: 1.1071428571428572em;
+    --caph: 0.7142857142857143;
+  }
+  .cardsName {
+    --size: 1.565217391304348rem;
+    --lh: 1.1666666666666667;
+    --pt: 0.22222222222222227em;
+    --mb: 0.9444444444444444em;
+    --caph: 0.7222222222222222;
+  }
+  .cardsSmall {
+
+  }
+}
+@media screen and (min-width: 780px) and (max-width: 940px),
+screen and (min-width: 1300px) and (max-width: 1366px),
+screen and (min-width: 1500px) and (max-width: 1900px),
+screen and (min-width: 2080px) {
+  .cards { /* l */
+    --size: 1.3043478260869565rem;
+    --lh: 1.4;
+    --pt: 0.3333333333333333em;
+    --mb: 1.0666666666666667em;
+    --caph: 0.7333333333333333;
+  }
+  .cardsName {
+    --size: 1.6521739130434783rem;
+    --lh: 1.1052631578947367;
+    --pt: 0.21052631578947362em;
+    --mb: 0.894736842105263em;
+    --caph: 0.6842105263157895;
+  }
+  .cardsSmall {
+
+  }
+}
+small, p, li, h5, h4, h3, h2, h1, b, big, i, small, tt, abbr, acronym, cite, code,
+dfn, em, kbd, strong, samp, var, a, bdo, img, map, object, q, script, pre,
+sub, sup, button, input, label, select, textarea,
+.small, .p, .p-small, .h6, .h5, .h4, .h3, .h2, .h1, .hero, .xs, .s, .m, .l, .xl, .xxl,
+.meta {
+  font-size: var(--size, 16px);
+  line-height: var(--lh, 24px);
+  padding-top: var(--pt, 8px);
+  margin-bottom: var(--mb, 16px);
+}
+li {
+  margin-bottom: calc(var(--mb, 16px) - var(--line, 16px));
+}
+small, p, h5, h4, h3, h2, h1, b, big, i, small, tt, abbr, acronym, cite, code,
+dfn, em, kbd, strong, samp, var, a, bdo, img, map, object, q, script, pre,
+sub, sup, button, input, label, select, textarea {
+  font-weight: var(--weight, 400);
+}
+strong, .semibold, .strong, .meta {
+  font-weight: var(--weight-semibold, 500);
+}
+b, .b, .bold {
+  font-weight: var(--weight-bold, 700);
+}
+
+i, em, .italic {
+  font-style: italic;
+}
+
+
+.input {
+  font-family: var(--font-sans);
+}
+.input::placeholder {
+  padding-top: 0;
+}
+
+
+p > i,
+p > em {
+  line-height: 0;
+}
+pre {
+  text-shadow: none;
+}
+*:not(pre) > code { /* TODO inline code */
+  background: var(--ui-bg);
+  color: var(--text);
+  border-radius: var(--ui-border-radius-emphasized);
+  padding: calc(var(--pt, 8px) / 3) calc(var(--pt, 8px) / 1.618) !important;
+}
+
+em,
+[class*="text shadow"] {
+  text-shadow: 0px 1px 2px rgba(34, 36, 38, 0.15);
+}
+
+.shadow:not([class*="subtle shadow"]) {
+  box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.08);
+}
+
+[class*="subtle shadow"] {
+  box-shadow: 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
+}
+
+.header {
+  font-variant-numeric: lining-nums;
+}
+.running {
+  font-variant-numeric: oldstyle-nums;
+}
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+/*--------------------------------------------------------------
+Typo <---
+--------------------------------------------------------------*/
+
+/* PARADE ONLY TODO */
+.bg-white {
+  border-color: var(--ui-border) !important;
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+}
+.bg-white.rounded-t-lg {
+  padding: 0 !important;
+  background-color: transparent !important;
+  /*  #303030 */
+}
+.flex.header {
+  border: none !important;
+}
+h1.h, h2.h, h3.h, h4.h, h5.h, .text-4xl, .text-3xl, .text-2xl,
+.my-1, .py-1, .my-4, .mt-4, .py-4, .my-8, .py-8, .my-12, .py-12, .pt-6 {
+  margin-top: 0 !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--size, 16px) !important;
+  line-height: var(--lh, 24px) !important;
+  padding-top: var(--pt, 8px) !important;
+  margin-bottom: var(--mb, 16px) !important;
+}
+.mb-2 .inline-block.relative {
+  margin-top: var(--line, 16px) !important;
+}
+nav.pt-6 {
+  padding-top: 0 !important;
+}
+.inline-block select { margin-top: -4px; }
+a.text-gray-600:hover { color: var(--text, #fff) !important; }
+.header.h-16 { padding-top: var(--line,15px) !important; color: #BBB; height: var(--line3, 45px); }
+.top-16, .top-16.-mt-12 { top: var(--line2, 30px) !important; }
+.h { margin: auto !important; }
+.inline { display: inline-block !important; }
+.pt-12, .pt-16 { padding-top: var(--line3, 15px) !important; }
+.pt-24 { padding-top: var(--line2, 30px) !important; }
+#app > .pt-24 { padding-top: var(--line3, 45px) !important; }
+.pb-16 { padding-bottom: var(--line, 15px) !important; }
+.pb-24 { padding-bottom: var(--line2, 30px) !important; }
+.p-4 { padding: var(--line) !important; }
+.p-12 { padding: var(--line2) !important; }
+.my-1 { padding-bottom: var(--line) !important; }
+.py-1, .my-6, .py-4, .my-8, .py-8, .my-12, .py-12, .pt-6 {
+  padding-bottom: 0 !important;
+}
+.border-t {
+  margin-top: -1px !important;
+}
+.mb-2, li.mb-2 > a {
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+}
+hr.my-1, hr.my-6 {
+  display: none !important;
+  padding: 0 !important;
+}
+code.language-ts {
+  font-size: 17px !important;
+}
+@media (max-width: 1280px) {
+  .max-w-3xl { max-width: 80rem !important; }
+}
+@media (min-width: 1280px) {
+  .w-full.max-w-screen-xl {
+    max-width: 4800px !important;
+  }
+  .max-w-3xl {
+    max-width: 1280px !important;
+    flex-grow: 1 !important;
+  }
+}
+.markdownFullscreen {
+  min-width: 98.9vw !important;
+  overflow-x: hidden;
+  margin: 0 !important;
+  padding: 0 0 var(--line4) 0 !important;
+  background-color: #303030;
+}
+.markdown.markdownFullscreen > * {
+  width: 100%;
+}
+.markdownFullscreen>div>h2 {
+  display: none !important;
+}
+.markdownFullscreen .p-4,
+.markdownFullscreen .p-6 {
+  padding: 0 !important;
+}
+.markdownFullscreen.hidden {
+  display: none !important;
+}
+/* <--- */

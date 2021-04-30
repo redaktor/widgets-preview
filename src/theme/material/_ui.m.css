@@ -62,12 +62,21 @@ while CSS vars should be "-" style
   margin-top: calc(var(--base-size) * 1.5);
 }
 
-.xs {composes: xs from './_typo.css'; }
+.xs {composes: xs from './_typo.css';}
 .s { composes: s from './_typo.css'; }
 .m { composes: m from './_typo.css'; }
 .l { composes: l from './_typo.css'; }
-.xl {composes: xl from './_typo.css'; }
-.xxl{composes: xxl from './_typo.css'; }
+.xl {composes: xl from './_typo.css';}
+.xxl{composes: xxl from './_typo.css';}
+.h1 {composes: h1 from './_typo.css';}
+.h2 {composes: h2 from './_typo.css';}
+.h3 {composes: h3 from './_typo.css';}
+.h4 {composes: h4 from './_typo.css';}
+.h5 {composes: h5 from './_typo.css';}
+.hgroup {
+	margin: 0;
+	padding: 0;
+}
 .s, .m, .l, .xl, .xxl {
 	--fullH: var(--line2);
 }

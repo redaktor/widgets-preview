@@ -377,11 +377,36 @@ export const Audio = factory(function Audio({
 	/*
 		classNames('audio-player', { editable })
 	*/
+	const sources = !!APo.url && !!APo.url.length && APo.url.map((_src) => {
+		if (typeof _src === 'object' && !!_src.href && !!_src.mediaType) {
+			return <source src={_src.href} type={_src.mediaType} />
+		} else if (typeof _src === 'object' && !!_src.href) {
+			return <source src={_src.href} />
+		} else if (typeof _src === 'string') {
+			return <source src={_src} />
+		}
+	});
+	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
+	const menuOpen = get('isTrackMenuOpen');
+	const formattedDuration = formatTime(Math.floor(get('duration')||0));
+	const {breakpoint: vp = 'm' } = breakpoints.get('measure')||{};
+	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
+	const lh = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
+	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
+	const isMini = (isRow && (vp === 'micro' || vp === 'xs')) || (!isRow && vp === 'micro');
+	const headlineClass = isMini ? ui.h5 : ui.h4;
+	const typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
+	const audioAvatarSize = vp === 'micro' || vp === 'xs' ? 'l' : 'xl';
+
 	const vol = get('volume')||0;
 	const playerProps: any = {
 		id: get('id'),
 		alt: !!APo.summary && !!APo.summary.length ? APo.summary[0]||'' : '',
-		classes: [themedCss.audio, get('hasTracks') || get('isPicInPic') ? themedCss.video : null],
+		classes: [
+			themedCss.audio,
+			typoClass,
+			get('hasTracks') || get('isPicInPic') ? themedCss.video : null
+		],
 		preload: autoPlay ? 'auto' : 'metadata',
 		onplay: onPlay && onPlay(get('currentTime')||0),
 		onpause: onPause && onPause(get('currentTime')||0),
@@ -408,31 +433,23 @@ export const Audio = factory(function Audio({
 		});
 		*/
 	}
-	const sources = !!APo.url && !!APo.url.length && APo.url.map((_src) => {
-		if (typeof _src === 'object' && !!_src.href && !!_src.mediaType) {
-			return <source src={_src.href} type={_src.mediaType} />
-		} else if (typeof _src === 'object' && !!_src.href) {
-			return <source src={_src.href} />
-		} else if (typeof _src === 'string') {
-			return <source src={_src} />
-		}
-	});
-	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
-	const menuOpen = get('isTrackMenuOpen');
-	const formattedDuration = formatTime(Math.floor(get('duration')||0));
-	const {breakpoint: vp = 'm' } = breakpoints.get('measure')||{};
-	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
-	const lh = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
-	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
-	const isMini = (isRow && (vp === 'micro' || vp === 'xs')) || (!isRow && vp === 'micro');
-	const typoClass = isMini ? themedCss.miniTypo : (vp === 'l' || vp === 'xl' ?
-		themedCss.largeTypo : themedCss.mediumTypo);
-	const audioAvatarSize = vp === 'micro' || vp === 'xs' ? 'l' : 'xl';
 
-	const namesPaginated = APo.name && <Paginated property="name">
+
+	const namesPaginated = !APo.name || (!isRow && APo.name.length < 4) ? '' :
+		<Paginated property="name">
 			{clampStrings(APo.name, 100).map((_name, i) =>
 				<h5 key={`name${i}`} classes={[themedCss.name, typoClass]}>{_name}</h5>)}
-		</Paginated>
+		</Paginated>;
+	const namesNode = <div classes={themedCss.names}>
+		{isRow ?
+			namesPaginated :
+			(APo.name && APo.name.length < 4 ? <header classes={ui.hgroup}>
+				{APo.name.length > 1 && <p key={`name1`} classes={[themedCss.kicker, typoClass]}>{APo.name[1]}</p>}
+				<h2 key={`name0`} classes={[themedCss.name, headlineClass]}>{APo.name[0]}</h2>
+				{APo.name.length > 2 && <p key={`name2`} classes={[themedCss.byline, typoClass]}>{APo.name[2]}</p>}
+			</header> : namesPaginated)
+		}
+	</div>
 
 	return <div
 		key="root"
@@ -492,7 +509,6 @@ export const Audio = factory(function Audio({
 				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :
 				<video key="audio" {...playerProps}>{sources}{children()}</video>
 			}
-			{!isRow && !menuOpen && get('isPaused') && <div classes={themedCss.names}>{namesPaginated}</div>}
 			{!menuOpen &&
 				<button
 					type="button"
@@ -589,24 +605,26 @@ export const Audio = factory(function Audio({
 			</div>
 		</div>}
 
+		{!isRow && !menuOpen && get('isPaused') && namesNode}
+
 		<div classes={themedCss.attributions}>
 			<AttributedTo {...APo} max={39} />
 		</div>
 
 		{hasContent && <div classes={themedCss.contentWrapper}>
-			{!!isRow && namesPaginated}
+			{!!isRow && namesNode}
 			{
 				APo.summary && <Paginated key="summary" property="summary" classes={{
 						'@dojo/widgets/paginated': { root: [themedCss.summaryPaginated] }
 					}}
 				>
 					{clampStrings(APo.summary, 500).map((_summary, i) =>
-						<MD classes={[themedCss.summary, typoClass]} content={_summary} />
+						<MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={_summary} />
 					)}
 				</Paginated>
 			}
 			{
-				APo.content && <Collapsed responsive={!isRow} lines={isRow ? (get('isFresh') ? 2 : 1) : 14} classes={{
+				APo.content && <Collapsed responsive={!isRow} lines={isRow ? (get('isFresh') ? 2 : 1) : 12} classes={{
 						'@dojo/widgets/collapsed': { root: [themedCss.contentCollapsed] }
 					}}>
 					{APo.content.map((_content, i) => <virtual>
