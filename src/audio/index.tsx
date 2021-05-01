@@ -30,7 +30,10 @@ import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/audio.m.css';
 
+/* TODO exists: */
 import MD from '../MD/';
+
+
 /*
 {
   "@context": "https://www.w3.org/ns/activitystreams",
@@ -389,8 +392,12 @@ export const Audio = factory(function Audio({
 	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
 	const menuOpen = get('isTrackMenuOpen');
 	const formattedDuration = formatTime(Math.floor(get('duration')||0));
-	const {breakpoint: vp = 'm' } = breakpoints.get('measure')||{};
+	const {breakpoint: vp = 'm', contentRect: rootDim = {width: 0} } = breakpoints.get('measure')||{};
+	console.log(rootDim);
 	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
+
+	const imagesWH = Math.floor(!get('l') ? 0 : ((rootDim && rootDim.width)||0) / get('l'));
+
 	const lh = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
 	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
 	const isMini = (isRow && (vp === 'micro' || vp === 'xs')) || (!isRow && vp === 'micro');
@@ -635,7 +642,15 @@ export const Audio = factory(function Audio({
 		</div>}
 
 		{hasAttachment && <virtual>
-			<p classes={themedCss.images}>... images</p>
+			<div classes={themedCss.images} style={`--wh: ${imagesWH}px;`}>
+				<img src="card-photo-1-1.3vTxmshj.jpg" />
+				<img src="card-photo-2-3.3G_muD46.jpg" />
+				<img src="card-photo-1-4.9vfpAQ1n.jpg" />
+				<img src="card-photo-2-3.3G_muD46.jpg" />
+				<img src="card-photo-1-1.3vTxmshj.jpg" />
+				<img src="card-photo-1-1.3vTxmshj.jpg" />
+				<img src="card-photo-2-3.3G_muD46.jpg" />
+			</div>
 			<p classes={themedCss.attachments}>... attachments</p>
 		</virtual>}
 	</div>

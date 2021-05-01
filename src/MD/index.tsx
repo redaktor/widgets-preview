@@ -12,6 +12,12 @@ const html = require('property-information/html');
 // const PropTypes = require('prop-types');
 // const uriTransformer = require('./uri-transformer');
 
+/*
+TODO:
+
+- replace plain text symbols in Unicode, e.g. --> = “unicode arrow” etc.
+*/
+
 
 export interface MDProperties {
 	content: string;

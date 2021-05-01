@@ -168,13 +168,15 @@ video:picture-in-picture {
 	transition: border-radius var(--ui-dpd-16,0.5s) var(--ui-easing);
 	width: 61.8%;
 	cursor: pointer;
+}
+.root:not(.row) .media {
 	margin: 0 19.1% 0 19.1%;
 }
-.xs .media {
+.xs:not(.row) .media {
 	width: 75%;
 	margin: 0 12.5% 0 12.5%;
 }
-.micro .media {
+.micro:not(.row) .media {
 	width: calc(100% - var(--line));
 	margin: 0 0 0 var(--line);
 }
@@ -193,8 +195,8 @@ video:picture-in-picture {
 	top: -100%;
 }
 .media::before {
-	display: block;
 	content: '';
+	display: block;
 	margin-top: calc(100% - var(--line2));
 	max-width: calc(100vh - var(--line2));
 }
@@ -383,8 +385,39 @@ video:picture-in-picture {
 	min-width: 240px;
 }
 .images {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+	align-items: flex-end;
+  max-height: var(--wh, 400px);
+  width: var(--wh, 100%);
+  max-width: 100%;
+  font-size: 0;
+  overflow:hidden;
+
 	background: red;
 	order: 7;
+}
+.images img {
+  width: 50%;
+	margin: 0;
+	padding: 0;
+}
+.l .images img,
+.xl .images img {
+	width: 25%;
+}
+.xs .images img,
+.micro .images img {
+	width: 50%;
+}
+/* fallback for earlier versions of Firefox */
+@supports not (flex-wrap: wrap) {
+  .images { display: block; }
+  .images img {
+	  display: inline-block;
+	  vertical-align: top;
+  }
 }
 .attachments {
 	background: green;
