@@ -373,7 +373,7 @@ video:picture-in-picture {
 	padding: 0 var(--p) var(--line) var(--p);
 	order: 5;
 }
-.images,
+/* .images, */
 .attachments {
 	min-width: 320px;
 	max-width: 100%;
@@ -382,7 +382,7 @@ video:picture-in-picture {
 	display: flex;
 	flex: 1;
 }
-.micro .images,
+/* .micro .images, */
 .micro .attachments {
 	min-width: 240px;
 }
@@ -391,14 +391,15 @@ video:picture-in-picture {
   grid-gap: 4px;
   grid-template-columns: repeat(auto-fill, minmax(160px,1fr));
   grid-auto-rows: 8px;
-
-	background: red;
+	
 	order: 7;
 }
 .image {
   overflow: hidden;
 }
-.image img{
+.image img {
+	margin: 0;
+	padding: 0;
   width: 100%;
 }
 /* TODO native masonry */
