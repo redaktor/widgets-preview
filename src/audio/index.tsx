@@ -642,7 +642,7 @@ export const Audio = factory(function Audio({
 		</div>}
 
 		{hasAttachment && <virtual>
-			<div classes={themedCss.images} style={`--wh: ${imagesWH}px;`}>
+			<div classes={themedCss.images} style={`--wh: ${imagesWH};`}>
 				<img src="card-photo-1-1.3vTxmshj.jpg" />
 				<img src="card-photo-2-3.3G_muD46.jpg" />
 				<img src="card-photo-1-4.9vfpAQ1n.jpg" />
