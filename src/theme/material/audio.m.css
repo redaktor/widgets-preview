@@ -388,10 +388,10 @@ video:picture-in-picture {
 }
 .images {
 	display: grid;
-  grid-gap: 4px;
-  grid-template-columns: repeat(auto-fill, minmax(160px,1fr));
-  grid-auto-rows: 8px;
-	
+  grid-gap: 4px; /* TODO gap property */
+  grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); /* TODO min property */
+  grid-auto-rows: var(--line, 16px);
+	background-color: var(--ui-bg, #000);
 	order: 7;
 }
 .image {
