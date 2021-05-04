@@ -394,17 +394,33 @@ video:picture-in-picture {
 	background-color: var(--ui-bg, #000);
 	order: 7;
 }
-.image {
+.imageWrapper {
+	margin: 0;
   overflow: hidden;
 }
-.image img {
+.imageWrapper > img {
+	display: block;
 	margin: 0;
 	padding: 0;
   width: 100%;
 }
 /* TODO native masonry */
 @supports (grid-template-rows: masonry) {
-  /* masonry code here */
+	.micro .images { --mcols: 1; }
+	.xs .images { --mcols: 2; }
+	.s .images, .m .images { --mcols: 3; }
+	.l .images { --mcols: 4; }
+	.xl .images { --mcols: 5; }
+  .images {
+		display: grid;
+		gap: 4px;
+	  grid-template-columns: repeat(var(--mcols, 2), 1fr);
+	  grid-template-rows: masonry;
+	}
+	.imageWrapper > img {
+	  grid-row: 1 / -1;
+	  grid-column: 1;
+	}
 }
 .attachments {
 	background: green;

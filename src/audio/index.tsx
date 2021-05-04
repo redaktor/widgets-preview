@@ -226,6 +226,9 @@ export const Audio = factory(function Audio({
 	if (!get('isPaused') && get('isFresh')) { set('isFresh', false) }
 
 /* MASONRY */
+	const hasNativeMasonry = CSS.supports('grid-template-rows', 'masonry');
+	console.log('hasNativeMasonry', hasNativeMasonry);
+/* JS fallback */
 	getOrSet('imagesCount', 7); /* TODO : children.length when it becomes a module !!! */
 	getOrSet('imagesLoaded', 0);
 	const loadedImg = () => {
@@ -233,28 +236,30 @@ export const Audio = factory(function Audio({
 		const loaded = get('imagesLoaded')||0;
 		set('imagesLoaded', loaded+1, (loaded >= count-1))
 	}
-	const resizeGridItem = (i: number) => {
-	  const [grid, item, img] = [node.get('images'), node.get(`image${i}`), node.get(`img${i}`)];
-		if (!item || !grid || !img) { return }
-	  const getProp = (name: string) => parseInt(window.getComputedStyle(grid).getPropertyValue(name), 10);
-	  const [rowHeight, rowGap] = [getProp('grid-auto-rows'), getProp('grid-row-gap')];
-	  item.style.gridRowEnd = `span ${Math.floor(((img as any).height+rowGap)/(rowHeight+rowGap))}`;
-	}
-	const resizeAllGridItems = () => {
-		const l = get('imagesCount')||0;
-	  for(let n = 0; n < l; n++){
-	    resizeGridItem(n);
-	  }
-	}
-	/*
-	TODO masonry:
-	aspect ratio in advance
-	resize observer: resizeAllGridItems
-	images more panorama >= 8:3 should take 2 columns
-	*/
-	if (get('imagesCount') === get('imagesLoaded')) {
-		console.log('Yay, loaded images',get('imagesLoaded'));
-		resizeAllGridItems()
+	if (!hasNativeMasonry) {
+		const resizeGridItem = (i: number) => {
+		  const [grid, item, img] = [node.get('images'), node.get(`image${i}`), node.get(`img${i}`)];
+			if (!item || !grid || !img) { return }
+		  const getProp = (name: string) => parseInt(window.getComputedStyle(grid).getPropertyValue(name), 10);
+		  const [rowHeight, rowGap] = [getProp('grid-auto-rows'), getProp('grid-row-gap')];
+		  item.style.gridRowEnd = `span ${Math.floor(((img as any).height+rowGap)/(rowHeight+rowGap))}`;
+		}
+		const resizeAllGridItems = () => {
+			const l = get('imagesCount')||0;
+		  for(let n = 0; n < l; n++){
+		    resizeGridItem(n);
+		  }
+		}
+		/*
+		TODO masonry:
+		aspect ratio in advance
+		resize observer: resizeAllGridItems
+		images more panorama >= 8:3 should take 2 columns
+		*/
+		if (get('imagesCount') === get('imagesLoaded')) {
+			console.log('Yay, loaded images',get('imagesLoaded'));
+			resizeAllGridItems()
+		}
 	}
 /* MASONRY <-- */
 
@@ -427,10 +432,9 @@ export const Audio = factory(function Audio({
 	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
 	const menuOpen = get('isTrackMenuOpen');
 	const formattedDuration = formatTime(Math.floor(get('duration')||0));
-	const {breakpoint: vp = 'm', contentRect: rootDim = {width: 0} } = breakpoints.get('measure')||{};
+	const {breakpoint: vp = 'm'} = breakpoints.get('measure')||{};
 	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
-
-	const imagesWH = Math.floor(!get('l') ? 0 : ((rootDim && rootDim.width)||0) / get('l'));
+	// const imagesWH = Math.floor(!get('l') ? 0 : ((measureDim && measureDim.width)||0) / get('l'));
 
 	const lh = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
 	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
@@ -676,14 +680,14 @@ export const Audio = factory(function Audio({
 		</div>}
 
 		{hasAttachment && <virtual>
-			<div key="images" classes={themedCss.images} style={`--wh: ${imagesWH};`}>
-				<div key="image0" classes={themedCss.image}><img key="img0" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/881020/dog1.jpg" onload={loadedImg} /></div>
-				<div key="image1" classes={themedCss.image}><img key="img1" src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} /></div>
-				<div key="image2" classes={themedCss.image}><img key="img2" src="card-photo-1-4.9vfpAQ1n.jpg" onload={loadedImg} /></div>
-				<div key="image3" classes={themedCss.image}><img key="img3" src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} /></div>
-				<div key="image4" classes={themedCss.image}><img key="img4" src="card-photo-1-1.3vTxmshj.jpg" onload={loadedImg} /></div>
-				<div key="image5" classes={themedCss.image}><img key="img5" src="card-photo-1-1.3vTxmshj.jpg" onload={loadedImg} /></div>
-				<div key="image6" classes={themedCss.image}><img key="img6" src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} /></div>
+			<div key="images" classes={themedCss.images}>
+				<figure key="image0" classes={themedCss.imageWrapper}><img key="img0" src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/881020/dog1.jpg" onload={loadedImg} /></figure>
+				<figure key="image1" classes={themedCss.imageWrapper}><img key="img1" src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} /></figure>
+				<figure key="image2" classes={themedCss.imageWrapper}><img key="img2" src="card-photo-1-4.9vfpAQ1n.jpg" onload={loadedImg} /></figure>
+				<figure key="image3" classes={themedCss.imageWrapper}><img key="img3" src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} /></figure>
+				<figure key="image4" classes={themedCss.imageWrapper}><img key="img4" src="card-photo-1-1.3vTxmshj.jpg" onload={loadedImg} /></figure>
+				<figure key="image5" classes={themedCss.imageWrapper}><img key="img5" src="card-photo-1-1.3vTxmshj.jpg" onload={loadedImg} /></figure>
+				<figure key="image6" classes={themedCss.imageWrapper}><img key="img6" src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} /></figure>
 			</div>
 			<p key="attachments" classes={themedCss.attachments}>... attachments</p>
 		</virtual>}
