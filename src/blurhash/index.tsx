@@ -4,8 +4,8 @@ import { decode } from './woltappBlurhash';
 export interface BlurhashProperties {
 	/** The blurhash to render, see https://blurha.sh */
 	blurhash: string | string[];
-	/** The render result, default is canvas, can be image or string (Data-URL) */
-	output?: 'canvas' | 'image' | 'string';
+	/** The render result, default is canvas, can be image or dataURL (Data-URL) */
+	output?: 'canvas' | 'image' | 'dataURL';
 	/** The width of the canvas showing the blurred pixels, default is 40 */
 	width?: number;
 	/** The height of the canvas showing the blurred pixels, default is `width` */
@@ -48,8 +48,8 @@ export const Blurhash = factory(function Blurhash({ properties, middleware: { no
 		}
 	}).filter((s) => !!s);
 
-	if ((output === 'string' || output === 'image') && converted.length === blurhash.length) {
-		return output === 'string' ? (converted.length === 1 ? converted[0] : converted) :
+	if ((output === 'dataURL' || output === 'image') && converted.length === blurhash.length) {
+		return output === 'dataURL' ? (converted.length === 1 ? converted[0] : converted) :
 			converted.map((s) => <img src={s} width={width} height={height} />)
 	}
 

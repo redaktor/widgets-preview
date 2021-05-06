@@ -5,8 +5,8 @@ import { encode } from './woltappBlurhash';
 export interface BlurhashProperties {
 	/** The image source to encode, see https://blurha.sh */
 	url: string | string[];
-	/** The render result, default is string, can be canvas or image */
-	output?: 'string' | 'canvas' | 'image';
+	/** The render result, default is blurhash, can be canvas, image or dataURL */
+	output?: 'blurhash' | 'canvas' | 'image' | 'dataURL';
 	/** If output is 'canvas' | 'image', it is a parameter that adjusts the contrast
 	 * on the decoded image.
 	 * 1 means normal, smaller values will make the effect more subtle,
@@ -73,7 +73,7 @@ export const Blurhash = factory(function Blurhash({ properties }) {
 					ratio > 1.78 ? 3 : (ratio < 0.5625 ? 5 : 4)
 				];
 				const blurhash = encode(imageData.data, w, h, x, y);
-				if (output === 'string') { return blurhash }
+				if (output === 'blurhash') { return blurhash }
 				return <VisualBlurhash {...{...canvasProps, blurhash, output, punch, width: w, height: h}} />
 			}
 		} catch (err) {
