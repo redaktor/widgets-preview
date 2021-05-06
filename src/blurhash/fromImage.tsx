@@ -1,8 +1,9 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
+import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import VisualBlurhash from './';
 import { encode } from './woltappBlurhash';
 
-export interface BlurhashProperties {
+export interface BlurhashImgProperties {
 	/** The image source to encode, see https://blurha.sh */
 	url: string | string[];
 	/** The render result, default is blurhash, can be canvas, image or dataURL */
@@ -26,22 +27,29 @@ export interface BlurhashProperties {
 	/** number of components for height, default is usually 4 but depends on aspect ratio */
 	componentY?: number;
 }
+export interface BlurhashImgIcache {
+	mapped: boolean;
+	nodes: any[];
+}
+const icache = createICacheMiddleware<BlurhashImgIcache>();
 
-const factory = create().properties<BlurhashProperties>();
+const factory = create({ icache }).properties<BlurhashImgProperties>();
 
-export const Blurhash = factory(function Blurhash({ properties }) {
+export const BlurhashImg = factory(function Blurhash({ properties, middleware: { icache } }) {
 	let { url } = properties();
 	const {
-		height,
-		width,
 		componentX,
 		componentY,
+		height,
+		width = 40,
 		punch = 1,
-		output = 'canvas',
+		output = 'blurhash',
 		...canvasProps
 	} = properties();
 	if (!url) { return ''; }
 	if (!Array.isArray(url)) { url = [url] }
+	icache.getOrSet('mapped', false, false);
+	icache.getOrSet('nodes', [], false);
 
 	const loadImage = async (src: string) =>
 		new Promise((resolve, reject) => {
@@ -53,7 +61,10 @@ export const Blurhash = factory(function Blurhash({ properties }) {
 
 	const getImageData = (image: any) => {
 		const canvas = document.createElement("canvas");
-		const [w, h] = [width||image.width, height||image.height];
+		const [w, h] = [
+			width||image.width,
+			height||(!!width ? Math.round(image.height/(image.width/width)) : image.height)
+		];
 		canvas.width = w;
 		canvas.height = h;
 		const context = canvas.getContext("2d");
@@ -61,27 +72,40 @@ export const Blurhash = factory(function Blurhash({ properties }) {
 		return context && context.getImageData(0, 0, w, h);
 	};
 
-	const converted = url.map(async (u: string) => {
-		try {
-			const image = await loadImage(u);
-			const imageData = getImageData(image);
-			if (imageData) {
-				const [w, h] = [width||imageData.width, height||imageData.height];
-				const ratio = w/h;
-				const [x, y] = [
-					ratio < 0.5625 ? 3 : (ratio > 1.78 ? 5 : 4),
-					ratio > 1.78 ? 3 : (ratio < 0.5625 ? 5 : 4)
-				];
-				const blurhash = encode(imageData.data, w, h, x, y);
-				if (output === 'blurhash') { return blurhash }
-				return <VisualBlurhash {...{...canvasProps, blurhash, output, punch, width: w, height: h}} />
+	if (!icache.get('mapped')) {
+		url.map(async (u: string) => {
+			try {
+				const image = await loadImage(u);
+				const imageData = getImageData(image);
+				if (imageData) {
+					const [w, h] = [
+						width||imageData.width,
+						height||(!!width ? Math.round(imageData.height/(imageData.width/width)) : imageData.height)
+					];
+					const ratio = w/h;
+					const [x, y] = [
+						ratio < 0.5625 ? 3 : (ratio > 1.78 ? 5 : 4),
+						ratio > 1.78 ? 3 : (ratio < 0.5625 ? 5 : 4)
+					];
+					const blurhash = encode(imageData.data, w, h, x, y);
+					const nodes = (icache.get('nodes')||[]).concat([
+						output === 'blurhash' ? blurhash :
+							<VisualBlurhash {...{
+								...canvasProps, blurhash, output, punch,
+								width: imageData.width, height: imageData.height
+							}} />
+					]);
+					console.log('nodes', nodes);
+					icache.set('nodes', nodes);
+				}
+			} catch (err) {
+				console.error('Blurhash decoding failed', { err, url });
 			}
-		} catch (err) {
-			console.error('Blurhash decoding failed', { err, url });
-		}
-	});
+		});
+		icache.set('mapped', true, false)
+	}
 
-	return <virtual>{...converted}</virtual>
+	return <virtual>{...(icache.get('nodes')||[])}</virtual>
 });
 
-export default Blurhash;
+export default BlurhashImg;

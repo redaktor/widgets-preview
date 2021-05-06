@@ -31,6 +31,7 @@ import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/audio.m.css';
 
 import Blurhash from '../blurhash/';
+import BlurhashFromImage from '../blurhash/fromImage';
 import { decode } from '../blurhash/woltappBlurhash';
 /* TODO exists in this module: */
 import MD from '../MD/';
@@ -712,7 +713,11 @@ export const Audio = factory(function Audio({
 				<figure key="image5" classes={themedCss.imageWrapper}><img key="img5" src="card-photo-1-1.3vTxmshj.jpg" onload={loadedImg} /></figure>
 				<figure key="image6" classes={themedCss.imageWrapper}><img key="img6" src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} /></figure>
 			</div>
-			<p key="attachments" classes={themedCss.attachments}>... attachments <Blurhash blurhash="LPFE.Z~W0z9uDND%EMNHyEtRs9xa" /></p>
+			<p key="attachments" classes={themedCss.attachments}>
+				... attachments
+				<Blurhash blurhash="LPFE.Z~W0z9uDND%EMNHyEtRs9xa" />
+				<BlurhashFromImage url="card-photo-2-3.3G_muD46.jpg" />
+			</p>
 		</virtual>}
 	</div>
 
