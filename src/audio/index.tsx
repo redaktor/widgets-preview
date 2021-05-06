@@ -30,7 +30,9 @@ import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/audio.m.css';
 
-/* TODO exists: */
+import Blurhash from '../blurhash/';
+import { decode } from '../blurhash/woltappBlurhash';
+/* TODO exists in this module: */
 import MD from '../MD/';
 
 
@@ -71,6 +73,7 @@ store the last used
 - volume
 - visibility of captions, subtitles, descriptions
 */
+
 export interface AudioProperties extends ActivityPubObject {
 	isRow?: boolean;
 	editable?: boolean;
@@ -226,6 +229,18 @@ export const Audio = factory(function Audio({
 	if (!get('isPaused') && get('isFresh')) { set('isFresh', false) }
 
 /* MASONRY */
+	const hashToCss = (hash: string) => {
+		const cv = document.createElement("canvas") as HTMLCanvasElement;
+		const ctx = cv.getContext("2d");
+		const pixels = decode(hash, 300, 300, 1);
+		const imgData = ctx && ctx.createImageData(300, 300);
+		imgData && imgData.data.set(pixels);
+		ctx && imgData && ctx.putImageData(imgData, 0, 0);
+		if (cv.toDataURL()) {
+			return cv.toDataURL();
+		}
+	};
+
 	const hasNativeMasonry = CSS.supports('grid-template-rows', 'masonry');
 	console.log('hasNativeMasonry', hasNativeMasonry);
 /* JS fallback */
@@ -255,6 +270,10 @@ export const Audio = factory(function Audio({
 		aspect ratio in advance
 		resize observer: resizeAllGridItems
 		images more panorama >= 8:3 should take 2 columns
+
+		TODO image:
+		canvasBlurhash static / img absolute / fade
+		nojs + img = force opacity 1;
 		*/
 		if (get('imagesCount') === get('imagesLoaded')) {
 			console.log('Yay, loaded images',get('imagesLoaded'));
@@ -432,16 +451,16 @@ export const Audio = factory(function Audio({
 	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
 	const menuOpen = get('isTrackMenuOpen');
 	const formattedDuration = formatTime(Math.floor(get('duration')||0));
-	const {breakpoint: vp = 'm'} = breakpoints.get('measure')||{};
+	const {breakpoint: vp = 's'} = breakpoints.get('measure')||{};
 	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
 	// const imagesWH = Math.floor(!get('l') ? 0 : ((measureDim && measureDim.width)||0) / get('l'));
 
 	const lh = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
 	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
-	const isMini = (isRow && (vp === 'micro' || vp === 'xs')) || (!isRow && vp === 'micro');
+	const isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
 	const headlineClass = isMini ? ui.h5 : ui.h4;
 	const typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
-	const audioAvatarSize = vp === 'micro' || vp === 'xs' ? 'l' : 'xl';
+	const audioAvatarSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
 
 	const vol = get('volume')||0;
 	const playerProps: any = {
@@ -685,11 +704,15 @@ export const Audio = factory(function Audio({
 				<figure key="image1" classes={themedCss.imageWrapper}><img key="img1" src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} /></figure>
 				<figure key="image2" classes={themedCss.imageWrapper}><img key="img2" src="card-photo-1-4.9vfpAQ1n.jpg" onload={loadedImg} /></figure>
 				<figure key="image3" classes={themedCss.imageWrapper}><img key="img3" src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} /></figure>
-				<figure key="image4" classes={themedCss.imageWrapper}><img key="img4" src="card-photo-1-1.3vTxmshj.jpg" onload={loadedImg} /></figure>
+				<figure key="image4" classes={themedCss.imageWrapper} style="padding-bottom:100%;">
+					 <div style="position: absolute; width: 100%; height: 100%;">
+						<img key="img4" src={hashToCss('LPFE.Z~W0z9uDND%EMNHyEtRs9xa')} onload={loadedImg} style="width: 100%; height: 100%;" />
+					</div>
+				</figure>
 				<figure key="image5" classes={themedCss.imageWrapper}><img key="img5" src="card-photo-1-1.3vTxmshj.jpg" onload={loadedImg} /></figure>
 				<figure key="image6" classes={themedCss.imageWrapper}><img key="img6" src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} /></figure>
 			</div>
-			<p key="attachments" classes={themedCss.attachments}>... attachments</p>
+			<p key="attachments" classes={themedCss.attachments}>... attachments <Blurhash blurhash="LPFE.Z~W0z9uDND%EMNHyEtRs9xa" /></p>
 		</virtual>}
 	</div>
 
