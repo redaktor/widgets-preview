@@ -392,18 +392,34 @@ video:picture-in-picture {
 	background-color: var(--ui-bg, #000);
 	order: 7;
 }
-.imageWrapper {
-	position: relative;
-	margin: 0px;
-  overflow: hidden;
-}
-.imageWrapper > img {
+.image {
 	display: block;
 	margin: 0;
 	padding: 0;
   max-width: 100%;
 	height: auto;
+	transition: opacity var(--ui-dpd-8,400ms) var(--ui-easing) 0ms;
 }
+.figure {
+	position: relative;
+	margin: 0px;
+  overflow: hidden;
+}
+.figure > canvas {
+	width: 100%;
+	height: auto;
+}
+/* only js */
+.figure > *:not(i) + .image {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	opacity: 0;
+}
+.figure.loaded > *:not(i) + .image {
+	opacity: 1;
+}
+
 /* TODO native masonry */
 @supports (grid-template-rows: masonry) {
 	.micro .images { --mcols: 1; --gap: 0; }
@@ -419,7 +435,7 @@ video:picture-in-picture {
 	  grid-template-columns: repeat(var(--mcols, 2), 1fr);
 	  grid-template-rows: masonry;
 	}
-	.imageWrapper > img {
+	.figure > img {
 	  grid-row: 1 / -1;
 	  grid-column: 1;
 	}

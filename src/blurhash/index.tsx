@@ -20,18 +20,17 @@ export interface BlurhashProperties {
 const factory = create({node}).properties<BlurhashProperties>();
 
 export const Blurhash = factory(function Blurhash({ properties, middleware: { node } }) {
-	let { blurhash } = properties();
 	const {
+		blurhash: b,
 		height: h,
 		width = 40,
 		punch = 1,
 		output = 'canvas',
 		...canvasProps
 	} = properties();
-	if (!blurhash) { return ''; }
-	if (!Array.isArray(blurhash)) { blurhash = [blurhash] }
+	if (!b) { return ''; }
+	const blurhash = !Array.isArray(b) ? [b] : b;
 	const height = !h ? width : h;
-
 
 	const converted = blurhash.map((hash: string, i: number) => {
 		const canvas = node.get(`canvas${i}`);

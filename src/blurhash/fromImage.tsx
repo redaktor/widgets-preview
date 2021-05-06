@@ -61,15 +61,18 @@ export const BlurhashImg = factory(function Blurhash({ properties, middleware: {
 
 	const getImageData = (image: any) => {
 		const canvas = document.createElement("canvas");
+		/*
 		const [w, h] = [
 			width||image.width,
 			height||(!!width ? Math.round(image.height/(image.width/width)) : image.height)
 		];
-		canvas.width = w;
-		canvas.height = h;
+		console.log(w,h);
+		*/
+		canvas.width = image.width;
+  	canvas.height = image.height;
 		const context = canvas.getContext("2d");
 		context && context.drawImage(image, 0, 0);
-		return context && context.getImageData(0, 0, w, h);
+		return context && context.getImageData(0, 0, image.width, image.height);
 	};
 
 	if (!icache.get('mapped')) {
@@ -78,16 +81,17 @@ export const BlurhashImg = factory(function Blurhash({ properties, middleware: {
 				const image = await loadImage(u);
 				const imageData = getImageData(image);
 				if (imageData) {
-					const [w, h] = [
+					/*const [w, h] = [
 						width||imageData.width,
 						height||(!!width ? Math.round(imageData.height/(imageData.width/width)) : imageData.height)
-					];
-					const ratio = w/h;
+					];*/
+					const ratio = imageData.width/imageData.height;
 					const [x, y] = [
 						ratio < 0.5625 ? 3 : (ratio > 1.78 ? 5 : 4),
 						ratio > 1.78 ? 3 : (ratio < 0.5625 ? 5 : 4)
 					];
-					const blurhash = encode(imageData.data, w, h, x, y);
+					// console.log(imageData,w,h,x,y);
+					const blurhash = encode(imageData.data, imageData.width, imageData.height, x, y);
 					const nodes = (icache.get('nodes')||[]).concat([
 						output === 'blurhash' ? blurhash :
 							<VisualBlurhash {...{
