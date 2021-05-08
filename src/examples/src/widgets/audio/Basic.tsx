@@ -1,6 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
+import { ActivityPubLink } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Audio, { AudioProperties } from '@dojo/widgets/audio';
+import Image, { ImageProperties } from '@dojo/widgets/image';
 /*
 kind
 How the text track is meant to be used. If omitted the default kind is subtitles.
@@ -59,7 +61,7 @@ import Map from '@dojo/widgets/map';
   }
 */
 
-const exampleData: AudioProperties = {
+const exampleData: AudioProperties | ImageProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
   type: "Audio",
   id: "#0",
@@ -82,7 +84,8 @@ const exampleData: AudioProperties = {
   - a list
   - with another item
 
-  Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`,`2 Jetzt herrscht Goldgräberstimmung an der New Yorker Technologiebörse NASDAQ. Dort will Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Börsenparkett. Gemessen am Referenzpreis der Aktien ist Coinbase rund 68 Milliarden Dollar wert. Analysten trauen Coinbase sogar eine Bewertung von 100 Milliarden Dollar zu – ein aberwitziger Preis für ein Unternehmen mit 56 Millionen Kunden und gut 1700 Mitarbeitern. Die schwindelerregende Bewertung erklären Analysten mit dem Hype um Kryptowährung LOREM IPSUM dolor sit amet, consectetur adipiscing elit. Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`],
+  Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`,
+  `2 Jetzt herrscht Goldgräberstimmung an der New Yorker Technologiebörse NASDAQ. Dort will Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Börsenparkett. Gemessen am Referenzpreis der Aktien ist Coinbase rund 68 Milliarden Dollar wert. Analysten trauen Coinbase sogar eine Bewertung von 100 Milliarden Dollar zu – ein aberwitziger Preis für ein Unternehmen mit 56 Millionen Kunden und gut 1700 Mitarbeitern. Die schwindelerregende Bewertung erklären Analysten mit dem Hype um Kryptowährung LOREM IPSUM dolor sit amet, consectetur adipiscing elit. Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`],
   image: {type: "Link", href: "card-photo-2-3.3G_muD46.jpg"},
   privacy: "public",
   published: "23m ago",
@@ -91,16 +94,28 @@ const exampleData: AudioProperties = {
   topic: {color: [ 223, 220, 0 ], name: "Journalism"},
 }
 
+const ogg: ActivityPubLink = {type: 'Link', href: 'http://localhost:9999/assets/nihWikimedia.ogg', mediaType: 'audio/ogg'};
+const mp3: ActivityPubLink = {type: 'Link', href: 'http://localhost:9999/assets/nihWikimedia.mp3', mediaType: 'audio/mp3'};
+const exampleAudio: AudioProperties = {
+  ...(exampleData as AudioProperties),
+  url: [ ogg, mp3 ]
+}
+const exampleImage: ImageProperties = {
+  ...(exampleData as ImageProperties),
+  type: 'Image',
+  blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP',
+  url: [ {type: 'Link', href: 'card-photo-2-3.3G_muD46.jpg', width: 1417, height: 945} ]
+}
+
 const factory = create();
-const ogg = 'http://localhost:9999/assets/nihWikimedia.ogg';
-const mp3 = 'http://localhost:9999/assets/nihWikimedia.mp3';
+
 const vttEn = 'http://localhost:9999/assets/nihWikimedia_en.vtt';
 const vttDe = 'http://localhost:9999/assets/nihWikimedia_de.vtt';
 const vttEs = 'http://localhost:9999/assets/nihWikimedia_es.vtt';
 const vttChapters = 'http://localhost:9999/assets/nihWikimedia_CHA_en.vtt';
 const vtt = 'http://localhost:9999/assets/nihWikimedia_SUB_en.vtt';
 export default factory(function Basic() {
-  const audio = (isRow = false) => <Audio {...exampleData} url={[ogg,mp3]} isRow={isRow}>
+  const audio = (isRow = false) => <Audio {...exampleAudio} isRow={isRow}>
     <track label="English captions" src={vttEn} kind="captions" srclang="en" />
     <track label="Deutsche Übersetzung" src={vttDe} kind="captions" srclang="de" default />
     <track label="Traducción Española" src={vttEs} kind="captions" srclang="es" />
@@ -114,6 +129,10 @@ export default factory(function Basic() {
   			<div styles={{ width: '66.666%' }}>{audio()}</div>
         <hr />
         <div styles={{ width: '100%' }}>{audio(true)}</div>
+        <hr />
+        <div styles={{ width: '66.666%' }}>
+          <Image {...exampleImage} />
+        </div>
       </virtual>
 		</Example>
 	);

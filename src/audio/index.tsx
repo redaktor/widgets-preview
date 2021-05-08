@@ -18,6 +18,7 @@ import i18n from '@dojo/framework/core/middleware/i18n';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Paginated from '../paginated';
 import Collapsed from '../collapsed';
+import Srcset from '../srcset';
 import AttributedTo from '../attributedTo';
 import AudioAvatar from '../audioAvatar';
 import RadioGroup from '../radio-group';
@@ -31,7 +32,6 @@ import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/audio.m.css';
 
 import Blurhash from '../blurhash/';
-import BlurhashFromImage from '../blurhash/fromImage';
 import { decode } from '../blurhash/woltappBlurhash';
 /* TODO exists in this module: */
 import MD from '../MD/';
@@ -85,11 +85,14 @@ export interface AudioProperties extends ActivityPubObject {
 	volume?: number;
 	speed?: number;
 	/*deployPictureInPicture?: func;*/
+	/* crossorigin parameter, default 'anonymous' */
+	crossorigin?: 'anonymous' | 'use-credentials';
+	onLoad?: () => any;
 	onPlay?: (currentTime: number) => any;
 	onPause?: (currentTime: number) => any;
 	onMouseEnter?: (currentTime: number) => any;
 	onMouseLeave?: (currentTime: number) => any;
-	/** `id` set on the root button DOM node */
+	/** `id` set on the root DOM node */
 	widgetId?: string;
 	/* extra poster instead of image[0] */
 	poster?: string;
@@ -203,9 +206,10 @@ export const Audio = factory(function Audio({
 	const themedCss = theme.classes(css);
 	const { messages } = i18n.localize(bundle);
 	const {
-		alt, editable, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId = uuid(),
+		alt, editable, onLoad, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId = uuid(),
 		hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
-		isRow = false, autoPlay = false, muted = false, volume = 1, speed = 1, poster, ..._rest
+		isRow = false, autoPlay = false, muted = false,
+		crossorigin = 'anonymous', volume = 1, speed = 1, poster, ..._rest
 	} = normalizeActivityPub(properties());
 
 	const APo: ActivityPubObjectNormalized = _rest;
@@ -391,6 +395,7 @@ export const Audio = factory(function Audio({
 		audio.muted = get('isMuted')||muted;
 		audio.volume = get('volume')||volume;
 		audio.playbackRate = get('speed')||speed;
+		onLoad && onLoad();
 		autoPlay && togglePlay();
 	}
 
@@ -440,15 +445,7 @@ export const Audio = factory(function Audio({
 	/*
 		classNames('audio-player', { editable })
 	*/
-	const sources = !!APo.url && !!APo.url.length && APo.url.map((_src) => {
-		if (typeof _src === 'object' && !!_src.href && !!_src.mediaType) {
-			return <source src={_src.href} type={_src.mediaType} />
-		} else if (typeof _src === 'object' && !!_src.href) {
-			return <source src={_src.href} />
-		} else if (typeof _src === 'string') {
-			return <source src={_src} />
-		}
-	});
+	const sources = !!APo.url && <Srcset url={APo.url} />;
 	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
 	const menuOpen = get('isTrackMenuOpen');
 	const formattedDuration = formatTime(Math.floor(get('duration')||0));
@@ -456,8 +453,8 @@ export const Audio = factory(function Audio({
 	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
 	// const imagesWH = Math.floor(!get('l') ? 0 : ((measureDim && measureDim.width)||0) / get('l'));
 
-	const lh = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
-	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
+	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
+	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
 	const isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
 	const headlineClass = isMini ? ui.h5 : ui.h4;
 	const typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
@@ -481,7 +478,7 @@ export const Audio = factory(function Audio({
 		onloadeddata: handleLoadedData,
 		ontimeupdate: setTime,
 		onseeked: togglePlay,
-		crossOrigin: 'anonymous'
+		crossorigin: crossorigin
 	};
 
 	if (get('hasTracks') && !!audio) {

@@ -126,6 +126,10 @@ video:picture-in-picture {
 .freshDuration {
 	composes: serif from './_typo.css';
 }
+.root .content {
+	margin: 0;
+	padding: 0;
+}
 .root .freshDuration {
 	padding: 0;
 }
@@ -170,15 +174,18 @@ video:picture-in-picture {
 	cursor: pointer;
 }
 .root:not(.row) .media {
-	margin: 0 19.1% 0 19.1%;
+	margin-left: 19.1%;
+	margin-right: 19.1%;
 }
 .xs:not(.row) .media {
 	width: 75%;
-	margin: 0 12.5% 0 12.5%;
+	margin-left: 12.5%;
+	margin-right: 12.5%;
 }
 .micro:not(.row) .media {
 	width: calc(100% - var(--line));
-	margin: 0 0 0 var(--line);
+	margin-left: 0;
+	margin-right: 0;
 }
 .media:not(.fresh .media) {
 	border-top-left-radius: var(--ui-border-radius-emphasized, 0.25rem);
@@ -406,6 +413,7 @@ video:picture-in-picture {
   overflow: hidden;
 }
 .figure > canvas {
+	display: block;
 	width: 100%;
 	height: auto;
 }

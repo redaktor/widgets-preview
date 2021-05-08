@@ -468,7 +468,7 @@ export interface ActivityPubImage extends ActivityPubCore {
 }
 
 export interface ActivityPubLinkObject extends ActivityPubCore {
-	type: ActivityPubLinkTypes | [ActivityPubLinkTypes, ...ActivityPubObjectTypes[]];
+	type: ActivityPubLinkTypes;
 	href?: string; /* Functional */
 	hreflang?: string; /* Functional */
 	rel?: string | string[];

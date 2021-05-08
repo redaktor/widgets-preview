@@ -1,5 +1,6 @@
 .root {
   display: grid;
+  margin-bottom: calc(var(--line) - var(--mb));
 }
 .pane,
 .input {
