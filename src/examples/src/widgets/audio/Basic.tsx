@@ -92,6 +92,7 @@ const exampleData: AudioProperties | ImageProperties = {
   bookmark: false,
   kicker: 'yo kicker',
   topic: {color: [ 223, 220, 0 ], name: "Journalism"},
+  sensitive: true
 }
 
 const ogg: ActivityPubLink = {type: 'Link', href: 'http://localhost:9999/assets/nihWikimedia.ogg', mediaType: 'audio/ogg'};
@@ -130,9 +131,9 @@ export default factory(function Basic() {
 		<Example spaced={true}>
       <virtual>
   			<div styles={{ width: '66.666%' }}>{audio()}</div>
-        <hr />
+        <br /><br />
         <div styles={{ width: '100%' }}>{audio(true)}</div>
-        <hr />
+        <br /><br />
         <div styles={{ width: '66.666%' }}>
           <Image {...exampleImage} />
         </div>

@@ -96,14 +96,10 @@ video:picture-in-picture {
 }
 
 .names {
-	/* position: absolute;
-	bottom: 0px;
-	left: 0px;
-	background-color: rgba(0,0,0,0.64);
-	width: 100%;
-	padding: var(--pt) var(--line) var(--pt) var(--line);
-	box-shadow: var(--ui-dp-2); */
 	z-index: 6;
+}
+.row .names {
+	margin-bottom: calc(var(--mb) - var(--line));
 }
 .kicker {
 	margin-bottom: calc(var(--mb) - var(--line)) !important;
@@ -392,6 +388,7 @@ video:picture-in-picture {
 	min-width: 240px;
 }
 .images {
+	width: 100%;
 	display: grid;
   grid-gap: 4px; /* TODO gap property */
   grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); /* TODO min property */

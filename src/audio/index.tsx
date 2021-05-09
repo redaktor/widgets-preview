@@ -698,31 +698,6 @@ export const Audio = factory(function Audio({
 
 		{hasAttachment && <virtual>
 			<div key="images" classes={themedCss.images}>
-				<figure key="image0" classes={themedCss.figure}>
-					<img key="img0" classes={themedCss.image} src="card-photo-1-1.3vTxmshj.jpg" onload={loadedImg} />
-				</figure>
-				<figure key="image1" classes={themedCss.figure}>
-					<img key="img1" classes={themedCss.image} src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} />
-				</figure>
-				<figure key="image2" classes={themedCss.figure}>
-					<img key="img2" classes={themedCss.image} src="card-photo-1-4.9vfpAQ1n.jpg" onload={loadedImg} />
-				</figure>
-				<figure key="image3" classes={[themedCss.figure, !!get('imagesLoaded') && themedCss.loaded]}>
-					<Blurhash blurhash="UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP" width={120} height={80} />
-					<noscript><i /></noscript>
-					<img key="img3" classes={themedCss.image} src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} />
-				</figure>
-				<figure key="image4" classes={[themedCss.figure, !!get('imagesLoaded') && themedCss.loaded]}>
-					<Blurhash blurhash="UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@" width={80} height={80} />
-					<noscript><i /></noscript>
-				 	<img classes={themedCss.image} key="img4" src="card-photo-1-1.3vTxmshj.jpg" onload={loadedImg} />
-				</figure>
-				<figure key="image5" classes={themedCss.figure}>
-					<img classes={themedCss.image} key="img5" src="card-photo-1-1.3vTxmshj.jpg" onload={loadedImg} />
-				</figure>
-				<figure key="image6" classes={themedCss.figure}>
-					<img classes={themedCss.image} key="img6" src="card-photo-2-3.3G_muD46.jpg" onload={loadedImg} />
-				</figure>
 			</div>
 			<p key="attachments" classes={themedCss.attachments}>... attachments</p>
 		</virtual>}

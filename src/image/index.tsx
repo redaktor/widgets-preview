@@ -85,7 +85,7 @@ export const Image = factory(function Image({
 	const { messages } = i18n.localize(bundle);
 	const {
 		alt, title, editable, fullscreen, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		blurhash, loading = 'lazy', crossorigin = 'anonymous', widgetId = uuid(), width = 80, height,
+		blurhash, loading = 'lazy', crossorigin = 'anonymous', widgetId = uuid(), width = 80, height = 80,
 		hasControls = true, hasContent = true, hasAttachment = true, isRow = false, ..._rest
 	} = normalizeActivityPub(properties());
 
@@ -116,12 +116,19 @@ export const Image = factory(function Image({
 	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
 	// const imagesWH = Math.floor(!get('l') ? 0 : ((measureDim && measureDim.width)||0) / get('l'));
 
-	const lh = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
-	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lh)) - lh);
+	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
+console.log(lineCount);
+	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
 	const isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
 	const headlineClass = isMini ? ui.h5 : ui.h4;
 	const typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
-	const audioAvatarSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
+
+	const maxInt = Math.max(width, height);
+	const [bWidth, bHeight] = [Math.round(width / maxInt * 80), Math.round(height / maxInt * 80)];
+console.log(bWidth, bHeight);
+	// const blurHeight = !height ? 40 : Math.floor(height / (width / 40));
+	const sensitiveId = !APo.sensitive ? '' : uuid();
+	// const cSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
 
 	const imgProps: any = {
 		alt: alt || (!!APo.summary && !!APo.summary.length ? APo.summary[0]||'' : ''),
@@ -136,8 +143,11 @@ export const Image = factory(function Image({
 			themedCss.image,
 			typoClass
 		],
-		onload: () => {
+		onload: (evt: Event) => {
 			set('loaded',true);
+			evt.target && evt.target.addEventListener('animationend', () => {
+			  set('faded',true);
+			});
 			onLoad && onLoad()
 		},
 		crossOrigin: 'anonymous'
@@ -158,8 +168,7 @@ export const Image = factory(function Image({
 			</header> : namesPaginated)
 		}
 	</div>
-	const blurHeight = !height ? 80 : Math.round(height / (width / 80));
-console.log(blurhash, blurHeight);
+
 	return <div
 		key="root"
 		classes={[
@@ -179,24 +188,30 @@ console.log(blurhash, blurHeight);
 		role="region"
 	>
 		<div classes={themedCss.measure} key="measure" />
+		{APo.sensitive && <input classes={themedCss.sensitiveCheck} id={sensitiveId} key="sensitive" type="checkbox" checked={true} />}
 		{!!APo.url && <figure
 			key="media"
 			classes={[
 				themedCss.media,
-				!!get('loaded') && themedCss.loaded
+				!!get('loaded') && themedCss.loaded,
+				!!get('faded') && themedCss.faded,
+				APo.sensitive && themedCss.sensitive
 			]}
 			style={`--mml: ${mml};`}
 		>
-			{!!blurhash && <Blurhash blurhash={blurhash} width={80} height={blurHeight} />}
+			{!get('faded') && !!blurhash &&
+				<Blurhash key="blurhash" blurhash={blurhash} width={bWidth} height={bHeight} />}
 			<noscript><i /></noscript>
-			<picture classes={themedCss.image} key="image" onload={() => set('loaded',true)} >
+
+			<picture classes={themedCss.picture}>
 				<Srcset url={APo.url} isPicture={true} />
-				<img classes={themedCss.image} key="image" {...imgProps} />
+				<img {...imgProps} key="image" />
 			</picture>
 		</figure>}
-
-		{hasControls && <div classes={themedCss.controls}>
-
+		{APo.sensitive && <label for={sensitiveId}>See</label>}
+		{hasControls && <div classes={themedCss.controls}></div>}
+		{hasAttachment && <div key="images" classes={themedCss.images}>
+			... images
 		</div>}
 
 		{!isRow && namesNode}
@@ -228,14 +243,9 @@ console.log(blurhash, blurHeight);
 			}
 		</div>}
 
-		{hasAttachment && <virtual>
-			<div key="images" classes={themedCss.images}>
-				... images
-			</div>
-			<p key="attachments" classes={themedCss.attachments}>
+		{hasAttachment && <p key="attachments" classes={themedCss.attachments}>
 				... attachments
-			</p>
-		</virtual>}
+			</p>}
 	</div>
 
 });
