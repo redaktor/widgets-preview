@@ -99,13 +99,6 @@
 	margin: 0 0 0 var(--line);
 }
 
-.media::before {
-	content: '';
-	display: block;
-	margin-top: calc(100% - var(--line2));
-	max-width: calc(100vh - var(--line2));
-}
-
 .controls {
 	height: var(--line3);
 	z-index: 7;
@@ -148,7 +141,7 @@
 	order: 5;
 }
 .images {
-	
+
 }
 .attachments {
 	min-width: 320px;

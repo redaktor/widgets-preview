@@ -99,13 +99,16 @@ const mp3: ActivityPubLink = {type: 'Link', href: 'http://localhost:9999/assets/
 const exampleAudio: AudioProperties = {
   ...(exampleData as AudioProperties),
   url: [ ogg, mp3 ]
-}
+};
 const exampleImage: ImageProperties = {
   ...(exampleData as ImageProperties),
   type: 'Image',
+  name: (exampleData as any).name[0],
+  width: 1417,
+  height: 945,
   blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP',
   url: [ {type: 'Link', href: 'card-photo-2-3.3G_muD46.jpg', width: 1417, height: 945} ]
-}
+};
 
 const factory = create();
 

@@ -42,7 +42,7 @@ export const Blurhash = factory(function Blurhash({ properties, middleware: { no
 				ctx && ctx.putImageData(imageData, 0, 0);
 				return (canvas as HTMLCanvasElement).toDataURL();
 			} catch (err) {
-				console.error('Blurhash decoding failed', { err, blurhash });
+				console.error('Blurhash decoding failed', { err, hash });
 			}
 		}
 	}).filter((s) => !!s);

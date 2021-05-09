@@ -158,8 +158,8 @@ export const Image = factory(function Image({
 			</header> : namesPaginated)
 		}
 	</div>
-	const blurHeight = !height ? 80 : (height / (width / 80));
-
+	const blurHeight = !height ? 80 : Math.round(height / (width / 80));
+console.log(blurhash, blurHeight);
 	return <div
 		key="root"
 		classes={[
