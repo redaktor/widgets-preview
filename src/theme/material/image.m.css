@@ -27,6 +27,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	color: var(--bg);
 	background-color: var(--ui-bg);
 	background-position: center center;
 	background-repeat: no-repeat;
@@ -52,7 +53,7 @@
 	transition: transform var(--ui-dpd-4,372ms) var(--ui-easing);
 }
 .image:hover {
-	transform: scale(1.1);
+	transform: scale(1.0618);
 }
 .sensitive .media {
 
@@ -72,17 +73,24 @@
 	display: inline-block;
 	font-family: 'redaktor' !important;
 	speak: never;
+	color: inherit;
 	font-size: inherit;
 	font-style: normal;
 	font-weight: normal;
 	font-variant: normal;
 	text-transform: none;
 	line-height: 1;
-	color: var(--bg);
 	vertical-align: baseline;
 }
 .sensitiveCheckbox:checked + .media::after {
 	content: '\f06e';
+	margin-top: calc(var(--line3) * -1);
+}
+.sensitiveCheckbox:checked + .media::before {
+	content: 'NSFW';
+	position: absolute;
+	z-index: 99;
+	font: inherit;
 }
 .sensitiveCheckbox:not(:checked) + .media .sensitiveLabel::after {
 	content: '\f070';
@@ -96,8 +104,9 @@
 	margin: 0;
 	padding: 0;
 }
+.sensitiveCheckbox:checked + .media:hover,
 .sensitiveLabel:hover {
-	color: var(--r-primary, #ff7a00);
+	color: var(--ui-bg-opaque);
 }
 .sensitiveCheckbox:not(:checked) + .media .sensitiveLabel {
 	width: var(--line2);
