@@ -19,6 +19,7 @@ import { normalizeActivityPub } from '../common/activityPubUtil';
 import Paginated from '../paginated';
 import Collapsed from '../collapsed';
 import Srcset from '../srcset';
+import Name from '../name';
 import AttributedTo from '../attributedTo';
 import AudioAvatar from '../audioAvatar';
 import RadioGroup from '../radio-group';
@@ -456,7 +457,6 @@ export const Audio = factory(function Audio({
 	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
 	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
 	const isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
-	const headlineClass = isMini ? ui.h5 : ui.h4;
 	const typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 	const audioAvatarSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
 
@@ -496,22 +496,7 @@ export const Audio = factory(function Audio({
 		*/
 	}
 
-
-	const namesPaginated = !APo.name || (!isRow && APo.name.length < 4) ? '' :
-		<Paginated property="name">
-			{clampStrings(APo.name, 100).map((_name, i) =>
-				<h5 key={`name${i}`} classes={[themedCss.name, typoClass]}>{_name}</h5>)}
-		</Paginated>;
-	const namesNode = <div classes={themedCss.names}>
-		{isRow ?
-			namesPaginated :
-			(APo.name && APo.name.length < 4 ? <header classes={ui.hgroup}>
-				{APo.name.length > 1 && <p key={`name1`} classes={[themedCss.kicker, typoClass]}>{APo.name[1]}</p>}
-				<h2 key={`name0`} classes={[themedCss.name, headlineClass]}>{APo.name[0]}</h2>
-				{APo.name.length > 2 && <p key={`name2`} classes={[themedCss.byline, typoClass]}>{APo.name[2]}</p>}
-			</header> : namesPaginated)
-		}
-	</div>
+	const namesNode = (<Name name={APo.name} isRow={isRow} size={!vp || vp === 'micro' ? 'xs' : (vp as any)} />);
 
 	return <div
 		key="root"

@@ -95,24 +95,6 @@ video:picture-in-picture {
 	opacity: 1;
 }
 
-.names {
-	z-index: 6;
-}
-.row .names {
-	margin-bottom: calc(var(--mb) - var(--line));
-}
-.kicker {
-	margin-bottom: calc(var(--mb) - var(--line)) !important;
-	color: var(--kicker);
-}
-.byline {
-	margin-top: calc(var(--line) * -1);
-	color: var(--text-muted);
-}
-.kicker,
-.name {
-	font-weight: var(--weight-semibold, 500);
-}
 .root .summary {
 	padding: 0;
 	margin-bottom: calc(var(--mb) - var(--line));
@@ -246,14 +228,6 @@ video:picture-in-picture {
 .media .playPause:hover::after {
 	--playcolor: var(--text, #fff);
 }
-.name:hover ~ .playPause::after,
-.name:hover ~ .playPause:hover::after {
-	--playcolor: var(--ui-filled, #eee);
-}
-.fresh .name:hover ~ .playPause::after,
-.fresh .name:hover ~ .playPause:hover::after {
-	--playcolor: var(--ui-bg, #eee);
-}
 .paused .playPause::after {
 	border-style: solid;
 	border-width: var(--bHalf) 0 var(--bHalf) var(--bBase);
@@ -264,8 +238,7 @@ video:picture-in-picture {
 }
 
 .menuOpen .audioAvatarWrapper,
-.menuOpen .playPause,
-.menuOpen .name {
+.menuOpen .playPause {
 	display: none;
 }
 .menuOpen .audio.video {

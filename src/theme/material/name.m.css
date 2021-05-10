@@ -1,0 +1,18 @@
+.root {
+	z-index: 6;
+}
+.row .root {
+	margin-bottom: calc(var(--mb) - var(--line));
+}
+.kicker {
+	margin-bottom: calc(var(--mb) - var(--line)) !important;
+	color: var(--kicker);
+}
+.byline {
+	margin-top: calc(var(--line) * -1);
+	color: var(--text-muted);
+}
+.kicker,
+.name {
+	font-weight: var(--weight-semibold, 500);
+}

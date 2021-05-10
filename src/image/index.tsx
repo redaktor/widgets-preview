@@ -11,6 +11,7 @@ import { normalizeActivityPub } from '../common/activityPubUtil';
 import Paginated from '../paginated';
 import Collapsed from '../collapsed';
 import Srcset from '../srcset';
+import Name from '../name';
 import AttributedTo from '../attributedTo';
 import Blurhash from '../blurhash/';
 import Icon from '../icon';
@@ -43,8 +44,6 @@ export interface ImageProperties extends ActivityPubObject {
 	onFullscreen?: () => any;
 	onMouseEnter?: (evt: MouseEvent) => any;
 	onMouseLeave?: (evt: MouseEvent) => any;
-	/* show audio controls, default true */
-	hasControls?: boolean;
 	/* show summary and content, default true */
 	hasContent?: boolean;
 	/* show images and attachments, default true */
@@ -85,8 +84,8 @@ export const Image = factory(function Image({
 	const { messages } = i18n.localize(bundle);
 	const {
 		alt, title, editable, fullscreen, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		blurhash, loading = 'lazy', crossorigin = 'anonymous', widgetId = uuid(), width = 80, height = 80,
-		hasControls = true, hasContent = true, hasAttachment = true, isRow = false, ..._rest
+		blurhash, loading = 'lazy', crossorigin = 'anonymous', widgetId = uuid(),
+		width = 80, height = 80, hasContent = true, hasAttachment = true, isRow = false, ..._rest
 	} = normalizeActivityPub(properties());
 
 	const APo: ActivityPubObjectNormalized = _rest;
@@ -114,21 +113,15 @@ export const Image = factory(function Image({
   }
 	const {breakpoint: vp = 's'} = breakpoints.get('measure')||{};
 	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
-	// const imagesWH = Math.floor(!get('l') ? 0 : ((measureDim && measureDim.width)||0) / get('l'));
 
 	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
-console.log(lineCount);
 	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
 	const isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
-	const headlineClass = isMini ? ui.h5 : ui.h4;
 	const typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 
 	const maxInt = Math.max(width, height);
-	const [bWidth, bHeight] = [Math.round(width / maxInt * 80), Math.round(height / maxInt * 80)];
-console.log(bWidth, bHeight);
-	// const blurHeight = !height ? 40 : Math.floor(height / (width / 40));
+	const [blurWidth, blurHeight] = [Math.round(width / maxInt * 80), Math.round(height / maxInt * 80)];
 	const sensitiveId = !APo.sensitive ? '' : uuid();
-	// const cSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
 
 	const imgProps: any = {
 		alt: alt || (!!APo.summary && !!APo.summary.length ? APo.summary[0]||'' : ''),
@@ -140,8 +133,7 @@ console.log(bWidth, bHeight);
 		(typeof APo.url[0] === 'object' && !!(APo.url[0] as ActivityPubLinkObject).href) ?
 			(APo.url[0] as ActivityPubLinkObject).href : (APo.url[0] as string))||'',
 		classes: [
-			themedCss.image,
-			typoClass
+			themedCss.image
 		],
 		onload: (evt: Event) => {
 			set('loaded',true);
@@ -153,22 +145,17 @@ console.log(bWidth, bHeight);
 		crossOrigin: 'anonymous'
 	};
 
-	const namesPaginated = !APo.name || (!isRow && APo.name.length < 4) ? '' :
-		<Paginated property="name">
-			{clampStrings(APo.name, 100).map((_name, i) =>
-				<h5 key={`name${i}`} classes={[themedCss.name, typoClass]}>{_name}</h5>)}
-		</Paginated>;
-	const namesNode = <div classes={themedCss.names}>
-		{isRow ?
-			namesPaginated :
-			(APo.name && APo.name.length < 4 ? <header classes={ui.hgroup}>
-				{APo.name.length > 1 && <p key={`name1`} classes={[themedCss.kicker, typoClass]}>{APo.name[1]}</p>}
-				<h2 key={`name0`} classes={[themedCss.name, headlineClass]}>{APo.name[0]}</h2>
-				{APo.name.length > 2 && <p key={`name2`} classes={[themedCss.byline, typoClass]}>{APo.name[2]}</p>}
-			</header> : namesPaginated)
-		}
-	</div>
-
+	const namesNode = (<div classes={themedCss.name}>
+			<Name name={APo.name} isRow={isRow} size={!vp || vp === 'micro' ? 'xs' : (vp as any)} />
+	</div>);
+	const summaryNode = (APo.summary && <Paginated key="summary" property="summary" classes={{
+			'@dojo/widgets/paginated': { root: [themedCss.summaryPaginated] }
+		}}
+	>
+		{clampStrings(APo.summary, 500).map((_summary, i) =>
+			<MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={_summary} />
+		)}
+	</Paginated>);
 	return <div
 		key="root"
 		classes={[
@@ -180,7 +167,8 @@ console.log(bWidth, bHeight);
 			theme.colored(colors),
 			theme.elevated(ui),
 			theme.animated(themedCss),
-			themedCss[(vp as keyof typeof themedCss)]
+			themedCss[(vp as keyof typeof themedCss)],
+			APo.sensitive && themedCss.sensitive
 		]}
 		onMouseEnter={onMouseEnter}
 		onMouseLeave={onMouseLeave}
@@ -188,28 +176,35 @@ console.log(bWidth, bHeight);
 		role="region"
 	>
 		<div classes={themedCss.measure} key="measure" />
-		{APo.sensitive && <input classes={themedCss.sensitiveCheck} id={sensitiveId} key="sensitive" type="checkbox" checked={true} />}
+		{APo.sensitive && <input
+			type="checkbox"
+			classes={themedCss.sensitiveCheckbox}
+			id={sensitiveId}
+			key="sensitive"
+			checked={true}
+		/>}
 		{!!APo.url && <figure
 			key="media"
 			classes={[
 				themedCss.media,
 				!!get('loaded') && themedCss.loaded,
-				!!get('faded') && themedCss.faded,
-				APo.sensitive && themedCss.sensitive
+				!!get('faded') && themedCss.faded
 			]}
 			style={`--mml: ${mml};`}
 		>
-			{!get('faded') && !!blurhash &&
-				<Blurhash key="blurhash" blurhash={blurhash} width={bWidth} height={bHeight} />}
+			{(!get('faded') || APo.sensitive) && !!blurhash &&
+				<Blurhash key="blurhash" blurhash={blurhash} width={blurWidth} height={blurHeight} />}
 			<noscript><i /></noscript>
 
 			<picture classes={themedCss.picture}>
 				<Srcset url={APo.url} isPicture={true} />
-				<img {...imgProps} key="image" />
+				{<img {...imgProps} key="image" />}
 			</picture>
+			{APo.sensitive && <label classes={themedCss.sensitiveLabel} for={sensitiveId} />}
 		</figure>}
-		{APo.sensitive && <label for={sensitiveId}>See</label>}
-		{hasControls && <div classes={themedCss.controls}></div>}
+
+		{APo.sensitive && summaryNode}
+
 		{hasAttachment && <div key="images" classes={themedCss.images}>
 			... images
 		</div>}
@@ -222,16 +217,7 @@ console.log(bWidth, bHeight);
 
 		{hasContent && <div classes={themedCss.contentWrapper}>
 			{!!isRow && namesNode}
-			{
-				APo.summary && <Paginated key="summary" property="summary" classes={{
-						'@dojo/widgets/paginated': { root: [themedCss.summaryPaginated] }
-					}}
-				>
-					{clampStrings(APo.summary, 500).map((_summary, i) =>
-						<MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={_summary} />
-					)}
-				</Paginated>
-			}
+			{summaryNode}
 			{
 				APo.content && <Collapsed responsive={!isRow} lines={isRow ? 2 : 12} classes={{
 						'@dojo/widgets/collapsed': { root: [themedCss.contentCollapsed] }
@@ -243,8 +229,8 @@ console.log(bWidth, bHeight);
 			}
 		</div>}
 
-		{hasAttachment && <p key="attachments" classes={themedCss.attachments}>
-				... attachments
+		{hasAttachment && <p key="attachment" classes={themedCss.attachment}>
+				... attachment
 			</p>}
 	</div>
 

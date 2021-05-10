@@ -58,6 +58,7 @@
 	--ui-bg-inverse: #2f3338;
 	--ui-bg-inverse-muted: #303030;
 	--ui-bg-inverse-hover: var(--full-black);
+	--ui-bg-opaque: rgba(255, 255, 255, 0.618);
 
 	--ui-header: #d6d6d6;
 	--ui-menu: var(--m-100);

@@ -21,6 +21,9 @@
 }
 
 .media {
+	composes: h1 from './_typo.css';
+	margin-bottom: calc(var(--line) * var(--mml,0));
+	padding: 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -33,14 +36,11 @@
 	width: 100%;
 	cursor: pointer;
 	position: relative;
-	margin-bottom: calc(var(--line) * var(--mml,0));
 }
 .media > canvas {
-	display: block;
 	width: 100%;
-	height: auto;
 }
-
+.media > canvas,
 .image {
 	display: block;
 	margin: 0px;
@@ -48,23 +48,26 @@
   max-width: 100%;
 	height: auto;
 }
-.sensitive {
-	composes: h1 from './_typo.css';
+.image {
+	transition: transform var(--ui-dpd-4,372ms) var(--ui-easing);
 }
-.root .sensitive {
-	padding: 0;
+.image:hover {
+	transform: scale(1.1);
 }
-.sensitiveCheck {
+.sensitive .media {
+
+}
+.sensitiveCheckbox {
 	visibility: hidden;
 	position: absolute;
 	top: -4000px;
 }
-.sensitiveCheck,
-.sensitiveCheck:checked + .sensitive .picture {
+.sensitiveCheckbox,
+.sensitiveCheckbox:checked + .media .picture {
 	opacity: 0;
 }
-.sensitiveCheck:checked + .sensitive::after {
-	content: '\f070';
+.sensitiveLabel::after,
+.sensitiveCheckbox:checked + .media::after {
 	position: absolute;
 	display: inline-block;
 	font-family: 'redaktor' !important;
@@ -75,66 +78,86 @@
 	font-variant: normal;
 	text-transform: none;
 	line-height: 1;
-	color: var(--ui-warning);
+	color: var(--bg);
 	vertical-align: baseline;
 }
+.sensitiveCheckbox:checked + .media::after {
+	content: '\f06e';
+}
+.sensitiveCheckbox:not(:checked) + .media .sensitiveLabel::after {
+	content: '\f070';
+}
+.sensitiveLabel {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 99;
+	cursor: pointer;
+	margin: 0;
+	padding: 0;
+}
+.sensitiveLabel:hover {
+	color: var(--r-primary, #ff7a00);
+}
+.sensitiveCheckbox:not(:checked) + .media .sensitiveLabel {
+	width: var(--line2);
+	height: var(--line2);
+	top: 0px;
+	right: 0px;
+}
 
-/* only js, note must be animation for listener */
+/* only js autofade, note must be animation for listener */
 @keyframes fadein {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-.media:not(.faded) > *:not(i) + .picture {
+.media.loaded > canvas,
+.media:not(.loaded) > *:not(i) + .picture {
 	position: absolute;
 	top: 0px;
 	left: 0px;
 }
+.sensitiveCheckbox:not(:checked) + .media .picture > .image,
 .media > *:not(i) + .picture > .image {
 	opacity: 0;
 }
-.sensitiveCheck:not(:checked) + .sensitive.loaded .picture > .image,
-.media.loaded:not(.sensitive) > *:not(i) + .picture > .image {
-	animation: fadein var(--ui-dpd-8,400ms) var(--ui-easing) 0ms forwards;
+.root:not(.sensitive) .loaded > *:not(i) + .picture > .image {
+	animation: fadein var(--ui-dpd-4,372ms) var(--ui-easing) 0ms forwards;
+}
+.sensitiveCheckbox:not(:checked) + .loaded .picture > .image {
+	animation: fadein var(--ui-dpd-8,440ms) var(--ui-easing) 0ms forwards;
 }
 /* <-- */
+.root .summary {
+	padding: 0;
+	margin-bottom: calc(var(--mb) - var(--line));
+}
+.sensitiveCheckbox:checked ~ .summaryPaginated {
+	background-color: var(--ui-bg-opaque);
+	z-index: 99;
+	margin-top: calc(var(--line) * -2);
+	margin-left: var(--lineHalf);
+	padding-left: var(--lineHalf);
+	margin-right: var(--line);
+}
+.sensitiveCheckbox:not(:checked) ~ .summaryPaginated,
+.sensitiveCheckbox:checked ~ .contentWrapper,
+.sensitiveCheckbox:checked ~ .name,
+.sensitiveCheckbox:checked ~ .attachment {
+	display: none;
+}
 
 .micro:not(.row) .media {
 	width: calc(100% - var(--line));
 	margin: 0 0 0 var(--line);
 }
 
-.controls {
-	height: var(--line);
-	z-index: 7;
-}
 .captionRow {
 	display: flex;
 	justify-content: space-between;
 }
 .caption {
 
-}
-
-
-.names {
-	color: var(--text-muted);
-	z-index: 6;
-}
-.kicker {
-	margin-bottom: calc(var(--mb) - var(--line)) !important;
-	color: var(--kicker);
-}
-.byline {
-	margin-top: calc(var(--line) * -1);
-	color: var(--text-muted);
-}
-.kicker,
-.name {
-	font-weight: var(--weight-semibold, 500);
-}
-.root .summary {
-	padding: 0;
-	margin-bottom: calc(var(--mb) - var(--line));
 }
 
 .content {
@@ -176,20 +199,20 @@
 .images {
 
 }
-.attachments {
+.attachment {
 	min-width: 320px;
 	max-width: 100%;
 }
-.attachments {
+.attachment {
 	display: flex;
 	flex: 1;
 }
 
-.micro .attachments {
+.micro .attachment {
 	min-width: 240px;
 }
 
-.attachments {
+.attachment {
 	background: green;
 	order: 8;
 }
@@ -197,7 +220,6 @@
 	z-index: 6;
 }
 
-.summaryPaginated,
 .contentCollapsed {
 
 }

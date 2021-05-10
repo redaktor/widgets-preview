@@ -52,6 +52,7 @@
 	--ui-bg-inverse: var(--full-white);
 	--ui-bg-inverse-muted: #ccc;
 	--ui-bg-inverse-hover: var(--off-white);
+	--ui-bg-opaque: rgba(0, 0, 0, 0.618);
 
 	--ui-header: #242629;
 	--ui-menu: #373a3e;
@@ -89,7 +90,6 @@
 	--native-input: var(--off-white);
 	--native-input-text: var(--full-black);
 	--ui-menu-border: rgba(0, 0, 0, 0.24);
-
 
 	/*---   Emotive defaults  ---*/
 	--ui-info: #4197e7;
