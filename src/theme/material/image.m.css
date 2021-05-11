@@ -12,6 +12,8 @@
 }
 .xs, .s, .m, .l, .xl, .xxl { }
 .mini, .medium, .large { }
+/* not used, when the blurhash faded to the main image */
+.faded { }
 
 .measure {
 	position: absolute;
@@ -27,7 +29,7 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	color: var(--bg);
+	color: var(--text);
 	background-color: var(--ui-bg);
 	background-position: center center;
 	background-repeat: no-repeat;
@@ -40,6 +42,7 @@
 }
 .media > canvas {
 	width: 100%;
+	transition: opacity var(--ui-dpd-2,240ms) var(--ui-easing);
 }
 .media > canvas,
 .image {
@@ -52,7 +55,7 @@
 .image {
 	transition: transform var(--ui-dpd-4,372ms) var(--ui-easing);
 }
-.image:hover {
+.root:not(.sensitive) .image:hover {
 	transform: scale(1.0618);
 }
 .sensitive .media {
@@ -86,7 +89,7 @@
 	content: '\f06e';
 	margin-top: calc(var(--line3) * -1);
 }
-.sensitiveCheckbox:checked + .media::before {
+.sensitiveCheckbox:checked + .media .sensitiveLabel::before {
 	content: 'NSFW';
 	position: absolute;
 	z-index: 99;
@@ -96,9 +99,13 @@
 	content: '\f070';
 }
 .sensitiveLabel {
+	composes: h3 from './_typo.css';
 	position: absolute;
 	width: 100%;
 	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	z-index: 99;
 	cursor: pointer;
 	margin: 0;
@@ -113,6 +120,8 @@
 	height: var(--line2);
 	top: 0px;
 	right: 0px;
+	background-color: var(--ui-bg-opaque);
+	border-bottom-left-radius: var(--ui-border-radius-emphasized);
 }
 
 /* only js autofade, note must be animation for listener */
@@ -126,6 +135,17 @@
 	top: 0px;
 	left: 0px;
 }
+.media.loaded > canvas {
+	/* 1px rounding issue */
+	height: 100%;
+}
+.sensitiveCheckbox + .media > canvas {
+	opacity: 0.5;
+}
+.sensitiveCheckbox + .media:hover > canvas {
+	opacity: 1;
+}
+
 .sensitiveCheckbox:not(:checked) + .media .picture > .image,
 .media > *:not(i) + .picture > .image {
 	opacity: 0;

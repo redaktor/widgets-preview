@@ -39,7 +39,22 @@ export const Blurhash = factory(function Blurhash({ properties, middleware: { no
 		    const pixels = decode(hash, width, height, punch);
 		    const ctx = (canvas as HTMLCanvasElement).getContext('2d');
 		    const imageData = new ImageData(pixels, width, height);
-				ctx && ctx.putImageData(imageData, 0, 0);
+				if (!!ctx) {
+					ctx.putImageData(imageData, 0, 0);
+
+					/* middle of image */
+					const data = ctx.getImageData(width/3, height/3, width/3, height/3).data;
+					const l = data.length;
+					let j = 0;
+					let colorSum = 0;
+			    for (j; j < l; j += 4) {
+			      const avg = Math.floor((data[j] + data[j+1] + data[j+2]) / 3);
+			      colorSum += avg;
+			    }
+					const middleBrightness = Math.floor(colorSum / ((width * height) / 3));
+					console.log( middleBrightness );
+				}
+
 				return (canvas as HTMLCanvasElement).toDataURL();
 			} catch (err) {
 				console.error('Blurhash decoding failed', { err, hash });

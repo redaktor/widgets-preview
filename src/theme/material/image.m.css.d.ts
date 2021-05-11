@@ -18,6 +18,7 @@ export const picture: string;
 export const sensitiveLabel: string;
 export const loaded: string;
 export const fadein: string;
+export const faded: string;
 export const summary: string;
 export const summaryPaginated: string;
 export const contentWrapper: string;
