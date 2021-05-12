@@ -23,4 +23,4 @@ package.json.bk
 /html-report
 _build
 .tsconfig*.json
-.DS_Store
+*.DS_Store

@@ -82,7 +82,7 @@ video:picture-in-picture {
 }
 
 .audioAvatarWrapper {
-	z-index: 1;
+	z-index: 5;
 }
 .fresh .audioAvatarWrapper {
 	opacity: 0.64;

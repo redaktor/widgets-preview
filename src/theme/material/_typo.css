@@ -412,12 +412,12 @@ sub, sup, button, input, label, select, textarea,
 li {
   margin-bottom: calc(var(--mb, 16px) - var(--line, 16px));
 }
-small, p, h5, h4, h3, h2, h1, b, big, i, small, tt, abbr, acronym, cite, code,
+small, p, h4, h3, h2, h1, b, big, i, small, tt, abbr, acronym, cite, code,
 dfn, em, kbd, strong, samp, var, a, bdo, img, map, object, q, script, pre,
 sub, sup, button, input, label, select, textarea {
   font-weight: var(--weight, 400);
 }
-strong, .semibold, .strong, .meta {
+h5, strong, .semibold, .strong, .meta {
   font-weight: var(--weight-semibold, 500);
 }
 b, .b, .bold {

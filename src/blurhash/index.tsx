@@ -15,6 +15,8 @@ export interface BlurhashProperties {
 	 * larger values will make it stronger. Lets you adjust the look.
 	 */
 	punch?: number;
+	/* Get the brightness of the blurhash */
+	onBrightness?: (brightObject: {brightness: number, textColor: string}) => any;
 }
 
 const factory = create({node}).properties<BlurhashProperties>();
@@ -26,6 +28,7 @@ export const Blurhash = factory(function Blurhash({ properties, middleware: { no
 		width = 40,
 		punch = 1,
 		output = 'canvas',
+		onBrightness,
 		...canvasProps
 	} = properties();
 	if (!b) { return ''; }
@@ -41,18 +44,18 @@ export const Blurhash = factory(function Blurhash({ properties, middleware: { no
 		    const imageData = new ImageData(pixels, width, height);
 				if (!!ctx) {
 					ctx.putImageData(imageData, 0, 0);
-
-					/* middle of image */
-					const data = ctx.getImageData(width/3, height/3, width/3, height/3).data;
-					const l = data.length;
-					let j = 0;
-					let colorSum = 0;
-			    for (j; j < l; j += 4) {
-			      const avg = Math.floor((data[j] + data[j+1] + data[j+2]) / 3);
-			      colorSum += avg;
-			    }
-					const middleBrightness = Math.floor(colorSum / ((width * height) / 3));
-					console.log( middleBrightness );
+					if (!!onBrightness) {
+						const {data} = imageData;
+						const l = data.length;
+						let [j, colorSum] = [0, 0];
+				    for (j; j < l; j += 4) {
+				      const avg = Math.round(((data[j] * 299) + (data[j+1] * 587) + (data[j+2] * 114)) / 1000);
+				      colorSum += avg;
+				    }
+						const brightness = Math.floor(colorSum / (width * height));
+						const textColor =  brightness > 120 ? '#000' : '#FFF';
+						onBrightness({brightness, textColor})
+					}
 				}
 
 				return (canvas as HTMLCanvasElement).toDataURL();

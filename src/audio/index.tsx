@@ -27,13 +27,13 @@ import Chip from '../chip';
 import Button from '../button';
 import Slider from '../slider';
 import Icon from '../icon';
+import Image from '../image';
+import Images from '../images';
 import bundle from './nls/Audio';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/audio.m.css';
 
-import Blurhash from '../blurhash/';
-import { decode } from '../blurhash/woltappBlurhash';
 /* TODO exists in this module: */
 import MD from '../MD/';
 
@@ -95,8 +95,6 @@ export interface AudioProperties extends ActivityPubObject {
 	onMouseLeave?: (currentTime: number) => any;
 	/** `id` set on the root DOM node */
 	widgetId?: string;
-	/* extra poster instead of image[0] */
-	poster?: string;
 	/* show poster image (poster or image[0]), default true */
 	hasPoster?: boolean;
 	/* show audio controls, default true */
@@ -210,10 +208,14 @@ export const Audio = factory(function Audio({
 		alt, editable, onLoad, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId = uuid(),
 		hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
 		isRow = false, autoPlay = false, muted = false,
-		crossorigin = 'anonymous', volume = 1, speed = 1, poster, ..._rest
+		crossorigin = 'anonymous', volume = 1, speed = 1, ..._rest
 	} = normalizeActivityPub(properties());
 
 	const APo: ActivityPubObjectNormalized = _rest;
+
+	if (APo.type.indexOf('Audio') < 0 && (!APo.mediaType || APo.mediaType.toLowerCase().indexOf('audio') !== 0)) {
+		return ''
+	}
 
 	const audio = (node.get('audio') as HTMLAudioElement);
 	const tracks = (children() as any || []).filter((c: any) => c.tag === 'track');
@@ -235,20 +237,7 @@ export const Audio = factory(function Audio({
 	if (!get('isPaused') && get('isFresh')) { set('isFresh', false) }
 
 /* MASONRY */
-	const hashToCss = (hash: string) => {
-		const cv = document.createElement("canvas") as HTMLCanvasElement;
-		const ctx = cv.getContext("2d");
-		const pixels = decode(hash, 300, 300, 1);
-		const imgData = ctx && ctx.createImageData(300, 300);
-		imgData && imgData.data.set(pixels);
-		ctx && imgData && ctx.putImageData(imgData, 0, 0);
-		if (cv.toDataURL()) {
-			return cv.toDataURL();
-		}
-	};
-
 	const hasNativeMasonry = CSS.supports('grid-template-rows', 'masonry');
-	console.log('hasNativeMasonry', hasNativeMasonry);
 /* JS fallback */
 	getOrSet('imagesCount', 7); /* TODO : children.length when it becomes a module !!! */
 	getOrSet('imagesLoaded', 0);
@@ -281,10 +270,10 @@ export const Audio = factory(function Audio({
 		canvasBlurhash static / img absolute / fade
 		nojs + img = force opacity 1;
 		*/
-		if (get('imagesCount') === get('imagesLoaded')) {
+/*		if (get('imagesCount') === get('imagesLoaded')) {
 			console.log('Yay, loaded images',get('imagesLoaded'));
 			resizeAllGridItems()
-		}
+		}*/
 	}
 /* MASONRY <-- */
 
@@ -447,12 +436,12 @@ export const Audio = factory(function Audio({
 		classNames('audio-player', { editable })
 	*/
 	const sources = !!APo.url && <Srcset url={APo.url} />;
-	const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
+	// const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
 	const menuOpen = get('isTrackMenuOpen');
 	const formattedDuration = formatTime(Math.floor(get('duration')||0));
 	const {breakpoint: vp = 's'} = breakpoints.get('measure')||{};
 	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
-	// const imagesWH = Math.floor(!get('l') ? 0 : ((measureDim && measureDim.width)||0) / get('l'));
+	const vpSize = !vp || vp === 'micro' ? 'xs' : (vp as any);
 
 	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
 	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
@@ -495,9 +484,6 @@ export const Audio = factory(function Audio({
 		});
 		*/
 	}
-
-	const namesNode = (<Name name={APo.name} isRow={isRow} size={!vp || vp === 'micro' ? 'xs' : (vp as any)} />);
-
 	return <div
 		key="root"
 		classes={[
@@ -551,7 +537,14 @@ export const Audio = factory(function Audio({
 			<noscript>
 				<video controls={true} {...playerProps}>{sources}{children()}</video>
 			</noscript>
-			{hasPoster && !!posterSrc && <img src={posterSrc} classes={themedCss.poster} />}
+			{
+				hasPoster && !!APo.image && !!APo.image[0] &&
+					<Image {...APo.image[0]}
+						fit={true} baselined={false} isRow={isRow}
+						hasContent={false} hasControls={false} hasAttachment={false}
+					/>
+			}
+
 			{!get('hasTracks') && !get('isPicInPic') ?
 				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :
 				<video key="audio" {...playerProps}>{sources}{children()}</video>
@@ -652,14 +645,14 @@ export const Audio = factory(function Audio({
 			</div>
 		</div>}
 
-		{!isRow && !menuOpen && get('isPaused') && namesNode}
+		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={vpSize} />}
 
 		<div classes={themedCss.attributions}>
 			<AttributedTo {...APo} max={39} />
 		</div>
 
 		{hasContent && <div classes={themedCss.contentWrapper}>
-			{!!isRow && namesNode}
+			{!!isRow && <Name name={APo.name} isRow={isRow} size={vpSize} />}
 			{
 				APo.summary && <Paginated key="summary" property="summary" classes={{
 						'@dojo/widgets/paginated': { root: [themedCss.summaryPaginated] }
