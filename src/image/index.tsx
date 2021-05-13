@@ -96,10 +96,8 @@ export const Image = factory(function Image({
 
 	const APo: ActivityPubObjectNormalized = _rest;
 	if (APo.type.indexOf('Image') < 0 && (!mediaType || mediaType.toLowerCase().indexOf('image') !== 0)) {
-		console.log('NO IMAGE', APo);
 		return ''
 	}
-	console.log('IMAGE', APo);
 	getOrSet('l', theme.line(), false);
 	getOrSet('loaded', false, false);
 	getOrSet('faded', false, false);

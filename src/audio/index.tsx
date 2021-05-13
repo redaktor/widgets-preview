@@ -311,9 +311,10 @@ export const Audio = factory(function Audio({
 		*/
   }
 	const handleLoadedMetadata = () => {
+		if (!audio) { return }
 		set('duration', audio.duration, false);
 		let trackMenu: RenderResult = [];
-		if (!!audio && audio.textTracks && audio.textTracks.length) {
+		if (audio.textTracks && audio.textTracks.length) {
 			const textTracks: any = {
 				captions:(new Map()),
 				subtitles:(new Map()),
@@ -353,6 +354,7 @@ export const Audio = factory(function Audio({
 									return v
 								})}
 								onValue={(iStr) => {
+									if (!audio) { return }
 									const i = parseInt(iStr, 10);
 									const track = audio.textTracks[i];
 									textTracks[track.kind].forEach((t: any) => {
@@ -378,6 +380,7 @@ export const Audio = factory(function Audio({
 		set('trackMenu', trackMenu);
 	}
 	const handleLoadedData = () => {
+		if (!audio) { return }
 		const { autoPlay, currentTime, muted = false, volume = 1, speed = 1 } = properties();
 		if (currentTime) {
 			audio.currentTime = currentTime;
@@ -390,6 +393,7 @@ export const Audio = factory(function Audio({
 	}
 
 	const handleProgress = () => {
+		if (!audio) { return }
     const lastTimeRange = audio.buffered.length - 1;
     if (lastTimeRange > -1) {
 			set('buffer', Math.ceil(audio.buffered.end(lastTimeRange) / audio.duration * 100));
@@ -673,7 +677,7 @@ export const Audio = factory(function Audio({
 		</div>}
 
 		{hasAttachment && <virtual>
-			<Images key="images" image={APo.image} size={(vp as any)} />
+			<Images key="images" isRow={isRow} image={APo.image} size={(vp as any)} />
 			<p key="attachments" classes={themedCss.attachments}>... attachments</p>
 		</virtual>}
 	</div>

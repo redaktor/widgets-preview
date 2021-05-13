@@ -56,8 +56,7 @@ export const Images = factory(function Images({
 		}
 	}
 	if (get('imageCount') === get('imageLoaded')) {
-		console.log('Yay, loaded images',get('imageLoaded'));
-		!CSS.supports('grid-template-rows', 'masonry') && resizeAllGridItems();
+		!CSS.supports('grid-template-rows', 'masonry') && !isRow && resizeAllGridItems();
 		onLoad && onLoad()
 	}
 
@@ -74,7 +73,6 @@ export const Images = factory(function Images({
 			role="region"
 		>
 			{image.map((img: any, i: number) => {
-				console.log(img);
 				if (typeof img === 'string') { img = {type: 'Image', url: img} }
 				return <Image key={`image${i}`} {...img} baselined={false} hasContent={false} hasAttachment={false} />
 			})}
