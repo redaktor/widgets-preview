@@ -67,6 +67,17 @@ export enum Size {
 }
 export type Sizes = (Size | keyof typeof Size);
 
+export enum VP {
+	'micro' = 'micro',
+	'xs' = 'xs',
+	's' = 's',
+	'm' = 'm',
+	'l' = 'l',
+	'xl' = 'xl',
+	'xxl' = 'xxl'
+}
+export type Viewports = (VP | keyof typeof VP);
+
 export enum Variant {
 	'flat' = 'flat',
 	'filled' = 'filled',

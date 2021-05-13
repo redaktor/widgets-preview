@@ -23,9 +23,7 @@
 	object-fit: cover;
 	height: 100%;
 }
-.root:not(.row) {
-	max-width: 64ch;
-}
+
 .xs, .s, .m, .l, .xl, .xxl { }
 .mini, .medium, .large { }
 .darkImage, .lightImage { }
@@ -206,12 +204,12 @@
 .sensitiveCheckbox:checked ~ .attachment {
 	display: none;
 }
-
+/*
 .micro:not(.row) .media {
 	width: calc(100% - var(--line));
 	margin: 0 0 0 var(--line);
 }
-
+*/
 .captionRow {
 	display: flex;
 	justify-content: space-between;

@@ -1,11 +1,11 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { clampStrings } from '../common/activityPubUtil';
 import Paginated from '../paginated';
-import theme, { ThemeProperties } from '../middleware/theme';
+import theme, { ViewportProperties } from '../middleware/theme';
 import * as ui from '../theme/material/_ui.m.css';
 import * as css from '../theme/material/name.m.css';
 
-export interface NameProperties extends ThemeProperties {
+export interface NameProperties extends ViewportProperties {
 	/** The property for the named group */
 	name?: string[];
 	/** The max. character count, default 200 */

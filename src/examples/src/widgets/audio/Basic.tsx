@@ -61,6 +61,12 @@ import Map from '@dojo/widgets/map';
   }
 */
 
+const ogg: ActivityPubLink = {type: 'Link', href: 'http://localhost:9999/assets/nihWikimedia.ogg', mediaType: 'audio/ogg'};
+const mp3: ActivityPubLink = {type: 'Link', href: 'http://localhost:9999/assets/nihWikimedia.mp3', mediaType: 'audio/mp3'};
+const _1_1: ActivityPubLink = {type: "Link", href: "card-photo-1-1.3vTxmshj.jpg", width: 2717, height: 2717, mediaType: "image/jpg", blurhash: 'UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@'};
+const _1_4: ActivityPubLink = {type: "Link", href: "card-photo-1-4.9vfpAQ1n.jpg", width: 13228, height: 3307, mediaType: "image/jpg", blurhash: 'MlIhplt7t7WB%M~qj[t7WBt7-;ofayWBWB'};
+const _2_3: ActivityPubLink = {type: "Link", href: "card-photo-2-3.3G_muD46.jpg", width: 1417, height: 945, mediaType: "image/jpg", blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP'};
+
 const exampleData: AudioProperties | ImageProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
   type: "Audio",
@@ -86,7 +92,7 @@ const exampleData: AudioProperties | ImageProperties = {
 
   Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`,
   `2 Jetzt herrscht Goldgräberstimmung an der New Yorker Technologiebörse NASDAQ. Dort will Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Börsenparkett. Gemessen am Referenzpreis der Aktien ist Coinbase rund 68 Milliarden Dollar wert. Analysten trauen Coinbase sogar eine Bewertung von 100 Milliarden Dollar zu – ein aberwitziger Preis für ein Unternehmen mit 56 Millionen Kunden und gut 1700 Mitarbeitern. Die schwindelerregende Bewertung erklären Analysten mit dem Hype um Kryptowährung LOREM IPSUM dolor sit amet, consectetur adipiscing elit. Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`],
-  image: {type: "Link", href: "card-photo-2-3.3G_muD46.jpg", width: 1417, height: 945, mediaType: "image/jpg", blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP'},
+  image: [ _2_3, _1_1, _2_3, _1_4, _1_1, _1_4, _2_3, _2_3, _1_1 ],
   privacy: "public",
   published: "23m ago",
   bookmark: false,
@@ -94,9 +100,11 @@ const exampleData: AudioProperties | ImageProperties = {
   topic: {color: [ 223, 220, 0 ], name: "Journalism"},
   sensitive: true
 }
+/* <--
+1:1 2717 UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@
+1:4 13228x3307 MlIhplt7t7WB%M~qj[t7WBt7-;ofayWBWB
 
-const ogg: ActivityPubLink = {type: 'Link', href: 'http://localhost:9999/assets/nihWikimedia.ogg', mediaType: 'audio/ogg'};
-const mp3: ActivityPubLink = {type: 'Link', href: 'http://localhost:9999/assets/nihWikimedia.mp3', mediaType: 'audio/mp3'};
+*/
 const exampleAudio: AudioProperties = {
   ...(exampleData as AudioProperties),
   url: [ ogg, mp3 ]
@@ -108,7 +116,7 @@ const exampleImage: ImageProperties = {
   width: 1417,
   height: 945,
   blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP',
-  url: [ {type: 'Link', href: 'card-photo-2-3.3G_muD46.jpg', width: 1417, height: 945, mediaType: "image/jpg"} ]
+  url: [ _2_3 ]
 };
 
 const factory = create();

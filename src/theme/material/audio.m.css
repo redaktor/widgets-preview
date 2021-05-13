@@ -347,81 +347,20 @@ video:picture-in-picture {
 	padding: 0 var(--p) var(--line) var(--p);
 	order: 5;
 }
-/* .images, */
+
 .attachments {
 	min-width: 320px;
 	max-width: 100%;
-}
-.attachments {
 	display: flex;
 	flex: 1;
-}
+	order: 8;
 
+	background: green;
+}
 .micro .attachments {
 	min-width: 240px;
 }
-.images {
-	width: 100%;
-	display: grid;
-  grid-gap: 4px; /* TODO gap property */
-  grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); /* TODO min property */
-  grid-auto-rows: var(--line, 16px);
-	background-color: var(--ui-bg, #000);
-	order: 7;
-}
-.image {
-	display: block;
-	margin: 0;
-	padding: 0;
-  max-width: 100%;
-	height: auto;
-	transition: opacity var(--ui-dpd-8,400ms) var(--ui-easing) 0ms;
-}
-.figure {
-	position: relative;
-	margin: 0px;
-  overflow: hidden;
-}
-.figure > canvas {
-	display: block;
-	width: 100%;
-	height: auto;
-}
-/* only js */
-.figure > *:not(i) + .image {
-	position: absolute;
-	top: 0px;
-	left: 0px;
-	opacity: 0;
-}
-.figure.loaded > *:not(i) + .image {
-	opacity: 1;
-}
 
-/* TODO native masonry */
-@supports (grid-template-rows: masonry) {
-	.micro .images { --mcols: 1; --gap: 0; }
-	.xs .images { --mcols: 2; --gap: 0; }
-	.s .images { --mcols: 2; }
-	.m .images { --mcols: 3; }
-	.l .images { --mcols: 4; }
-	.xl .images { --mcols: 5; }
-	.xxl .images { --mcols: 6; --gap: calc(var(--grid-base, 8px) * 2); }
-  .images {
-		display: grid;
-		gap: var(--gap, var(--grid-base, 8px));
-	  grid-template-columns: repeat(var(--mcols, 2), 1fr);
-	  grid-template-rows: masonry;
-	}
-	.figure > img {
-	  grid-row: 1 / -1;
-	  grid-column: 1;
-	}
-}
-.attachments {
-	background: green;
-	order: 8;
-}
 .footer {
 	z-index: 6;
 }

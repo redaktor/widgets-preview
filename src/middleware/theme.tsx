@@ -1,6 +1,6 @@
 import { create } from '@dojo/framework/core/vdom';
 import { ActivityPubObject } from '../common/interfaces';
-import { Sizes, Materials, Spaced, Variants, Elevation, PointerDevices } from '../common/util';
+import { Sizes, Viewports, Materials, Spaced, Variants, Elevation, PointerDevices } from '../common/util';
 import coreTheme, { ThemeProperties as CoreProps } from '@dojo/framework/core/middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { ClassNames, Theme } from '@dojo/framework/core/mixins/Themed';
@@ -22,6 +22,12 @@ function isThemeWithVariant(theme: any): theme is ThemeWithVariant {
 	return theme && theme.hasOwnProperty('variant');
 }
 
+export interface ViewportProperties extends CoreProps {
+	/** The size for the button: 'xs', 's', 'm', 'l', 'xl', 'xxl'
+	 * 'm' by default
+	 */
+	size?: Viewports;
+}
 export interface ThemeProperties extends CoreProps {
 	/** The size for the button: 'xs', 's', 'm', 'l', 'xl', 'xxl'
 	 * 'm' by default

@@ -441,7 +441,6 @@ export const Audio = factory(function Audio({
 	const formattedDuration = formatTime(Math.floor(get('duration')||0));
 	const {breakpoint: vp = 's'} = breakpoints.get('measure')||{};
 	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
-	const vpSize = !vp || vp === 'micro' ? 'xs' : (vp as any);
 
 	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
 	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
@@ -540,8 +539,7 @@ export const Audio = factory(function Audio({
 			{
 				hasPoster && !!APo.image && !!APo.image[0] &&
 					<Image {...APo.image[0]}
-						fit={true} baselined={false} isRow={isRow}
-						hasContent={false} hasControls={false} hasAttachment={false}
+						fit={true} baselined={false} isRow={isRow} hasContent={false} hasAttachment={false}
 					/>
 			}
 
@@ -645,14 +643,14 @@ export const Audio = factory(function Audio({
 			</div>
 		</div>}
 
-		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={vpSize} />}
+		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
 
 		<div classes={themedCss.attributions}>
 			<AttributedTo {...APo} max={39} />
 		</div>
 
 		{hasContent && <div classes={themedCss.contentWrapper}>
-			{!!isRow && <Name name={APo.name} isRow={isRow} size={vpSize} />}
+			{!!isRow && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
 			{
 				APo.summary && <Paginated key="summary" property="summary" classes={{
 						'@dojo/widgets/paginated': { root: [themedCss.summaryPaginated] }
@@ -675,8 +673,7 @@ export const Audio = factory(function Audio({
 		</div>}
 
 		{hasAttachment && <virtual>
-			<div key="images" classes={themedCss.images}>
-			</div>
+			<Images key="images" image={APo.image} size={(vp as any)} />
 			<p key="attachments" classes={themedCss.attachments}>... attachments</p>
 		</virtual>}
 	</div>
@@ -685,9 +682,6 @@ export const Audio = factory(function Audio({
 
 export default Audio;
 /*
-2-3 	UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP
-1-1 	UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@
-1-4 	MlIhplt7t7WB%M~qj[t7WBt7-;ofayWBWB
 
 <button onclick={() => {
 	set('isPicInPic', true);
