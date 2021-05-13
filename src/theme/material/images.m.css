@@ -3,30 +3,83 @@
 	background-color: var(--ui-bg, #000);
 	order: 7;
 }
-.root:not(.row) {
-	display: grid;
+.root.hasPagination {
+	padding-bottom: var(--line3);
+}
+.controls {
+	display: none;
+	padding-top: var(--lineHalf);
+	height: var(--line2);
+	width: 100%;
+	position: absolute;
+	bottom: calc(var(--line3) - var(--lineHalf) - var(--ui-border-width-emphasized));
+	justify-content: space-between;
+	z-index: 1;
+	border-top: 1px solid #444;
+	background: #000;
+}
+label.prevControl, label.nextControl {
+	padding: 0;
+	margin: 0;
+}
+.firstControl { }
+.lastControl { }
+.root:not(.row) .page {
+	display: none;
 	grid-gap: 4px; /* TODO gap property */
 	grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); /* TODO min property */
 	grid-auto-rows: var(--line, 16px);
 }
-.root.row {
+.root:not(.row) .pageRadio:checked + .controls + .page {
+	display: grid;
+}
+.root:not(.row) .pageRadio:checked + .controls,
+.row .page {
 	display: flex;
 }
+.pageRadio {
+	position: absolute;
+	bottom: var(--line3);
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	border-radius: 50%;
+	width: var(--line);
+	height: var(--line);
+	border: var(--ui-border-width-emphasized) solid var(--text-muted, #999);
+	transition: 0.2s all linear;
+	margin: 0;
+	padding: 0;
+	z-index: 2;
+}
+.pageRadio:checked {
+	border-color: var(--ui-border, #999);
+}
+.pageRadio:nth-of-type(1) { left: var(--touch-target-min); }
+.pageRadio:nth-of-type(2) { left: calc(var(--touch-target-min) * 2); }
+.pageRadio:nth-of-type(3) { left: calc(var(--touch-target-min) * 3); }
+.pageRadio:nth-of-type(4) { left: calc(var(--touch-target-min) * 4); }
+.pageRadio:nth-of-type(5) { left: calc(var(--touch-target-min) * 5); }
+.pageRadio:nth-of-type(6) { left: calc(var(--touch-target-min) * 6); }
+.pageRadio:nth-of-type(7) { left: calc(var(--touch-target-min) * 7); }
+.pageRadio:nth-of-type(8) { left: calc(var(--touch-target-min) * 8); }
+.pageRadio:nth-of-type(9) { left: calc(var(--touch-target-min) * 9); }
+.pageRadio:nth-of-type(10) { left: calc(var(--touch-target-min) * 10); }
 /* TODO native masonry */
 @supports (grid-template-rows: masonry) {
-	.micro.root { --mcols: 1; --gap: 0; }
-	.xs.root { --mcols: 2; --gap: 0; }
-	.s.root { --mcols: 2; }
-	.m.root { --mcols: 3; }
-	.l.root { --mcols: 4; }
-	.xl.root { --mcols: 5; }
-	.xxl.root { --mcols: 6; --gap: calc(var(--grid-base, 8px) * 2); }
-  .root {
+	.micro .page { --mcols: 1; --gap: 0; }
+	.xs .page { --mcols: 2; --gap: 0; }
+	.s .page { --mcols: 2; }
+	.m .page { --mcols: 3; }
+	.l .page { --mcols: 4; }
+	.xl .page { --mcols: 5; }
+	.xxl .page { --mcols: 6; --gap: calc(var(--grid-base, 8px) * 2); }
+  .page {
 		gap: var(--gap, var(--grid-base, 8px));
 	  grid-template-columns: repeat(var(--mcols, 2), 1fr);
 	  grid-template-rows: masonry;
 	}
-	.root figure > img {
+	.page figure > img {
 	  grid-row: 1 / -1;
 	  grid-column: 1;
 	}

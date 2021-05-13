@@ -1,14 +1,21 @@
 import { tsx, create, node } from '@dojo/framework/core/vdom';
+import has from '@dojo/framework/core/has';
 import { ActivityPubObject } from '../common/interfaces';
+import { uuid } from '@dojo/framework/core/util';
 import theme, { ViewportProperties} from '../middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { normalizeActivityPub } from '../common/activityPubUtil';
+import Icon from '../icon';
 import Image from '../image';
 // import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/images.m.css';
 
 export interface ImagesProperties extends ActivityPubObject, ViewportProperties {
 	isRow?: boolean;
+	/* maximum number of items, default 1000 */
+	max?: number;
+	/* max. items per “page”, default 10 */
+	itemsPerPage?: number;
 	/* when all images have loaded */
 	onLoad?: () => any;
 	/* when clicking an image */
@@ -16,8 +23,10 @@ export interface ImagesProperties extends ActivityPubObject, ViewportProperties 
 }
 
 export interface ImagesIcache {
+	idBase: string;
 	imageCount: number;
 	imageLoaded: number;
+	currentPage: number;
 }
 const icache = createICacheMiddleware<ImagesIcache>();
 
@@ -33,10 +42,20 @@ export const Images = factory(function Images({
 }) {
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
-	const { image = [], isRow = false, size = 'm', onLoad, onClick } = normalizeActivityPub(properties());
-
-	getOrSet('imageCount', 7); /* TODO : children.length when it becomes a module !!! */
+	const {
+		image = [], isRow = false, size = 'm', max = 1000, itemsPerPage = 8, onLoad, onClick
+	} = normalizeActivityPub(properties());
+	const maxImage = image.slice(0,max+1);
+	const mLength = maxImage.length;
+	const paginatedImage = [];
+	for (let i = 0; i<mLength; i+=itemsPerPage) {
+    paginatedImage.push(maxImage.slice(i,i+itemsPerPage));
+	}
+	getOrSet('idBase', uuid(), false);
+	getOrSet('imageCount', Math.min(itemsPerPage, mLength), false);
+	getOrSet('currentPage', 0, false);
 	getOrSet('imageLoaded', 0);
+
 	const loadedImg = () => {
 		const count = get('imageCount')||0;
 		const loaded = get('imageLoaded')||0;
@@ -67,15 +86,57 @@ export const Images = factory(function Images({
 			classes={[
 				themedCss.root,
 				isRow && themedCss.row,
+				(maxImage.length > itemsPerPage) && themedCss.hasPagination,
 				themedCss[(size as keyof typeof themedCss)]
 			]}
 			aria-label="Images"
 			role="region"
 		>
-			{image.map((img: any, i: number) => {
-				if (typeof img === 'string') { img = {type: 'Image', url: img} }
-				return <Image key={`image${i}`} {...img} baselined={false} hasContent={false} hasAttachment={false} />
-			})}
+
+		{paginatedImage.map((imagePage: any, i: number) => {
+			return <virtual>
+				<input
+					type="radio"
+					classes={themedCss.pageRadio}
+					id={`${get('idBase')}_${i}`}
+					name={`${get('idBase')}_images`}
+					checked={i === get('currentPage')}
+					onclick={() => { set('currentPage', i) }}
+				/>
+				{(maxImage.length > itemsPerPage) &&
+					<div key={`controls${i}`} classes={[themedCss.controls]}>
+						{<label
+							for={!i ? `${get('idBase')}_${paginatedImage.length-1}` : `${get('idBase')}_${i-1}`}
+							classes={[themedCss.prevControl, !i && themedCss.firstControl]}
+							onclick={() => { set('currentPage', !i ? paginatedImage.length-1 : i-1) }}
+						>
+							<Icon size="xl" type="left" />
+						</label>}
+						{<label
+							for={i === paginatedImage.length-1 ? `${get('idBase')}_0` : `${get('idBase')}_${i+1}`}
+							classes={[themedCss.nextControl, i === paginatedImage.length-1 && themedCss.lastControl]}
+							onclick={() => { set('currentPage', i === paginatedImage.length-1 ? 0 : i+1) }}
+						>
+							<Icon size="xl" type="right" />
+						</label>}
+					</div>
+				}
+				{(!!has('host-browser') && i !== get('currentPage')) ? '' : <div key={`page${i}`} classes={[themedCss.page]}>
+					{imagePage.map((img: any, j: number) => {
+						if (typeof img === 'string') { img = {type: 'Image', url: img} }
+						return <Image
+							key={`image${j}`}
+							{...img}
+							baselined={false}
+							hasContent={false}
+							hasAttachment={false}
+							onLoad={loadedImg}
+							onClick={onClick && onClick(img)}
+						/>
+					})}
+				</div>}
+			</virtual>
+		})}
 		</div>
 	</virtual>
 });
