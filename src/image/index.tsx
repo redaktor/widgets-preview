@@ -32,7 +32,7 @@ export interface ImageProperties extends ActivityPubObject {
 	crossorigin?: 'anonymous' | 'use-credentials';
 	/* is Fullscreen */
 	fullscreen?: boolean;
-	/* snap to baseline, default false */
+	/* snap to baseline, default true */
 	baselined?: boolean;
 	/** `id` set on the root DOM node */
 	widgetId?: string;
@@ -107,7 +107,6 @@ export const Image = factory(function Image({
   }
 	const {breakpoint: vp = 's'} = breakpoints.get('measure')||{};
 	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
-
 	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
 	const mml = !get('l') || !baselined ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
 	const isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));

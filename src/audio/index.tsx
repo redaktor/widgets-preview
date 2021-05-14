@@ -93,6 +93,8 @@ export interface AudioProperties extends ActivityPubObject {
 	onPause?: (currentTime: number) => any;
 	onMouseEnter?: (currentTime: number) => any;
 	onMouseLeave?: (currentTime: number) => any;
+	/* snap to baseline, default false */
+	baselined?: boolean;
 	/** `id` set on the root DOM node */
 	widgetId?: string;
 	/* show poster image (poster or image[0]), default true */
@@ -206,7 +208,7 @@ export const Audio = factory(function Audio({
 	const { messages } = i18n.localize(bundle);
 	const {
 		alt, editable, onLoad, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId = uuid(),
-		hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
+		baselined = true, hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
 		isRow = false, autoPlay = false, muted = false,
 		crossorigin = 'anonymous', volume = 1, speed = 1, ..._rest
 	} = normalizeActivityPub(properties());
@@ -447,7 +449,7 @@ export const Audio = factory(function Audio({
 	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
 
 	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
-	const mml = !get('l') ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
+	const mml = !get('l') || !baselined ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
 	const isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
 	const typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 	const audioAvatarSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';

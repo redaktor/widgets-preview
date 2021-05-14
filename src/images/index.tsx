@@ -3,6 +3,7 @@ import has from '@dojo/framework/core/has';
 import { ActivityPubObject } from '../common/interfaces';
 import { uuid } from '@dojo/framework/core/util';
 import theme, { ViewportProperties} from '../middleware/theme';
+import breakpoints from '../middleware/breakpoint';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Icon from '../icon';
@@ -11,6 +12,7 @@ import Image from '../image';
 import * as css from '../theme/material/images.m.css';
 
 export interface ImagesProperties extends ActivityPubObject, ViewportProperties {
+	baselined?: boolean;
 	isRow?: boolean;
 	/* maximum number of items, default 1000 */
 	max?: number;
@@ -23,6 +25,7 @@ export interface ImagesProperties extends ActivityPubObject, ViewportProperties 
 }
 
 export interface ImagesIcache {
+	l: any;
 	idBase: string;
 	imageCount: number;
 	imageLoaded: number;
@@ -33,17 +36,19 @@ const icache = createICacheMiddleware<ImagesIcache>();
 const factory = create({
 	icache,
 	node,
+	breakpoints,
 	theme
 }).properties<ImagesProperties>();
 
 export const Images = factory(function Images({
-	middleware: { icache, node, theme },
+	middleware: { icache, node, breakpoints, theme },
 	properties
 }) {
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
 	const {
-		image = [], isRow = false, size = 'm', max = 1000, itemsPerPage = 8, onLoad, onClick
+		image = [], isRow = false, size = 'm', max = 1000, itemsPerPage = 8, baselined = true,
+		onLoad, onClick
 	} = normalizeActivityPub(properties());
 	const maxImage = image.slice(0,max+1);
 	const mLength = maxImage.length;
@@ -51,10 +56,16 @@ export const Images = factory(function Images({
 	for (let i = 0; i<mLength; i+=itemsPerPage) {
     paginatedImage.push(maxImage.slice(i,i+itemsPerPage));
 	}
+
 	getOrSet('idBase', uuid(), false);
 	getOrSet('imageCount', Math.min(itemsPerPage, mLength), false);
 	getOrSet('currentPage', 0, false);
+	getOrSet('l', theme.line(), false);
 	getOrSet('imageLoaded', 0);
+
+	const {contentRect: dim = {height: 0}} = breakpoints.get('root')||{};
+	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
+	const mml = !get('l') || !baselined ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
 
 	const loadedImg = () => {
 		const count = get('imageCount')||0;
@@ -86,40 +97,42 @@ export const Images = factory(function Images({
 			classes={[
 				themedCss.root,
 				isRow && themedCss.row,
+				(!has('host-browser') || get('imageCount') === get('imageLoaded')) && themedCss.loaded,
 				(maxImage.length > itemsPerPage) && themedCss.hasPagination,
 				themedCss[(size as keyof typeof themedCss)]
 			]}
 			aria-label="Images"
 			role="region"
+			style={`--mml: ${mml};`}
 		>
 
 		{paginatedImage.map((imagePage: any, i: number) => {
 			return <virtual>
-				<input
-					type="radio"
-					classes={themedCss.pageRadio}
-					id={`${get('idBase')}_${i}`}
-					name={`${get('idBase')}_images`}
-					checked={i === get('currentPage')}
-					onclick={() => { set('currentPage', i) }}
-				/>
 				{(maxImage.length > itemsPerPage) &&
-					<div key={`controls${i}`} classes={[themedCss.controls]}>
-						{<label
+					<virtual>
+						<input
+							type="radio"
+							classes={themedCss.pageRadio}
+							id={`${get('idBase')}_${i}`}
+							name={`${get('idBase')}_images`}
+							checked={i === get('currentPage')}
+							onclick={() => { set('currentPage', i) }}
+						/>
+						{<label key={`prev_${i}`}
 							for={!i ? `${get('idBase')}_${paginatedImage.length-1}` : `${get('idBase')}_${i-1}`}
 							classes={[themedCss.prevControl, !i && themedCss.firstControl]}
 							onclick={() => { set('currentPage', !i ? paginatedImage.length-1 : i-1) }}
 						>
 							<Icon size="xl" type="left" />
 						</label>}
-						{<label
+						{<label key={`next_${i}`}
 							for={i === paginatedImage.length-1 ? `${get('idBase')}_0` : `${get('idBase')}_${i+1}`}
 							classes={[themedCss.nextControl, i === paginatedImage.length-1 && themedCss.lastControl]}
 							onclick={() => { set('currentPage', i === paginatedImage.length-1 ? 0 : i+1) }}
 						>
 							<Icon size="xl" type="right" />
 						</label>}
-					</div>
+					</virtual>
 				}
 				{(!!has('host-browser') && i !== get('currentPage')) ? '' : <div key={`page${i}`} classes={[themedCss.page]}>
 					{imagePage.map((img: any, j: number) => {
