@@ -27,8 +27,8 @@ export interface ImagesProperties extends ActivityPubObject, ViewportProperties 
 export interface ImagesIcache {
 	l: any;
 	idBase: string;
-	imageCount: number;
-	imageLoaded: number;
+	paginated: any[];
+	loaded: number[];
 	currentPage: number;
 }
 const icache = createICacheMiddleware<ImagesIcache>();
@@ -50,27 +50,32 @@ export const Images = factory(function Images({
 		image = [], isRow = false, size = 'm', max = 1000, itemsPerPage = 8, baselined = true,
 		onLoad, onClick
 	} = normalizeActivityPub(properties());
+	if (!image.length) { return '' }
 	const maxImage = image.slice(0,max+1);
 	const mLength = maxImage.length;
-	const paginatedImage = [];
-	for (let i = 0; i<mLength; i+=itemsPerPage) {
-    paginatedImage.push(maxImage.slice(i,i+itemsPerPage));
+	if (!get('paginated')) {
+		const paginatedImage: any[] = [];
+		for (let i = 0; i<mLength; i+=itemsPerPage) {
+	    paginatedImage.push(maxImage.slice(i,i+itemsPerPage));
+		}
+		getOrSet('paginated', paginatedImage, false);
+		getOrSet('loaded', paginatedImage.map(() => 0), false);
 	}
-
 	getOrSet('idBase', uuid(), false);
-	getOrSet('imageCount', Math.min(itemsPerPage, mLength), false);
 	getOrSet('currentPage', 0, false);
 	getOrSet('l', theme.line(), false);
-	getOrSet('imageLoaded', 0);
 
 	const {contentRect: dim = {height: 0}} = breakpoints.get('root')||{};
 	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
 	const mml = !get('l') || !baselined ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
 
 	const loadedImg = () => {
-		const count = get('imageCount')||0;
-		const loaded = get('imageLoaded')||0;
-		set('imageLoaded', loaded+1, (loaded >= count-1))
+		const current = get('currentPage') || 0;
+		const paginated = get('paginated') || [];
+		const count = paginated.length && paginated[current].length || 0;
+		const loaded = get('loaded') || [];
+		loaded[current]++;
+		set('loaded', loaded, (loaded[current] >= count))
 	}
 	const resizeGridItem = (i: number) => {
 		const [grid, item, img] = [node.get('root'), node.get(`image${i}`), node.get(`img${i}`)];
@@ -80,15 +85,26 @@ export const Images = factory(function Images({
 		item.style.gridRowEnd = `span ${Math.floor(((img as any).height+rowGap)/(rowHeight+rowGap))}`;
 	}
 	const resizeAllGridItems = () => {
-		const l = get('imageCount')||0;
+		const current = get('currentPage') || 0;
+		const paginated = get('paginated') || [];
+		const l = paginated[current].length || 0;
 		for(let n = 0; n < l; n++){
 			resizeGridItem(n);
 		}
 	}
-	if (get('imageCount') === get('imageLoaded')) {
+	const setPage = (i: number) => {
+		set('currentPage', i);
+	}
+
+	const current = get('currentPage') || 0;
+	const paginated = get('paginated') || [];
+	const count = paginated.length && paginated[current].length || 0;
+	const allLoaded = count === (get('loaded') as any)[current];
+	if (allLoaded) {
 		!CSS.supports('grid-template-rows', 'masonry') && !isRow && resizeAllGridItems();
 		onLoad && onLoad()
 	}
+	console.log(current, count, paginated, (get('loaded') as any)[current], allLoaded);
 
 	return <virtual>
 		<noscript><i /></noscript>
@@ -97,7 +113,7 @@ export const Images = factory(function Images({
 			classes={[
 				themedCss.root,
 				isRow && themedCss.row,
-				(!has('host-browser') || get('imageCount') === get('imageLoaded')) && themedCss.loaded,
+				(!has('host-browser') || allLoaded) && themedCss.loaded,
 				(maxImage.length > itemsPerPage) && themedCss.hasPagination,
 				themedCss[(size as keyof typeof themedCss)]
 			]}
@@ -106,7 +122,10 @@ export const Images = factory(function Images({
 			style={`--mml: ${mml};`}
 		>
 
-		{paginatedImage.map((imagePage: any, i: number) => {
+		{paginated.map((imagePage: any, i: number, a: any[]) => {
+			const count = paginated.length && paginated[i].length || 0;
+			const wasLoaded = count === (get('loaded') as any)[i];
+
 			return <virtual>
 				{(maxImage.length > itemsPerPage) &&
 					<virtual>
@@ -116,38 +135,40 @@ export const Images = factory(function Images({
 							id={`${get('idBase')}_${i}`}
 							name={`${get('idBase')}_images`}
 							checked={i === get('currentPage')}
-							onclick={() => { set('currentPage', i) }}
+							onclick={() => { setPage(i) }}
 						/>
 						{<label key={`prev_${i}`}
-							for={!i ? `${get('idBase')}_${paginatedImage.length-1}` : `${get('idBase')}_${i-1}`}
+							for={!i ? `${get('idBase')}_${a.length-1}` : `${get('idBase')}_${i-1}`}
 							classes={[themedCss.prevControl, !i && themedCss.firstControl]}
-							onclick={() => { set('currentPage', !i ? paginatedImage.length-1 : i-1) }}
+							onclick={() => { setPage(!i ? a.length-1 : i-1) }}
 						>
 							<Icon size="xl" type="left" />
 						</label>}
 						{<label key={`next_${i}`}
-							for={i === paginatedImage.length-1 ? `${get('idBase')}_0` : `${get('idBase')}_${i+1}`}
-							classes={[themedCss.nextControl, i === paginatedImage.length-1 && themedCss.lastControl]}
-							onclick={() => { set('currentPage', i === paginatedImage.length-1 ? 0 : i+1) }}
+							for={i === a.length-1 ? `${get('idBase')}_0` : `${get('idBase')}_${i+1}`}
+							classes={[themedCss.nextControl, i === a.length-1 && themedCss.lastControl]}
+							onclick={() => { setPage(i === a.length-1 ? 0 : i+1) }}
 						>
 							<Icon size="xl" type="right" />
 						</label>}
 					</virtual>
 				}
-				{(!!has('host-browser') && i !== get('currentPage')) ? '' : <div key={`page${i}`} classes={[themedCss.page]}>
-					{imagePage.map((img: any, j: number) => {
-						if (typeof img === 'string') { img = {type: 'Image', url: img} }
-						return <Image
-							key={`image${j}`}
-							{...img}
-							baselined={false}
-							hasContent={false}
-							hasAttachment={false}
-							onLoad={loadedImg}
-							onClick={onClick && onClick(img)}
-						/>
-					})}
-				</div>}
+				{(!!has('host-browser') && i !== get('currentPage') && !wasLoaded) ? '' :
+					<div key={`page${i}`} classes={[themedCss.page]}>
+						{imagePage.map((img: any, j: number) => {
+							if (typeof img === 'string') { img = {type: 'Image', url: img} }
+							return <Image
+								key={`image${j}`}
+								{...img}
+								baselined={false}
+								hasContent={false}
+								hasAttachment={false}
+								onLoad={loadedImg}
+								onClick={onClick && onClick(img)}
+							/>
+						})}
+					</div>
+				}
 			</virtual>
 		})}
 		</div>
