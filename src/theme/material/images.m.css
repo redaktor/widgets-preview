@@ -8,23 +8,23 @@
 .loaded.hasPagination {
 	display: flex;
 	flex-wrap: wrap;
-	align-items: flex-end;
+	align-items: center;
 	justify-content: space-around;
 	padding-bottom: var(--line);
 }
 .page {
 	position: relative;
-	order: 1;
+	order: 4;
 }
 .firstControl { }
 .lastControl { }
 .prevControl {
 	display: none;
-	order: 2;
+	order: 1;
 }
 .nextControl {
 	display: none;
-	order: 4;
+	order: 3;
 }
 .root:not(.row) .page {
 	display: grid;
@@ -35,41 +35,75 @@
 .row .page {
 	display: flex;
 }
-.root:not(.row) .pageRadio:not(:checked) + .prevControl + .nextControl + .page {
+
+.root .pageRadio:not(:checked) + .prevControl + .nextControl + .page {
 	display: none;
 }
-
-.pageRadio {
+.pageRadio.hidden {
+	visibility: hidden;
+	position: absolute;
+	top: -4000px;
+	height: 0px;
+}
+.pageRadio:not(.hidden) {
 	display: none;
-	order: 3;
+	order: 2;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
 	border-radius: 50%;
 	width: var(--line);
 	height: var(--line);
-	border: var(--ui-border-width-emphasized) solid var(--text-muted, #999);
-	transition: 0.2s all linear;
-	margin: var(--lineHalf) 0 0 0;
+	border: var(--ui-border-width-emphasized) solid var(--border, #999);
+	transition: var(--ui-dpd-2,240ms) all linear;
+	margin: 0;
 	padding: 0;
 	z-index: 2;
 	cursor: pointer;
 }
-.loaded:not(.row) .pageRadio:checked + .prevControl,
-.loaded:not(.row) .pageRadio:checked + .prevControl + .nextControl,
+.pageRadio:not(.hidden):hover {
+	border-color: var(--text-muted, #999);
+}
+.pageRadio:not(.hidden)::after {
+	content: attr(data-i);
+	color: var(--text-muted);
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	position: relative;
+	top: -1px;
+}
+.pageRadio:checked {
+	border-color: var(--ui-border, #999);
+}
+.pageRadio:checked::after {
+	color: var(--text);
+}
+.pageInfo {
+	margin: 0;
+	padding: 0;
+	order: 2;
+}
+
+.root .pageRadio:checked + .prevControl,
+.root .pageRadio:checked + .prevControl + .nextControl,
 .loaded .pageRadio {
-	display: block;
+	display: flex;
 }
 label.prevControl, label.nextControl {
+	align-items: center;
+	justify-content: center;
+	min-width: var(--touch-target-min, 40px);
+	min-height: var(--line2);
 	padding: 0;
 	margin: 0;
 	cursor: pointer;
 }
 
-.pageRadio:checked {
-	border-color: var(--ui-border, #999);
-}
-/* TODO native masonry */
+
+/* native masonry */
 @supports (grid-template-rows: masonry) {
 	.micro .page { --mcols: 1; --gap: 0; }
 	.xs .page { --mcols: 2; --gap: 0; }

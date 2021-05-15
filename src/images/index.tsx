@@ -104,7 +104,8 @@ export const Images = factory(function Images({
 		!CSS.supports('grid-template-rows', 'masonry') && !isRow && resizeAllGridItems();
 		onLoad && onLoad()
 	}
-	console.log(current, count, paginated, (get('loaded') as any)[current], allLoaded);
+	const paginationInputsVisible = !(paginated.length > 9 || size === 's' && paginated.length > 8 ||
+		size === 'xs' && paginated.length > 7 || size === 'micro' && paginated.length > 6);
 
 	return <virtual>
 		<noscript><i /></noscript>
@@ -131,9 +132,10 @@ export const Images = factory(function Images({
 					<virtual>
 						<input
 							type="radio"
-							classes={themedCss.pageRadio}
+							classes={[themedCss.pageRadio, !paginationInputsVisible && themedCss.hidden]}
 							id={`${get('idBase')}_${i}`}
 							name={`${get('idBase')}_images`}
+							data-i={`${i+1}`}
 							checked={i === get('currentPage')}
 							onclick={() => { setPage(i) }}
 						/>
@@ -171,6 +173,9 @@ export const Images = factory(function Images({
 				}
 			</virtual>
 		})}
+		{!paginationInputsVisible &&
+			<p classes={themedCss.pageInfo}>{(get('currentPage')||0)+1} / {paginated.length}</p>
+		}
 		</div>
 	</virtual>
 });

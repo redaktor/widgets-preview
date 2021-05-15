@@ -8,6 +8,8 @@ export const prevControl: string;
 export const nextControl: string;
 export const row: string;
 export const pageRadio: string;
+export const hidden: string;
+export const pageInfo: string;
 export const micro: string;
 export const xs: string;
 export const s: string;

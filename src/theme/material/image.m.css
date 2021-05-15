@@ -21,7 +21,7 @@
 .root.fit .media.fit canvas,
 .root.fit .media.fit .image {
 	object-fit: cover;
-	height: 100%;
+	min-height: 100%;
 }
 
 .xs, .s, .m, .l, .xl, .xxl { }
