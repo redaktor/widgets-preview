@@ -114,7 +114,7 @@ export const Images = factory(function Images({
 			classes={[
 				themedCss.root,
 				isRow && themedCss.row,
-				(!has('host-browser') || allLoaded) && themedCss.loaded,
+				(!!has('host-node') || allLoaded) && themedCss.loaded,
 				(maxImage.length > itemsPerPage) && themedCss.hasPagination,
 				themedCss[(size as keyof typeof themedCss)]
 			]}
@@ -155,7 +155,7 @@ export const Images = factory(function Images({
 						</label>}
 					</virtual>
 				}
-				{(!!has('host-browser') && i !== get('currentPage') && !wasLoaded) ? '' :
+				{(!has('host-node') && i !== get('currentPage') && !wasLoaded) ? '' :
 					<div key={`page${i}`} classes={[themedCss.page]}>
 						{imagePage.map((img: any, j: number) => {
 							if (typeof img === 'string') { img = {type: 'Image', url: img} }

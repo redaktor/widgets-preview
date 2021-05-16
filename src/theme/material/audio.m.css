@@ -347,7 +347,9 @@ video:picture-in-picture {
 	padding: 0 var(--p) var(--line) var(--p);
 	order: 5;
 }
-
+.root:not(.row) .contentWrapper {
+	margin-bottom: var(--line);
+}
 .attachments {
 	min-width: 320px;
 	max-width: 100%;
