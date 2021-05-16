@@ -40,7 +40,7 @@ export const isDatetime = (s: any) => (!!s && typeof s === 'string') && dateTime
 export const isDuration = (s: any) => (!!s && typeof s === 'string') && durationR.test(s);
 export const isPosInteger = (n: any) => (typeof n === 'number' && is(n, 'integer') && n >= 0);
 
-type APall = ActivityPubActivity|ActivityPubActor|ActivityPubObject|ActivityPubLinkObject;
+type APall = Partial<ActivityPubActivity|ActivityPubActor|ActivityPubObject|ActivityPubLinkObject>;
 export function getActorName({ petName: pet, preferredUsername: p, name: n, id }: RedaktorActor): string[] {
 	if (pet && typeof pet === 'string') { return [pet] }
 	if (p && typeof p === 'string') { return [p] }
@@ -86,7 +86,7 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 	*/
 
 	if (typeof ap === 'string') { return ap }
-	if (typeof ap === 'object' && !ap.type) { ap.type = 'Create' }
+	if (typeof ap === 'object' && !ap.type) { (ap as ActivityPubActivity).type = 'Create' }
 	const userLang = typeof language === 'string' ? language :
 		(new Intl.DateTimeFormat().resolvedOptions().locale ||
 			global.navigator.language ||
@@ -316,5 +316,6 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 				toArray(normalizeActivityPub(_ap[key], language));
 		}
 	}
+	console.log(o);
 	return o
 }

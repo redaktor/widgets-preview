@@ -454,6 +454,13 @@ export const Audio = factory(function Audio({
 	const typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 	const audioAvatarSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
 
+	const attachmentIcons = hasAttachment ? (APo.attachment||[]).reduce((a, ao) => {console.log(ao.type); return a.concat(ao.type as any);}, []).map((type) =>
+		<Icon spaced={true} size="xxl" type={(type as any).toLowerCase()} /> ) : '';
+
+	/*const attachmentIcons = hasAttachment ? (APo.attachment||[]).reduce((a: any[], ao) => a.concat((ao.type as any[]).filter((t: any) => a.indexOf(t) < 0)), []).map((type: any) =>
+		<Icon spaced={true} size="xxl" type={(type as any).toLowerCase()} /> ) : '';*/
+
+
 	const vol = get('volume')||0;
 	const playerProps: any = {
 		id: get('id'),
@@ -487,6 +494,8 @@ export const Audio = factory(function Audio({
 		audio.textTracks.addEventListener('addtrack', (e: TrackEvent) => {
 			// TODO : begin to cache media
 		});
+
+		content, instrument, location
 		*/
 	}
 	return <div
@@ -680,7 +689,12 @@ export const Audio = factory(function Audio({
 
 		{hasAttachment && <virtual>
 			<Images key="images" isRow={isRow} image={APo.image} size={(vp as any)} />
-			<p key="attachments" classes={themedCss.attachments}>... attachments</p>
+			<div key="attachments" classes={themedCss.attachments}>
+				<Chip>
+					{{ label: <virtual><Icon spaced={true} type="pin" /> {(APo.attachment||[]).length}{' '}</virtual> }}
+				</Chip>
+				<label class={themedCss.attachmentType}>{ attachmentIcons }</label>
+			</div>
 		</virtual>}
 	</div>
 

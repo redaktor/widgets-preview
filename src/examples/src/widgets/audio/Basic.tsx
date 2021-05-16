@@ -105,10 +105,6 @@ const exampleData: AudioProperties | ImageProperties = {
 1:4 13228x3307 MlIhplt7t7WB%M~qj[t7WBt7-;ofayWBWB
 
 */
-const exampleAudio: AudioProperties = {
-  ...(exampleData as AudioProperties),
-  url: [ ogg, mp3 ]
-};
 const exampleImage: ImageProperties = {
   ...(exampleData as ImageProperties),
   type: 'Image',
@@ -117,6 +113,11 @@ const exampleImage: ImageProperties = {
   height: 945,
   blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP',
   url: [ _2_3 ]
+};
+const exampleAudio: AudioProperties = {
+  ...(exampleData as AudioProperties),
+  url: [ ogg, mp3 ],
+  attachment: [ exampleImage ]
 };
 
 const factory = create();

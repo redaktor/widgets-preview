@@ -351,16 +351,19 @@ video:picture-in-picture {
 	margin-bottom: var(--line);
 }
 .attachments {
-	min-width: 320px;
-	max-width: 100%;
 	display: flex;
+	align-items: baseline;
 	flex: 1;
 	order: 8;
-
-	background: green;
+	min-width: 320px;
+	max-width: 100%;
+	margin-top: var(--line);
 }
 .micro .attachments {
 	min-width: 240px;
+}
+.attachmentType {
+	min-width: var(--touch-target-min, var(--line2, 32px));
 }
 
 .footer {

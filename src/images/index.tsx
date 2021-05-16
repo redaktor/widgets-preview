@@ -156,7 +156,7 @@ export const Images = factory(function Images({
 					</virtual>
 				}
 				{(!has('host-node') && i !== get('currentPage') && !wasLoaded) ? '' :
-					<div key={`page${i}`} classes={[themedCss.page]}>
+					<div key={`page${i}`} classes={[themedCss.page]} style={`--count: ${itemsPerPage};`}>
 						{imagePage.map((img: any, j: number) => {
 							if (typeof img === 'string') { img = {type: 'Image', url: img} }
 							return <Image
