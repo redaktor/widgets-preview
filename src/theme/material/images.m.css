@@ -1,22 +1,32 @@
 .root {
 	width: 100%;
+	/* padding-top: var(--line2); */
 	margin-bottom: calc(var(--line) * var(--mml,0));
 	background-color: var(--ui-bg, #000);
 	order: 7;
 }
 .loaded { }
-.loaded.hasPagination {
+/*
+.root.loaded {
+	padding-top: 0px;
+}
+*/
+.hasPagination {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-around;
 	padding-bottom: var(--line);
 }
+.break {
+	order: 4;
+}
 .page {
 	--minWidth: 240px;
 	--gap: 4px;
+	width: 100%;
 	position: relative;
-	order: 4;
+	order: 5;
 }
 .firstControl { }
 .lastControl { }
@@ -32,6 +42,12 @@
 .nextControl {
 	order: 3;
 }
+.pageRadio:checked + .prevControl,
+.pageRadio:checked + .prevControl + .nextControl,
+.pageRadio {
+	display: flex;
+}
+
 .root:not(.row) .page {
 	display: grid;
 	grid-gap: var(--gap, var(--grid-base, 8px));
@@ -56,7 +72,7 @@
 	height: 0px;
 }
 .pageRadio:not(.hidden) {
-	display: none;
+	display: flex;
 	order: 2;
 	-webkit-appearance: none;
 	-moz-appearance: none;
@@ -96,11 +112,7 @@
 	order: 2;
 }
 
-.root .pageRadio:checked + .prevControl,
-.root .pageRadio:checked + .prevControl + .nextControl,
-.loaded .pageRadio {
-	display: flex;
-}
+
 
 label.prevControl, label.nextControl {
 	align-items: center;
@@ -122,7 +134,7 @@ label.prevControl, label.nextControl {
 	}
 	.prevControl,
 	.nextControl {
-		color: var(--border);
+		color: var(--text-muted);
 	}
 	.root .pageRadio:checked + .prevControl:hover,
 	.root .pageRadio:checked + .prevControl + .nextControl:hover {

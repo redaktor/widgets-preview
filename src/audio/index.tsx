@@ -70,7 +70,10 @@ as a means of grouping objects and activities that share a common originating co
 or purpose. An example could be all activities relating to a common project or event.
 */
 
-/* TODO state store:
+/* TODO
+duration:
+if APo.duration, use as fallback right from start
+state store:
 store the last used
 - volume
 - visibility of captions, subtitles, descriptions
@@ -237,47 +240,6 @@ export const Audio = factory(function Audio({
 	getOrSet('isPaused', !autoPlay);
 	getOrSet('tracksVisible', {captions: '', subtitles: '', descriptions: '', chapters: '', metadata: ''});
 	if (!get('isPaused') && get('isFresh')) { set('isFresh', false) }
-
-/* MASONRY */
-	const hasNativeMasonry = CSS.supports('grid-template-rows', 'masonry');
-/* JS fallback */
-	getOrSet('imagesCount', 7); /* TODO : children.length when it becomes a module !!! */
-	getOrSet('imagesLoaded', 0);
-	const loadedImg = () => {
-		const count = get('imagesCount')||0;
-		const loaded = get('imagesLoaded')||0;
-		set('imagesLoaded', loaded+1, (loaded >= count-1))
-	}
-	if (!hasNativeMasonry) {
-		const resizeGridItem = (i: number) => {
-		  const [grid, item, img] = [node.get('images'), node.get(`image${i}`), node.get(`img${i}`)];
-			if (!item || !grid || !img) { return }
-		  const getProp = (name: string) => parseInt(window.getComputedStyle(grid).getPropertyValue(name), 10);
-		  const [rowHeight, rowGap] = [getProp('grid-auto-rows'), getProp('grid-row-gap')];
-		  item.style.gridRowEnd = `span ${Math.floor(((img as any).height+rowGap)/(rowHeight+rowGap))}`;
-		}
-		const resizeAllGridItems = () => {
-			const l = get('imagesCount')||0;
-		  for(let n = 0; n < l; n++){
-		    resizeGridItem(n);
-		  }
-		}
-		/*
-		TODO masonry:
-		aspect ratio in advance
-		resize observer: resizeAllGridItems
-		images more panorama >= 8:3 should take 2 columns
-
-		TODO image:
-		canvasBlurhash static / img absolute / fade
-		nojs + img = force opacity 1;
-		*/
-/*		if (get('imagesCount') === get('imagesLoaded')) {
-			console.log('Yay, loaded images',get('imagesLoaded'));
-			resizeAllGridItems()
-		}*/
-	}
-/* MASONRY <-- */
 
   const togglePlay = (e?: Event) => {
 		e && e.preventDefault();
@@ -454,12 +416,11 @@ export const Audio = factory(function Audio({
 	const typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 	const audioAvatarSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
 
-	const attachmentIcons = hasAttachment ? (APo.attachment||[]).reduce((a, ao) => {console.log(ao.type); return a.concat(ao.type as any);}, []).map((type) =>
-		<Icon spaced={true} size="xxl" type={(type as any).toLowerCase()} /> ) : '';
-
-	/*const attachmentIcons = hasAttachment ? (APo.attachment||[]).reduce((a: any[], ao) => a.concat((ao.type as any[]).filter((t: any) => a.indexOf(t) < 0)), []).map((type: any) =>
-		<Icon spaced={true} size="xxl" type={(type as any).toLowerCase()} /> ) : '';*/
-
+	const attachmentIcons = hasAttachment ? (APo.attachment||[]).reduce((a: string[], ao) =>
+		a.concat(ao.type.filter((t: string) => (a.indexOf(t) < 0))), []).map((type) =>
+			<label classes={themedCss.attachmentType}>
+				<Icon size="xxl" type={(type as any).toLowerCase()} />
+			</label>) : '';
 
 	const vol = get('volume')||0;
 	const playerProps: any = {
@@ -689,11 +650,15 @@ export const Audio = factory(function Audio({
 
 		{hasAttachment && <virtual>
 			<Images key="images" isRow={isRow} image={APo.image} size={(vp as any)} />
-			<div key="attachments" classes={themedCss.attachments}>
-				<Chip>
-					{{ label: <virtual><Icon spaced={true} type="pin" /> {(APo.attachment||[]).length}{' '}</virtual> }}
-				</Chip>
-				<label class={themedCss.attachmentType}>{ attachmentIcons }</label>
+			<div key="attachment" classes={themedCss.attachment}>
+				<div key="attachmentControl" classes={themedCss.attachmentControl}>
+					<Chip>
+						{{ label: <virtual><Icon spaced={true} type="pin" /> {(APo.attachment||[]).length}{' attachment'}</virtual> }}
+					</Chip>
+					{ attachmentIcons }
+				</div>
+				<span>a</span>
+				<span>b</span>
 			</div>
 		</virtual>}
 	</div>

@@ -155,6 +155,14 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 		hreflang?: string;
 	}
 	*/
+	if (Array.isArray(type)) {
+		o.type = type.filter((s: any) => typeof s === 'string' && !!s)
+	} else if (typeof type === 'string' && !!type) {
+		o.type = toArray(type)
+	} else {
+		o.type = ['Create']
+	}
+
 	if (Array.isArray(url)) {
 		o.url = url.filter(isLink)
 	} else if (isLink(url)) {
@@ -316,6 +324,5 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 				toArray(normalizeActivityPub(_ap[key], language));
 		}
 	}
-	console.log(o);
 	return o
 }

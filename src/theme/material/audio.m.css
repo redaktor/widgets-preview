@@ -350,20 +350,28 @@ video:picture-in-picture {
 .root:not(.row) .contentWrapper {
 	margin-bottom: var(--line);
 }
-.attachments {
+.attachment {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: baseline;
+	justify-content: space-around;
 	flex: 1;
 	order: 8;
 	min-width: 320px;
 	max-width: 100%;
 	margin-top: var(--line);
 }
-.micro .attachments {
+.micro .attachment {
 	min-width: 240px;
+}
+.attachmentControl {
+	display: flex;
+	align-items: baseline;
+	min-width: 100%;
 }
 .attachmentType {
 	min-width: var(--touch-target-min, var(--line2, 32px));
+	text-align: center;
 }
 
 .footer {
