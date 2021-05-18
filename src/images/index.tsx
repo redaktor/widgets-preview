@@ -77,19 +77,20 @@ export const Images = factory(function Images({
 		loaded[current]++;
 		set('loaded', loaded, (loaded[current] >= count))
 	}
-	const resizeGridItem = (i: number) => {
-		const [grid, item, img] = [node.get('root'), node.get(`image${i}`), node.get(`img${i}`)];
-		if (!item || !grid || !img) { return }
+	const resizeGridItem = (page: number, i: number) => {
+		const [grid, item] = [node.get(`page${page}`), node.get(`image${i}`)];
+		if (!grid || !item || !item.firstChild) { return }
 		const getProp = (name: string) => parseInt(window.getComputedStyle(grid).getPropertyValue(name), 10);
 		const [rowHeight, rowGap] = [getProp('grid-auto-rows'), getProp('grid-row-gap')];
-		item.style.gridRowEnd = `span ${Math.floor(((img as any).height+rowGap)/(rowHeight+rowGap))}`;
+		item.style.gridRowEnd = `span ${Math.floor(((item.firstChild as any).offsetHeight||0+rowGap)/(rowHeight+rowGap))}`;
 	}
 	const resizeAllGridItems = () => {
 		const current = get('currentPage') || 0;
 		const paginated = get('paginated') || [];
 		const l = paginated[current].length || 0;
+		console.log(current, paginated, l);
 		for(let n = 0; n < l; n++){
-			resizeGridItem(n);
+			resizeGridItem(current, n);
 		}
 	}
 	const setPage = (i: number) => {
@@ -159,15 +160,14 @@ export const Images = factory(function Images({
 					<div key={`page${i}`} classes={[themedCss.page]} style={`--count: ${itemsPerPage};`}>
 						{imagePage.map((img: any, j: number) => {
 							if (typeof img === 'string') { img = {type: ['Image'], url: img} }
-							return <Image
-								key={`image${j}`}
+							return <div key={`image${j}`}><Image
 								{...img}
 								baselined={false}
 								hasContent={false}
 								hasAttachment={false}
 								onLoad={loadedImg}
 								onClick={onClick && onClick(img)}
-							/>
+							/></div>
 						})}
 					</div>
 				}
