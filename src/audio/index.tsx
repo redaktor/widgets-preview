@@ -653,7 +653,7 @@ export const Audio = factory(function Audio({
 			<div key="attachment" classes={themedCss.attachment}>
 				<div key="attachmentControl" classes={themedCss.attachmentControl}>
 					<Chip>
-						{{ label: <virtual><Icon spaced={true} type="pin" /> {(APo.attachment||[]).length}{' attachment'}</virtual> }}
+						{{ label: <virtual><Icon spaced={true} type="pin" color="neutral" /> {(APo.attachment||[]).length}</virtual> }}
 					</Chip>
 					{ attachmentIcons }
 				</div>
