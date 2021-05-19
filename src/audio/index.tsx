@@ -16,6 +16,8 @@ import focus from '@dojo/framework/core/middleware/focus';
 */
 import i18n from '@dojo/framework/core/middleware/i18n';
 import { normalizeActivityPub } from '../common/activityPubUtil';
+import { Row, Cell } from '../table';
+import { parseDuration, formatTime } from '../duration';
 import Paginated from '../paginated';
 import Collapsed from '../collapsed';
 import Srcset from '../srcset';
@@ -32,6 +34,7 @@ import Images from '../images';
 import bundle from './nls/Audio';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
+import * as tableCSS from '../theme/material/table.m.css';
 import * as css from '../theme/material/audio.m.css';
 
 /* TODO exists in this module: */
@@ -80,7 +83,8 @@ store the last used
 */
 
 export interface AudioProperties extends ActivityPubObject {
-	isRow?: boolean;
+	view?: 'column' | 'row' | 'tableRow';
+
 	editable?: boolean;
 	fullscreen?: boolean;
 	currentTime?: number;
@@ -157,15 +161,6 @@ export interface AudioChildren {
 	footer?: RenderResult;
 }
 
-export const formatTime = (sec: number) => {
-  const hours   = Math.floor(sec / 3600);
-  const minutes = Math.floor((sec - (hours * 3600)) / 60);
-  const seconds = sec - (hours * 3600) - (minutes * 60);
-	const m0 = minutes < 10 ? '0' : '';
-	const s0 = seconds < 10 ? '0' : '';
-  return (hours === 0 ? '' : `${hours}:`) + `${m0}${minutes}:${s0}${seconds}`;
-};
-
 const icache = createICacheMiddleware<AudioIcache>();
 /*
 const resource = createResourceMiddleware();
@@ -212,7 +207,7 @@ export const Audio = factory(function Audio({
 	const {
 		alt, editable, onLoad, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId = uuid(),
 		baselined = true, hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
-		isRow = false, autoPlay = false, muted = false,
+		autoPlay = false, muted = false, view = 'column',
 		crossorigin = 'anonymous', volume = 1, speed = 1, ..._rest
 	} = normalizeActivityPub(properties());
 
@@ -220,6 +215,18 @@ export const Audio = factory(function Audio({
 
 	if (APo.type.indexOf('Audio') < 0 && (!APo.mediaType || APo.mediaType.toLowerCase().indexOf('audio') !== 0)) {
 		return ''
+	}
+console.log(APo, APo.duration, parseDuration(APo.duration||''));
+	const duration = getOrSet('duration', parseDuration(APo.duration||''), false);
+	if (view === 'tableRow') {
+		return <Row>
+			<Cell type="fixed" align="center" onClick={(i) => {!i && console.log('icon click',i)}}>
+	      <Icon type="audio" />
+	    </Cell>
+			<Cell type="resizable">{APo.name && APo.name.map((n) => <span>{n}</span>)}</Cell>
+			<Cell type="flexible">{APo.summary && APo.summary.map((s) => <span>{s}</span>)}</Cell>
+			<Cell type="responsive">{formatTime(duration)}</Cell>
+	  </Row>
 	}
 
 	const audio = (node.get('audio') as HTMLAudioElement);
@@ -403,6 +410,7 @@ export const Audio = factory(function Audio({
 	/*
 		classNames('audio-player', { editable })
 	*/
+	const isRow = (view === 'row');
 	const sources = !!APo.url && <Srcset url={APo.url} />;
 	// const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
 	const menuOpen = get('isTrackMenuOpen');
@@ -459,6 +467,7 @@ export const Audio = factory(function Audio({
 		content, instrument, location
 		*/
 	}
+
 	return <div
 		key="root"
 		classes={[

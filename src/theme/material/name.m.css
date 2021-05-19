@@ -1,11 +1,12 @@
 .root {
+	margin-bottom: var(--mb);
 	z-index: 6;
 }
 .row .root {
 	margin-bottom: calc(var(--mb) - var(--line));
 }
-.kicker {
-	margin-bottom: calc(var(--mb) - var(--line)) !important;
+.root .kicker {
+	margin-bottom: calc(var(--mb) - var(--line));
 	color: var(--kicker);
 }
 .byline {

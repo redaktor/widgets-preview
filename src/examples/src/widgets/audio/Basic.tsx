@@ -3,6 +3,8 @@ import { ActivityPubLink } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Audio, { AudioProperties } from '@dojo/widgets/audio';
 import Image, { ImageProperties } from '@dojo/widgets/image';
+
+import * as tableCSS from '../../../../theme/material/table.m.css';
 /*
 kind
 How the text track is meant to be used. If omitted the default kind is subtitles.
@@ -98,7 +100,8 @@ const exampleData: AudioProperties | ImageProperties = {
   bookmark: false,
   kicker: 'yo kicker',
   topic: {color: [ 223, 220, 0 ], name: "Journalism"},
-  sensitive: true
+  sensitive: true,
+  duration: 'PT167S'
 }
 /* <--
 1:1 2717 UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@
@@ -127,8 +130,9 @@ const vttDe = 'http://localhost:9999/assets/nihWikimedia_de.vtt';
 const vttEs = 'http://localhost:9999/assets/nihWikimedia_es.vtt';
 const vttChapters = 'http://localhost:9999/assets/nihWikimedia_CHA_en.vtt';
 const vtt = 'http://localhost:9999/assets/nihWikimedia_SUB_en.vtt';
+
 export default factory(function Basic() {
-  const audio = (isRow = false) => <Audio {...exampleAudio} isRow={isRow}>
+  const audio = (view: 'column' | 'row' | 'tableRow' = 'column') => <Audio {...exampleAudio} view={view}>
     <track label="English captions" src={vttEn} kind="captions" srclang="en" />
     <track label="Deutsche Übersetzung" src={vttDe} kind="captions" srclang="de" default />
     <track label="Traducción Española" src={vttEs} kind="captions" srclang="es" />
@@ -136,13 +140,24 @@ export default factory(function Basic() {
     <track label="Chapters" src={vttChapters} kind="chapters" srclang="en" />
   </Audio>;
 
+/* tableRow is meant to be 100vw */
 	return (
 		<Example spaced={true}>
       <virtual>
   			<div styles={{ width: '66.666%' }}>{audio()}</div>
         <br /><br />
-        <div styles={{ width: '100%' }}>{audio(true)}</div>
+        <div styles={{ width: '100%' }}>{audio('row')}</div>
         <br /><br />
+        <table
+          classes={[tableCSS.table, tableCSS.bordered]}
+          styles={{ position: 'absolute', left: '0px', zIndex: '9999' }}
+        >
+          {audio('tableRow')}
+          {audio('tableRow')}
+          {audio('tableRow')}
+        </table>
+        <br /><br /><br /><br /><br /><br />
+        <p>Lorem</p>
         <div styles={{ width: '66.666%' }}>
           <Image {...exampleImage} />
         </div>

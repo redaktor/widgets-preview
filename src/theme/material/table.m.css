@@ -1,0 +1,139 @@
+.root {
+  height: 100%;
+	box-shadow: var(--ui-dp-2);
+}
+.headerOuter {
+  overflow: hidden;
+  height: 25px;
+  background-color: #666;
+  color: #fff;
+}
+.headerInner {
+  overflow: hidden;
+  height: 100%;
+}
+.headerInner .item {
+  line-height: 25px;
+}
+.headerInner .first, .headerInner .last,
+.headerInner .resizable, .headerInner .flexible {
+  background-color: #666;
+}
+
+.containerOuter {
+  overflow: hidden;
+  height: 210px;
+}
+.containerInner {
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  height: calc(100% - 5px);
+}
+.table {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  white-space: nowrap;
+  border-collapse: separate;
+  border-spacing: 0px;
+	margin-top: calc(var(--pt) - var(--line) + var(--mb) - 1px);
+	margin-bottom: calc(var(--pt) + 1px);
+}
+
+.item {
+	cursor: pointer;
+	height: var(--fullH, var(--line2));
+	white-space: nowrap;
+	overflow: hidden;
+}
+.item > td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+	padding-left: var(--grid-base);
+}
+.item > td > span + span {
+	margin-left: var(--grid-base);
+	padding-left: var(--grid-base);
+	border-left: 1px solid var(--text-muted);
+}
+.item > td.center {
+	text-align: center;
+}
+.item > td.right {
+	text-align: right;
+}
+.item > td {
+	border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+.item > td:first-child {
+  border-left: 1px solid transparent;
+}
+.item > td:last-child {
+  border-right: 1px solid transparent;
+}
+.item:hover > td {
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+.item.bordered > td {
+  border-color: var(--ui-border);
+}
+.item.bordered:hover > td {
+  border-color: var(--ui-border-hover);
+}
+
+.first { }
+.last { }
+.fixedCell {
+	width: var(--w, var(--touch-target-min, 40px));
+  background-color: var(--paper);
+}
+.responsive {
+  width: 64px;
+  background-color: var(--paper);
+}
+@media only screen and (min-width: 320px) {
+	.responsive {
+	  width: 80px;
+	}
+}
+@media only screen and (min-width: 800px) {
+	.responsive {
+	  width: 128px;
+	}
+}
+@media only screen and (min-width: 1024px) {
+	.responsive {
+	  width: 144px;
+	}
+}
+.resizable {
+  width: 38.2%;
+  background-color: var(--ui-bg);
+}
+@media only screen and (min-width: 1280px) {
+	.resizable {
+	  width: 480px;
+	}
+}
+.flexible {
+  width: auto;
+  background-color: var(--bg);
+}
+
+.resizableHandleHover, .resizableHandle:hover {
+  background-color: #aaa;
+  border-color-bottom: #ddd;
+}
+
+.content {
+  width: 100%;
+  background-color: #e0eeff;
+  height: 200px;
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: scroll
+}

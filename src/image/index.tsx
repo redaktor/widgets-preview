@@ -150,7 +150,7 @@ export const Image = factory(function Image({
 			<MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={_summary} />
 		)}
 	</Paginated>);
-
+	
 	return <div
 		key="root"
 		classes={[

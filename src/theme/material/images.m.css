@@ -52,7 +52,7 @@
 	display: grid;
 	grid-gap: var(--gap, var(--grid-base, 8px));
 	grid-template-columns: repeat(auto-fill, minmax(calc((var(--minWidth) / 2) - var(--gap)), 1fr));
-	grid-auto-rows: var(--line, 16px);
+	grid-auto-rows: var(--gap, var(--grid-base, 8px));
 }
 .row .page {
 	display: flex;

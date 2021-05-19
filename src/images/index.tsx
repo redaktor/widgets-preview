@@ -51,6 +51,7 @@ export const Images = factory(function Images({
 		onLoad, onClick
 	} = normalizeActivityPub(properties());
 	if (!image.length) { return '' }
+
 	const maxImage = image.slice(0,max+1);
 	const mLength = maxImage.length;
 	if (!get('paginated')) {
@@ -82,7 +83,7 @@ export const Images = factory(function Images({
 		if (!grid || !item || !item.firstChild) { return }
 		const getProp = (name: string) => parseInt(window.getComputedStyle(grid).getPropertyValue(name), 10);
 		const [rowHeight, rowGap] = [getProp('grid-auto-rows'), getProp('grid-row-gap')];
-		item.style.gridRowEnd = `span ${Math.floor(((item.firstChild as any).offsetHeight||0+rowGap)/(rowHeight+rowGap))}`;
+		item.style.gridRowEnd = `span ${Math.ceil(((item.firstChild as any).offsetHeight||0+rowGap)/(rowHeight+rowGap))}`;
 	}
 	const resizeAllGridItems = () => {
 		const current = get('currentPage') || 0;
@@ -101,10 +102,11 @@ export const Images = factory(function Images({
 	const paginated = get('paginated') || [];
 	const count = paginated.length && paginated[current].length || 0;
 	const allLoaded = count === (get('loaded') as any)[current];
-	if (allLoaded) {
+	if (!(get('loaded') as any)[current]) {
 		!CSS.supports('grid-template-rows', 'masonry') && !isRow && resizeAllGridItems();
 		onLoad && onLoad()
 	}
+
 	const paginationInputsVisible = !(paginated.length > 9 || size === 's' && paginated.length > 8 ||
 		size === 'xs' && paginated.length > 7 || size === 'micro' && paginated.length > 6);
 
