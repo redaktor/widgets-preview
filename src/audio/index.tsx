@@ -136,6 +136,8 @@ export interface AudioIcache {
 	currentTime: number;
 	buffer: number;
 	duration: number;
+	sampleRate: number;
+	numberOfChannels: number;
 	volume: number;
 	speed: number;
 	tracks: TextTracks;
@@ -159,6 +161,11 @@ export interface AudioChildren {
 	header?: RenderResult;
 	/** Optional Footer */
 	footer?: RenderResult;
+}
+// browsers compatibility
+if (!(window as any).AudioContext) {
+	(window as any).AudioContext = (window as any).webkitAudioContext ||
+		(window as any).mozAudioContext || (window as any).msAudioContext
 }
 
 const icache = createICacheMiddleware<AudioIcache>();
@@ -216,8 +223,10 @@ export const Audio = factory(function Audio({
 	if (APo.type.indexOf('Audio') < 0 && (!APo.mediaType || APo.mediaType.toLowerCase().indexOf('audio') !== 0)) {
 		return ''
 	}
-console.log(APo, APo.duration, parseDuration(APo.duration||''));
-	const duration = getOrSet('duration', parseDuration(APo.duration||''), false);
+
+	getOrSet('duration', parseDuration(APo.duration||''), false);
+	getOrSet('sampleRate', 44100);
+	const [duration, sampleRate, numberOfChannels] = [get('duration'), get('sampleRate'), get('numberOfChannels')];
 	if (view === 'tableRow') {
 		return <Row>
 			<Cell type="fixed" align="center" onClick={(i) => {!i && console.log('icon click',i)}}>
@@ -225,7 +234,13 @@ console.log(APo, APo.duration, parseDuration(APo.duration||''));
 	    </Cell>
 			<Cell type="resizable">{APo.name && APo.name.map((n) => <span>{n}</span>)}</Cell>
 			<Cell type="flexible">{APo.summary && APo.summary.map((s) => <span>{s}</span>)}</Cell>
-			<Cell type="responsive">{formatTime(duration)}</Cell>
+			<Cell type="responsive">
+				<Icon type="listen" />
+				{duration && <virtual key="time"> {formatTime(duration)}</virtual>}
+				{duration && sampleRate && ','}
+				{sampleRate && <span classes={ui.muted} key="sampleRate"> {sampleRate}Hz</span>}
+				{numberOfChannels && <span classes={ui.muted}  key="numberOfChannels"> • {numberOfChannels}Ch</span>}
+			</Cell>
 	  </Row>
 	}
 
@@ -281,8 +296,21 @@ console.log(APo, APo.duration, parseDuration(APo.duration||''));
   	});
 		*/
   }
-	const handleLoadedMetadata = () => {
+	const handleLoadedMetadata = async () => {
 		if (!audio) { return }
+		const audioCtx = new AudioContext();
+		const res = await fetch(audio.currentSrc, {
+			headers: new Headers({'Range': 'bytes=0-640'}),
+      mode: 'no-cors'
+		});
+		const buf = await res.arrayBuffer();
+		audioCtx.decodeAudioData(buf, function(decodedBuffer) {
+			getOrSet('sampleRate', decodedBuffer.sampleRate||44100);
+			getOrSet('numberOfChannels', decodedBuffer.numberOfChannels||1);
+	  }, function(error: Error) {
+	    // console.log(error);
+	  });
+
 		set('duration', audio.duration, false);
 		let trackMenu: RenderResult = [];
 		if (audio.textTracks && audio.textTracks.length) {
@@ -494,6 +522,8 @@ console.log(APo, APo.duration, parseDuration(APo.duration||''));
 		<div classes={themedCss.mediaFreshTop}>
 			<Icon type="listen" spaced={true} />
 			<i classes={themedCss.freshDuration}>{formattedDuration}</i>
+			{ get('sampleRate') && <span classes={ui.muted} key="sampleRate"><br />{get('sampleRate')}Hz</span> }
+			{ get('numberOfChannels') && <span classes={ui.muted} key="numberOfChannels"> • {get('numberOfChannels')}Ch</span> }
 		</div>
 		<div classes={themedCss.mediaTop}>
 			<Button

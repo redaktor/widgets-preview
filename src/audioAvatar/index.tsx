@@ -29,11 +29,14 @@ export interface AvatarICache {
 	analyser: any;
 }
 // browsers compatibility
-(window as any).AudioContext = (window as any).AudioContext || (window as any).webkitAudioContext ||
-	(window as any).mozAudioContext || (window as any).msAudioContext;
-window.requestAnimationFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame ||
-	(window as any).mozRequestAnimationFrame || (window as any).msRequestAnimationFrame;
-
+if (!(window as any).AudioContext) {
+	(window as any).AudioContext = (window as any).webkitAudioContext ||
+		(window as any).mozAudioContext || (window as any).msAudioContext
+}
+if (!(window as any).requestAnimationFrame) {
+	window.requestAnimationFrame = window.webkitRequestAnimationFrame ||
+		(window as any).mozRequestAnimationFrame || (window as any).msRequestAnimationFrame;
+}
 const icache = createICacheMiddleware<AvatarICache>();
 const factory = create({ theme, node, dimensions, icache }).properties<AvatarProperties>();
 
@@ -82,7 +85,7 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 	const setAnalyser = () => {
 		try {
 			if (!get('audioCtx')) {
-				set('audioCtx', new ((window as any).AudioContext || (window as any).webkitAudioContext)(), false);
+				set('audioCtx', new ((window as any).AudioContext)(), false);
 				set('analyser', get('audioCtx').createAnalyser(), false);
 			}
 			if (!get('audioCtx')) {
@@ -152,7 +155,7 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 
     _setCanvas();
     get('analyser').getByteFrequencyData(data);
-		
+
     // circle bar lines
     ctx.lineWidth = barWidth;
     ctx.strokeStyle = _setBarColor(cx, cy)||'';
