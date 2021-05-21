@@ -47,41 +47,41 @@
 	white-space: nowrap;
 	overflow: hidden;
 }
-.item > td {
+.cell {
+	position: relative;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 	padding-left: var(--grid-base);
+	border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
 }
-.item > td > span + span {
+.cell > span + span {
 	margin-left: var(--grid-base);
 	padding-left: var(--grid-base);
 	border-left: 1px solid var(--text-muted);
 }
-.item > td.center {
+.item > .center {
 	text-align: center;
 }
-.item > td.right {
+.item > .right {
 	text-align: right;
 }
-.item > td {
-	border-top: 1px solid transparent;
-  border-bottom: 1px solid transparent;
-}
-.item > td:first-child {
+
+.cell:first-child {
   border-left: 1px solid transparent;
 }
-.item > td:last-child {
+.cell:last-child {
   border-right: 1px solid transparent;
 }
-.item:hover > td {
+.item:hover > .cell {
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
 }
-.item.bordered > td {
+.item.bordered > .cell {
   border-color: var(--ui-border);
 }
-.item.bordered:hover > td {
+.item.bordered:hover > .cell {
   border-color: var(--ui-border-hover);
 }
 
@@ -113,6 +113,7 @@
 .resizable {
   width: 38.2%;
   background-color: var(--ui-bg);
+	position: relative;
 }
 @media only screen and (min-width: 1280px) {
 	.resizable {
@@ -124,9 +125,25 @@
   background-color: var(--bg);
 }
 
-.resizableHandleHover, .resizableHandle:hover {
-  background-color: #aaa;
-  border-color-bottom: #ddd;
+.hasResize {
+	height: var(--line);
+}
+.resizer {
+	position: absolute;
+	width: var(--touch-target-min, 40px);
+	height: 100%;
+	right: calc(var(--grid-base) * -1 + 2px);
+	top: 0;
+	cursor: e-resize;
+	font-size: 0.1px;
+	display: block;
+	-ms-touch-action: none;
+	touch-action: none;
+	border-right: var(--grid-base) solid var(--text);
+}
+.resizerHover, .resizer:hover {
+  border-right-color: var(--ui-border);
+  border-bottom-color: #ddd;
 }
 
 .content {

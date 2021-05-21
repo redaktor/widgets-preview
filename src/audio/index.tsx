@@ -34,7 +34,6 @@ import Images from '../images';
 import bundle from './nls/Audio';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
-import * as tableCSS from '../theme/material/table.m.css';
 import * as css from '../theme/material/audio.m.css';
 
 /* TODO exists in this module: */
@@ -74,8 +73,11 @@ or purpose. An example could be all activities relating to a common project or e
 */
 
 /* TODO
-duration:
-if APo.duration, use as fallback right from start
+
+- VTT flag for Meta
+- Copy multilanguage-select from private repo
+- attachment with tableRow -> tableRow w. preview or row
+
 state store:
 store the last used
 - volume
@@ -229,12 +231,12 @@ export const Audio = factory(function Audio({
 	const [duration, sampleRate, numberOfChannels] = [get('duration'), get('sampleRate'), get('numberOfChannels')];
 	if (view === 'tableRow') {
 		return <Row>
-			<Cell type="fixed" align="center" onClick={(i) => {!i && console.log('icon click',i)}}>
+			<Cell align="center" onClick={(i) => {!i && console.log('icon click',i)}}>
 	      <Icon type="audio" />
 	    </Cell>
-			<Cell type="resizable">{APo.name && APo.name.map((n) => <span>{n}</span>)}</Cell>
-			<Cell type="flexible">{APo.summary && APo.summary.map((s) => <span>{s}</span>)}</Cell>
-			<Cell type="responsive">
+			<Cell>{APo.name && APo.name.map((n) => <span>{n}</span>)}</Cell>
+			<Cell>{APo.summary && APo.summary.map((s) => <span>{s}</span>)}</Cell>
+			<Cell>
 				<Icon type="listen" />
 				{duration && <virtual key="time"> {formatTime(duration)}</virtual>}
 				{duration && sampleRate && ','}

@@ -89,7 +89,6 @@ export const Images = factory(function Images({
 		const current = get('currentPage') || 0;
 		const paginated = get('paginated') || [];
 		const l = paginated[current].length || 0;
-		console.log(current, paginated, l);
 		for(let n = 0; n < l; n++){
 			resizeGridItem(current, n);
 		}

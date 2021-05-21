@@ -1,7 +1,9 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { uuid } from '@dojo/framework/core/util';
+import i18n from '@dojo/framework/core/middleware/i18n';
 import Button from '../button';
 import theme, { ThemeProperties } from '../middleware/theme';
+import bundle from './nls/Collapsed';
 import * as css from '../theme/material/collapsed.m.css';
 
 export interface CollapsedProperties extends ThemeProperties {
@@ -13,12 +15,14 @@ export interface CollapsedProperties extends ThemeProperties {
 	expanded?: boolean;
 	/** full width */
 	responsive?: boolean;
+	/** label content */
+	label?: 'read'|'readMore'|'view'|'viewMore';
 }
 
-const factory = create({ theme })
+const factory = create({ theme, i18n })
 	.properties<CollapsedProperties>();
 
-export const Collapsed = factory(function Collapsed({ properties, children, middleware: { theme } }) {
+export const Collapsed = factory(function Collapsed({ properties, children, middleware: { theme, i18n } }) {
 	const {
 		lines = 14,
 		expanded = false,
@@ -27,11 +31,13 @@ export const Collapsed = factory(function Collapsed({ properties, children, midd
 		spaced = false,
 		size = 's',
 		color = 'primary',
-		variant = 'flat'
+		variant = 'flat',
+		label = 'readMore'
 	} = properties();
 
 	const c = children();
 	if (!c || !c.length) { return '' }
+	const { messages } = i18n.localize(bundle);
 
 	const themedCss = theme.classes(css);
 	const idBase = `${uuid()}_${property}`;
@@ -44,7 +50,7 @@ export const Collapsed = factory(function Collapsed({ properties, children, midd
 			{children()}
 		</div>
 		<Button labelFor={idBase} {...{size, spaced, color, variant, responsive}}>
-			<span classes={themedCss.more} /> read more
+			<span classes={themedCss.more} /> {messages[label]}
 		</Button>
 	</virtual>
 });

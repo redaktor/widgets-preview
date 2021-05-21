@@ -132,7 +132,7 @@ export const Image = factory(function Image({
 		onload: (evt: Event) => {
 			set('loaded',true);
 			evt.target && evt.target.addEventListener('animationend', () => {
-			  set('faded',true);
+			  getOrSet('faded',true);
 			});
 			onLoad && onLoad()
 		},
@@ -150,7 +150,7 @@ export const Image = factory(function Image({
 			<MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={_summary} />
 		)}
 	</Paginated>);
-	
+
 	return <div
 		key="root"
 		classes={[
@@ -197,7 +197,7 @@ export const Image = factory(function Image({
 					width={blurWidth}
 					height={blurHeight}
 					onBrightness={(o) => {
-						icache.set('brightnessClass', o.brightness > 120 ? themedCss.lightImage : themedCss.darkImage)
+						getOrSet('brightnessClass', o.brightness > 120 ? themedCss.lightImage : themedCss.darkImage)
 					}}
 				/>}
 			<noscript><i /></noscript>

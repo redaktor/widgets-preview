@@ -4,7 +4,7 @@ import Example from '../../Example';
 import Audio, { AudioProperties } from '@dojo/widgets/audio';
 import Image, { ImageProperties } from '@dojo/widgets/image';
 
-import * as tableCSS from '../../../../theme/material/table.m.css';
+import Table from '@dojo/widgets/table';
 /*
 kind
 How the text track is meant to be used. If omitted the default kind is subtitles.
@@ -132,7 +132,7 @@ const vttChapters = 'http://localhost:9999/assets/nihWikimedia_CHA_en.vtt';
 const vtt = 'http://localhost:9999/assets/nihWikimedia_SUB_en.vtt';
 
 export default factory(function Basic() {
-  const audio = (view: 'column' | 'row' | 'tableRow' = 'column') => <Audio {...exampleAudio} view={view}>
+  const audio = (view: ('column'|'row'|'tableRow') = 'column') => <Audio {...exampleAudio} view={view}>
     <track label="English captions" src={vttEn} kind="captions" srclang="en" />
     <track label="Deutsche Übersetzung" src={vttDe} kind="captions" srclang="de" default />
     <track label="Traducción Española" src={vttEs} kind="captions" srclang="es" />
@@ -148,14 +148,13 @@ export default factory(function Basic() {
         <br /><br />
         <div styles={{ width: '100%' }}>{audio('row')}</div>
         <br /><br />
-        <table
-          classes={[tableCSS.table, tableCSS.bordered]}
-          styles={{ position: 'absolute', left: '0px', zIndex: '9999' }}
-        >
-          {audio('tableRow')}
-          {audio('tableRow')}
-          {audio('tableRow')}
-        </table>
+        <div styles={{ position: 'absolute', left: '0px', zIndex: '9999' }} >
+          <Table columns={['fixed','resizable','flexible','responsive']}>
+            {audio('tableRow')}
+            {audio('tableRow')}
+            {audio('tableRow')}
+          </Table>
+        </div>
         <br /><br /><br /><br /><br /><br />
         <p>Lorem</p>
         <div styles={{ width: '66.666%' }}>
