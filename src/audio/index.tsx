@@ -131,7 +131,9 @@ export interface VisibleTracks {
 	captions: string; subtitles: string; descriptions: string; chapters: string; metadata: string;
 };
 export interface AudioIcache {
-	l: any;
+	locale: string;
+	locales: ({value: string})[];
+	l: number;
 	id: string;
 	width: number;
 	currentTime: number;
@@ -217,17 +219,14 @@ export const Audio = factory(function Audio({
 		baselined = true, hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
 		autoPlay = false, muted = false, view = 'column',
 		crossorigin = 'anonymous', volume = 1, speed = 1, ..._rest
-	} = normalizeActivityPub(properties());
+	} = normalizeActivityPub(properties(), get('locale'));
 
 	const APo = _rest;
 	if (APo.type.indexOf('Audio') < 0 && (!APo.mediaType || APo.mediaType.toLowerCase().indexOf('audio') !== 0)) {
 		return ''
 	}
-/*
-	nameMap, summaryMap, contentMap, sourceMap,
-*/
-	console.log(APo.locales, APo);
 
+	getOrSet('locales', APo.locales.map((value) => ({value})), false)
 	getOrSet('duration', parseDuration(APo.duration||''), false);
 	getOrSet('sampleRate', 44100);
 	const [duration, sampleRate, numberOfChannels] = [get('duration'), get('sampleRate'), get('numberOfChannels')];
@@ -450,7 +449,7 @@ export const Audio = factory(function Audio({
 	const {breakpoint: vp = 's'} = breakpoints.get('measure')||{};
 	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
 
-	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
+	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / (get('l')||1);
 	const mml = !get('l') || !baselined ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
 	const isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
 	const typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
@@ -500,6 +499,7 @@ export const Audio = factory(function Audio({
 		*/
 	}
 
+	const [locale, locales] = [get('locale'), get('locales')];
 	return <div
 		key="root"
 		classes={[
@@ -524,10 +524,14 @@ export const Audio = factory(function Audio({
 	>
 		<div classes={themedCss.measure} key="measure" />
 		<div classes={themedCss.mediaFreshTop}>
-			<Icon type="listen" spaced={true} />
-			<i classes={themedCss.freshDuration}>{formattedDuration}</i>
-			{ get('sampleRate') && <span classes={ui.muted} key="sampleRate"><br />{get('sampleRate')}Hz</span> }
-			{ get('numberOfChannels') && <span classes={ui.muted} key="numberOfChannels"> • {get('numberOfChannels')}Ch</span> }
+			<details>
+				<summary>
+					<Icon type="listen" spaced={true} />
+					<i classes={themedCss.freshDuration}>{formattedDuration}</i>
+				</summary>
+				{ get('sampleRate') && <span classes={ui.muted} key="sampleRate">{get('sampleRate')}Hz</span> }
+				{ get('numberOfChannels') && <span classes={ui.muted} key="numberOfChannels"><br />{get('numberOfChannels')}Ch</span> }
+			</details>
 		</div>
 		<div classes={themedCss.mediaTop}>
 			<Button
@@ -662,20 +666,28 @@ export const Audio = factory(function Audio({
 			</div>
 		</div>}
 
-		{APo.locales.length > 1 && <div>
-
-			<RadioGroup
-				size="s"
-				name="locales"
-				options={APo.locales.map((value) => ({value}))}
-				onValue={(value) => {
-					// set('standard', value);
-				}}
-			>
-				{{
-					label: <Icon type="globe" />
-				}}
-			</RadioGroup>
+		{!!locales && locales.length > 1 && <div>
+			<details>
+				<summary>
+					<Icon type="globe" />{' '}
+					<i classes={themedCss.metaSummary}>{
+						locales.map((l,i,a) => {
+							const localeCaption = `${l.value}${i < a.length-1 ? ', ' : ''}`;
+							return l.value === locale ? <span>{localeCaption}</span> : localeCaption
+						})
+					}</i>
+				</summary>
+				<RadioGroup
+					size="s"
+					value={locale}
+					name="locales"
+					options={locales}
+					onValue={(value) => {
+						set('locale', value);
+					}}
+				/>
+				<pre classes={themedCss.metaLocale}>{`${getOrSet('locale', APo.locale)}`}</pre>
+			</details>
 		</div>}
 
 		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}

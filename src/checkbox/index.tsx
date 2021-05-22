@@ -122,15 +122,19 @@ export const Checkbox = factory(function Checkbox({
 			<input
 				key="input"
 				id={idBase}
-				{...formatAriaProperties(aria)}
+				{...{
+					...formatAriaProperties(aria),
+					...{
+						invalid: valid === false ? 'true' : null,
+						readonly: readOnly === true ? 'true' : null
+					}
+				}}
 				classes={themedCss.input}
 				checked={checked}
 				disabled={disabled}
 				focus={focus.shouldFocus()}
-				aria-invalid={valid === false ? 'true' : null}
 				name={name}
 				readonly={readOnly}
-				aria-readonly={readOnly === true ? 'true' : null}
 				required={required}
 				type={_inputType}
 				value={value}

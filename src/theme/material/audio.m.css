@@ -101,8 +101,15 @@ video:picture-in-picture {
 }
 
 .content,
+.metaSummary,
 .freshDuration {
 	composes: serif from './_typo.css';
+}
+.metaSummary > span {
+	color: var(--ui-accent);
+}
+.metaLocale {
+	display: none;
 }
 .root .content {
 	margin: 0;

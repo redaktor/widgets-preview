@@ -428,6 +428,9 @@ i, em, .italic {
   font-style: italic;
 }
 
+details > summary {
+  cursor: pointer;
+}
 
 .input {
   font-family: var(--font-sans);
