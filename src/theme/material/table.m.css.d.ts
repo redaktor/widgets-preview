@@ -9,6 +9,7 @@ export const flexible: string;
 export const containerOuter: string;
 export const containerInner: string;
 export const table: string;
+export const isResizing: string;
 export const cell: string;
 export const center: string;
 export const right: string;

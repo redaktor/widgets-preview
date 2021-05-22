@@ -81,7 +81,7 @@ const exampleData: AudioProperties | ImageProperties = {
     summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
     type: "Person"
   }],
-  name: ["The Government's Secret Campaign Against Cats","Special Episode","Super"],
+  nameMap: [{en: "The Government's Secret Campaign Against Cats", de: "Das ist alles nur Blindtext"},{en: "Special Episode", de: "Spezielle Episode"}, {en: "Super", de: "Super"}],
   summary: ["10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For","summary2"],
   content: [`Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs #Parkett. \nParsed handle @sl@sl.de – handle @sl@sl.de – link-handle @https://localhost:9999 – link https://localhost:9999 \n Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Parkett. Dies sind Sätze mit Zeichen bis zu 500 LOREM IPSUM dolor sit amet, consectetur adipiscing elit.
 
@@ -111,7 +111,7 @@ const exampleData: AudioProperties | ImageProperties = {
 const exampleImage: ImageProperties = {
   ...(exampleData as ImageProperties),
   type: 'Image',
-  name: (exampleData as any).name[0],
+  name: (exampleData as any).nameMap[0].en,
   width: 1417,
   height: 945,
   blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP',
@@ -149,7 +149,7 @@ export default factory(function Basic() {
         <div styles={{ width: '100%' }}>{audio('row')}</div>
         <br /><br />
         <div styles={{ position: 'absolute', left: '0px', zIndex: '9999' }} >
-          <Table columns={['fixed','resizable','flexible','responsive']}>
+          <Table columns={['fixed','resizable','resizable','responsive']}>
             {audio('tableRow')}
             {audio('tableRow')}
             {audio('tableRow')}

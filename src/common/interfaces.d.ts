@@ -434,6 +434,8 @@ export interface ActivityPubObjectNormalized extends ActivityPubBaseNormalized {
 	href?: string; /* Functional */
 	hreflang?: string; /* Functional */
 	rel?: string[];
+	/* available locales */
+	locales: string[];
 }
 
 export interface ActivityPubCollection extends ActivityPubCore {

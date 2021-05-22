@@ -40,6 +40,10 @@
 	margin-top: calc(var(--pt) - var(--line) + var(--mb) - 1px);
 	margin-bottom: calc(var(--pt) + 1px);
 }
+.table.isResizing {
+	-webkit-touch-callout: none; /* iOS Safari */
+	user-select: none;
+}
 
 .item {
 	cursor: pointer;
@@ -132,14 +136,18 @@
 	position: absolute;
 	width: var(--touch-target-min, 40px);
 	height: 100%;
-	right: calc(var(--grid-base) * -1 + 2px);
+	right: 0;
 	top: 0;
 	cursor: e-resize;
-	font-size: 0.1px;
 	display: block;
 	-ms-touch-action: none;
 	touch-action: none;
 	border-right: var(--grid-base) solid var(--text);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	-webkit-touch-callout: none; /* iOS Safari */
+  user-select: none;
 }
 .resizerHover, .resizer:hover {
   border-right-color: var(--ui-border);

@@ -2,7 +2,7 @@ import { tsx, create, node } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { uuid } from '@dojo/framework/core/util';
 import { clampStrings } from '../common/activityPubUtil';
-import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
+import { ActivityPubObject } from '../common/interfaces';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
@@ -38,7 +38,6 @@ import * as css from '../theme/material/audio.m.css';
 
 /* TODO exists in this module: */
 import MD from '../MD/';
-
 
 /*
 {
@@ -220,11 +219,14 @@ export const Audio = factory(function Audio({
 		crossorigin = 'anonymous', volume = 1, speed = 1, ..._rest
 	} = normalizeActivityPub(properties());
 
-	const APo: ActivityPubObjectNormalized = _rest;
-
+	const APo = _rest;
 	if (APo.type.indexOf('Audio') < 0 && (!APo.mediaType || APo.mediaType.toLowerCase().indexOf('audio') !== 0)) {
 		return ''
 	}
+/*
+	nameMap, summaryMap, contentMap, sourceMap,
+*/
+	console.log(APo.locales, APo);
 
 	getOrSet('duration', parseDuration(APo.duration||''), false);
 	getOrSet('sampleRate', 44100);
@@ -658,6 +660,22 @@ export const Audio = factory(function Audio({
 					}
 				</div>
 			</div>
+		</div>}
+
+		{APo.locales.length > 1 && <div>
+
+			<RadioGroup
+				size="s"
+				name="locales"
+				options={APo.locales.map((value) => ({value}))}
+				onValue={(value) => {
+					// set('standard', value);
+				}}
+			>
+				{{
+					label: <Icon type="globe" />
+				}}
+			</RadioGroup>
 		</div>}
 
 		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}

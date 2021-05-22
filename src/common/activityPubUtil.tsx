@@ -87,6 +87,8 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 
 	if (typeof ap === 'string') { return ap }
 	if (typeof ap === 'object' && !ap.type) { (ap as ActivityPubActivity).type = 'Create' }
+
+	const locales: string[] = [];
 	const userLang = typeof language === 'string' ? language :
 		(new Intl.DateTimeFormat().resolvedOptions().locale ||
 			global.navigator.language ||
@@ -97,6 +99,7 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 	const langMap = (langMap: LangMap | LangMap[]): string[] => {
 		const a = toArray(langMap);
 		return a.map((_o: any) => {
+			locales.push(...Object.keys(_o));
 			let uLang = userLang;
 			if (!uLang) {
 				/* The special language tag "und" can be used within the object form to
@@ -146,7 +149,11 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 	} = ap;
  	let o: any = { id, type, ...notAP };
 
-	// TODO id
+	/* TODO
+	id
+	HOW MANY multiple max. ?
+	WHAT IF e.g. [" ", " " (repeat 20 times), "A real text"] ?
+	*/
 	/*
 		inbox?: ActivityPubOrderedCollection;
 		outbox?: ActivityPubOrderedCollection;
@@ -180,8 +187,16 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 	}
 	if (typeof mediaType === 'string') { o.mediaType = mediaType }
 
-	if (isCaption(name, nameMap)) { o.name = !!nameMap ? toArray(langMap(nameMap)) : toArray(name) }
-	if (isCaption(summary, summaryMap)) { o.summary = toArray(summaryMap ? langMap(summaryMap) : summary) }
+	if (isCaption(name, nameMap)) {
+		if (!!nameMap) {
+			o.name = toArray(langMap(nameMap));
+			o.nameMap = nameMap;
+		} else {
+			o.name = toArray(name);
+		}
+	}
+	if (isCaption(summary, summaryMap)) {
+		o.summary = toArray(summaryMap ? langMap(summaryMap) : summary) }
 	if (isCaption(content, contentMap)) { o.content = toArray(contentMap ? langMap(contentMap) : content) }
 	if (isCaption(source, sourceMap)) { o.source = toArray(sourceMap ? langMap(sourceMap) : source) }
 
@@ -324,5 +339,6 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 				toArray(normalizeActivityPub(_ap[key], language));
 		}
 	}
+	o.locales = locales.filter((l,i) => (i === locales.indexOf(l)));
 	return o
 }

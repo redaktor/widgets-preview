@@ -89,7 +89,7 @@ export const Table = factory(function Table({
 				set('isResizing', {x: e.clientX, width: parseInt(styles.width||'0', 10), key: `col_${i}`}, false);
 				document.addEventListener('mousemove', handleMouseMove);
 				document.addEventListener('mouseup', handleMouseUp);
-			}} />
+			}}>{'<>'}</div>
 		</virtual>
 		if (type === 'resizable') { isResizable = true }
 		if ((typeof c !== 'object' || !c.name) && !isResizable) {
@@ -113,7 +113,10 @@ export const Table = factory(function Table({
 	</colgroup>
 
 	return <div key="root" classes={[themedCss.root, theme.variant(), theme.colored(color)]}>
-		<table key="table" classes={[themedCss.table]}>
+		<table key="table" classes={[
+			themedCss.table,
+			get('isResizing') && themedCss.isResizing
+		]}>
 			{tableHeader}
 			{colgroup}
 			{children()}
