@@ -2,7 +2,7 @@ import { tsx, create, node } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { uuid } from '@dojo/framework/core/util';
 import { clampStrings } from '../common/activityPubUtil';
-import { ActivityPubObject } from '../common/interfaces';
+import { ActivityPubObject, Labeled } from '../common/interfaces';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
@@ -132,7 +132,7 @@ export interface VisibleTracks {
 };
 export interface AudioIcache {
 	locale: string;
-	locales: ({value: string})[];
+	locales: Labeled[];
 	l: number;
 	id: string;
 	width: number;
@@ -226,7 +226,7 @@ export const Audio = factory(function Audio({
 		return ''
 	}
 
-	getOrSet('locales', APo.locales.map((value) => ({value})), false)
+	getOrSet('locales', APo.locales, false);
 	getOrSet('duration', parseDuration(APo.duration||''), false);
 	getOrSet('sampleRate', 44100);
 	const [duration, sampleRate, numberOfChannels] = [get('duration'), get('sampleRate'), get('numberOfChannels')];
@@ -679,7 +679,7 @@ export const Audio = factory(function Audio({
 				</summary>
 				<RadioGroup
 					size="s"
-					value={locale}
+					initialValue={locale}
 					name="locales"
 					options={locales}
 					onValue={(value) => {

@@ -226,6 +226,10 @@ export type ActivityPubObjectTypes = 'Article'|'Audio'|'Document'|'Event'|'Image
 'Collection'|'OrderedCollection'|'CollectionPage'|'OrderedCollectionPage';
 export type ActivityPubLinkTypes = 'Link'|'Mention';
 
+export interface Labeled {
+	value: string;
+	label: string;
+}
 export interface LangMap {
 	[iso: string]: string;
 }
@@ -435,7 +439,7 @@ export interface ActivityPubObjectNormalized extends ActivityPubBaseNormalized {
 	hreflang?: string; /* Functional */
 	rel?: string[];
 	/* available locales */
-	locales: string[];
+	locales: Labeled[];
 }
 
 export interface ActivityPubCollection extends ActivityPubCore {

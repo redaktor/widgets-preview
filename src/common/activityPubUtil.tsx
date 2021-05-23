@@ -339,6 +339,12 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 				toArray(normalizeActivityPub(_ap[key], language));
 		}
 	}
-	o.locales = locales.filter((l,i) => (i === locales.indexOf(l)));
+	o.locales = locales.filter((l,i) => (i === locales.indexOf(l))).map((value) => {
+		const label = !!(Intl as any).DisplayNames && (
+			new (Intl as any).DisplayNames([value], {type: 'language'}).of(value) ||
+			new (Intl as any).DisplayNames(['en'], {type: 'language'}).of(value)
+		) || value;
+		return {label, value}
+	})
 	return o
 }

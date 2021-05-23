@@ -90,6 +90,7 @@ export const Checkbox = factory(function Checkbox({
 	} = properties();
 	const idBase = widgetId || `radio-${id}` || uuid();
 
+console.log(value,'checked',checked)
 	return (
 		<label
 			key="root"

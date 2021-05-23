@@ -1,5 +1,6 @@
 import * as css from '../theme/material/radio-group.m.css';
 import theme from '@dojo/framework/core/middleware/theme';
+import { uuid } from '@dojo/framework/core/util';
 import { Radio, RadioProperties } from '../radio/';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
@@ -41,7 +42,10 @@ export const RadioGroup = factory(function({
 	properties,
 	middleware: { radioGroup, theme }
 }) {
-	const { vertical, name, options, onValue, value, initialValue, disabled, ...radioProps } = properties();
+	const {
+		vertical, options, onValue, value, initialValue, disabled,
+		name = '', widgetId = uuid(), ...radioProps
+	} = properties();
 	const [{ radios, label } = { radios: undefined, label: undefined }] = children();
 	const radio = radioGroup(onValue, initialValue || '', value);
 	const themedCss = theme.classes(css);
@@ -53,7 +57,7 @@ export const RadioGroup = factory(function({
 		return options.map(({ value, label }) => {
 			const { checked } = radio(value);
 			return (
-				<Radio {...radioProps} spaced={true} checked={checked()} name={name} onValue={checked} value={value}>
+				<Radio {...radioProps} spaced={true} checked={checked()} name={`${name}_${widgetId}`} onValue={checked} value={value}>
 					{label || value}
 				</Radio>
 			);
