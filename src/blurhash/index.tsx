@@ -1,6 +1,10 @@
 import { create, tsx, node } from '@dojo/framework/core/vdom';
 import { decode } from './woltappBlurhash';
 
+export interface Brightness {
+	brightness: number;
+	textColor: string;
+}
 export interface BlurhashProperties {
 	/** The blurhash to render, see https://blurha.sh */
 	blurhash: string | string[];
@@ -16,7 +20,7 @@ export interface BlurhashProperties {
 	 */
 	punch?: number;
 	/* Get the brightness of the blurhash */
-	onBrightness?: (brightObject: {brightness: number, textColor: string}) => any;
+	onBrightness?: (brightObject: Brightness) => any;
 }
 
 const factory = create({node}).properties<BlurhashProperties>();

@@ -29,7 +29,7 @@ import Chip from '../chip';
 import Button from '../button';
 import Slider from '../slider';
 import Icon from '../icon';
-import Image from '../image';
+import Image from '../image/image';
 import Images from '../images';
 import bundle from './nls/Audio';
 import * as ui from '../theme/material/_ui.m.css';
@@ -74,7 +74,6 @@ or purpose. An example could be all activities relating to a common project or e
 /* TODO
 
 - VTT flag for Meta
-- Copy multilanguage-select from private repo
 - attachment with tableRow -> tableRow w. preview or row
 
 state store:
@@ -561,9 +560,7 @@ export const Audio = factory(function Audio({
 			</noscript>
 			{
 				hasPoster && !!APo.image && !!APo.image[0] &&
-					<Image {...APo.image[0]}
-						fit={true} baselined={false} isRow={isRow} hasContent={false} hasAttachment={false}
-					/>
+					<Image {...APo.image[0]} fit={true} baselined={false} />
 			}
 
 			{!get('hasTracks') && !get('isPicInPic') ?

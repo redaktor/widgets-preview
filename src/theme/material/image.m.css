@@ -7,6 +7,21 @@
 	padding: 0 !important;
 	margin-bottom: 0 !important;
 }
+.xs, .s, .m, .l, .xl, .xxl { }
+.mini, .medium, .large { }
+.darkImage, .lightImage { }
+/* not used, when the blurhash faded to the main image */
+.faded { }
+.measure {
+	position: absolute;
+	width: 100%;
+	height: 1px;
+	top: -1px;
+}
+.picture {
+	width: 100%;
+}
+
 .root.fit,
 .media.fit,
 .fit .picture {
@@ -15,26 +30,6 @@
 	margin: 0;
 	padding: 0;
 	position: absolute;
-	object-fit: cover;
-	object-position: 50%;
-}
-.root.fit .media.fit canvas,
-.root.fit .media.fit .image {
-	object-fit: cover;
-	min-height: 100%;
-}
-
-.xs, .s, .m, .l, .xl, .xxl { }
-.mini, .medium, .large { }
-.darkImage, .lightImage { }
-/* not used, when the blurhash faded to the main image */
-.faded { }
-
-.measure {
-	position: absolute;
-	width: 100%;
-	height: 1px;
-	top: -1px;
 }
 
 .media {
@@ -59,9 +54,62 @@
 	width: 100%;
 	transition: opacity var(--ui-dpd-2,240ms) var(--ui-easing);
 }
-.picture {
-	width: 100%;
+@supports(object-fit: cover) {
+	.root.fit,
+	.media.fit,
+	.media.ratio,
+	.ratio .picture,
+	.fit .picture {
+		object-fit: cover;
+		object-position: 50%;
+	}
+	.media.ratio canvas,
+	.media.ratio .image,
+	.media.fit canvas,
+	.media.fit .image {
+		object-fit: cover;
+		min-height: 100%;
+	}
 }
+
+.portraitVideo, ._9_16 { --apt: 177.77777777%; --ar: 9 / 16; }
+.portraitPhoto, ._2_3 { --apt: 150%; --ar: 2 / 3; }
+._3_4 { --apt: 133.33333333%; --ar: 3 / 4; }
+._4_5 { --apt: 125%; --ar: 4 / 5; }
+._6_7 { --apt: 116.66666666%; --ar: 6 / 7; }
+
+.square, ._1_1 { --apt: 100%; --ar: 1 / 1; }
+._7_6 { --apt: 85.714285714%; --ar: 7 / 6; }
+._5_4 { --apt: 80%; --ar: 5 / 4; }
+._4_3 { --apt: 75%; --ar: 4 / 3; }
+.photo, ._3_2 { --apt: 66.66666666%; --ar: 3 / 2; }
+._16_10 { --apt: 62.5%; --ar: 16 / 10; }
+.video, ._16_9 { --apt: 56.25%; --ar: 16 / 9; }
+.cinema, ._37_20 { --apt: 54.054054%; --ar: 37 / 20; }
+._16_7 { --apt: 43.75%; --ar: 16 / 7; }
+.cinemaWide, ._21_9 { --apt: 42.85714285%; --ar: 21 / 9; }
+._8_3 { --apt: 37.5%; --ar: 8 / 3; }
+.apsP, ._3_1 { --apt: 33.33333333%; --ar: 3 / 1; }
+._16_5 { --apt: 31.25%; --ar: 16 / 5; }
+._10_3 { --apt: 30%; --ar: 10 / 3; }
+.pano3, ._9_2 { --apt: 22.22222222%; --ar: 9 / 2; }
+.pano4, ._12_2 { --apt: 16.66666666%; --ar: 12 / 2; }
+@supports not (aspect-ratio: 16 / 9) {
+	.media.ratio::before {
+	  content: "";
+	  padding-top: var(--apt, 56.25%);
+	  float: left;
+	}
+	.media.ratio::after {
+	  clear: left;
+	  content: " ";
+	  display: table;
+	}
+}
+.media.ratio {
+	aspect-ratio: var(--ar, 16 / 9);
+}
+
 .media.loaded > canvas,
 .media:not(.loaded) > *:not(i) + .picture {
 	position: absolute;
@@ -83,10 +131,10 @@
 .image {
 	transition: transform var(--ui-dpd-4,372ms) var(--ui-easing);
 }
-.root:not(.sensitive) .image:hover {
+.media:not(.sensitive) .image:hover {
 	transform: scale(1.0618);
 }
-.sensitive .media {
+.sensitive.media {
 
 }
 .sensitiveLabel {
@@ -179,7 +227,7 @@
 .media > *:not(i) + .picture > .image {
 	opacity: 0;
 }
-.root:not(.sensitive) .loaded > *:not(i) + .picture > .image {
+.media:not(.sensitive).loaded > *:not(i) + .picture > .image {
 	animation: fadein var(--ui-dpd-4,372ms) var(--ui-easing) 0ms forwards;
 }
 .sensitiveCheckbox:not(:checked) + .loaded .picture > .image {

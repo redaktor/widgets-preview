@@ -39,6 +39,12 @@ export const Elevation = {
 	24:24
 }
 
+export enum AspectRatioNamed {
+	"portraitVideo","9/16","portraitPhoto","2/3","3/4","4/5","6/7","square","1/1",
+	"7/6","5/4","4/3","photo","3/2","16/10","video","16/9","cinema","37/20","16/7",
+	"cinemaWide","21/9","8/3","apsP","3/1","16/5","10/3","pano3","9/2","pano4","12/2"
+}
+
 interface AriaPropertyObject {
 	[key: string]: string | null;
 }

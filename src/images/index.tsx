@@ -7,7 +7,7 @@ import breakpoints from '../middleware/breakpoint';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Icon from '../icon';
-import Image from '../image';
+import Image from '../image/image';
 // import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/images.m.css';
 
@@ -164,8 +164,6 @@ export const Images = factory(function Images({
 							return <div key={`image${j}`}><Image
 								{...img}
 								baselined={false}
-								hasContent={false}
-								hasAttachment={false}
 								onLoad={loadedImg}
 								onClick={onClick && onClick(img)}
 							/></div>

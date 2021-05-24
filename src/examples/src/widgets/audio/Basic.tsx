@@ -3,6 +3,7 @@ import { ActivityPubLink } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Audio, { AudioProperties } from '@dojo/widgets/audio';
 import Image, { ImageProperties } from '@dojo/widgets/image';
+import Img from '@dojo/widgets/image/image';
 
 import Table from '@dojo/widgets/table';
 /*
@@ -159,6 +160,8 @@ export default factory(function Basic() {
         <p>Lorem</p>
         <div styles={{ width: '66.666%' }}>
           <Image {...exampleImage} />
+          <br /><br />
+          <Img {...exampleImage} sensitive={false} aspectRatio="16/7" />
         </div>
       </virtual>
 		</Example>
