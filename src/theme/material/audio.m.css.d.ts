@@ -23,6 +23,7 @@ export const summary: string;
 export const content: string;
 export const metaSummary: string;
 export const freshDuration: string;
+export const selected: string;
 export const metaLocale: string;
 export const mediaFreshTop: string;
 export const mediaTop: string;

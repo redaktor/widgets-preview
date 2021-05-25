@@ -14,6 +14,8 @@ export interface BlurhashProperties {
 	width?: number;
 	/** The height of the canvas showing the blurred pixels, default is `width` */
 	height?: number;
+	/** Styles for the canvas (to support focalPoint) */
+	styles?: Partial<CSSStyleDeclaration>;
 	/** It is a parameter that adjusts the contrast on the decoded image.
 	 * 1 means normal, smaller values will make the effect more subtle,
 	 * larger values will make it stronger. Lets you adjust the look.

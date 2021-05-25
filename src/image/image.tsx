@@ -14,6 +14,8 @@ import * as css from '../theme/material/image.m.css';
 export interface ImgProperties extends ActivityPubObject {
 	alt?: string;
 	title?: string;
+	/* focal point, see https://github.com/jonom/jquery-focuspoint#1-calculate-your-images-focus-point */
+	focalPoint?: [number, number];
 	/* fixed aspect ratio, e.g. ratio={16/9} */
 	aspectRatio?: AspectRatioNamed | keyof typeof AspectRatioNamed | [number, number];
 	/* object-fit logic */
@@ -72,8 +74,8 @@ export const Img = factory(function Img({
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
 	const {
-		sensitive, alt, title, aspectRatio, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		onBrightness, blurhash, mediaType, loading = 'lazy', crossorigin = 'anonymous',
+		sensitive, alt, title, aspectRatio: ratio, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
+		onBrightness, blurhash, focalPoint, mediaType, loading = 'lazy', crossorigin = 'anonymous',
 		baselined = true, fit = false, width = 80, height = 80, ..._rest
 	} = normalizeActivityPub(properties());
 
@@ -88,14 +90,51 @@ export const Img = factory(function Img({
 	getOrSet('loaded', false, false);
 	getOrSet('faded', false, false);
 
-	const {contentRect: dim = {height: 0}} = breakpoints.get('media')||{};
-	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
+
+	const {contentRect = {width: 1, height: 1}} = breakpoints.get('media')||{};
+	const {width: cWidth, height: cHeight} = contentRect;
+	/* Baselined to typo grid */
+	const lineCount = !get('l') ? 0 : ((contentRect && cHeight)||0) / get('l');
 	const mml = `--mml: ${!get('l') || !baselined ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount)};`;
+	/* Fixed Aspect Ratio */
+	const aspectRatio = Array.isArray(ratio) && ratio.join('/') in AspectRatioNamed ? ratio.join('/') : ratio;
 	const apt = !aspectRatio || typeof aspectRatio === 'string' ? '' : `--apt: ${100 / aspectRatio[0] * aspectRatio[1]}%;`;
 	const ar = !aspectRatio || typeof aspectRatio === 'string' ? '' : `--ar: ${aspectRatio[0]} / ${aspectRatio[1]};`;
+	/* Blurhash and CW */
 	const maxInt = Math.max(width, height);
 	const [blurWidth, blurHeight] = [Math.round(width / maxInt * 80), Math.round(height / maxInt * 80)];
 	const cwId = !sensitive ? '' : uuid();
+	/* Focal Point */
+	let styles: Partial<CSSStyleDeclaration> = {};
+	const hasFocalPoint = Array.isArray(focalPoint) &&
+		focalPoint.filter((coord) => typeof coord === 'number' && !isNaN(coord)) &&
+		cWidth > 1 && !!width && !!height;
+	if (hasFocalPoint) {
+		const calcShift = function(toRatio: number, containerSize: number, imageSize: number, focusSize: number, toMinus?: boolean) {
+			const containerCenter = Math.floor(containerSize / 2); // Container center in px
+			const focusFactor = (focusSize + 1) / 2; // Focus point of resize image in px
+			const scaledImage = Math.floor(imageSize / toRatio); // Can't use width() as images may be display:none
+			let focus =  Math.floor(focusFactor * scaledImage);
+			if (toMinus) { focus = scaledImage - focus }
+			let focusOffset = focus - containerCenter; // Calculate difference between focus point and center
+			const remainder = scaledImage - focus; // Reduce offset if necessary so image remains filled
+			const containerRemainder = containerSize - containerCenter;
+			if (remainder < containerRemainder) { focusOffset -= containerRemainder - remainder }
+			if (focusOffset < 0) { focusOffset = 0 }
+			return `${(focusOffset * -100 / containerSize)}%`;
+		};
+		const [x, y] = focalPoint;
+		const [wR, hR] = [(width/cWidth), (height/cHeight)];
+
+		styles = { position: 'absolute', maxWidth: '', maxHeight: '' };
+		if (wR > hR) {
+			styles.left = calcShift(hR, cWidth, width, x);
+			styles.maxHeight = '100%';
+		} else if (wR < hR) {
+			styles.top = calcShift(wR, cHeight, height, y, true);
+			styles.maxWidth = '100%';
+		}
+	}
 
 	const imgProps: any = {
 		alt: alt || (!!APo.summary && !!APo.summary.length ? APo.summary[0]||'' : ''),
@@ -105,6 +144,7 @@ export const Img = factory(function Img({
 		height,
 		mediaType,
 		src,
+		styles,
 		classes: [ themedCss.image ],
 		onload: (evt: Event) => {
 			set('loaded',true);
@@ -125,7 +165,7 @@ export const Img = factory(function Img({
 				!!get('faded') && themedCss.faded,
 				!!fit && themedCss.fit,
 				!!aspectRatio && themedCss.ratio,
-				!!aspectRatio && typeof aspectRatio === 'string' && (themedCss as any)[`_${aspectRatio.replace('/','_')}`]
+				!!aspectRatio && aspectRatio in AspectRatioNamed && (themedCss as any)[`_${aspectRatio.replace('/','_')}`]
 			]}
 			style={`${mml}${apt}${ar}`}
 		>
@@ -134,6 +174,7 @@ export const Img = factory(function Img({
 				blurhash={blurhash}
 				width={blurWidth}
 				height={blurHeight}
+				styles={styles}
 				onBrightness={(o) => {
 					onBrightness && onBrightness(o)
 				}}

@@ -161,7 +161,7 @@ export default factory(function Basic() {
         <div styles={{ width: '66.666%' }}>
           <Image {...exampleImage} />
           <br /><br />
-          <Img {...exampleImage} sensitive={false} aspectRatio="16/7" />
+          <Img {...exampleImage} sensitive={false} aspectRatio="16/7" focalPoint={[0, 0.13]} />
         </div>
       </virtual>
 		</Example>

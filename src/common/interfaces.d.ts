@@ -6,12 +6,6 @@ import { Keys, Sizes, Material } from './util';
 /* COMMON EXPORTS */
 export type CommonMessages = typeof commonBundle.messages;
 
-
-export type AspectRatioNamed =	"portraitVideo"|"9_16"|"portraitPhoto"|"2_3"|
-	"3_4"|"4_5"|"6_7"|"square"|"1_1"|"7_6"|"5_4"|"4_3"|"photo"|"3_2"|"16_10"|
-	"video"|"16_9"|"cinema"|"37_20"|"16_7"|"cinemaWide"|"21_9"|"8_3"|"apsP"|
-	"3_1"|"16_5"|"10_3"|"pano3"|"9_2"|"pano4"|"12_2";
-
 export type AriaPropertyObject = {
 	[key: string]: string;
 };
@@ -476,6 +470,8 @@ export interface ActivityPubPlace extends ActivityPubCore {
 }
 export interface ActivityPubImage extends ActivityPubCore {
 	type: 'Image' | ['Image', ...ActivityPubObjectTypes[]];
+	blurhash?: string;
+	focalPoint?: [number, number];
 }
 
 export interface ActivityPubLinkObject extends ActivityPubCore {

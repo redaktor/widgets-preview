@@ -670,7 +670,7 @@ export const Audio = factory(function Audio({
 					<i classes={themedCss.metaSummary}>{
 						locales.map((l,i,a) => {
 							const localeCaption = `${l.value}${i < a.length-1 ? ', ' : ''}`;
-							return l.value === locale ? <span>{localeCaption}</span> : localeCaption
+							return l.value === locale ? <span classes={themedCss.selected}>{localeCaption}</span> : localeCaption
 						})
 					}</i>
 				</summary>
