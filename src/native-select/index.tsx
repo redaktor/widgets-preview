@@ -1,19 +1,21 @@
+import { create, tsx } from '@dojo/framework/core/vdom';
 import focus from '@dojo/framework/core/middleware/focus';
 import { i18n } from '@dojo/framework/core/middleware/i18n';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { create, tsx } from '@dojo/framework/core/vdom';
 import HelperText from '../helper-text';
-import theme from '../middleware/theme';
-import * as css from '../theme/default/native-select.m.css';
-import * as labelCss from '../theme/default/label.m.css';
-import * as iconCss from '../theme/default/icon.m.css';
+import { theme, formatAriaProperties, ThemeProperties, Variants } from '../middleware/theme';
+import * as ui from '../theme/material/_ui.m.css';
+import * as colors from '../theme/material/_color.m.css';
+import * as css from '../theme/material/native-select.m.css';
+import * as labelCss from '../theme/material/label.m.css';
+import * as iconCss from '../theme/material/icon.m.css';
 import Icon from '../icon';
 import Label from '../label';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 
 export type MenuOption = { value: string; label?: string; disabled?: boolean };
 
-export interface NativeSelectProperties {
+export interface NativeSelectProperties extends ThemeProperties {
 	/** Callback called when user selects a value */
 	onValue?(value: string): void;
 	/** The initial selected value */
@@ -31,7 +33,7 @@ export interface NativeSelectProperties {
 	/** Used to specify the name of the control */
 	name?: string;
 	/** Represents the number of rows the are visible at one time */
-	size?: number;
+	rowMax?: number;
 	/** Handler for events triggered by select field losing focus */
 	onBlur?(): void;
 	/** Handler for events triggered by the select element being focused */
@@ -57,6 +59,7 @@ export const NativeSelect = factory(function NativeSelect({
 	middleware: { icache, theme, focus }
 }) {
 	const {
+		variant = 'flat',
 		classes,
 		disabled,
 		helperText,
@@ -65,7 +68,7 @@ export const NativeSelect = factory(function NativeSelect({
 		options,
 		required,
 		name,
-		size,
+		rowMax,
 		onFocus,
 		onBlur
 	} = properties();
@@ -97,12 +100,17 @@ export const NativeSelect = factory(function NativeSelect({
 			classes={[
 				theme.variant(),
 				themedCss.root,
+				theme.sized(ui),
+				theme.spaced(ui),
+				theme.colored(colors),
+				theme.animated(themedCss),
 				disabled && themedCss.disabled,
 				required && themedCss.required,
 				inputFocused ? themedCss.focused : undefined
 			]}
 			key="root"
 		>
+			<div classes={[themedCss.box, theme.elevated(ui)]} />
 			{label && (
 				<Label
 					theme={theme.compose(
@@ -134,14 +142,17 @@ export const NativeSelect = factory(function NativeSelect({
 					name={name}
 					required={required}
 					id={id}
-					size={size}
+					rowMax={rowMax}
 					onfocus={() => {
 						onFocus && onFocus();
 					}}
 					onblur={() => {
 						onBlur && onBlur();
 					}}
-					classes={themedCss.select}
+					classes={[
+						themedCss.select,
+						themedCss[variant as (keyof typeof themedCss)]
+					]}
 				>
 					{icache.get('prependBlank') && <option key="blank-option" value="" />}
 					{options.map(({ value, label, disabled = false }, index) => {
@@ -159,7 +170,7 @@ export const NativeSelect = factory(function NativeSelect({
 				</select>
 				<span classes={themedCss.arrow}>
 					<Icon
-						type="downIcon"
+						type="down"
 						theme={theme.compose(
 							iconCss,
 							css,

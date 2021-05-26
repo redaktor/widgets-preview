@@ -1,4 +1,7 @@
 export const root: string;
+export const placeholder: string;
+export const expanded: string;
+export const valueExpanded: string;
 export const focused: string;
 export const valid: string;
 export const invalid: string;

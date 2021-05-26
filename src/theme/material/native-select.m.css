@@ -1,19 +1,57 @@
 .root {
-	composes: mdc-select from '@material/select/dist/mdc.select.css';
+	composes: uiVar ui-transition from './_ui.m.css';
+	min-height: var(--ui-wrap-h);
+	position: relative;
+	cursor: pointer;
+	outline: none;
+	background-color: transparent;
+	margin: 0 !important;
 }
 
 .inputWrapper {
-	composes: mdc-select__anchor from '@material/select/dist/mdc.select.css';
 	width: 100%;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+.box {
+	composes: box from './_ui.m.css';
+	position: absolute;
+	left: 0;
+	top: calc((var(--uiH) - var(--h)) / 2);
+	width: 100%;
+	height: var(--h);
+	display: inline-block;
+	margin-bottom: 0;
+	margin-right: var(--plr);
+	border-radius: var(--ui-border-radius-emphasized);
+	background-color: var(--ui-bg);
+	transition: none;
+	z-index: 0;
 }
 
 .select {
-	composes: mdc-select__selected-text from '@material/select/dist/mdc.select.css';
+	composes: p from './_typo.css';
+	position: relative;
 	appearance: none;
-	-webkit-appearance: none;
+	padding-left: var(--grid-base);
+	padding-right: calc(var(--grid-base) * 6);
+	border-radius: var(--ui-border-radius-emphasized);
+  border: none;
+  outline: none;
+  color: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
 	cursor: pointer;
 	min-width: 100%;
 	border-radius: 0;
+	background-color: var(--ui-bg);
+	z-index: 1;
+}
+.root .select {
+	padding-top: 0;
 }
 
 .focused {
@@ -21,7 +59,10 @@
 }
 
 .arrow {
-	composes: mdc-select__dropdown-icon from '@material/select/dist/mdc.select.css';
+	position: absolute;
+	right: var(--grid-base);
+	top: var(--pt);
+	z-index: 2;
 }
 
 .labelRoot {
@@ -39,4 +80,13 @@
 
 .iconIcon {
 	display: none;
+}
+
+
+/* Class for disabled select state */
+.disabled {
+	cursor: inherit;
+}
+/* Class for required select state */
+.required {
 }

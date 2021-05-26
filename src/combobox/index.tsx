@@ -1,3 +1,4 @@
+import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import {
 	Input, CommonMessages, RedaktorProperties, LabeledProperties, PointerEventProperties,
@@ -17,7 +18,6 @@ import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
 /*import { createDataMiddleware } from '@dojo/framework/core/middleware/data';*/
 import { uuid } from '@dojo/framework/core/util';
-import { create, tsx } from '@dojo/framework/core/vdom';
 import { Keys } from '../common/util';
 import HelperText from '../helper-text';
 import Icon from '../icon';
@@ -149,13 +149,13 @@ interface ComboBoxICache {
 
 const icache = createICacheMiddleware<ComboBoxICache>();
 
-const factory = create({ icache, focus, theme, i18n, resource: createResourceMiddleware<ListOption>() })
+const factory = create({ icache, focus, theme, i18n })
 	.properties<ComboBoxProperties>()
 	.children<ComboBoxChildren | undefined>();
 
 export const ComboBox = factory(function ComboBox({
 	properties,
-	middleware: { icache, focus, theme, i18n, resource }
+	middleware: { icache, focus, theme, i18n }
 }) {
 
 /*
@@ -503,7 +503,7 @@ export const ComboBox = factory(function ComboBox({
 		const [open, indices, indexed, activeIndex = 0] = [
 			icache.get('open'), icache.get('indices'), icache.get('indexed'), icache.get('activeIndex')
 		];
-		
+
 		return <div key="dropdown" classes={[
 			comboCss.dropdown,
 			open === true ? comboCss.open : comboCss.closed
@@ -530,6 +530,24 @@ export const ComboBox = factory(function ComboBox({
 			/>
 		</div>
 	}
+	_onMenuChange();
+	_indexResults();
+/*
+	this.
+	this._indexResults();
+	if (!this._hasMatch && !this._menuHasVisualFocus) {
+		this._activeIndex = -1;
+	} else if (!this._hadMatch && this._hasMatch) {
+		this._selectedIndex();
+	}
+	if (this._open) {
+		this.meta(ScrollViewMeta).scroll('dropdown');
+	}
+*/
+	return <div key="root">
+		{ renderInput() }
+		{ renderMenu() }
+	</div>
 });
 
 export default ComboBox;

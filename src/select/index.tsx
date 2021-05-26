@@ -9,15 +9,22 @@ import { Keys } from '../common/util';
 import HelperText from '../helper-text';
 import Icon from '../icon';
 import Label from '../label';
-import { ItemRendererProperties, List, ListOption } from '../list';
-import { ListItemProperties, MenuItemProperties } from '../list/Listitem';
+import {
+	ItemRendererProperties,
+	List,
+	ListOption
+} from '../list';
+import {
+	ListItemProperties,
+	MenuItemProperties
+} from '../list/Listitem';
 import theme from '../middleware/theme';
 import { PopupPosition } from '../popup';
 import TriggerPopup from '../trigger-popup';
-import * as listCss from '../theme/default/list.m.css';
-import * as labelCss from '../theme/default/label.m.css';
-import * as iconCss from '../theme/default/icon.m.css';
-import * as css from '../theme/default/select.m.css';
+import * as listCss from '../theme/material/list.m.css';
+import * as labelCss from '../theme/material/label.m.css';
+import * as iconCss from '../theme/material/icon.m.css';
+import * as css from '../theme/material/select.m.css';
 import bundle from './nls/Select';
 import LoadingIndicator from '../loading-indicator';
 import { find } from '@dojo/framework/shim/array';
@@ -109,6 +116,8 @@ export const Select = factory(function Select({
 		template: { read }
 	} = resource.template(template);
 
+	console.log(resource, get(options(), { read }))
+
 	const [{ items, label } = { items: undefined, label: undefined }] = children();
 	let { value } = properties();
 
@@ -142,6 +151,22 @@ export const Select = factory(function Select({
 			onValidate && onValidate(isValid);
 		}
 	}
+
+	let valueOption: ListOption | undefined;
+	if (value && data) {
+		let found = find(data, (item) => {
+			return Boolean(item.value && item.value.value === value);
+		});
+		if (found) {
+			valueOption = found.value;
+		} else {
+			const items = get(options({ query: { value } }), { read });
+			if (items && items.length > 0 && items[0].value === value) {
+				valueOption = items[0];
+			}
+		}
+	}
+	value = valueOption ? valueOption.value : undefined;
 
 	return (
 		<div
@@ -201,21 +226,6 @@ export const Select = factory(function Select({
 							}
 						}
 
-						let valueOption: ListOption | undefined;
-						if (value && data) {
-							let found = find(data, (item) => {
-								return Boolean(item.value && item.value.value === value);
-							});
-							if (found) {
-								valueOption = found.value;
-							} else {
-								const items = get(options({ query: { value } }), { read });
-								if (items) {
-									valueOption = items[0];
-								}
-							}
-						}
-
 						return (
 							<button
 								name={name}
@@ -246,13 +256,13 @@ export const Select = factory(function Select({
 								<span
 									classes={[themedCss.value, expanded && themedCss.valueExpanded]}
 								>
-									{(valueOption && valueOption.label) || value || (
+									{(valueOption && valueOption.label) || (
 										<span classes={themedCss.placeholder}>{placeholder}</span>
 									)}
 								</span>
 								<span classes={themedCss.arrow}>
 									<Icon
-										type="downIcon"
+										type="down"
 										theme={theme.compose(
 											iconCss,
 											css,
@@ -316,7 +326,7 @@ export const Select = factory(function Select({
 				key="helperText"
 				text={valid === false ? messages.requiredMessage : helperText}
 				valid={valid}
-				classes={classes}
+				classes={(classes as any)}
 				variant={variant}
 				theme={themeProp}
 			/>

@@ -1,7 +1,9 @@
 .root {
 	composes: mdc-select from '@material/select/dist/mdc.select.css';
 }
-
+.placeholder { }
+.expanded { }
+.valueExpanded { }
 .focused {
 	composes: mdc-select--focused from '@material/select/dist/mdc.select.css';
 }
