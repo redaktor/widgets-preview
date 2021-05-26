@@ -7,17 +7,29 @@
 	background-color: transparent;
 	margin: 0 !important;
 }
+.xs, .s, .m, .l, .xl, .xxl { }
+.sans {
+	composes: sans from './_typo.css';
+}
+.serif {
+	composes: serif from './_typo.css';
+}
 
 .inputWrapper {
 	width: 100%;
-	padding-left: 4px;
-	padding-right: 4px;
+	padding-left: var(--ui-border-radius-emphasized);
+	padding-right: var(--ui-border-radius-emphasized);
+}
+.root .inputWrapper {
+	margin-top: calc(var(--lineHalf) * -1);
+	padding-top: var(--lineHalf);
 }
 .box {
+	--boxTop: calc((var(--uiH) - var(--h)) / 2);
 	composes: box from './_ui.m.css';
 	position: absolute;
 	left: 0;
-	top: calc((var(--uiH) - var(--h)) / 2);
+	top: var(--boxTop);
 	width: 100%;
 	height: var(--h);
 	display: inline-block;
@@ -28,9 +40,7 @@
 	transition: none;
 	z-index: 0;
 }
-
 .select {
-	composes: p from './_typo.css';
 	position: relative;
 	appearance: none;
 	padding-left: var(--grid-base);
@@ -47,15 +57,26 @@
 	cursor: pointer;
 	min-width: 100%;
 	border-radius: 0;
-	background-color: var(--ui-bg);
+	background-color: transparent;
 	z-index: 1;
+}
+.xs .select:hover:focus,
+.root:not(.xs) .select:focus {
+	background-color: var(--ui-bg);
+}
+.select > option {
+	--button-pulse: #fff;
+	background-color: var(--paper);
+}
+
+.select:focus + .box {
+	border: var(--ui-border-width-emphasized) solid var(--ui-focus-alpha);
 }
 .root .select {
 	padding-top: 0;
 }
 
 .focused {
-	composes: mdc-select--focused from '@material/select/dist/mdc.select.css';
 }
 
 .arrow {
@@ -66,16 +87,14 @@
 }
 
 .labelRoot {
-	composes: mdc-floating-label from '@material/select/dist/mdc.select.css';
 	z-index: 10;
 }
 
 .labelActive {
-	composes: mdc-floating-label--float-above from '@material/textfield/dist/mdc.textfield.css';
 }
 
 .root .labelActive {
-	top: 26px;
+	top: var(--line);
 }
 
 .iconIcon {

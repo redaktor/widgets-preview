@@ -72,6 +72,7 @@ export default factory(function Basic({ middleware: { icache } }) {
 				onValue={(value) => {
 					icache.set('value', value);
 				}}
+				isSerif
 			/>
 
 			<p>{icache.getOrSet('value', '')}</p>

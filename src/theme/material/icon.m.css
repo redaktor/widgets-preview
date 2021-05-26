@@ -18,9 +18,9 @@ i.icon {
 	font-weight: normal;
 	font-variant: normal;
 	text-transform: none;
-	line-height: 1 !important;
-	margin-bottom: 0 !important;
-	padding-top: 0 !important;
+	line-height: 1;
+	margin-bottom: 0;
+	padding-top: 0;
 	background-color: transparent !important;
 	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;

@@ -16,8 +16,6 @@ import { RenderResult } from '@dojo/framework/core/interfaces';
 export type MenuOption = { value: string; label?: string; disabled?: boolean };
 
 export interface NativeSelectProperties extends ThemeProperties {
-	/** Callback called when user selects a value */
-	onValue?(value: string): void;
 	/** The initial selected value */
 	initialValue?: string;
 	/** A controlled value */
@@ -34,6 +32,10 @@ export interface NativeSelectProperties extends ThemeProperties {
 	name?: string;
 	/** Represents the number of rows the are visible at one time */
 	rowMax?: number;
+	/** Serif typo options, default false */
+	isSerif?: boolean;
+	/** Callback called when user selects a value */
+	onValue?(value: string): void;
 	/** Handler for events triggered by select field losing focus */
 	onBlur?(): void;
 	/** Handler for events triggered by the select element being focused */
@@ -60,6 +62,8 @@ export const NativeSelect = factory(function NativeSelect({
 }) {
 	const {
 		variant = 'flat',
+		isSerif = false,
+		size,
 		classes,
 		disabled,
 		helperText,
@@ -101,6 +105,7 @@ export const NativeSelect = factory(function NativeSelect({
 				theme.variant(),
 				themedCss.root,
 				theme.sized(ui),
+				size && themedCss[(size as keyof typeof themedCss)],
 				theme.spaced(ui),
 				theme.colored(colors),
 				theme.animated(themedCss),
@@ -110,7 +115,6 @@ export const NativeSelect = factory(function NativeSelect({
 			]}
 			key="root"
 		>
-			<div classes={[themedCss.box, theme.elevated(ui)]} />
 			{label && (
 				<Label
 					theme={theme.compose(
@@ -143,7 +147,9 @@ export const NativeSelect = factory(function NativeSelect({
 					required={required}
 					id={id}
 					rowMax={rowMax}
+					tabIndex={0}
 					onfocus={() => {
+						console.log('on Focus');
 						onFocus && onFocus();
 					}}
 					onblur={() => {
@@ -151,10 +157,14 @@ export const NativeSelect = factory(function NativeSelect({
 					}}
 					classes={[
 						themedCss.select,
-						themedCss[variant as (keyof typeof themedCss)]
+						theme.sized(ui),
+						themedCss[variant as (keyof typeof themedCss)],
+						isSerif ? themedCss.serif : themedCss.sans
 					]}
 				>
 					{icache.get('prependBlank') && <option key="blank-option" value="" />}
+
+					// TODO optgroup / multiple
 					{options.map(({ value, label, disabled = false }, index) => {
 						return (
 							<option
@@ -168,7 +178,8 @@ export const NativeSelect = factory(function NativeSelect({
 						);
 					})}
 				</select>
-				<span classes={themedCss.arrow}>
+				<div classes={[themedCss.box, theme.elevated(ui)]} />
+				<div classes={[themedCss.arrow]}>
 					<Icon
 						type="down"
 						theme={theme.compose(
@@ -178,7 +189,7 @@ export const NativeSelect = factory(function NativeSelect({
 						)}
 						classes={classes}
 					/>
-				</span>
+				</div>
 			</div>
 			<HelperText key="helperText" text={helperText} />
 		</div>
