@@ -60,8 +60,8 @@
 	background-color: transparent;
 	z-index: 1;
 }
-.xs .select:hover:focus,
-.root:not(.xs) .select:focus {
+
+.select:focus {
 	background-color: var(--ui-bg);
 }
 .select > option {

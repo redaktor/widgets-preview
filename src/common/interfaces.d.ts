@@ -6,9 +6,15 @@ import { Keys, Sizes, Material } from './util';
 /* COMMON EXPORTS */
 export type CommonMessages = typeof commonBundle.messages;
 
+export interface MenuOption {
+	value: string;
+	label?: string;
+	disabled?: boolean
+}
+
 export type AriaPropertyObject = {
 	[key: string]: string;
-};
+}
 
 export interface CustomAriaProperties {
 	aria?: AriaPropertyObject;

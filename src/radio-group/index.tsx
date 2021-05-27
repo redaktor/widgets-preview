@@ -2,11 +2,11 @@ import * as css from '../theme/material/radio-group.m.css';
 import theme from '@dojo/framework/core/middleware/theme';
 import { uuid } from '@dojo/framework/core/util';
 import { Radio, RadioProperties } from '../radio/';
+import { MenuOption } from '../common/interfaces';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { radioGroup } from './middleware';
 
-type RadioOptions = { value: string; label?: string }[];
 
 export interface RadioGroupProperties extends RadioProperties {
 	vertical?: boolean;
@@ -15,19 +15,19 @@ export interface RadioGroupProperties extends RadioProperties {
 	/** Controlled value property */
 	value?: string;
 	/** The name attribute for this form group */
-	name: string;
+	name?: string;
 	/** Callback for the current value */
-	onValue(value: any): void;
+	onValue?(value: any): void;
 	/** Object containing the values / labels to create radios for */
-	options: RadioOptions;
+	options: MenuOption[];
 }
 
 export interface RadioGroupChildren {
 	/** Custom renderer for the radios, receives the radio group middleware and options */
-	radios?(
+	inputs?(
 		name: string,
 		middleware: ReturnType<ReturnType<typeof radioGroup>['api']>,
-		options: RadioOptions,
+		options: MenuOption[],
 		disabled: boolean
 	): RenderResult;
 	label?: RenderResult;
@@ -46,18 +46,18 @@ export const RadioGroup = factory(function({
 		vertical, options, onValue, value, initialValue, disabled,
 		name = '', widgetId = uuid(), ...radioProps
 	} = properties();
-	const [{ radios, label } = { radios: undefined, label: undefined }] = children();
-	const radio = radioGroup(onValue, initialValue || '', value);
+	const [{ inputs, label } = { inputs: undefined, label: undefined }] = children();
+	const radio = radioGroup(initialValue || '', value, onValue);
 	const themedCss = theme.classes(css);
 
 	function renderRadios() {
-		if (radios) {
-			return radios(name, radio, options, !!disabled);
+		if (inputs) {
+			return inputs(name, radio, options, !!disabled);
 		}
-		return options.map(({ value, label }) => {
+		return options.map(({ value, label, disabled }) => {
 			const { checked } = radio(value);
 			return (
-				<Radio {...radioProps} spaced={true} checked={checked()} name={`${name}_${widgetId}`} onValue={checked} value={value}>
+				<Radio {...radioProps} spaced={true} checked={checked()} disabled={disabled} name={`${name}_${widgetId}`} onValue={checked} value={value}>
 					{label || value}
 				</Radio>
 			);

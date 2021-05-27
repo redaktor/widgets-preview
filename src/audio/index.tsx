@@ -39,6 +39,7 @@ import * as css from '../theme/material/audio.m.css';
 /* TODO exists in this module: */
 import MD from '../MD/';
 
+import DynamicSelect from '../native-select/dynamic';
 /*
 {
   "@context": "https://www.w3.org/ns/activitystreams",
@@ -340,7 +341,8 @@ export const Audio = factory(function Audio({
 				<div key="tracksMenu" role="menu" aria-modal="true" classes={themedCss.trackMenu}>
 					{Object.keys(textTracks).map((k) => {
 						return k === 'metadata' || !textTracks[k].size ? '' :
-							<RadioGroup
+							<DynamicSelect
+								singleMax={8}
 								name={k}
 								size="s"
 								vertical={true}
@@ -373,7 +375,7 @@ export const Audio = factory(function Audio({
 								{{
 									label: (messages as any)[`${k}Track`]
 								}}
-							</RadioGroup>
+							</DynamicSelect>
 					}
 				)}
 				</div>
@@ -663,8 +665,7 @@ export const Audio = factory(function Audio({
 			</div>
 		</div>}
 
-		{!!locales && locales.length > 1 && <div>
-			<details>
+		{!!locales && locales.length > 1 && <details>
 				<summary>
 					<Icon type="globe" />{' '}
 					<i classes={themedCss.metaSummary}>{
@@ -674,7 +675,7 @@ export const Audio = factory(function Audio({
 						})
 					}</i>
 				</summary>
-				<RadioGroup
+				<DynamicSelect
 					size="s"
 					initialValue={locale}
 					name="locales"
@@ -684,11 +685,9 @@ export const Audio = factory(function Audio({
 					}}
 				/>
 				<pre classes={themedCss.metaLocale}>{`${getOrSet('locale', APo.locale)}`}</pre>
-			</details>
-		</div>}
+			</details>}
 
 		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
-
 		<div classes={themedCss.attributions}>
 			<AttributedTo {...APo} max={39} />
 		</div>

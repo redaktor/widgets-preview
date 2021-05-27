@@ -24,6 +24,8 @@ export interface CheckboxBaseProperties extends ThemeProperties, FocusProperties
 	checked?: boolean;
 	/** Set the disabled property of the control */
 	disabled?: boolean;
+	/** Can receive focus, default true */
+	focusable?: boolean;
 	/** Hides the label from view while still remaining accessible for screen readers */
 	labelHidden?: boolean;
 	/** The name of the checkbox */
@@ -32,10 +34,10 @@ export interface CheckboxBaseProperties extends ThemeProperties, FocusProperties
 	onBlur?(): void;
 	/** Handler for when the element is focused */
 	onFocus?(): void;
+	/** Handler for when the pointer moves over the element */
+	onEnter?(): void;
 	/** Handler for when the pointer moves out of the element */
 	onOut?(): void;
-	/** Handler for when the pointer moves over the element */
-	onOver?(): void;
 	/** Handler for when the value of the widget changes */
 	onValue?(checked: boolean): void;
 	/** Makes the checkbox readonly (it may be focused but not changed) */
@@ -48,6 +50,8 @@ export interface CheckboxBaseProperties extends ThemeProperties, FocusProperties
 	value?: string;
 	/** The id used for the form input element */
 	widgetId?: string;
+	/** Serif typo options, default false */
+	isSerif?: boolean;
 }
 
 export interface CheckboxProperties extends CheckboxBaseProperties {
@@ -75,12 +79,14 @@ export const Checkbox = factory(function Checkbox({
 		aria = {},
 		variant = 'flat',
 		checked = false,
+		focusable = true,
 		icon = 'checkmark',
+		isSerif = false,
 		responsive,
 		disabled,
 		labelHidden,
 		name,
-		onBlur, onFocus, onValue, onOut, onOver,
+		onBlur, onFocus, onValue, onOut, onEnter,
 		readOnly,
 		required,
 		theme: themeProp,
@@ -90,7 +96,6 @@ export const Checkbox = factory(function Checkbox({
 	} = properties();
 	const idBase = widgetId || `radio-${id}` || uuid();
 
-console.log(value,'checked',checked)
 	return (
 		<label
 			key="root"
@@ -101,6 +106,7 @@ console.log(value,'checked',checked)
 				theme.spaced(ui),
 				theme.colored(colors),
 				theme.animated(themedCss),
+				isSerif ? themedCss.serif : themedCss.sans,
 				checked ? themedCss.checked : null,
 				responsive ? themedCss.responsive : null,
 				disabled ? themedCss.disabled : null,
@@ -133,7 +139,7 @@ console.log(value,'checked',checked)
 				classes={themedCss.input}
 				checked={checked}
 				disabled={disabled}
-				focus={focus.shouldFocus()}
+				focus={focusable && focus.shouldFocus()}
 				name={name}
 				readonly={readOnly}
 				required={required}
@@ -146,7 +152,7 @@ console.log(value,'checked',checked)
 					onValue && onValue(checkbox.checked);
 				}}
 				onfocus={() => onFocus && onFocus()}
-				onpointerenter={() => onOver && onOver()}
+				onpointerenter={() => onEnter && onEnter()}
 				onpointerleave={() => onOut && onOut()}
 			/>
 			<div key="box" classes={[

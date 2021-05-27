@@ -2,44 +2,24 @@ import { create, tsx } from '@dojo/framework/core/vdom';
 import focus from '@dojo/framework/core/middleware/focus';
 import { i18n } from '@dojo/framework/core/middleware/i18n';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import HelperText from '../helper-text';
-import { theme, formatAriaProperties, ThemeProperties, Variants } from '../middleware/theme';
+import { RadioGroupProperties } from '../radio-group';
+import { theme, formatAriaProperties } from '../middleware/theme';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/native-select.m.css';
 import * as labelCss from '../theme/material/label.m.css';
 import * as iconCss from '../theme/material/icon.m.css';
+import HelperText from '../helper-text';
 import Icon from '../icon';
 import Label from '../label';
-import { RenderResult } from '@dojo/framework/core/interfaces';
 
-export type MenuOption = { value: string; label?: string; disabled?: boolean };
-
-export interface NativeSelectProperties extends ThemeProperties {
-	/** The initial selected value */
-	initialValue?: string;
-	/** A controlled value */
-	value?: string;
-	/** Options to display within the menu */
-	options: MenuOption[];
-	/** Property to determine if the input is disabled */
-	disabled?: boolean;
+export interface NativeSelectProperties extends RadioGroupProperties {
+	/** Allow multiple selected values, default false */
+	multiple?: boolean;
 	/** Sets the helper text of the input */
 	helperText?: string;
-	/** Boolean to indicate if field is required */
-	required?: boolean;
-	/** Used to specify the name of the control */
-	name?: string;
 	/** Represents the number of rows the are visible at one time */
 	rowMax?: number;
-	/** Serif typo options, default false */
-	isSerif?: boolean;
-	/** Callback called when user selects a value */
-	onValue?(value: string): void;
-	/** Handler for events triggered by select field losing focus */
-	onBlur?(): void;
-	/** Handler for events triggered by the select element being focused */
-	onFocus?(): void;
 }
 
 interface NativeSelectICache {
@@ -52,7 +32,7 @@ const icache = createICacheMiddleware<NativeSelectICache>();
 
 const factory = create({ icache, focus, theme, i18n })
 	.properties<NativeSelectProperties>()
-	.children<RenderResult | undefined>();
+	.children<any>();
 
 export const NativeSelect = factory(function NativeSelect({
 	properties,
@@ -63,11 +43,15 @@ export const NativeSelect = factory(function NativeSelect({
 	const {
 		variant = 'flat',
 		isSerif = false,
-		size,
+		focusable = true,
+		multiple = false,
+		aria = {},
 		classes,
 		disabled,
 		helperText,
 		initialValue,
+		onEnter,
+		onOut,
 		onValue,
 		options,
 		required,
@@ -98,14 +82,14 @@ export const NativeSelect = factory(function NativeSelect({
 	const selectedValue = value;
 	const themedCss = theme.classes(css);
 	const inputFocused = focus.isFocused('native-select');
-
+	const selectProperties: any = !focusable ? {} : { tabIndex: 0 };
+	if (!!multiple) { selectProperties.multiple = true }
 	return (
 		<div
 			classes={[
 				theme.variant(),
 				themedCss.root,
 				theme.sized(ui),
-				size && themedCss[(size as keyof typeof themedCss)],
 				theme.spaced(ui),
 				theme.colored(colors),
 				theme.animated(themedCss),
@@ -147,7 +131,6 @@ export const NativeSelect = factory(function NativeSelect({
 					required={required}
 					id={id}
 					rowMax={rowMax}
-					tabIndex={0}
 					onfocus={() => {
 						console.log('on Focus');
 						onFocus && onFocus();
@@ -155,12 +138,16 @@ export const NativeSelect = factory(function NativeSelect({
 					onblur={() => {
 						onBlur && onBlur();
 					}}
+					onpointerenter={() => onEnter && onEnter()}
+					onpointerleave={() => onOut && onOut()}
 					classes={[
 						themedCss.select,
 						theme.sized(ui),
 						themedCss[variant as (keyof typeof themedCss)],
 						isSerif ? themedCss.serif : themedCss.sans
 					]}
+					{...formatAriaProperties(aria)}
+					{...selectProperties}
 				>
 					{icache.get('prependBlank') && <option key="blank-option" value="" />}
 

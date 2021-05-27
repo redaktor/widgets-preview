@@ -5,6 +5,12 @@
 	composes: ui ui-transition from './_ui.m.css';
 	padding-left: calc(var(--h) + var(--plr)) !important;
 }
+.sans {
+	composes: sans from './_typo.css';
+}
+.serif {
+	composes: serif from './_typo.css';
+}
 
 .box {
 	composes: box from './_ui.m.css';

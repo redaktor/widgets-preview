@@ -1,8 +1,9 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { checkboxGroup } from './middleware';
+import theme from '@dojo/framework/core/middleware/theme';
+import { uuid } from '@dojo/framework/core/util';
 import { Checkbox, CheckboxProperties } from '../checkbox/index';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import theme from '@dojo/framework/core/middleware/theme';
 import * as css from '../theme/material/checkbox-group.m.css';
 
 type CheckboxOptions = { value: string; label?: string }[];
@@ -10,11 +11,11 @@ type CheckboxOptions = { value: string; label?: string }[];
 export interface CheckboxGroupProperties extends CheckboxProperties {
 	vertical?: boolean;
 	/** The name attribute for this form group */
-	name: string;
+	name?: string;
 	/** Object containing the values / labels to create checkboxes for */
 	options: CheckboxOptions;
 	/** Callback for the current value */
-	onValue(value: string[]|any): void;
+	onValue?(value: string[]|any): void;
 	/** Initial value of the checkbox group */
 	initialValue?: string[]|any;
 	/** A controlled value for the checkbox group */
@@ -23,7 +24,7 @@ export interface CheckboxGroupProperties extends CheckboxProperties {
 
 export interface CheckboxGroupChildren {
 	/** Custom renderer for the checkboxes, receives the checkbox group middleware and options */
-	checkboxes?(
+	inputs?(
 		name: string,
 		middleware: ReturnType<ReturnType<typeof checkboxGroup>['api']>,
 		options: CheckboxOptions
@@ -40,20 +41,20 @@ export const CheckboxGroup = factory(function({
 	properties,
 	middleware: { checkboxGroup, theme }
 }) {
-	const { vertical, name, options, onValue, initialValue, value, ...cbProps } = properties();
-	const [{ checkboxes, label } = { checkboxes: undefined, label: undefined }] = children();
+	const { vertical, name = '', widgetId = uuid(), options, onValue, initialValue, value, ...cbProps } = properties();
+	const [{ inputs, label } = { inputs: undefined, label: undefined }] = children();
 
-	const checkbox = checkboxGroup(onValue, initialValue, value);
+	const checkbox = checkboxGroup(initialValue, value, onValue);
 	const themedCss = theme.classes(css);
 
 	function renderCheckboxes() {
-		if (checkboxes) {
-			return checkboxes(name, checkbox, options);
+		if (inputs) {
+			return inputs(name, checkbox, options);
 		}
 		return options.map(({ value, label }) => {
 			const { checked } = checkbox(value);
 			return (
-				<Checkbox {...cbProps} spaced={true} name={name} value={value} checked={checked()} onValue={checked}>
+				<Checkbox {...cbProps} spaced={true} name={`${name}_${widgetId}`} value={value} checked={checked()} onValue={checked}>
 					{label || value}
 				</Checkbox>
 			);

@@ -1,4 +1,6 @@
 export const root: string;
+export const sans: string;
+export const serif: string;
 export const box: string;
 export const input: string;
 export const responsive: string;

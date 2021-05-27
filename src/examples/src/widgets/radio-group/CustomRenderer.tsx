@@ -20,7 +20,7 @@ const App = factory(function({ middleware: { icache } }) {
 			>
 				{{
 					label: 'going?',
-					radios: (name, radioGroup, options) => {
+					inputs: (name, radioGroup, options) => {
 						return options.map(({ value, label }) => {
 							const { checked } = radioGroup(value);
 							return (
