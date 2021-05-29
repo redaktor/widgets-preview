@@ -13,9 +13,17 @@
 	/*margin-bottom: calc(var(--mb, 16px) - var(--line, 15px));*/
   background-repeat: no-repeat;
 }
+.metaSummary {
+	composes: serif from './_typo.css';
+}
+.metaSummary > .selected {
+	border-bottom: var(--ui-border-width-emphasized) solid var(--ui-accent);
+}
+.metaSummary:hover,
 .summary:hover {
 	cursor: pointer;
 }
+.metaSummary:focus,
 .summary:focus {
 	outline: none;
 	background-color: var(--ui-bg, #7a7a7a);

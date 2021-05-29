@@ -6,6 +6,11 @@ import { Keys, Sizes, Material } from './util';
 /* COMMON EXPORTS */
 export type CommonMessages = typeof commonBundle.messages;
 
+export interface Labeled {
+	value: string;
+	label?: string;
+}
+
 export interface MenuOption {
 	value: string;
 	label?: string;
@@ -231,10 +236,6 @@ export type ActivityPubObjectTypes = 'Article'|'Audio'|'Document'|'Event'|'Image
 'Collection'|'OrderedCollection'|'CollectionPage'|'OrderedCollectionPage';
 export type ActivityPubLinkTypes = 'Link'|'Mention';
 
-export interface Labeled {
-	value: string;
-	label: string;
-}
 export interface LangMap {
 	[iso: string]: string;
 }
@@ -444,7 +445,7 @@ export interface ActivityPubObjectNormalized extends ActivityPubBaseNormalized {
 	hreflang?: string; /* Functional */
 	rel?: string[];
 	/* available locales */
-	locales: Labeled[];
+	locales?: Labeled[];
 }
 
 export interface ActivityPubCollection extends ActivityPubCore {

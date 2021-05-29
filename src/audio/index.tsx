@@ -6,7 +6,7 @@ import { clampStrings } from '../common/activityPubUtil';
 import { ActivityPubObject } from '../common/interfaces';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
-import activityPub from '../middleware/activityPub';
+import i18nActivityPub from '../middleware/i18nActivityPub';
 /*
 import {
 	createResourceTemplate,
@@ -15,7 +15,6 @@ import {
 } from '@dojo/framework/core/middleware/resources';
 import focus from '@dojo/framework/core/middleware/focus';
 */
-import i18n from '@dojo/framework/core/middleware/i18n';
 import { Row, Cell } from '../table';
 import { parseDuration, formatTime } from '../duration';
 import Paginated from '../paginated';
@@ -31,6 +30,7 @@ import Slider from '../slider';
 import Icon from '../icon';
 import Image from '../image/image';
 import Images from '../images';
+import Locales from '../locales';
 import bundle from './nls/Audio';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
@@ -150,34 +150,32 @@ const icache = createICacheMiddleware<AudioIcache>();
 const factory = create({
 	icache,
 	node,
-	i18n,
 	theme,
 	breakpoints,
-	activityPub
+	i18nActivityPub
 })
 	.properties<AudioProperties>()
 	.children<AudioChildren | RenderResult | undefined>();
 
 export const Audio = factory(function Audio({
-	middleware: { icache, node, i18n, theme, breakpoints, activityPub /*, resource */ },
+	middleware: { icache, node, theme, breakpoints, i18nActivityPub /*, resource */ },
 	properties,
 	children
 }) {
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
-	const { messages } = i18n.localize(bundle);
+	const { messages } = i18nActivityPub.localize(bundle);
 	const {
 		alt, editable, onLoad, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId = uuid(),
 		baselined = true, hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
 		autoPlay = false, muted = false, view = 'column',
 		crossorigin = 'anonymous', volume = 1, speed = 1, ..._rest
-	} = activityPub.normalized(properties());
+	} = i18nActivityPub.normalized(properties());
 
 	const APo = _rest;
 	if (APo.type.indexOf('Audio') < 0 && (!APo.mediaType || APo.mediaType.toLowerCase().indexOf('audio') !== 0)) {
 		return ''
 	}
-
 	getOrSet('duration', parseDuration(APo.duration||''), false);
 	getOrSet('sampleRate', 44100);
 	const [duration, sampleRate, numberOfChannels] = [get('duration'), get('sampleRate'), get('numberOfChannels')];
@@ -451,7 +449,7 @@ export const Audio = factory(function Audio({
 		*/
 	}
 
-	const [locale, locales] = [activityPub.getLocale(), activityPub.getLocales()];
+	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
 	return <div
 		key="root"
 		classes={[
@@ -616,26 +614,7 @@ export const Audio = factory(function Audio({
 			</div>
 		</div>}
 
-		{!!locales && locales.length > 1 && <details>
-				<summary>
-					<Icon type="globe" />{' '}
-					<i classes={themedCss.metaSummary}>{
-						locales.map((l,i,a) => {
-							const localeCaption = `${l.value}${i < a.length-1 ? ', ' : ''}`;
-							return l.value === locale ? <span classes={themedCss.selected}>{localeCaption}</span> : localeCaption
-						})
-					}</i>
-				</summary>
-				<DynamicSelect
-					size="s"
-					initialValue={locale}
-					name="locales"
-					options={locales}
-					onValue={(value) => {
-						activityPub.setLocale(value);
-					}}
-				/>
-			</details>}
+		{!!locales && locales.length > 1 && <Locales locale={locale} locales={locales} onValue={(l) => i18nActivityPub.set(l)} />}
 
 		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
 		<div classes={themedCss.attributions}>

@@ -1,24 +1,37 @@
 import { create, defer } from '@dojo/framework/core/vdom';
 import { ActivityPubObject, ActivityPubObjectNormalized, Labeled } from '../common/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import i18n from '@dojo/framework/core/middleware/i18n';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 
 const icache = createICacheMiddleware<{
   normalized: ActivityPubObjectNormalized;
 }>();
-const factory = create({ defer, icache }).properties<{
+const factory = create({ defer, i18n, icache }).properties<{
   userLocale?: string;
-	locales: Labeled[];
+	locales?: Labeled[];
 }>();
 
-export const ActivityPubCachingMiddleware = factory(({ properties, middleware: { defer, icache }}) => ({
+export const ActivityPubCachingMiddleware = factory(({ properties, middleware: { defer, i18n, icache }}) => ({
+  ...i18n,
+  _set: i18n.set,
+  getLocales() {
+    const o = icache.get('normalized') ? icache.get('normalized') : this.normalized(properties());
+    return !!o ? o.locales : []
+  },
+  set(locale: string) {
+    if (locale !== this.get()) { this._set({locale}) } // TODO ,rtl
+    return this.normalized(properties(), locale, true)
+  },
   normalized(o: ActivityPubObject, locale?: string, _invalidate = false) {
-      const { userLocale } = properties();
+      const { locale: userLocale = 'en' } = properties();
+      if (!locale) { locale = userLocale }
+      if (locale !== this.get()) { this._set({locale}) } // TODO ,rtl
 			if (!_invalidate) {
       	const cachedValue = icache.get('normalized');
       	if (!!cachedValue) { return cachedValue }
 			}
-			return icache.set('normalized', normalizeActivityPub(o, locale||userLocale))
+			return icache.set('normalized', normalizeActivityPub(o, locale))
 			/*
       // Cache miss from server (isStale):
       const promise = fetchExternalValue(value);
@@ -34,18 +47,7 @@ export const ActivityPubCachingMiddleware = factory(({ properties, middleware: {
   },
 	invalidate(o: ActivityPubObject, locale?: string) {
 		return this.normalized(o, locale, true)
-	},
-  getLocales() {
-    const o = icache.get('normalized') ? icache.get('normalized') : this.normalized(properties());
-    return !!o ? o.locales : []
-  },
-  getLocale() {
-    const o = icache.get('normalized') ? icache.get('normalized') : this.normalized(properties());
-    return !!o ? o.locale : []
-  },
-  setLocale(locale: string) {
-    return this.normalized(properties(), locale, true)
-  }
+	}
 }));
 
 export default ActivityPubCachingMiddleware;

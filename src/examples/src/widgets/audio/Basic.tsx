@@ -123,7 +123,6 @@ const exampleAudio: AudioProperties = {
   url: [ ogg, mp3 ],
   attachment: [ exampleImage ]
 };
-
 const factory = create();
 
 const vttEn = 'http://localhost:9999/assets/nihWikimedia_en.vtt';
