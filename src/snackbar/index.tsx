@@ -1,6 +1,6 @@
+import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import theme from '@dojo/framework/core/middleware/theme';
-import { create, tsx } from '@dojo/framework/core/vdom';
 import * as css from '../theme/default/snackbar.m.css';
 
 export interface SnackbarProperties {

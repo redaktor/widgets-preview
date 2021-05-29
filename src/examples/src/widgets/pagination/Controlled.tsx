@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import Pagination from '@dojo/widgets/pagination';
+import Pagination from '@redaktor/widgets/pagination';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import Slider from '@dojo/widgets/slider';
+import Slider from '@redaktor/widgets/slider';
 
 interface BasicCache {
 	currentPage: number;

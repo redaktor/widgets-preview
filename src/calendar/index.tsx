@@ -1,5 +1,9 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { DNode, RenderResult } from '@dojo/framework/core/interfaces';
+import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import focus from '@dojo/framework/core/middleware/focus';
+import i18n from '@dojo/framework/core/middleware/i18n';
+import theme from '../middleware/theme';
 import { formatAriaProperties, Keys } from '../common/util';
 import {
 	getWeekdays, getMonths, monthInMin, monthInMax, isOutOfDateRange, toDate
@@ -12,11 +16,6 @@ import * as css from '../theme/material/calendar.m.css';
 import * as baseCss from '../common/styles/base.m.css';
 import * as iconCss from '../theme/material/icon.m.css';
 import * as colors from '../theme/material/_color.m.css';
-
-import theme from '../middleware/theme';
-import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import focus from '@dojo/framework/core/middleware/focus';
-import i18n from '@dojo/framework/core/middleware/i18n';
 
 export type CalendarMessages = {
 	chooseMonth: string;
@@ -585,7 +584,7 @@ export const Calendar = factory(function Calendar({
 
 	function renderPagingButtonContent(type: Paging, labels: CalendarMessages) {
 		const { classes, variant } = properties();
-		const iconType = type === Paging.next ? 'rightIcon' : 'leftIcon';
+		const iconType = type === Paging.next ? 'right' : 'left';
 		const labelText = type === Paging.next ? labels.nextMonth : labels.previousMonth;
 
 		return [

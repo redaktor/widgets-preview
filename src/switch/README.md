@@ -1,6 +1,6 @@
-# @dojo/widgets/switch widget
+# @redaktor/widgets/switch widget
 
-Dojo's `Switch` widget provides an on/off toggle that uses the native `<input type="checkbox">` as a base.
+redaktor's `Switch` widget provides an on/off toggle that uses the native `<input type="checkbox">` as a base.
 
 
 ## Features

@@ -1,7 +1,7 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 
-import Grid from '@dojo/widgets/grid';
-import { FetcherOptions } from '@dojo/widgets/grid/interfaces';
+import Grid from '@redaktor/widgets/grid';
+import { FetcherOptions } from '@redaktor/widgets/grid/interfaces';
 
 const columnConfig = [
 	{

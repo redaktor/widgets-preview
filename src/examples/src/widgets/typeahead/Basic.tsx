@@ -1,6 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
-import Typeahead from '@dojo/widgets/typeahead';
+import Typeahead from '@redaktor/widgets/typeahead';
 import Example from '../../Example';
 import {
 	createResourceTemplate,
@@ -8,9 +8,9 @@ import {
 	defaultFilter
 } from '@dojo/framework/core/middleware/resources';
 import { largeListOptions } from '../../data';
-import { ListOption } from '@dojo/widgets/list';
-import { Addon } from '@dojo/widgets/text-input';
-import Icon from '@dojo/widgets/icon';
+import { ListOption } from '@redaktor/widgets/list';
+import { Addon } from '@redaktor/widgets/inputText';
+import Icon from '@redaktor/widgets/icon';
 import timezones from '../../../../common/data/timezones';
 import * as css from './list.m.css';
 
@@ -48,7 +48,7 @@ export default factory(function Basic({ middleware: { icache, resource } }) {
 						icache.set('value', value);
 					}}
 					classes={{
-						'@dojo/widgets/typeahead': {
+						'@redaktor/widgets/typeahead': {
 							menu: [css.menu]
 						}
 					}}

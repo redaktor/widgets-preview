@@ -1,5 +1,5 @@
-import Header from '@dojo/widgets/header';
-import Icon from '@dojo/widgets/icon';
+import Header from '@redaktor/widgets/header';
+import Icon from '@redaktor/widgets/icon';
 import { Link } from '@dojo/framework/routing/Link';
 import { create, tsx } from '@dojo/framework/core/vdom';
 

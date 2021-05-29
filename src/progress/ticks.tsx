@@ -1,5 +1,5 @@
-import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import dimensions from '@dojo/framework/core/middleware/dimensions';
 import { theme, ThemeProperties } from '../middleware/theme';
 import * as css from '../theme/material/progress.m.css';

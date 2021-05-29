@@ -1,6 +1,6 @@
-# @dojo/widgets/header
+# @redaktor/widgets/header
 
-Dojo's `Header` widget provides an application toolbar.
+redaktor's `Header` widget provides an application toolbar.
 
 ### Features
 

@@ -1,12 +1,12 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { uuid } from '@dojo/framework/core/util';
-import { clampStrings } from '../common/activityPubUtil';
-import { ActivityPubObjectNormalized } from '../common/interfaces';
-import theme from '../middleware/theme';
-import breakpoints from '../middleware/breakpoint';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
+import theme from '../middleware/theme';
+import breakpoints from '../middleware/breakpoint';
+import { clampStrings } from '../common/activityPubUtil';
+import { ActivityPubObjectNormalized } from '../common/interfaces';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Paginated from '../paginated';
 import Collapsed from '../collapsed';
@@ -84,7 +84,7 @@ export const Image = factory(function Image({
 			<Name name={APo.name} isRow={isRow} size={!vp || vp === 'micro' ? 'xs' : (vp as any)} />
 	</div>);
 	const summaryNode = (APo.summary && <Paginated key="summary" property="summary" classes={{
-			'@dojo/widgets/paginated': { root: [themedCss.summaryPaginated] }
+			'@redaktor/widgets/paginated': { root: [themedCss.summaryPaginated] }
 		}}
 	>
 		{clampStrings(APo.summary, 500).map((_summary, i) =>
@@ -133,7 +133,7 @@ export const Image = factory(function Image({
 				{summaryNode}
 				{
 					APo.content && <Collapsed responsive={!isRow} lines={isRow ? 2 : 12} classes={{
-							'@dojo/widgets/collapsed': { root: [themedCss.contentCollapsed] }
+							'@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] }
 						}}>
 						{APo.content.map((_content, i) => <virtual>
 							<MD classes={[themedCss.content, typoClass]} key={`content${i}`} content={_content} /><hr />

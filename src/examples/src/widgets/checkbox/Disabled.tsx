@@ -1,6 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import Example from '../../Example';
-import Checkbox from '@dojo/widgets/checkbox';
+import Checkbox from '@redaktor/widgets/checkbox';
 
 const factory = create();
 

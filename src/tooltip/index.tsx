@@ -1,10 +1,10 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import theme from '../middleware/theme';
 
 import * as fixedCss from './styles/tooltip.m.css';
 import * as css from '../theme/default/tooltip.m.css';
 import { formatAriaProperties } from '../common/util';
-import { RenderResult } from '@dojo/framework/core/interfaces';
 
 export interface TooltipProperties {
 	/** Custom aria attributes */

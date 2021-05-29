@@ -4,7 +4,7 @@ import {
 	createResourceMiddleware
 } from '@dojo/framework/core/middleware/resources';
 import Example from '../../Example';
-import Tree, { TreeNodeOption } from '@dojo/widgets/tree';
+import Tree, { TreeNodeOption } from '@redaktor/widgets/tree';
 
 const resource = createResourceMiddleware();
 const factory = create({ resource });

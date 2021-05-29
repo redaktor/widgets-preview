@@ -1,5 +1,5 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import Icon from '@dojo/widgets/icon';
+import Icon from '@redaktor/widgets/icon';
 
 const factory = create();
 

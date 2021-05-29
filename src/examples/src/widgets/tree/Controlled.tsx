@@ -4,7 +4,7 @@ import {
 	createResourceMiddleware
 } from '@dojo/framework/core/middleware/resources';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import Tree, { TreeNodeOption } from '@dojo/widgets/tree';
+import Tree, { TreeNodeOption } from '@redaktor/widgets/tree';
 import Example from '../../Example';
 
 interface ControlledCache {

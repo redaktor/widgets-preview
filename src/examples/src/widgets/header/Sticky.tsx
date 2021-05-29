@@ -1,4 +1,4 @@
-import Header from '@dojo/widgets/header';
+import Header from '@redaktor/widgets/header';
 import { Link } from '@dojo/framework/routing/Link';
 import { create, tsx } from '@dojo/framework/core/vdom';
 

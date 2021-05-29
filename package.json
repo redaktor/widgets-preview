@@ -1,11 +1,11 @@
 {
-  "name": "@dojo/widgets",
-  "version": "8.0.0-pre",
-  "description": "Dojo Widgets",
+  "name": "@redaktor/widgets",
+  "version": "0.0.5-pre",
+  "description": "Redaktor Widgets",
   "private": true,
-  "homepage": "https://dojo.io",
+  "homepage": "https://redaktor.me",
   "bugs": {
-    "url": "https://github.com/dojo/widgets/issues"
+    "url": "https://github.com/redaktor/widgets-preview/issues"
   },
   "license": "BSD-3-Clause",
   "main": "src/main.tsx",
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dojo/widgets.git"
+    "url": "https://github.com/redaktor/widgets-preview.git"
   },
   "scripts": {
     "dev": "dojo build app -m dev -w -s",

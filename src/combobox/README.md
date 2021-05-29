@@ -1,6 +1,6 @@
-# @dojo/widgets/select
+# @redaktor/widgets/select
 
-Dojo's `Select` provides a dropdown menu form control using either the native `<select>` element or a fully custom component. The custom version uses the `Listbox` widget as its list of options.
+redaktor's `Combobox` provides a dropdown menu form control using either the native `<select>` element or a fully custom component. The custom version uses the `Listbox` widget as its list of options.
 
 ## Features
 

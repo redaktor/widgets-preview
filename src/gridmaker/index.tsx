@@ -4,7 +4,7 @@ import { groupedUnits } from './util';
 import { GlobalEvent } from '../global-event/index';
 import { v, w, DNode, theme, customElement } from '../common/Widget';
 import { materialClass } from '../common/util';
-import TextInput from '../../widgets/text-input';
+import TextInput from '../inputText';
 import GridmakerBase, { GridmakerProperties } from './base';
 import Settings from './settings';
 import Edit from './edit';
@@ -66,7 +66,7 @@ export default class Gridmaker extends GridmakerBase<GridmakerProperties> {
       // Column and Row Units
       this.colRowUnits('col'),
       this.colRowUnits('row'),
-      
+
       // Grid Container
       v('div', { key: 'gridContainer', classes: [ css.gridContainer ] }, [
         v('section', {

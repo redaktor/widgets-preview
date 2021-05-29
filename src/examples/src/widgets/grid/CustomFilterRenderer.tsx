@@ -1,13 +1,13 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
-import Grid from '@dojo/widgets/grid';
-import { ColumnConfig, FetcherOptions } from '@dojo/widgets/grid/interfaces';
-import { createFetcherResult, sorter } from '@dojo/widgets/grid/utils';
+import Grid from '@redaktor/widgets/grid';
+import { ColumnConfig, FetcherOptions } from '@redaktor/widgets/grid/interfaces';
+import { createFetcherResult, sorter } from '@redaktor/widgets/grid/utils';
 
 import { createData } from './data';
 import * as css from './CustomFilterRenderer.m.css';
 
-import Button from '@dojo/widgets/button';
-import TextInput from '@dojo/widgets/text-input';
+import Button from '@redaktor/widgets/button';
+import TextInput from '@redaktor/widgets/inputText';
 
 const columnConfig: ColumnConfig[] = [
 	{
@@ -68,7 +68,7 @@ export default factory(function CustomFilterRenderer() {
 						return (
 							<div>
 								<Button
-									classes={{ '@dojo/widgets/button': { root: [css.filter] } }}
+									classes={{ '@redaktor/widgets/button': { root: [css.filter] } }}
 									pressed={filterValue === 'female'}
 									onClick={() => {
 										if (filterValue === 'female') {
@@ -81,7 +81,7 @@ export default factory(function CustomFilterRenderer() {
 									Female
 								</Button>
 								<Button
-									classes={{ '@dojo/widgets/button': { root: [css.filter] } }}
+									classes={{ '@redaktor/widgets/button': { root: [css.filter] } }}
 									pressed={filterValue === 'male'}
 									onClick={() => {
 										if (filterValue === 'male') {

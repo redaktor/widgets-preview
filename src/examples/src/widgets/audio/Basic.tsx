@@ -1,11 +1,11 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { ActivityPubLink } from '../../../../common/interfaces';
 import Example from '../../Example';
-import Audio, { AudioProperties } from '@dojo/widgets/audio';
-import Image, { ImageProperties } from '@dojo/widgets/image';
-import Img from '@dojo/widgets/image/image';
+import Audio, { AudioProperties } from '@redaktor/widgets/audio';
+import Image, { ImageProperties } from '@redaktor/widgets/image';
+import Img from '@redaktor/widgets/image/image';
 
-import Table from '@dojo/widgets/table';
+import Table from '@redaktor/widgets/table';
 /*
 kind
 How the text track is meant to be used. If omitted the default kind is subtitles.
@@ -38,7 +38,7 @@ src
 Address of the track (.vtt file)
 srclang
 
-import Map from '@dojo/widgets/map';
+import Map from '@redaktor/widgets/map';
 
 	<div
 		styles={{

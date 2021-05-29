@@ -4,7 +4,7 @@ import {
 	createResourceMiddleware
 } from '@dojo/framework/core/middleware/resources';
 import { create, tsx } from '@dojo/framework/core/vdom';
-import List, { ListOption } from '@dojo/widgets/list';
+import List, { ListOption } from '@redaktor/widgets/list';
 
 import Example from '../../Example';
 

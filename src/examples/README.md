@@ -1,7 +1,7 @@
 # @redaktor/widgets
 
-A suite of pre-built Dojo widgets, ready to use in your web application.
-These widgets are built using Dojo's widget authoring system [(@dojo/framework/core)](https://github.com/dojo/framework/blob/master/src/core/README.md).
+A suite of pre-built redaktor widgets, ready to use in your web application.
+These widgets are built using redaktor's widget authoring system [(@dojo/framework/core)](https://github.com/dojo/framework/blob/master/src/core/README.md).
 
 - [Usage](#usage)
 - [Features](#features)

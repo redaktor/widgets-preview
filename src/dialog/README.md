@@ -1,6 +1,6 @@
-# @dojo/widgets/dialog
+# @redaktor/widgets/dialog
 
-Dojo's `Dialog` component shows content inside a window over top the application content. It provides default styling for a titlebar, content area, underlay, and a close button.
+redaktor's `Dialog` component shows content inside a window over top the application content. It provides default styling for a titlebar, content area, underlay, and a close button.
 
 ## Features
 

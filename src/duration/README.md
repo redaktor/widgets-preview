@@ -1,3 +1,3 @@
-# @dojo/widgets/collapsed
+# @redaktor/widgets/collapsed
 
 ...

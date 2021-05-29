@@ -1,6 +1,6 @@
-# @dojo/widgets/form widget
+# @redaktor/widgets/form widget
 
-Dojo's `Form` widget provides an opinionated way to use a group of inputs in a form.
+redaktor's `Form` widget provides an opinionated way to use a group of inputs in a form.
 
 ## Features
 

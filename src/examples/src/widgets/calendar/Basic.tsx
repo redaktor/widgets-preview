@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import Example from '../../Example';
 import icache from '@dojo/framework/core/middleware/icache';
-import Calendar from '@dojo/widgets/calendar';
-import CalendarInput from '@dojo/widgets/calendarInput';
+import Calendar from '@redaktor/widgets/calendar';
+import CalendarInput from '@redaktor/widgets/calendarInput';
 
 const factory = create({ icache });
 

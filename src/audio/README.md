@@ -1,4 +1,4 @@
-# @dojo/widgets/audio
+# @redaktor/widgets/audio
 Dojo's `Audio` renders TODO.
 
 ## Features

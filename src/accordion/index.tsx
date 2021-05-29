@@ -2,11 +2,11 @@ import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { theme, ThemeProperties, Variants, formatAriaProperties } from '../middleware/theme';
-import TitlePane, { TitlePaneProperties, TitlePaneChildren } from '../title-pane';
+import TitlePane, { TitlePaneProperties, TitlePaneChildren } from '../paneTitle';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/accordion.m.css';
-import * as titlePaneCss from '../theme/material/title-pane.m.css';
+import * as titlePaneCss from '../theme/material/paneTitle.m.css';
 
 /* TODO
 What icon will you choose to indicate expansion?

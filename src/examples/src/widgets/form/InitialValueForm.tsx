@@ -1,9 +1,9 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 
-import TextInput from '@dojo/widgets/text-input';
-import Form from '@dojo/widgets/form';
-import { FormMiddleware } from '@dojo/widgets/form/middleware';
+import TextInput from '@redaktor/widgets/inputText';
+import Form from '@redaktor/widgets/form';
+import { FormMiddleware } from '@redaktor/widgets/form/middleware';
 
 const icache = createICacheMiddleware<{
 	basic?: Partial<Fields>;

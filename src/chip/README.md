@@ -1,6 +1,6 @@
-# @dojo/widgets/chip
+# @redaktor/widgets/chip
 
-Dojo's `Chip` widget allows information and user inputs to be displayed as a single compact entity. Supported interactions include removing a chip or clicking them to trigger an action.
+redaktor's `Chip` widget allows information and user inputs to be displayed as a single compact entity. Supported interactions include removing a chip or clicking them to trigger an action.
 
 ## Features
 

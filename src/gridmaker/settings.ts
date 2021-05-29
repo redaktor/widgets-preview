@@ -1,9 +1,9 @@
 import { InputEvent, GridAxis, Direction, SettingsChange } from './interfaces';
 import { createArr } from './util';
 import { v, w, DNode, ThemedBase, theme } from '../common/Widget';
-import TextInput from '../../widgets/text-input';
+import TextInput from '../inputText';
 import * as css from './styles/gridmaker.m.css';
-import * as uiCss from '../themes/redaktor-default/_ui.m.css';
+import * as uiCss from '../theme/material/_ui.m.css';
 
 export interface GridmakerSettingsProperties {
   label: string;

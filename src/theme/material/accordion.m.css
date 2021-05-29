@@ -17,7 +17,7 @@
 }
 
 .paneRoot {
-	composes: root from './title-pane.m.css';
+	composes: root from './paneTitle.m.css';
 	margin-bottom: 1px;
 	transition: margin var(--ui-easing, ease-in-out) var(--ui-dpd-0, 0.25s);
 }
@@ -34,7 +34,7 @@
 }
 
 .paneOpen {
-	composes: open from './title-pane.m.css';
+	composes: open from './paneTitle.m.css';
 	margin: 16px 0;
 }
 

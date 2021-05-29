@@ -1,3 +1,3 @@
-# @dojo/widgets/pagination
+# @redaktor/widgets/pagination
 
-Dojo's `Pagination` widget provides a fully-customizable pagination component suitable for every situation.
+redaktor's `Pagination` widget provides a fully-customizable pagination component suitable for every situation.

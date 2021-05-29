@@ -1,8 +1,8 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 
-import Grid from '@dojo/widgets/grid';
-import { ColumnConfig } from '@dojo/widgets/grid/interfaces';
-import { createFetcher, createUpdater } from '@dojo/widgets/grid/utils';
+import Grid from '@redaktor/widgets/grid';
+import { ColumnConfig } from '@redaktor/widgets/grid/interfaces';
+import { createFetcher, createUpdater } from '@redaktor/widgets/grid/utils';
 
 import { createData } from './data';
 

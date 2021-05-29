@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
-import Tooltip from '@dojo/widgets/tooltip';
-import TextInput from '@dojo/widgets/text-input';
+import Tooltip from '@redaktor/widgets/tooltip';
+import TextInput from '@redaktor/widgets/inputText';
 
 const factory = create({ icache });
 

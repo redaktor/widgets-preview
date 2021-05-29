@@ -1,6 +1,6 @@
-# @dojo/widgets/snackbar
+# @redaktor/widgets/snackbar
 
-Dojo's `Snackbar` widget creates a brief display message that is positioned at the bottom of the screen.
+redaktor's `Snackbar` widget creates a brief display message that is positioned at the bottom of the screen.
 
 ## Features
 

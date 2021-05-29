@@ -1,5 +1,5 @@
-import Accordion, { Pane } from '@dojo/widgets/accordion';
 import { create, tsx } from '@dojo/framework/core/vdom';
+import Accordion, { Pane } from '@redaktor/widgets/accordion';
 
 const factory = create();
 

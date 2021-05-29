@@ -1,5 +1,5 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import ThreeColumnLayout from '@dojo/widgets/three-column-layout';
+import ThreeColumnLayout from '@redaktor/widgets/three-column-layout';
 
 const factory = create();
 

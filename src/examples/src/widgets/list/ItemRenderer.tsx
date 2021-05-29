@@ -1,5 +1,5 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import List, { ListItem } from '@dojo/widgets/list';
+import List, { ListItem } from '@redaktor/widgets/list';
 import states from './states';
 import icache from '@dojo/framework/core/middleware/icache';
 import Example from '../../Example';

@@ -1,7 +1,7 @@
-import { formatAriaProperties, Variants, PointerDevices } from '../common/util';
+import { create, tsx } from '@dojo/framework/core/vdom';
 import { DimensionResults } from '@dojo/framework/core/meta/Dimensions';
 import { dimensions } from '@dojo/framework/core/middleware/dimensions';
-import { create, tsx } from '@dojo/framework/core/vdom';
+import { formatAriaProperties, Variants, PointerDevices } from '../common/util';
 import { theme, ThemeProperties } from '../middleware/theme';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';

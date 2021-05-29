@@ -1,6 +1,6 @@
-# @dojo/widgets/list
+# @redaktor/widgets/list
 
-Dojo's `List` provides a base widget that can be used as a List or an options List within a `Select`, `Typeahead`, etc.
+redaktor's `List` provides a base widget that can be used as a List or an options List within a `Select`, `Typeahead`, etc.
 
 ## Features
 

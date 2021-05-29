@@ -1,5 +1,5 @@
 import { createResourceTemplate, defaultFilter } from '@dojo/framework/core/middleware/resources';
-import { ListOption } from '@dojo/widgets/list';
+import { ListOption } from '@redaktor/widgets/list';
 import { largeData as data, Data, largeListOptions as listOptions } from './data';
 
 export const customDataTemplate = createResourceTemplate<Data>({

@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
 import Example from '../../Example';
-import Checkbox from '@dojo/widgets/checkbox';
-import { ExampleProperties } from '@dojo/widgets/common/util';
+import Checkbox from '@redaktor/widgets/checkbox';
+import { ExampleProperties } from '@redaktor/widgets/common/util';
 
 const factory = create({ icache }).properties<ExampleProperties>();
 

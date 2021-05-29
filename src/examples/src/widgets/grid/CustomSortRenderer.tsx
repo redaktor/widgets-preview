@@ -1,8 +1,8 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 
-import Grid from '@dojo/widgets/grid';
-import { ColumnConfig } from '@dojo/widgets/grid/interfaces';
-import { createFetcher } from '@dojo/widgets/grid/utils';
+import Grid from '@redaktor/widgets/grid';
+import { ColumnConfig } from '@redaktor/widgets/grid/interfaces';
+import { createFetcher } from '@redaktor/widgets/grid/utils';
 
 import { createData } from './data';
 import * as css from './CustomSortRenderer.m.css';

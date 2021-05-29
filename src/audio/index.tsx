@@ -1,11 +1,12 @@
 import { tsx, create, node } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { uuid } from '@dojo/framework/core/util';
+import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { clampStrings } from '../common/activityPubUtil';
-import { ActivityPubObject, Labeled } from '../common/interfaces';
+import { ActivityPubObject } from '../common/interfaces';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
-import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import activityPub from '../middleware/activityPub';
 /*
 import {
 	createResourceTemplate,
@@ -15,7 +16,6 @@ import {
 import focus from '@dojo/framework/core/middleware/focus';
 */
 import i18n from '@dojo/framework/core/middleware/i18n';
-import { normalizeActivityPub } from '../common/activityPubUtil';
 import { Row, Cell } from '../table';
 import { parseDuration, formatTime } from '../duration';
 import Paginated from '../paginated';
@@ -24,7 +24,7 @@ import Srcset from '../srcset';
 import Name from '../name';
 import AttributedTo from '../attributedTo';
 import AudioAvatar from '../audioAvatar';
-import RadioGroup from '../radio-group';
+import DynamicSelect from '../selectDynamic';
 import Chip from '../chip';
 import Button from '../button';
 import Slider from '../slider';
@@ -39,39 +39,6 @@ import * as css from '../theme/material/audio.m.css';
 /* TODO exists in this module: */
 import MD from '../MD/';
 
-import DynamicSelect from '../native-select/dynamic';
-/*
-{
-  "@context": "https://www.w3.org/ns/activitystreams",
-  "type": "Audio",
-  "name": "Interview With A Famous Technologist",
-  "url": {
-    "type": "Link",
-    "href": "http://example.org/podcast.mp3",
-    "mediaType": "audio/mp3"
-  },
-
-  "startTime": "2014-12-31T23:00:00-08:00",
-  "endTime": "2015-01-01T06:00:00-08:00"
-
-  "duration": "PT2H"
-  // icon, image
-  "attachment": [
-    {
-      "type": "Image",
-      "content": "This is what he looks like.",
-      "url": "http://example.org/cat.jpeg"
-    }
-  ]
-}
-
-context
-Identifies the context within which the object exists or an activity was performed.
-The notion of "context" used is intentionally vague. The intended function is to serve
-as a means of grouping objects and activities that share a common originating context
-or purpose. An example could be all activities relating to a common project or event.
-*/
-
 /* TODO
 
 - VTT flag for Meta
@@ -81,6 +48,15 @@ state store:
 store the last used
 - volume
 - visibility of captions, subtitles, descriptions
+
+
+canPlay + error message / disabled states
+---
+slider:
+aria-valuetext="seek audio bar"
+aria-valuemax="100"
+aria-valuemin="0"
+aria-valuenow={Math.round(percentage)}
 */
 
 export interface AudioProperties extends ActivityPubObject {
@@ -115,7 +91,7 @@ export interface AudioProperties extends ActivityPubObject {
 	hasAttachment?: boolean;
 }
 
-interface TextTrack {
+export interface TextTrack {
 	index: number;
 	language: string;
 	label: string;
@@ -131,8 +107,6 @@ export interface VisibleTracks {
 	captions: string; subtitles: string; descriptions: string; chapters: string; metadata: string;
 };
 export interface AudioIcache {
-	locale: string;
-	locales: Labeled[];
 	l: number;
 	id: string;
 	width: number;
@@ -172,42 +146,20 @@ if (!(window as any).AudioContext) {
 }
 
 const icache = createICacheMiddleware<AudioIcache>();
-/*
-const resource = createResourceMiddleware();
-export const listOptionTemplate = createResourceTemplate<ListOption>({
-	idKey: 'value',
-	read: async (req, { put }) => {
-		const { offset, size, query } = req;
-		const filteredData = timezones.map((s: string) =>
-			({label: s, value: s})).filter((item) => defaultFilter(query, item));
-		put({ data: filteredData.slice(offset, offset + size), total: filteredData.length }, req);
-	}
-});
-*/
 
-
-/* TODO
-canPlay + error message / disabled states
----
-slider:
-aria-valuetext="seek audio bar"
-aria-valuemax="100"
-aria-valuemin="0"
-aria-valuenow={Math.round(percentage)}
-*/
 const factory = create({
 	icache,
 	node,
 	i18n,
 	theme,
-	breakpoints
-	/*, resource */
+	breakpoints,
+	activityPub
 })
 	.properties<AudioProperties>()
 	.children<AudioChildren | RenderResult | undefined>();
 
 export const Audio = factory(function Audio({
-	middleware: { icache, node, i18n, theme, breakpoints /*, resource */ },
+	middleware: { icache, node, i18n, theme, breakpoints, activityPub /*, resource */ },
 	properties,
 	children
 }) {
@@ -219,14 +171,13 @@ export const Audio = factory(function Audio({
 		baselined = true, hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
 		autoPlay = false, muted = false, view = 'column',
 		crossorigin = 'anonymous', volume = 1, speed = 1, ..._rest
-	} = normalizeActivityPub(properties(), get('locale'));
+	} = activityPub.normalized(properties());
 
 	const APo = _rest;
 	if (APo.type.indexOf('Audio') < 0 && (!APo.mediaType || APo.mediaType.toLowerCase().indexOf('audio') !== 0)) {
 		return ''
 	}
 
-	getOrSet('locales', APo.locales, false);
 	getOrSet('duration', parseDuration(APo.duration||''), false);
 	getOrSet('sampleRate', 44100);
 	const [duration, sampleRate, numberOfChannels] = [get('duration'), get('sampleRate'), get('numberOfChannels')];
@@ -500,7 +451,7 @@ export const Audio = factory(function Audio({
 		*/
 	}
 
-	const [locale, locales] = [get('locale'), get('locales')];
+	const [locale, locales] = [activityPub.getLocale(), activityPub.getLocales()];
 	return <div
 		key="root"
 		classes={[
@@ -592,7 +543,7 @@ export const Audio = factory(function Audio({
 					setTime(n);
 				}}
 				classes={{
-					'@dojo/widgets/progress': { root: [themedCss.progress] }
+					'@redaktor/widgets/progress': { root: [themedCss.progress] }
 				}}
 			/>
 			<div classes={themedCss.captionRow}>
@@ -681,10 +632,9 @@ export const Audio = factory(function Audio({
 					name="locales"
 					options={locales}
 					onValue={(value) => {
-						set('locale', value);
+						activityPub.setLocale(value);
 					}}
 				/>
-				<pre classes={themedCss.metaLocale}>{`${getOrSet('locale', APo.locale)}`}</pre>
 			</details>}
 
 		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
@@ -696,7 +646,7 @@ export const Audio = factory(function Audio({
 			{!!isRow && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
 			{
 				APo.summary && <Paginated key="summary" property="summary" classes={{
-						'@dojo/widgets/paginated': { root: [themedCss.summaryPaginated] }
+						'@redaktor/widgets/paginated': { root: [themedCss.summaryPaginated] }
 					}}
 				>
 					{clampStrings(APo.summary, 500).map((_summary, i) =>
@@ -706,7 +656,7 @@ export const Audio = factory(function Audio({
 			}
 			{
 				APo.content && <Collapsed responsive={!isRow} lines={isRow ? (get('isFresh') ? 2 : 1) : 12} classes={{
-						'@dojo/widgets/collapsed': { root: [themedCss.contentCollapsed] }
+						'@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] }
 					}}>
 					{APo.content.map((_content, i) => <virtual>
 						<MD classes={[themedCss.content, typoClass]} key={`content${i}`} content={_content} /><hr />

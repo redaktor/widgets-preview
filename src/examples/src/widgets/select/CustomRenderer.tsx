@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import Select from '@dojo/widgets/select';
+import Select from '@redaktor/widgets/select';
 import icache from '@dojo/framework/core/middleware/icache';
-import { ListItem } from '@dojo/widgets/list';
+import { ListItem } from '@redaktor/widgets/list';
 import Example from '../../Example';
 import {
 	createResourceTemplate,

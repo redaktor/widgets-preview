@@ -1,12 +1,12 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
-import {
-	ActivityPubActors, ActivityPubActivities, ActivityPubObjects, ActivityPubLinks
-} from '../common/activityPub';
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import {
 	ActivityPubActivity, RedaktorActor, ActivityPubObject, LangMap
 } from '../common/interfaces';
+import {
+	ActivityPubActors, ActivityPubActivities, ActivityPubObjects, ActivityPubLinks
+} from '../common/activityPub';
 import { normalizeActivityPub } from '../common/activityPubUtil';
-import { RenderResult } from '@dojo/framework/core/interfaces';
 import { lowerCase } from '../framework/String/case';
 import { RGB, bestTextColor } from '../framework/color';
 import Profile from './profile';
@@ -359,7 +359,7 @@ console.log(name, s, c, cContent, objectRest);
 		{cssType === 'article' && summary && content && (
 			<Button
 				classes={{
-					'@dojo/widgets/button': { root: [themedCss.activityBtn] }
+					'@redaktor/widgets/button': { root: [themedCss.activityBtn] }
 				}}
 				size="xl"
 				spaced={false}

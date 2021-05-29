@@ -1,6 +1,6 @@
-# @dojo/widgets/progress
+# @redaktor/widgets/progress
 
-Dojo's `Progress` widget provides a themeable progress bar with a customizable output display.
+redaktor's `Progress` widget provides a themeable progress bar with a customizable output display.
 
 ## Features
 
@@ -13,4 +13,3 @@ Dojo's `Progress` widget provides a themeable progress bar with a customizable o
 ### Accessibility Features
 
 Appropriate aria attributes added to the progress bar for `valuenow`, `valuemax`, `valuemin` and `valuetext`.
-

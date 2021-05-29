@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import Grid from '@dojo/widgets/grid';
+import Grid from '@redaktor/widgets/grid';
 import icache from '@dojo/framework/core/middleware/icache';
-import { FetcherOptions, FetcherResult, ColumnConfig } from '@dojo/widgets/grid/interfaces';
-import TextInput from '@dojo/widgets/text-input';
+import { FetcherOptions, FetcherResult, ColumnConfig } from '@redaktor/widgets/grid/interfaces';
+import TextInput from '@redaktor/widgets/inputText';
 
 /**
  * Custom fetcher that builds the API url based on the page/pageSize and filters.

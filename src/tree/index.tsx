@@ -2,17 +2,16 @@ import { create, tsx, diffProperty } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
-import theme from '../middleware/theme';
 import focus from '@dojo/framework/core/middleware/focus';
 import { flat } from '@dojo/framework/shim/array';
-
+import theme from '../middleware/theme';
 import { Keys } from '../common/util';
 import Icon from '../icon';
 import Checkbox from '../checkbox';
-import { ListItem } from '../list';
+import { ListItem } from '../list/Listitem';
 
-import * as css from '../theme/default/tree.m.css';
-import LoadingIndicator from '../loading-indicator';
+import * as css from '../theme/material/tree.m.css';
+import LoadingIndicator from '../loadingIndicator';
 
 export interface TreeNodeOption {
 	id: string;
@@ -384,7 +383,7 @@ export const TreeNode = treeNodeFactory(function TreeNode({
 					{isExpandable && (
 						<div classes={themedCss.expander}>
 							<Icon
-								type={expanded ? 'downIcon' : 'rightIcon'}
+								type={expanded ? 'down' : 'right'}
 								theme={themeProp}
 								classes={classes}
 								variant={variant}

@@ -1,10 +1,10 @@
 import { tsx, create, node } from '@dojo/framework/core/vdom';
 import has from '@dojo/framework/core/has';
-import { ActivityPubObject } from '../common/interfaces';
 import { uuid } from '@dojo/framework/core/util';
+import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import theme, { ViewportProperties} from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
-import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import { ActivityPubObject } from '../common/interfaces';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Icon from '../icon';
 import Image from '../image';
@@ -50,6 +50,7 @@ export const Images = factory(function Images({
 		image = [], isRow = false, size = 'm', max = 1000, itemsPerPage = 8, baselined = true,
 		onLoad, onClick
 	} = normalizeActivityPub(properties());
+
 	if (!image.length) { return '' }
 	const maxImage = image.slice(0,max+1);
 	const mLength = maxImage.length;
@@ -155,6 +156,7 @@ export const Images = factory(function Images({
 						</label>}
 					</virtual>
 				}
+				{i !== get('currentPage') && <div}
 				{(!has('host-node') && i !== get('currentPage') && !wasLoaded) ? '' :
 					<div key={`page${i}`} classes={[themedCss.page]} style={`--count: ${itemsPerPage};`}>
 						{imagePage.map((img: any, j: number) => {

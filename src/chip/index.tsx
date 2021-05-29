@@ -99,7 +99,7 @@ export default factory(function Chip({ properties, children, middleware: { theme
 					{closeIcon || (
 						<Icon
 							type="close"
-							classes={{ '@dojo/widgets/icon': { icon: [themedCss.icon] } }}
+							classes={{ '@redaktor/widgets/icon': { icon: [themedCss.icon] } }}
 						/>
 					)}
 				</span>

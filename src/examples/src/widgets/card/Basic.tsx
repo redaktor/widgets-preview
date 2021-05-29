@@ -1,12 +1,12 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import Example from '../../Example';
-import Details from '@dojo/widgets/details';
-import Avatar from '@dojo/widgets/avatar';
-import Icon from '@dojo/widgets/icon';
-import Button from '@dojo/widgets/button';
-import Card, { CardProperties } from '@dojo/widgets/card';
+import Details from '@redaktor/widgets/details';
+import Avatar from '@redaktor/widgets/avatar';
+import Icon from '@redaktor/widgets/icon';
+import Button from '@redaktor/widgets/button';
+import Card, { CardProperties } from '@redaktor/widgets/card';
 /*
-import Map from '@dojo/widgets/map';
+import Map from '@redaktor/widgets/map';
 
 	<div
 		styles={{

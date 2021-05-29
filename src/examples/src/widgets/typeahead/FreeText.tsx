@@ -1,12 +1,12 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
-import Typeahead from '@dojo/widgets/typeahead';
+import Typeahead from '@redaktor/widgets/typeahead';
 import Example from '../../Example';
 import {
 	createMemoryResourceTemplate,
 	createResourceMiddleware
 } from '@dojo/framework/core/middleware/resources';
-import { ListOption } from '@dojo/widgets/list';
+import { ListOption } from '@redaktor/widgets/list';
 
 const resource = createResourceMiddleware();
 const factory = create({ icache, resource });

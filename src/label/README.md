@@ -1,11 +1,11 @@
-# @dojo/widgets/label
+# @redaktor/widgets/label
 
-Dojo's `Label` widget creates a `<label>` element that wraps its children. It is included by default in all form input widgets (including `ComboBox` and `TimePicker`).
+redaktor's `Label` widget creates a `<label>` element that wraps its children. It is included by default in all form input widgets (including `ComboBox` and `TimePicker`).
 
 ## Features
 
 - The label may be visually hidden while remaining accessible to screen readers
-- All form controls in `@dojo/widgets` make use of the label and share the same `properties.label` API
+- All form controls in `@redaktor/widgets` make use of the label and share the same `properties.label` API
 
 ### Accessibility Features
 

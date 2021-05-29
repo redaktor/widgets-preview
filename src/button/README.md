@@ -1,6 +1,6 @@
-# @dojo/widgets/button
+# @redaktor/widgets/button
 
-Dojo's `Button` widget creates a `<button>` element with support `pressed` and `disabled` states.
+redaktor's `Button` widget creates a `<button>` element with support `pressed` and `disabled` states.
 
 ## Features
 

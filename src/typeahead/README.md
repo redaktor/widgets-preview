@@ -1,6 +1,6 @@
-# @dojo/widgets/typeahead
+# @redaktor/widgets/typeahead
 
-Dojo's `Typeahead` provides a form input with a filterable list of options. As the user types, the options are filtered and presented to the user.
+redaktor's `Typeahead` provides a form input with a filterable list of options. As the user types, the options are filtered and presented to the user.
 
 ## Features
 

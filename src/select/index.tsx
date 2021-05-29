@@ -1,12 +1,13 @@
+import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { focus } from '@dojo/framework/core/middleware/focus';
 import { i18n } from '@dojo/framework/core/middleware/i18n';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
 import { uuid } from '@dojo/framework/core/util';
-import { create, tsx } from '@dojo/framework/core/vdom';
+import { find } from '@dojo/framework/shim/array';
 import { Keys } from '../common/util';
-import HelperText from '../helper-text';
+import HelperText from '../helperText';
 import Icon from '../icon';
 import Label from '../label';
 import {
@@ -20,14 +21,14 @@ import {
 } from '../list/Listitem';
 import theme from '../middleware/theme';
 import { PopupPosition } from '../popup';
-import TriggerPopup from '../trigger-popup';
+import TriggerPopup from '../triggerPopup';
 import * as listCss from '../theme/material/list.m.css';
 import * as labelCss from '../theme/material/label.m.css';
 import * as iconCss from '../theme/material/icon.m.css';
 import * as css from '../theme/material/select.m.css';
 import bundle from './nls/Select';
-import LoadingIndicator from '../loading-indicator';
-import { find } from '@dojo/framework/shim/array';
+import LoadingIndicator from '../loadingIndicator';
+
 
 export interface SelectProperties {
 	/** Callback called when user selects a value */

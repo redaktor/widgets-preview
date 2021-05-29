@@ -1,6 +1,6 @@
-# @dojo/widgets/tooltip
+# @redaktor/widgets/tooltip
 
-Dojo's `Tooltip` component can be used to show or hide content around a child component based on specific events.
+redaktor's `Tooltip` component can be used to show or hide content around a child component based on specific events.
 
 ## Features
 

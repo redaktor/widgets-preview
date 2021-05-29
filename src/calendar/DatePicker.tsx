@@ -1,9 +1,9 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import theme from '../middleware/theme';
 import icache from '@dojo/framework/core/middleware/icache';
 import focus from '@dojo/framework/core/middleware/focus';
 import i18n from '@dojo/framework/core/middleware/i18n';
+import theme from '../middleware/theme';
 import { Keys } from '../common/util';
 import { monthInMin, monthInMax } from './date-utils';
 import Icon from '../icon/index';
@@ -285,7 +285,7 @@ const DatePicker = create({ theme, focus, icache, i18n }).properties<DatePickerP
 
 		function renderPagingButtonContent(type: Paging) {
 			const { classes, variant } = properties();
-			const iconType = type === Paging.next ? 'rightIcon' : 'leftIcon';
+			const iconType = type === Paging.next ? 'right' : 'left';
 			const labelText = type === Paging.next ? labels.nextYears : labels.previousYears;
 
 			return [

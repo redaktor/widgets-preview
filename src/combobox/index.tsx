@@ -5,7 +5,7 @@ import {
 	/* TODO KeyEventProperties, */ CustomAriaProperties
 } from '../common/interfaces';
 import { keyName } from '../commonOld/util';
-import TextInput, { TextInputProperties } from '../text-input';
+import TextInput, { TextInputProperties } from '../inputText';
 import Listbox, { ListboxProperties, Operation } from '../listbox';
 
 import { I18nMixin } from '@dojo/framework/core/mixins/I18n';
@@ -19,7 +19,7 @@ import { createResourceMiddleware } from '@dojo/framework/core/middleware/resour
 /*import { createDataMiddleware } from '@dojo/framework/core/middleware/data';*/
 import { uuid } from '@dojo/framework/core/util';
 import { Keys } from '../common/util';
-import HelperText from '../helper-text';
+import HelperText from '../helperText';
 import Icon from '../icon';
 import Label from '../label';
 import {
@@ -31,7 +31,7 @@ import {
 import theme from '../middleware/theme';
 /*
 import { PopupPosition } from '../popup';
-import TriggerPopup from '../trigger-popup';
+import TriggerPopup from '../triggerPopup';
 */
 import * as listCss from '../theme/material/listbox.m.css';
 import * as comboCss from '../theme/material/combobox.m.css';
@@ -40,7 +40,7 @@ import * as labelCss from '../theme/default/label.m.css';
 import * as iconCss from '../theme/default/icon.m.css';
 import bundle from './combobox.nls';
 // import { find } from '@dojo/framework/shim/array';
-import LoadingIndicator from '../loading-indicator';
+import LoadingIndicator from '../loadingIndicator';
 import Search, { SearchResult } from '../framework/String/search/';
 
 

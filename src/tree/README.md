@@ -1,6 +1,6 @@
-# @dojo/widgets/tree
+# @redaktor/widgets/tree
 
-Dojo's `Tree` widget provides fundamental support for rendering a list of heirarchical nodes - such as a file system or a table of contents - with custom node rendering support.
+redaktor's `Tree` widget provides fundamental support for rendering a list of heirarchical nodes - such as a file system or a table of contents - with custom node rendering support.
 
 ## Features
 

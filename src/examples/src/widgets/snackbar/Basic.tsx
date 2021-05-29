@@ -1,5 +1,5 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import Snackbar from '@dojo/widgets/snackbar';
+import Snackbar from '@redaktor/widgets/snackbar';
 
 const factory = create();
 

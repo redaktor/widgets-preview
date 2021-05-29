@@ -6,7 +6,7 @@ import { v, w, DNode, theme, customElement } from '../common/Widget';
 import { materialClass } from '../common/util';
 import Container from '../container/index';
 import Control from '../container/control';
-import TextInput from '../text-input';
+import TextInput from '../inputText';
 import GridmakerBase, { GridmakerProperties } from './base';
 import Settings from './settings';
 import Edit from './edit';

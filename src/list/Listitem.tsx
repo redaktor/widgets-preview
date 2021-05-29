@@ -182,8 +182,8 @@ export const ListItem = listItemFactory(function ListItem({
 			{children()}
 			{draggable && (
 				<Icon
-					type="barsIcon"
-					classes={{ '@dojo/widgets/icon': { icon: [themedCss.dragIcon] } }}
+					type="bars"
+					classes={{ '@redaktor/widgets/icon': { icon: [themedCss.dragIcon] } }}
 					theme={themeProp}
 					variant={variant}
 				/>

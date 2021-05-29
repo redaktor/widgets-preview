@@ -1,7 +1,7 @@
 import icache from '@dojo/framework/core/middleware/icache';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import Example from '../../Example';
-import Slider from '@dojo/widgets/slider';
+import Slider from '@redaktor/widgets/slider';
 
 const factory = create({ icache });
 

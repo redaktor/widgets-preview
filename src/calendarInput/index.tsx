@@ -9,12 +9,12 @@ import {
 import focus from '@dojo/framework/core/middleware/focus';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import { parseDate, formatDateISO, formatDate } from './date-utils';
-import TextInput, { Addon } from '../text-input';
-import TimePicker from '../time-picker';
-import DateInput from '../date-input';
-import { ListOption } from '@dojo/widgets/list';
-import Icon from '@dojo/widgets/icon';
-import Typeahead from '@dojo/widgets/typeahead';
+import TextInput, { Addon } from '../inputText';
+import TimePicker from '../timePicker';
+import DateInput from '../inputDate';
+import { ListOption } from '../list';
+import Icon from '../icon';
+import Typeahead from '../typeahead';
 import bundle from './nls/CalendarInput';
 import * as ui from '../theme/material/_ui.m.css';
 import * as css from '../theme/material/calendar.m.css';
@@ -178,7 +178,7 @@ console.log(start, icache.get('end'));
 				relativeTo={icache.get('start')}
 				timezone={icache.get('timezone')}
 				classes={{
-			    '@dojo/widgets/text-input': {
+			    '@redaktor/widgets/inputText': {
 			      root: [themedCss.rootEnd]
 			    }
 			  }}
@@ -233,7 +233,7 @@ console.log(start, icache.get('end'));
 				icache.set('timezone', listOption.value);
 			}}
 			classes={{
-				'@dojo/widgets/typeahead': {
+				'@redaktor/widgets/typeahead': {
 					root: [css.timezoneInput],
 					menu: [css.timezones]
 				}

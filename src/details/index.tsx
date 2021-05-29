@@ -1,5 +1,4 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
-import { RenderResult } from '@dojo/framework/core/interfaces';
 import * as css from '../theme/material/details.m.css';
 import theme from '../middleware/theme';
 

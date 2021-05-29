@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { icache } from '@dojo/framework/core/middleware/icache';
-import Card from '@dojo/widgets/card';
-import Button from '@dojo/widgets/button';
+import Card from '@redaktor/widgets/card';
+import Button from '@redaktor/widgets/button';
 
 const factory = create({ icache });
 

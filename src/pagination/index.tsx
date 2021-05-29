@@ -1,10 +1,10 @@
 import renderer, { create, tsx, diffProperty } from '@dojo/framework/core/vdom';
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import theme from '../middleware/theme';
 import dimensions from '@dojo/framework/core/middleware/dimensions';
 import resize from '@dojo/framework/core/middleware/resize';
-import { RenderResult } from '@dojo/framework/core/interfaces';
 import {
 	createResourceMiddleware,
 	createResourceTemplate

@@ -1,6 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import Example from '../../Example';
-import Chip from '@dojo/widgets/chip';
+import Chip from '@redaktor/widgets/chip';
 
 const factory = create();
 

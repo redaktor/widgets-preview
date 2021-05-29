@@ -4,8 +4,9 @@ import { focus } from '@dojo/framework/core/middleware/focus';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { create, renderer, tsx } from '@dojo/framework/core/vdom';
 import global from '@dojo/framework/shim/global';
-import { Keys } from '../common/util';
+import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
 import theme, { ThemeProperties } from '../middleware/theme';
+import { Keys } from '../common/util';
 import offscreen from '../middleware/offscreen';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
@@ -13,8 +14,7 @@ import * as listItemCss from '../theme/material/list-item.m.css';
 import * as menuItemCss from '../theme/material/menu-item.m.css';
 import * as css from '../theme/material/list.m.css';
 import * as fixedCss from './list.m.css';
-import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
-import LoadingIndicator from '../loading-indicator';
+import LoadingIndicator from '../loadingIndicator';
 import { MenuItem, MenuItemProperties, ListItem, ListItemProperties } from './Listitem';
 
 export const offscreenHeight = (dnode: RenderResult) => {

@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import TwoColumnLayout from '@dojo/widgets/two-column-layout';
+import TwoColumnLayout from '@redaktor/widgets/two-column-layout';
 import { icache } from '@dojo/framework/core/middleware/icache';
-import Button from '@dojo/widgets/button';
+import Button from '@redaktor/widgets/button';
 
 const factory = create({ icache });
 

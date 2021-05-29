@@ -1,5 +1,5 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import List from '@dojo/widgets/list';
+import List from '@redaktor/widgets/list';
 import icache from '@dojo/framework/core/middleware/icache';
 import { listOptions } from '../../data';
 import Example from '../../Example';

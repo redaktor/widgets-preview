@@ -1,3 +1,3 @@
-# @dojo/widgets/blurhash
+# @redaktor/widgets/blurhash
 
 ...

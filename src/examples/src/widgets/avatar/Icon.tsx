@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import Example from '../../Example';
-import Avatar from '@dojo/widgets/avatar';
-import Icon from '@dojo/widgets/icon';
+import Avatar from '@redaktor/widgets/avatar';
+import Icon from '@redaktor/widgets/icon';
 
 const factory = create();
 

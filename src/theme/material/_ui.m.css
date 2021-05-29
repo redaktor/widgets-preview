@@ -472,7 +472,7 @@ a[rel~=contact]:active {
 }
 
 /* FIXME ::
-.ui-input { /*text-input.m.css:48
+.ui-input { /*inputText.m.css:48
 	--tb: calc(var(--line) - var(--pt));
 	--lr: calc(var(--line) / 1.618);
 	padding: var(--tb) var(--lr) var(--tb) var(--lr);

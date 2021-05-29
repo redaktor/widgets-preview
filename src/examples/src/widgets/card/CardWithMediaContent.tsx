@@ -1,5 +1,5 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import Card from '@dojo/widgets/card';
+import Card from '@redaktor/widgets/card';
 const mediaSrc = require('./img/card-photo.jpg');
 
 const factory = create();

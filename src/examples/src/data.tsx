@@ -1,4 +1,4 @@
-import { ListOption } from '@dojo/widgets/list';
+import { ListOption } from '@redaktor/widgets/list';
 
 export interface Data {
 	id: string;

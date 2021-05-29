@@ -1,4 +1,4 @@
-// import dojoTheme from '@dojo/widgets/theme/dojo';
+// import dojoTheme from '@redaktor/widgets/theme/dojo';
 import materialTheme from '../../theme/material';
 import * as light from '../../theme/material/variants/light.m.css';
 import * as dark from '../../theme/material/variants/dark.m.css';
@@ -42,41 +42,41 @@ import SwitchRaised from './widgets/switch/Raised';
 import SwitchShaped from './widgets/switch/Shaped';
 import SwitchDisabled from './widgets/switch/Disabled';
 
-import TextInputOverview from './widgets/text-input/Overview';
-import TextInputFlat from './widgets/text-input/Basic';
-import TextInputFilled from './widgets/text-input/Filled';
-import TextInputOutlined from './widgets/text-input/Outlined';
-import TextInputRaised from './widgets/text-input/Raised';
-import TextInputShaped from './widgets/text-input/Shaped';
-import TextInputControlled from './widgets/text-input/Controlled';
-import TextInputDisabled from './widgets/text-input/Disabled';
-import TextInputHelper from './widgets/text-input/HelperText';
-import TextInputHiddenLabel from './widgets/text-input/HiddenLabel';
-import TextInputPlaceholder from './widgets/text-input/Placeholder';
-import TextInputLeadingTrailing from './widgets/text-input/LeadingTrailing';
-import TextInputValidated from './widgets/text-input/Validated';
-import TextInputWithLabel from './widgets/text-input/WithLabel';
+import TextInputOverview from './widgets/inputText/Overview';
+import TextInputFlat from './widgets/inputText/Basic';
+import TextInputFilled from './widgets/inputText/Filled';
+import TextInputOutlined from './widgets/inputText/Outlined';
+import TextInputRaised from './widgets/inputText/Raised';
+import TextInputShaped from './widgets/inputText/Shaped';
+import TextInputControlled from './widgets/inputText/Controlled';
+import TextInputDisabled from './widgets/inputText/Disabled';
+import TextInputHelper from './widgets/inputText/HelperText';
+import TextInputHiddenLabel from './widgets/inputText/HiddenLabel';
+import TextInputPlaceholder from './widgets/inputText/Placeholder';
+import TextInputLeadingTrailing from './widgets/inputText/LeadingTrailing';
+import TextInputValidated from './widgets/inputText/Validated';
+import TextInputWithLabel from './widgets/inputText/WithLabel';
 
-import TextAreaOverview from './widgets/text-area/Overview';
-import TextAreaControlled from './widgets/text-area/Controlled';
-import TextAreaWithLabel from './widgets/text-area/Label';
-import TextAreaDisabled from './widgets/text-area/Disabled';
-import TextAreaHelper from './widgets/text-area/HelperText';
-import TextAreaHiddenLabel from './widgets/text-area/HiddenLabel';
-import TextAreaValidatedCustom from './widgets/text-area/ValidatedCustom';
-import TextAreaValidatedRequired from './widgets/text-area/ValidatedRequired';
+import TextAreaOverview from './widgets/textArea/Overview';
+import TextAreaControlled from './widgets/textArea/Controlled';
+import TextAreaWithLabel from './widgets/textArea/Label';
+import TextAreaDisabled from './widgets/textArea/Disabled';
+import TextAreaHelper from './widgets/textArea/HelperText';
+import TextAreaHiddenLabel from './widgets/textArea/HiddenLabel';
+import TextAreaValidatedCustom from './widgets/textArea/ValidatedCustom';
+import TextAreaValidatedRequired from './widgets/textArea/ValidatedRequired';
 
-import CheckboxBasicGroup from './widgets/checkbox-group/Basic';
-import CheckboxCustomLabelGroup from './widgets/checkbox-group/CustomLabel';
-import CustomRendererCheckboxGroup from './widgets/checkbox-group/CustomRenderer';
-import InitialValueCheckboxGroup from './widgets/checkbox-group/InitialValue';
-import ControlledCheckboxGroup from './widgets/checkbox-group/Controlled';
+import CheckboxBasicGroup from './widgets/checkboxGroup/Basic';
+import CheckboxCustomLabelGroup from './widgets/checkboxGroup/CustomLabel';
+import CustomRendererCheckboxGroup from './widgets/checkboxGroup/CustomRenderer';
+import InitialValueCheckboxGroup from './widgets/checkboxGroup/InitialValue';
+import ControlledCheckboxGroup from './widgets/checkboxGroup/Controlled';
 
-import RadioBasicGroup from './widgets/radio-group/Basic';
-import ControlledRadioGroup from './widgets/radio-group/Basic';
-import CustomLabelRadioGroup from './widgets/radio-group/CustomLabel';
-import CustomRendererRadioGroup from './widgets/radio-group/CustomRenderer';
-import InitialValueRadioGroup from './widgets/radio-group/InitialValue';
+import RadioBasicGroup from './widgets/radioGroup/Basic';
+import ControlledRadioGroup from './widgets/radioGroup/Basic';
+import CustomLabelRadioGroup from './widgets/radioGroup/CustomLabel';
+import CustomRendererRadioGroup from './widgets/radioGroup/CustomRenderer';
+import InitialValueRadioGroup from './widgets/radioGroup/InitialValue';
 
 import ChipOverview from './widgets/chip/Overview';
 import ChipClickable from './widgets/chip/Clickable';
@@ -96,9 +96,9 @@ import CardWithMediaRectangle from './widgets/card/CardWithMediaRectangle';
 import CardWithMediaSquare from './widgets/card/CardWithMediaSquare';
 import Cards from './widgets/cards/Basic';
 
-import BasicHeaderCard from './widgets/header-card/Basic';
-import MediaHeaderCard from './widgets/header-card/MediaCard';
-import ActionHeaderCard from './widgets/header-card/ActionCard';
+import BasicHeaderCard from './widgets/headerCard/Basic';
+import MediaHeaderCard from './widgets/headerCard/MediaCard';
+import ActionHeaderCard from './widgets/headerCard/ActionCard';
 
 import BasicProgress from './widgets/progress/Basic';
 import ProgressVariants from './widgets/progress/Variants';
@@ -131,27 +131,27 @@ import AvatarSize from './widgets/avatar/Size';
 import AvatarIcon from './widgets/avatar/Icon';
 import AvatarSecondary from './widgets/avatar/Secondary';
 import Exclusive from './widgets/accordion/Exclusive';
-import BasicBreadcrumbGroup from './widgets/breadcrumb-group/Basic';
-import CustomRendererBreadcrumbGroup from './widgets/breadcrumb-group/CustomRenderer';
+import BasicBreadcrumbGroup from './widgets/breadcrumbGroup/Basic';
+import CustomRendererBreadcrumbGroup from './widgets/breadcrumbGroup/CustomRenderer';
 import BasicCalendar from './widgets/calendar/Basic';
 import FirstDayOfWeekCalendar from './widgets/calendar/CustomFirstWeekDay';
 import LimitedRange from './widgets/calendar/LimitedRange';
 import InitialMonthAndYear from './widgets/calendar/InitialMonthAndYear';
 import FullyControlledCalendar from './widgets/calendar/FullyControlled';
 
-import TimePickerOverview from './widgets/time-picker/Basic';
-import TimePickerControlled from './widgets/time-picker/Controlled';
-import TimePickerTwelve from './widgets/time-picker/12HourTime';
-import TimePickerSelectBySecond from './widgets/time-picker/SelectBySecond';
-import TimePickerDisabled from './widgets/time-picker/Disabled';
-import TimePickerDisabledMenuItems from './widgets/time-picker/DisabledMenuItems';
-import TimePickerRequired from './widgets/time-picker/Required';
+import TimePickerOverview from './widgets/timePicker/Basic';
+import TimePickerControlled from './widgets/timePicker/Controlled';
+import TimePickerTwelve from './widgets/timePicker/12HourTime';
+import TimePickerSelectBySecond from './widgets/timePicker/SelectBySecond';
+import TimePickerDisabled from './widgets/timePicker/Disabled';
+import TimePickerDisabledMenuItems from './widgets/timePicker/DisabledMenuItems';
+import TimePickerRequired from './widgets/timePicker/Required';
 
 
-import BasicContextMenu from './widgets/context-menu/Basic';
-import BasicConstrainedInput from './widgets/constrained-input/Basic';
-import Username from './widgets/constrained-input/Username';
-import BasicContextPopup from './widgets/context-popup/Basic';
+import BasicContextMenu from './widgets/contextMenu/Basic';
+import BasicConstrainedInput from './widgets/inputConstrained/Basic';
+import Username from './widgets/inputConstrained/Username';
+import BasicContextPopup from './widgets/contextPopup/Basic';
 import BasicDialog from './widgets/dialog/Basic';
 import CloseableDialog from './widgets/dialog/CloseableDialog';
 import ModalDialog from './widgets/dialog/ModalDialog';
@@ -160,7 +160,7 @@ import AlertDialog from './widgets/dialog/AlertDialog';
 import AnimatedDialog from './widgets/dialog/AnimatedDialog';
 import FocusTrappedDialog from './widgets/dialog/FocusTrappedDialog';
 import ActionsDialog from './widgets/dialog/ActionsDialog';
-import BasicEmailInput from './widgets/email-input/Basic';
+import BasicEmailInput from './widgets/inputEmail/Basic';
 import Advanced from './widgets/grid/Advanced';
 import BasicForm from './widgets/form/Basic';
 import ControlledForm from './widgets/form/Basic';
@@ -201,35 +201,35 @@ import FetchedResource from './widgets/list/FetchedResource';
 import Menu from './widgets/list/Menu';
 import CustomTransformer from './widgets/list/CustomTransformer';
 
-import BasicNumberInput from './widgets/number-input/Basic';
-import ValidatedNumberInput from './widgets/number-input/Validation';
-import BasicPassword from './widgets/password-input/Basic';
-import NoRules from './widgets/password-input/NoRules';
-import BasicTriggerPopup from './widgets/trigger-popup/Basic';
-import MenuTriggerPopup from './widgets/trigger-popup/MenuPopup';
-import SetWidth from './widgets/trigger-popup/SetWidth';
-import Underlay from './widgets/trigger-popup/Underlay';
+import BasicNumberInput from './widgets/inputNumber/Basic';
+import ValidatedNumberInput from './widgets/inputNumber/Validation';
+import BasicPassword from './widgets/inputPassword/Basic';
+import NoRules from './widgets/inputPassword/NoRules';
+import BasicTriggerPopup from './widgets/triggerPopup/Basic';
+import MenuTriggerPopup from './widgets/triggerPopup/MenuPopup';
+import SetWidth from './widgets/triggerPopup/SetWidth';
+import Underlay from './widgets/triggerPopup/Underlay';
 
-import BasicRangeSlider from './widgets/range-slider/Basic';
-import MinMaxRangeSlider from './widgets/range-slider/MinMax';
-import TooltipRangeSlider from './widgets/range-slider/Tooltip';
-import EventsRangeSlider from './widgets/range-slider/Events';
-import DisabledRangeSlider from './widgets/range-slider/Disabled';
-import RequiredRangeSlider from './widgets/range-slider/Required';
-import LabelledRangeSlider from './widgets/range-slider/Labelled';
-import ControlledRangeSlider from './widgets/range-slider/Controlled';
+import BasicRangeSlider from './widgets/sliderRange/Basic';
+import MinMaxRangeSlider from './widgets/sliderRange/MinMax';
+import TooltipRangeSlider from './widgets/sliderRange/Tooltip';
+import EventsRangeSlider from './widgets/sliderRange/Events';
+import DisabledRangeSlider from './widgets/sliderRange/Disabled';
+import RequiredRangeSlider from './widgets/sliderRange/Required';
+import LabelledRangeSlider from './widgets/sliderRange/Labelled';
+import ControlledRangeSlider from './widgets/sliderRange/Controlled';
 import AdditionalText from './widgets/select/AdditionalText';
 import BasicSelect from './widgets/select/Basic';
 import ControlledSelect from './widgets/select/Controlled';
 import CustomRenderer from './widgets/select/CustomRenderer';
 import DisabledSelect from './widgets/select/DisabledSelect';
 import RequiredSelect from './widgets/select/RequiredSelect';
-import BasicSlidePane from './widgets/slide-pane/Basic';
-import RightAlignSlidePane from './widgets/slide-pane/RightAlignSlidePane';
-import LeftAlignSlidePane from './widgets/slide-pane/LeftAlignSlidePane';
-import BottomAlignSlidePane from './widgets/slide-pane/BottomAlignSlidePane';
-import UnderlaySlidePane from './widgets/slide-pane/UnderlaySlidePane';
-import FixedWidthSlidePane from './widgets/slide-pane/FixedWidthSlidePane';
+import BasicSlidePane from './widgets/paneSlide/Basic';
+import RightAlignSlidePane from './widgets/paneSlide/RightAlignSlidePane';
+import LeftAlignSlidePane from './widgets/paneSlide/LeftAlignSlidePane';
+import BottomAlignSlidePane from './widgets/paneSlide/BottomAlignSlidePane';
+import UnderlaySlidePane from './widgets/paneSlide/UnderlaySlidePane';
+import FixedWidthSlidePane from './widgets/paneSlide/FixedWidthSlidePane';
 import BasicSnackbar from './widgets/snackbar/Basic';
 import ErrorSnackbar from './widgets/snackbar/Error';
 import LeadingSnackbar from './widgets/snackbar/Leading';
@@ -237,17 +237,17 @@ import StackedSnackbar from './widgets/snackbar/Stacked';
 import SuccessSnackbar from './widgets/snackbar/Success';
 
 import BasicThreeColumnLayout from './widgets/three-column-layout/Basic';
-import BasicTitlePane from './widgets/title-pane/Basic';
-import HeadingLevel from './widgets/title-pane/HeadingLevel';
-import NonCloseable from './widgets/title-pane/NonCloseable';
+import BasicTitlePane from './widgets/paneTitle/Basic';
+import HeadingLevel from './widgets/paneTitle/HeadingLevel';
+import NonCloseable from './widgets/paneTitle/NonCloseable';
 import BasicTooltip from './widgets/tooltip/Basic';
 import ClickTooltip from './widgets/tooltip/Click';
 import FocusTooltip from './widgets/tooltip/Focus';
-import BasicNativeSelect from './widgets/native-select/Basic';
-import ControlledNativeSelect from './widgets/native-select/ControlledNativeSelect';
-import BasicDateInput from './widgets/date-input/Basic';
-import ControlledDateInput from './widgets/date-input/Controlled';
-import BasicLoadingIndicator from './widgets/loading-indicator/Basic';
+import BasicNativeSelect from './widgets/selectNative/Basic';
+import ControlledNativeSelect from './widgets/selectNative/ControlledNativeSelect';
+import BasicDateInput from './widgets/inputDate/Basic';
+import ControlledDateInput from './widgets/inputDate/Controlled';
+import BasicLoadingIndicator from './widgets/loadingIndicator/Basic';
 import BasicHeader from './widgets/header/Basic';
 import LeadingHeader from './widgets/header/Leading';
 import StickyHeader from './widgets/header/Sticky';
@@ -260,11 +260,11 @@ import PaginationSiblingCount from './widgets/pagination/SiblingCount';
 import BasicTwoColumnLayout from './widgets/two-column-layout/Basic';
 import TrailingBiasTwoColumnLayout from './widgets/two-column-layout/TrailingBias';
 import CollapsingLayout from './widgets/two-column-layout/Collapsing';
-import BasicTabContainer from './widgets/tab-container/Basic';
-import ControlledTabContainer from './widgets/tab-container/Controlled';
-import ButtonAlignmentTabContainer from './widgets/tab-container/ButtonAlignment';
-import CloseableTabContainer from './widgets/tab-container/Closeable';
-import DisabledTabContainer from './widgets/tab-container/Disabled';
+import BasicTabContainer from './widgets/containerTabs/Basic';
+import ControlledTabContainer from './widgets/containerTabs/Controlled';
+import ButtonAlignmentTabContainer from './widgets/containerTabs/ButtonAlignment';
+import CloseableTabContainer from './widgets/containerTabs/Closeable';
+import DisabledTabContainer from './widgets/containerTabs/Disabled';
 
 `!has('docs')`;
 import testsContext from './tests';
@@ -364,7 +364,7 @@ export const config = {
 				}
 			}
 		},
-		'breadcrumb-group': {
+		'breadcrumbGroup': {
 			examples: [
 				{
 					filename: 'CustomRenderer',
@@ -462,7 +462,7 @@ export const config = {
 				{ title: 'Custom Label', module: CheckboxCustomLabel, filename: 'CustomLabel' }
 			]
 		},
-		'checkbox-group': {
+		'checkboxGroup': {
 			examples: [
 				{
 					filename: 'InitialValue',
@@ -578,7 +578,7 @@ export const config = {
 				}
 			}
 		},
-		'header-card': {
+		'headerCard': {
 			examples: [
 				{
 					title: 'Basic HeaderCard with Action Buttons',
@@ -640,7 +640,7 @@ export const config = {
 				}
 			}
 		},
-		'constrained-input': {
+		'inputConstrained': {
 			examples: [
 				{
 					filename: 'Username',
@@ -655,7 +655,7 @@ export const config = {
 				}
 			}
 		},
-		'context-menu': {
+		'contextMenu': {
 			overview: {
 				example: {
 					filename: 'Basic',
@@ -665,7 +665,7 @@ export const config = {
 				}
 			}
 		},
-		'date-input': {
+		'inputDate': {
 			filename: 'index',
 			overview: {
 				example: {
@@ -685,7 +685,7 @@ export const config = {
 				}
 			]
 		},
-		'context-popup': {
+		'contextPopup': {
 			overview: {
 				example: {
 					filename: 'Basic',
@@ -756,7 +756,7 @@ export const config = {
 				}
 			}
 		},
-		'email-input': {
+		'inputEmail': {
 			filename: 'index',
 			overview: {
 				example: {
@@ -991,7 +991,7 @@ export const config = {
 				}
 			]
 		},
-		'loading-indicator': {
+		'loadingIndicator': {
 			filename: 'index',
 			overview: {
 				example: {
@@ -1046,7 +1046,7 @@ export const config = {
 				}
 			}
 		},
-		'native-select': {
+		'selectNative': {
 			overview: {
 				example: {
 					filename: 'Basic',
@@ -1061,7 +1061,7 @@ export const config = {
 				}
 			]
 		},
-		'password-input': {
+		'inputPassword': {
 			overview: {
 				example: {
 					filename: 'Basic',
@@ -1076,7 +1076,7 @@ export const config = {
 				}
 			]
 		},
-		'trigger-popup': {
+		'triggerPopup': {
 			overview: {
 				example: {
 					filename: 'Basic',
@@ -1109,7 +1109,7 @@ export const config = {
 				}
 			]
 		},
-		'number-input': {
+		'inputNumber': {
 			overview: {
 				example: {
 					filename: 'Basic',
@@ -1243,7 +1243,7 @@ export const config = {
 				}
 			]
 		},
-		'radio-group': {
+		'radioGroup': {
 			examples: [
 				{
 					filename: 'Controlled',
@@ -1274,7 +1274,7 @@ export const config = {
 				}
 			}
 		},
-		'range-slider': {
+		'sliderRange': {
 			overview: {
 				example: {
 					filename: 'Basic',
@@ -1346,7 +1346,7 @@ export const config = {
 				}
 			]
 		},
-		'slide-pane': {
+		'paneSlide': {
 			overview: {
 				example: {
 					filename: 'Basic',
@@ -1516,7 +1516,7 @@ export const config = {
 			]
 		},
 
-		'tab-container': {
+		'containerTabs': {
 			examples: [
 				{
 					filename: 'Controlled',
@@ -1547,7 +1547,7 @@ export const config = {
 				}
 			}
 		},
-		'text-area': {
+		'textArea': {
 			examples: [
 				{
 					filename: 'Controlled',
@@ -1592,7 +1592,7 @@ export const config = {
 				}
 			}
 		},
-		'text-input': {
+		'inputText': {
 			overview: {
 				example: {
 					filename: 'Overview',
@@ -1668,7 +1668,7 @@ export const config = {
 			],
 			filename: 'index'
 		},
-		'time-picker': {
+		'timePicker': {
 			overview: {
 				example: {
 					filename: 'Overview',
@@ -1717,7 +1717,7 @@ export const config = {
 				}
 			}
 		},
-		'title-pane': {
+		'paneTitle': {
 			examples: [
 				{
 					filename: 'AriaHeadingLevel',

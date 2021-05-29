@@ -1,4 +1,4 @@
-import Accordion from '@dojo/widgets/accordion';
+import Accordion from '@redaktor/widgets/accordion';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import Example from '../../Example';
 const factory = create();

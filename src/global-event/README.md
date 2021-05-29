@@ -1,6 +1,6 @@
-# @dojo/widgets/global-event
+# @redaktor/widgets/global-event
 
-Dojo's `GlobalEvent` enables events to be registered on `document` and `window` reactively.
+redaktor's `GlobalEvent` enables events to be registered on `document` and `window` reactively.
 
 ## Features
 

@@ -1,6 +1,6 @@
 {
-  "name": "@dojo/widgets",
-  "version": "1.0.0",
+  "name": "@redaktor/widgets",
+  "version": "0.0.5-pre",
   "main": "src/main.tsx",
   "scripts": {
     "dev": "dojo build --mode dev --watch --serve",

@@ -1,3 +1,3 @@
-# @dojo/widgets/icon
+# @redaktor/widgets/icon
 
-Dojo's `Icon` widget renders one of Dojo's predefined font icons.
+redaktor's `Icon` widget renders one of Dojo's predefined font icons.

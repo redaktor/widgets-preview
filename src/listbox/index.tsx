@@ -7,7 +7,7 @@ import global from '@dojo/framework/shim/global';
 import { theme, ThemeProperties, Keys, Variants } from '../middleware/theme';
 import * as LI from './Listitem';
 import MenuItem from './MenuItem';
-import LoadingIndicator from '../loading-indicator';
+import LoadingIndicator from '../loadingIndicator';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/list.m.css';

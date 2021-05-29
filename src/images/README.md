@@ -1,6 +1,6 @@
-# @dojo/widgets/card widget
+# @redaktor/widgets/card widget
 
-Dojo's `Card` widget provides a simple wrapper for elements that should be designated and styled as a card component.
+redaktor's `Card` widget provides a simple wrapper for elements that should be designated and styled as a card component.
 
 ### Features
 

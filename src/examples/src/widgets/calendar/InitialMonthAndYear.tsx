@@ -1,6 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
-import Calendar from '@dojo/widgets/calendar';
+import Calendar from '@redaktor/widgets/calendar';
 
 const factory = create({ icache });
 

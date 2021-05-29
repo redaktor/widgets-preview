@@ -5,7 +5,7 @@ import I18nMixin from '@dojo/framework/core/mixins/I18n';
 import ThemedMixin, { theme } from '@dojo/framework/core/mixins/Themed';
 import { ColumnConfig, SortOptions } from './interfaces';
 import { DNode } from '@dojo/framework/core/interfaces';
-import TextInput from '../text-input/index';
+import TextInput from '../inputText/index';
 import Icon from '../icon/index';
 
 import bundle from './nls/Grid';
@@ -103,11 +103,11 @@ export default class Header extends I18nMixin(ThemedMixin(WidgetBase))<HeaderPro
 				theme,
 				classes: {
 					...classes,
-					'@dojo/widgets/text-input': {
+					'@redaktor/widgets/inputText': {
 						root: [this.theme(css.filter)],
 						input: [this.theme(css.filterInput)],
 						noLabel: [this.theme(css.filterNoLabel)],
-						...classes['@dojo/widgets/text-input']
+						...classes['@redaktor/widgets/inputText']
 					}
 				},
 				labelHidden: true,
@@ -186,7 +186,11 @@ export default class Header extends I18nMixin(ThemedMixin(WidgetBase))<HeaderPro
 				return v(
 					'div',
 					{
-						'aria-sort': isSorted ? (isSortedAsc ? 'ascending' : 'descending') : null,
+						'aria-sort': isSorted
+							? isSortedAsc
+								? 'ascending'
+								: 'descending'
+							: undefined,
 						classes: [this.theme(css.cell), fixedCss.cellFixed],
 						role: 'columnheader',
 						styles: columnWidths

@@ -1,6 +1,6 @@
-# @dojo/widgets/avatar
+# @redaktor/widgets/avatar
 
-Dojo's `Avatar` widget provides a simple means for displaying an image or text avatar.
+redaktor's `Avatar` widget provides a simple means for displaying an image or text avatar.
 
 ### Features
 

@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
 import Example from '../../Example';
-import Radio from '@dojo/widgets/radio';
+import Radio from '@redaktor/widgets/radio';
 
 const factory = create({ icache });
 

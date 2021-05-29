@@ -1,6 +1,6 @@
-# @dojo/widgets/radio
+# @redaktor/widgets/radio
 
-Dojo's `Radio` widget provides a styleable radio widget with an optional label.
+redaktor's `Radio` widget provides a styleable radio widget with an optional label.
 
 ## Features
 

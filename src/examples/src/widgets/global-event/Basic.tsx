@@ -1,6 +1,6 @@
 import icache from '@dojo/framework/core/middleware/icache';
 import { create, tsx } from '@dojo/framework/core/vdom';
-import GlobalEvent from '@dojo/widgets/global-event';
+import GlobalEvent from '@redaktor/widgets/global-event';
 
 const factory = create({ icache });
 

@@ -6,7 +6,7 @@ import ThemedMixin, { theme } from '@dojo/framework/core/mixins/Themed';
 import { DNode } from '@dojo/framework/core/interfaces';
 import { uuid } from '@dojo/framework/core/util';
 import { Keys } from '../common/util';
-import TextInput from '../text-input/index';
+import TextInput from '../inputText/index';
 import Button from '../button/index';
 import Icon from '../icon/index';
 
@@ -93,8 +93,8 @@ export default class Cell extends I18nMixin(ThemedMixin(FocusMixin(WidgetBase)))
 		let { editable, rawValue, theme, classes, width } = this.properties;
 		const { format, messages } = this.localizeBundle(bundle);
 
-		const passedInputClasses = (classes && classes['@dojo/widgets/text-input']) || {};
-		const passedButtonClasses = (classes && classes['@dojo/widgets/button']) || {};
+		const passedInputClasses = (classes && classes['@redaktor/widgets/inputText']) || {};
+		const passedButtonClasses = (classes && classes['@redaktor/widgets/button']) || {};
 
 		return v(
 			'div',
@@ -116,7 +116,7 @@ export default class Cell extends I18nMixin(ThemedMixin(FocusMixin(WidgetBase)))
 								theme,
 								classes: {
 									...classes,
-									'@dojo/widgets/text-input': {
+									'@redaktor/widgets/inputText': {
 										input: [this.theme(css.input)],
 										...passedInputClasses
 									}
@@ -139,7 +139,7 @@ export default class Cell extends I18nMixin(ThemedMixin(FocusMixin(WidgetBase)))
 								theme,
 								classes: {
 									...classes,
-									'@dojo/widgets/button': {
+									'@redaktor/widgets/button': {
 										root: [this.theme(css.edit)],
 										...passedButtonClasses
 									}
@@ -149,7 +149,7 @@ export default class Cell extends I18nMixin(ThemedMixin(FocusMixin(WidgetBase)))
 								type: 'button',
 								onClick: this._onEdit
 							},
-							[w(Icon, { type: 'editIcon', altText: messages.edit, classes, theme })]
+							[w(Icon, { type: 'edit', altText: messages.edit, classes, theme })]
 					  )
 					: null
 			]

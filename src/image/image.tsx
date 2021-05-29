@@ -1,11 +1,11 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
+import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import breakpoints from '../middleware/breakpoint';
+import theme from '../middleware/theme';
 import { ActivityPubObject, ActivityPubObjectNormalized, ActivityPubLinkObject } from '../common/interfaces';
 import { AspectRatioNamed }from '../common/util';
-import theme from '../middleware/theme';
-import breakpoints from '../middleware/breakpoint';
 import { uuid } from '@dojo/framework/core/util';
-import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Srcset from '../srcset';
 import Blurhash, { Brightness } from '../blurhash/';

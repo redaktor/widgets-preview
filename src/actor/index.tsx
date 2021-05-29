@@ -6,7 +6,7 @@ import Button from '../button';
 import Chip from '../chip';
 import Icon from '../icon';
 import Avatar from '../avatar';
-import Input from '../text-input';
+import Input from '../inputText';
 import * as css from '../theme/material/actors.m.css';
 import theme from '../middleware/theme';
 
@@ -155,7 +155,7 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 			}
 			{icache.get('open') && <Chip
 				classes={{
-					'@dojo/widgets/chip': {
+					'@redaktor/widgets/chip': {
 						root:[themedCss.trustChip, follow === 'me' ? themedCss.me : null]
 					}
 				}}

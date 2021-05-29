@@ -1,8 +1,7 @@
+import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import focus from '@dojo/framework/core/middleware/focus';
 import { theme, formatAriaProperties } from '../middleware/theme';
-import { create, tsx } from '@dojo/framework/core/vdom';
-
 import { CheckboxBaseProperties } from '../checkbox';
 // import Label from '../label';
 import * as ui from '../theme/material/_ui.m.css';

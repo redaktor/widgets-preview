@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import Dialog from '@dojo/widgets/dialog';
-import Button from '@dojo/widgets/button';
+import Dialog from '@redaktor/widgets/dialog';
+import Button from '@redaktor/widgets/button';
 import icache from '@dojo/framework/core/middleware/icache';
-import theme from '@dojo/widgets/middleware/theme';
+import theme from '@redaktor/widgets/middleware/theme';
 import * as css from './styles/AnimatedDialog.m.css';
 
 const factory = create({ icache, theme });
@@ -20,7 +20,7 @@ export default factory(function AnimatedDialog({ middleware: { icache, theme } }
 				open={isOpen}
 				onRequestClose={() => icache.set('isOpen', false)}
 				classes={{
-					'@dojo/widgets/dialog': {
+					'@redaktor/widgets/dialog': {
 						enter: [enter],
 						exit: [exit]
 					}

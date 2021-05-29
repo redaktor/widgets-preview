@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
 import Example from '../../Example';
-import Switch from '@dojo/widgets/switch';
+import Switch from '@redaktor/widgets/switch';
 const factory = create({ icache });
 
 export default factory(function Overview({ middleware: { icache } }) {

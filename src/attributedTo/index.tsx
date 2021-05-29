@@ -46,7 +46,7 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 		(APo.attributedTo.length === 1) && isActor(APo.attributedTo[0]) &&
 			<Actor {...{...APo.attributedTo[0]}}
 				classes={{
-					'@dojo/widgets/actor': { avatar: [themedCss.avatar] }
+					'@redaktor/widgets/actor': { avatar: [themedCss.avatar] }
 				}}
 			/>
 	}
@@ -63,14 +63,14 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 						<label for={`${widgetId}_attr${i}`} classes={themedCss.actor}>
 							<Avatar {...{size, spaced, color, name }}
 								classes={{
-									'@dojo/widgets/avatar': { content: [themedCss.avatarsContent] }
+									'@redaktor/widgets/avatar': { content: [themedCss.avatarsContent] }
 								}}
 							/>
 						</label>
 						<Actor {...{...attrO}}
 							open={true}
 							classes={{
-								'@dojo/widgets/actor': { avatar: [themedCss.avatar] }
+								'@redaktor/widgets/actor': { avatar: [themedCss.avatar] }
 							}}
 						/>
 					</virtual>
@@ -80,7 +80,7 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 				!!remainingCount && <div classes={themedCss.moreWrapper}>
 					<Avatar {...{size, spaced, color, name }}
 					classes={{
-						'@dojo/widgets/avatar': {
+						'@redaktor/widgets/avatar': {
 							content: [themedCss.moreContent, remainingCount > 99 && themedCss.moreContentDense]
 						}
 					}}>

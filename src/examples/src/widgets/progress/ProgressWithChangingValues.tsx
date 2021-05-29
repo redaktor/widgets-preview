@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { icache } from '@dojo/framework/core/middleware/icache';
 import Example from '../../Example';
-import Progress from '@dojo/widgets/progress';
-import Button from '@dojo/widgets/button';
+import Progress from '@redaktor/widgets/progress';
+import Button from '@redaktor/widgets/button';
 
 const factory = create({ icache });
 

@@ -1,6 +1,6 @@
-# @dojo/widgets/accordion
+# @redaktor/widgets/accordion
 
-Dojo's `Accordion` component can be used to show multiple pieces of content inside collapsible panes within a common parent component. It provides a mechanism of control over multiple child `TitlePane` components.
+redaktor's `Accordion` component can be used to show multiple pieces of content inside collapsible panes within a common parent component. It provides a mechanism of control over multiple child `TitlePane` components.
 
 ## Features
 

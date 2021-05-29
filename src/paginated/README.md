@@ -1,3 +1,3 @@
-# @dojo/widgets/paged
+# @redaktor/widgets/paged
 
 ...

@@ -3,7 +3,7 @@ import {
 	createResourceTemplate,
 	createResourceMiddleware
 } from '@dojo/framework/core/middleware/resources';
-import Tree, { TreeNodeOption } from '@dojo/widgets/tree';
+import Tree, { TreeNodeOption } from '@redaktor/widgets/tree';
 import Example from '../../Example';
 
 const resource = createResourceMiddleware();

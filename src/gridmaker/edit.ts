@@ -1,7 +1,7 @@
 import { GridAxis, GridChildArea } from './interfaces';
 import { v, w, DNode, ThemedBase, theme } from '../common/Widget';
 import { CircularProgress } from '../../widgets/progress';
-import TextInput from '../../widgets/text-input';
+import TextInput from '../../widgets/inputText';
 import * as css from './styles/gridmaker.m.css';
 import * as uiCss from '../themes/redaktor-default/_ui.m.css';
 export interface GridmakerEditProperties {

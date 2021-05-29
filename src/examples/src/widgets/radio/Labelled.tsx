@@ -1,6 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import Example from '../../Example';
-import Radio from '@dojo/widgets/radio';
+import Radio from '@redaktor/widgets/radio';
 
 const factory = create();
 

@@ -1,8 +1,8 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 
-import Grid from '@dojo/widgets/grid';
+import Grid from '@redaktor/widgets/grid';
 import icache from '@dojo/framework/core/middleware/icache';
-import { createFetcher } from '@dojo/widgets/grid/utils';
+import { createFetcher } from '@redaktor/widgets/grid/utils';
 import { createData } from './data';
 
 const columnConfig = [

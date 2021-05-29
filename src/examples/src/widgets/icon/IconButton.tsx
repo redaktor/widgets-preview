@@ -1,6 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import Icon from '@dojo/widgets/icon';
-import Button from '@dojo/widgets/button';
+import Icon from '@redaktor/widgets/icon';
+import Button from '@redaktor/widgets/button';
 
 const factory = create();
 

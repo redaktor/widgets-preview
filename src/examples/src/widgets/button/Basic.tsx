@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import theme from '../../../../middleware/theme';
 import Example from '../../Example';
-import Button from '@dojo/widgets/button';
-import { ExampleProperties } from '@dojo/widgets/common/util';
+import Button from '@redaktor/widgets/button';
+import { ExampleProperties } from '@redaktor/widgets/common/util';
 
 const factory = create({theme}).properties<ExampleProperties>();
 

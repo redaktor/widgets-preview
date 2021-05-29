@@ -1,6 +1,6 @@
-# @dojo/widgets/checkbox widget
+# @redaktor/widgets/checkbox widget
 
-Dojo's `Checkbox` widget provides a wrapped, styleable checkbox widget that uses the native `<input type="checkbox">` as a base.
+redaktor's `Checkbox` widget provides a wrapped, styleable checkbox widget that uses the native `<input type="checkbox">` as a base.
 
 
 ## Features

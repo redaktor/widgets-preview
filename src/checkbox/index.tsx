@@ -1,9 +1,10 @@
+import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
+import { uuid } from '@dojo/framework/core/util';
 import focus from '@dojo/framework/core/middleware/focus';
 import { FocusProperties } from '@dojo/framework/core/mixins/Focus';
 import { theme, formatAriaProperties, ThemeProperties, Variants } from '../middleware/theme';
-import { uuid } from '@dojo/framework/core/util';
-import { tsx, create } from '@dojo/framework/core/vdom';
+
 
 // import Label from '../label/index';
 import * as ui from '../theme/material/_ui.m.css';

@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
 import Example from '../../Example';
-import Chip from '@dojo/widgets/chip';
+import Chip from '@redaktor/widgets/chip';
 
 const factory = create({ icache });
 

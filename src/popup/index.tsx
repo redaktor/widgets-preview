@@ -1,8 +1,8 @@
+import { create, tsx } from '@dojo/framework/core/vdom';
 import { dimensions } from '@dojo/framework/core/middleware/dimensions';
 import { resize } from '@dojo/framework/core/middleware/resize';
 import theme from '../middleware/theme';
 import { bodyScroll } from '../middleware/bodyScroll';
-import { create, tsx } from '@dojo/framework/core/vdom';
 import * as css from '../theme/material/popup.m.css';
 import * as fixedCss from './popup.m.css';
 import { RenderResult } from '@dojo/framework/core/interfaces';

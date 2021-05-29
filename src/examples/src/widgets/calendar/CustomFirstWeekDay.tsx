@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
 import Example from '../../Example';
-import Calendar, { FirstDayOfWeek } from '@dojo/widgets/calendar';
+import Calendar, { FirstDayOfWeek } from '@redaktor/widgets/calendar';
 
 const factory = create({ icache });
 

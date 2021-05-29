@@ -1,7 +1,7 @@
-import * as css from '../theme/default/header.m.css';
-import theme from '../middleware/theme';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
+import theme from '../middleware/theme';
+import * as css from '../theme/default/header.m.css';
 
 export interface HeaderProperties {
 	/** Determines if this header is fixed */

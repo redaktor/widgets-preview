@@ -85,7 +85,7 @@ html {
 /*
 .root, .root * { box-sizing: border-box; }
 .root {
-	composes: root from "./text-input.m.css";
+	composes: root from "./inputText.m.css";
 }*/
 
 /* Note :
@@ -518,7 +518,7 @@ html {
 
 
 .border {
-	composes: border from "./text-input.m.css";
+	composes: border from "./inputText.m.css";
 	display: flex;
 	order: 3;
 	z-index: 3;

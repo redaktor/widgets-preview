@@ -1,6 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
-import Typeahead from '@dojo/widgets/typeahead';
+import Typeahead from '@redaktor/widgets/typeahead';
 import Example from '../../Example';
 
 import {

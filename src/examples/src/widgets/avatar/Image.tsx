@@ -1,6 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import Example from '../../Example';
-import Avatar from '@dojo/widgets/avatar';
+import Avatar from '@redaktor/widgets/avatar';
 const avatar = require('./img/dojo.jpg');
 
 const factory = create();

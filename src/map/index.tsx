@@ -7,7 +7,7 @@ import { LatLng } from './interfaces';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import Button from '../Button';
 import Icon from '../Icon';
-// import Select from '@dojo/widgets/select';
+// import Select from '@redaktor/widgets/select';
 // import * as UriTemplate from 'uritemplate';
 import { loadModules } from 'esri-loader';
 // import bundle from './nls/';
@@ -574,28 +574,28 @@ export default factory(function lMap({
 					disabled={curId === baseIds[1]}
 					{...btnProps}
 				>
-					<Icon size="xxl" type="osm" />
+					<Icon size="xxl" type="mapOSM" />
 				</Button>
 				<Button
 					onClick={switchMap(baseIds[2])}
 					disabled={curId === baseIds[2]}
 					{...btnProps}
 				>
-					<Icon size="xxl" type="sat" />
+					<Icon size="xxl" type="mapSat" />
 				</Button>
 				<Button
 					onClick={switchMap(baseIds[3])}
 					disabled={curId === baseIds[3]}
 					{...btnProps}
 				>
-					<Icon size="xxl" type="streets" />
+					<Icon size="xxl" type="mapStreet" />
 				</Button>
 				<Button
 					onClick={switchMap(baseIds[4])}
 					disabled={curId === baseIds[4]}
 					{...btnProps}
 				>
-					<Icon size="xxl" type="topo" />
+					<Icon size="xxl" type="mapTopo" />
 				</Button>
 			</div>
 			{createMap()}

@@ -1,26 +1,25 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import List, {ItemRendererProperties,ListOption,ListProperties} from '../list';
-import { ListItemProperties, MenuItemProperties } from '../list/Listitem';
-
 import theme from '../middleware/theme';
 import focus from '@dojo/framework/core/middleware/focus';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import { dimensions } from '@dojo/framework/core/middleware/dimensions';
 import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
-import TriggerPopup from '../trigger-popup';
-import { PopupPosition } from '@dojo/widgets/popup';
-import TextInput from '../text-input';
-import HelperText from '../helper-text';
-import { Keys } from '../common/util';
-import LoadingIndicator from '../loading-indicator';
 import { find } from '@dojo/framework/shim/array';
+import List, {ItemRendererProperties,ListOption,ListProperties} from '../list';
+import { ListItemProperties, MenuItemProperties } from '../list/Listitem';
+import TriggerPopup from '../triggerPopup';
+import { PopupPosition } from '../popup';
+import TextInput from '../inputText';
+import HelperText from '../helperText';
+import { Keys } from '../common/util';
+import LoadingIndicator from '../loadingIndicator';
 import bundle from '../select/nls/Select';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/typeahead.m.css';
-import * as inputCss from '../theme/material/text-input.m.css';
+import * as inputCss from '../theme/material/inputText.m.css';
 
 export interface TypeaheadProperties {
 	/** Callback called when user selects a value */
@@ -424,7 +423,7 @@ export const Typeahead = factory(function Typeahead({
 								widgetId={triggerId}
 								disabled={disabled}
 								classes={{
-									'@dojo/widgets/text-input': {
+									'@redaktor/widgets/inputText': {
 										root: [themedCss.trigger]
 									}
 								}}
@@ -458,7 +457,7 @@ export const Typeahead = factory(function Typeahead({
 							resource={resource({ template, options })}
 							disabled={itemDisabled}
 							classes={{
-								'@dojo/widgets/list': {
+								'@redaktor/widgets/list': {
 									root: [
 										themedCss.menu,
 										variant && (themedCss as any)[variant],
