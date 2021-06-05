@@ -5,7 +5,7 @@ import intersection from '@dojo/framework/core/middleware/intersection';
 import dimensions from '@dojo/framework/core/middleware/dimensions';
 import resize from '@dojo/framework/core/middleware/resize';
 // import icache from '@dojo/framework/core/middleware/icache';
-import { uuid } from '@dojo/framework/core/util';
+import id from '../middleware/id';
 import Card, { CardProperties } from '../card';
 import Icon from '../icon';
 import * as css from '../theme/material/cards.m.css';
@@ -30,16 +30,16 @@ interface CardsICache {
 style={`height:${icache.get('loading') ? '99999' : cardsHeight}px;`}
 */
 const icache = createICacheMiddleware<CardsICache>();
-const factory = create({ icache, theme, intersection, dimensions, resize })
+const factory = create({ icache, theme, id, intersection, dimensions, resize })
 	.properties<CardsProperties>()
 	.children<CardsChildren>();
 
 export const Cards = factory(function Cards({
 	children,
 	properties,
-	middleware: { icache, theme, intersection, dimensions, resize }
+	middleware: { icache, theme, id, intersection, dimensions, resize }
 }) {
-	const id = uuid();
+	const _id = id.getId();
 	const themedCss = theme.classes(css);
 	const {
 		aside: asidePosition = true,
@@ -52,7 +52,7 @@ export const Cards = factory(function Cards({
 	{
 		(p||[]).map(
 			({actionButtons, ...o}) =>
-				<li key={`Card${o.id||uuid()}`} classes={themedCss.item}>
+				<li key={`Card${_id}`} classes={themedCss.item}>
 					<Card {...o}>
 						{{actionButtons}}
 					</Card>
@@ -83,10 +83,10 @@ export const Cards = factory(function Cards({
 
 	const asideContainer = (
 		<virtual>
-			<input id={id} type="checkbox" classes={themedCss.trigger} />
+			<input id={_id} type="checkbox" classes={themedCss.trigger} />
 			<aside classes={themedCss.aside}>
 				<nav classes={themedCss.asideNav}>
-					<label for={id} classes={themedCss.triggerLabel}>
+					<label for={_id} classes={themedCss.triggerLabel}>
 						<Icon type="close" />
 					</label>
 				</nav>

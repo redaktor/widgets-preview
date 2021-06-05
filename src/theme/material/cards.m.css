@@ -41,6 +41,8 @@
 	height: calc(var(--line, 15px) * 1.5);
 }
 .cards {
+	--gap: 1.11111111vw;
+  --gapHalf: calc(var(--gap) / 2);
 	flex-grow: 1;
 	display: flex;
 	flex-wrap: wrap;

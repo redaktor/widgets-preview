@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import { uuid } from '@dojo/framework/core/util';
-import Icon from '../icon';
+import id from '../middleware/id';
 import theme, { ThemeProperties } from '../middleware/theme';
+import Icon from '../icon';
 // import { formatAriaProperties } from '../common/util';
 import * as css from '../theme/material/paginated.m.css';
 
@@ -13,23 +13,20 @@ export interface PaginatedProperties extends ThemeProperties {
 	widgetId?: string;
 }
 
-const factory = create({ theme })
+const factory = create({ id, theme })
 	.properties<PaginatedProperties>();
 
-export const Paginated = factory(function Paginated({ properties, children, middleware: { theme } }) {
-	const {
-		property = uuid(),
-		widgetId = uuid()
-	} = properties();
+export const Paginated = factory(function Paginated({ properties, children, middleware: { id, theme } }) {
+	const { property = '' } = properties();
 
 	const c = children();
 	if (!c || !c.length) { return '' }
 	if (c.length === 1) { return c }
 
 	const themedCss = theme.classes(css);
-	const idBase = `${widgetId}_${property}`;
-
+	const idBase = id.getId(property);
 	const ids: any = c.map((node: any, i: number) => node.properties.id || `${idBase}_${i}`);
+
 	return <div classes={[themedCss.root]}>
 		{c.map((node: any, i: number, a: RenderResult[]) => {
 			if (!node.properties.id) {

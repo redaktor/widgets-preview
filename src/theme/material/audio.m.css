@@ -10,7 +10,7 @@
 .root:not(.row) {
 	max-width: 64ch;
 }
-.xs, .s, .m, .l, .xl, .xxl { }
+.micro, .xs, .s, .m, .l, .xl, .xxl { }
 .mini, .medium, .large { }
 
 

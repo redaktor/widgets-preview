@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import { uuid } from '@dojo/framework/core/util';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import Button from '../button';
 import theme, { ThemeProperties } from '../middleware/theme';
+import id from '../middleware/id';
+import Button from '../button';
 import bundle from './nls/Collapsed';
 import * as css from '../theme/material/collapsed.m.css';
 
@@ -19,14 +19,14 @@ export interface CollapsedProperties extends ThemeProperties {
 	label?: 'read'|'readMore'|'view'|'viewMore';
 }
 
-const factory = create({ theme, i18n })
+const factory = create({ theme, id, i18n })
 	.properties<CollapsedProperties>();
 
-export const Collapsed = factory(function Collapsed({ properties, children, middleware: { theme, i18n } }) {
+export const Collapsed = factory(function Collapsed({ properties, children, middleware: { theme, id, i18n } }) {
 	const {
 		lines = 14,
 		expanded = false,
-		property = uuid(),
+		property = '',
 		responsive = true,
 		spaced = false,
 		size = 's',
@@ -40,7 +40,8 @@ export const Collapsed = factory(function Collapsed({ properties, children, midd
 	const { messages } = i18n.localize(bundle);
 
 	const themedCss = theme.classes(css);
-	const idBase = `${uuid()}_${property}`;
+	const idBase = id.getId(property);
+
 	return <virtual>
 		{!!expanded ?
 			<input id={idBase} type="checkbox" key="contentDetails" classes={themedCss.input} checked={true} /> :

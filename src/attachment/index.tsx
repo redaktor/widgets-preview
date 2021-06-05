@@ -1,7 +1,7 @@
 import { tsx, create, node } from '@dojo/framework/core/vdom';
 import has from '@dojo/framework/core/has';
-import { uuid } from '@dojo/framework/core/util';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import id from '../middleware/id';
 import theme, { ViewportProperties} from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import { ActivityPubObject } from '../common/interfaces';
@@ -26,22 +26,16 @@ export interface ImagesProperties extends ActivityPubObject, ViewportProperties 
 
 export interface ImagesIcache {
 	l: any;
-	idBase: string;
 	paginated: any[];
 	loaded: number[];
 	currentPage: number;
 }
 const icache = createICacheMiddleware<ImagesIcache>();
 
-const factory = create({
-	icache,
-	node,
-	breakpoints,
-	theme
-}).properties<ImagesProperties>();
+const factory = create({ icache, id, node, breakpoints, theme }).properties<ImagesProperties>();
 
 export const Images = factory(function Images({
-	middleware: { icache, node, breakpoints, theme },
+	middleware: { icache, id, node, breakpoints, theme },
 	properties
 }) {
 	const { get, set, getOrSet } = icache;
@@ -62,9 +56,9 @@ export const Images = factory(function Images({
 		getOrSet('paginated', paginatedImage, false);
 		getOrSet('loaded', paginatedImage.map(() => 0), false);
 	}
-	getOrSet('idBase', uuid(), false);
 	getOrSet('currentPage', 0, false);
 	getOrSet('l', theme.line(), false);
+	const idBase = id.getId('attachment')
 
 	const {contentRect: dim = {height: 0}} = breakpoints.get('root')||{};
 	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
@@ -134,21 +128,21 @@ export const Images = factory(function Images({
 						<input
 							type="radio"
 							classes={[themedCss.pageRadio, !paginationInputsVisible && themedCss.hidden]}
-							id={`${get('idBase')}_${i}`}
-							name={`${get('idBase')}_images`}
+							id={`${idBase}_${i}`}
+							name={`${idBase}_images`}
 							data-i={`${i+1}`}
 							checked={i === get('currentPage')}
 							onclick={() => { setPage(i) }}
 						/>
 						{<label key={`prev_${i}`}
-							for={!i ? `${get('idBase')}_${a.length-1}` : `${get('idBase')}_${i-1}`}
+							for={!i ? `${idBase}_${a.length-1}` : `${idBase}_${i-1}`}
 							classes={[themedCss.prevControl, !i && themedCss.firstControl]}
 							onclick={() => { setPage(!i ? a.length-1 : i-1) }}
 						>
 							<Icon size="xl" type="left" />
 						</label>}
 						{<label key={`next_${i}`}
-							for={i === a.length-1 ? `${get('idBase')}_0` : `${get('idBase')}_${i+1}`}
+							for={i === a.length-1 ? `${idBase}_0` : `${idBase}_${i+1}`}
 							classes={[themedCss.nextControl, i === a.length-1 && themedCss.lastControl]}
 							onclick={() => { setPage(i === a.length-1 ? 0 : i+1) }}
 						>
@@ -156,7 +150,7 @@ export const Images = factory(function Images({
 						</label>}
 					</virtual>
 				}
-				{i !== get('currentPage') && <div}
+				{i !== get('currentPage') && <div />}
 				{(!has('host-node') && i !== get('currentPage') && !wasLoaded) ? '' :
 					<div key={`page${i}`} classes={[themedCss.page]} style={`--count: ${itemsPerPage};`}>
 						{imagePage.map((img: any, j: number) => {

@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import { uuid } from '@dojo/framework/core/util';
+import id from '../middleware/id';
 import { formatAriaProperties } from '../common/util';
 import Icon from '../icon';
 import theme from '../middleware/theme';
@@ -64,11 +64,12 @@ export interface SlidePaneICache {
 const factory = create({
 	icache: createICacheMiddleware<SlidePaneICache>(),
 	theme,
+	id,
 	i18n
 }).properties<SlidePaneProperties>();
 
 export const SlidePane = factory(function SlidePane({
-	middleware: { icache, theme, i18n },
+	middleware: { icache, theme, id, i18n },
 	properties,
 	children
 }) {
@@ -225,7 +226,7 @@ export const SlidePane = factory(function SlidePane({
 		}
 	};
 
-	const titleId = icache.getOrSet('titleId', uuid());
+	const titleId = id.getId('titleId');
 
 	return (
 		<div

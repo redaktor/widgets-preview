@@ -4,7 +4,7 @@ import { focus } from '@dojo/framework/core/middleware/focus';
 import { i18n } from '@dojo/framework/core/middleware/i18n';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
-import { uuid } from '@dojo/framework/core/util';
+import id from '../middleware/id';
 import { find } from '@dojo/framework/shim/array';
 import { Keys } from '../common/util';
 import HelperText from '../helperText';
@@ -83,6 +83,7 @@ const factory = create({
 	focus,
 	theme,
 	i18n,
+	id,
 	resource: createResourceMiddleware<ListOption>()
 })
 	.properties<SelectProperties>()
@@ -91,7 +92,7 @@ const factory = create({
 export const Select = factory(function Select({
 	children,
 	properties,
-	middleware: { icache, focus, theme, i18n, resource }
+	middleware: { icache, focus, theme, i18n, id, resource }
 }) {
 	const {
 		classes,
@@ -130,8 +131,8 @@ export const Select = factory(function Select({
 		value = icache.get('value');
 	}
 
-	const menuId = icache.getOrSet('menuId', uuid());
-	const triggerId = icache.getOrSet('triggerId', uuid());
+	const menuId = id.getId('menuId');
+	const triggerId = id.getId('triggerId');
 	const focusNode = icache.getOrSet('focusNode', 'trigger');
 	const shouldFocus = focus.shouldFocus();
 	const themedCss = theme.classes(css);

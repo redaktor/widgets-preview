@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import { uuid } from '@dojo/framework/core/util';
 import theme from '@dojo/framework/core/middleware/theme';
+import id from '../middleware/id';
 import { checkboxGroup } from './middleware';
 import { Checkbox, CheckboxProperties } from '../checkbox/index';
 import * as css from '../theme/material/checkboxGroup.m.css';
@@ -32,16 +32,16 @@ export interface CheckboxGroupChildren {
 	label?: RenderResult;
 }
 
-const factory = create({ checkboxGroup, theme })
+const factory = create({ checkboxGroup, id, theme })
 	.properties<CheckboxGroupProperties>()
 	.children<CheckboxGroupChildren | undefined>();
 
 export const CheckboxGroup = factory(function({
 	children,
 	properties,
-	middleware: { checkboxGroup, theme }
+	middleware: { checkboxGroup, id, theme }
 }) {
-	const { vertical, name = '', widgetId = uuid(), options, onValue, initialValue, value, ...cbProps } = properties();
+	const { vertical, name = '', widgetId, options, onValue, initialValue, value, ...cbProps } = properties();
 	const [{ inputs, label } = { inputs: undefined, label: undefined }] = children();
 
 	const checkbox = checkboxGroup(initialValue, value, onValue);
@@ -54,7 +54,7 @@ export const CheckboxGroup = factory(function({
 		return options.map(({ value, label }) => {
 			const { checked } = checkbox(value);
 			return (
-				<Checkbox {...cbProps} spaced={true} name={`${name}_${widgetId}`} value={value} checked={checked()} onValue={checked}>
+				<Checkbox {...cbProps} spaced={true} name={widgetId||id.getId(name)} value={value} checked={checked()} onValue={checked}>
 					{label || value}
 				</Checkbox>
 			);

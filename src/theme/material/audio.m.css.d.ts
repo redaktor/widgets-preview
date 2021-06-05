@@ -1,5 +1,6 @@
 export const root: string;
 export const row: string;
+export const micro: string;
 export const xs: string;
 export const s: string;
 export const m: string;
@@ -28,7 +29,6 @@ export const metaLocale: string;
 export const mediaFreshTop: string;
 export const mediaTop: string;
 export const header: string;
-export const micro: string;
 export const avatar: string;
 export const playPause: string;
 export const preview: string;

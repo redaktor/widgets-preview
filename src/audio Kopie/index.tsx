@@ -7,9 +7,6 @@ import { ActivityPubObject } from '../common/interfaces';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import i18nActivityPub from '../middleware/i18nActivityPub';
-
-import { normalizeActivityPub } from '../common/activityPubUtil';
-import i18n from '@dojo/framework/core/middleware/i18n';
 /*
 import {
 	createResourceTemplate,
@@ -150,24 +147,24 @@ if (!(window as any).AudioContext) {
 }
 
 const icache = createICacheMiddleware<AudioIcache>();
-const factory = create({ icache, node, theme, breakpoints, id, i18n })
+const factory = create({ icache, node, theme, breakpoints, id, i18nActivityPub })
 	.properties<AudioProperties>()
 	.children<AudioChildren | RenderResult | undefined>();
 
 export const Audio = factory(function Audio({
-	middleware: { icache, node, theme, breakpoints, id, i18n /*, resource */ },
+	middleware: { icache, node, theme, breakpoints, id, i18nActivityPub /*, resource */ },
 	properties,
 	children
 }) {
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
-	const { messages } = i18n.localize(bundle);
+	const { messages } = i18nActivityPub.localize(bundle);
 	const {
 		alt, editable, onLoad, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId,
 		baselined = true, hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
 		autoPlay = false, muted = false, view = 'column',
 		crossorigin = 'anonymous', volume = 1, speed = 1, ..._rest
-	} = normalizeActivityPub(properties());
+	} = i18nActivityPub.normalized(properties());
 
 	const APo = _rest;
 	if (APo.type.indexOf('Audio') < 0 && (!APo.mediaType || APo.mediaType.toLowerCase().indexOf('audio') !== 0)) {
@@ -438,7 +435,7 @@ export const Audio = factory(function Audio({
 	}
 	*/
 
-	const [locale, locales] = [i18n.get(), APo.locales];
+	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
 	const audioId = id.getId('audio');
 	const vol = get('volume')||0;
 	const playerProps: any = {
@@ -627,7 +624,7 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 			</div>
 		</div>}
 
-		{!!locales && locales.length > 1 && <Locales locale={locale} locales={locales} onValue={(l) => i18n.set({locale:l})} />}
+		{!!locales && locales.length > 1 && <Locales locale={locale} locales={locales} onValue={(l) => i18nActivityPub.set(l)} />}
 
 		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
 		<div classes={themedCss.attributions}>

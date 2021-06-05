@@ -1,7 +1,7 @@
 import { tsx, create, node } from '@dojo/framework/core/vdom';
 import has from '@dojo/framework/core/has';
 import { ActivityPubObject } from '../common/interfaces';
-import { uuid } from '@dojo/framework/core/util';
+import id from '../middleware/id';
 import theme, { ViewportProperties} from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
@@ -26,22 +26,15 @@ export interface ImagesProperties extends ActivityPubObject, ViewportProperties 
 
 export interface ImagesIcache {
 	l: any;
-	idBase: string;
 	paginated: any[];
 	loaded: number[];
 	currentPage: number;
 }
 const icache = createICacheMiddleware<ImagesIcache>();
-
-const factory = create({
-	icache,
-	node,
-	breakpoints,
-	theme
-}).properties<ImagesProperties>();
+const factory = create({ icache, id, node, breakpoints, theme }).properties<ImagesProperties>();
 
 export const Images = factory(function Images({
-	middleware: { icache, node, breakpoints, theme },
+	middleware: { icache, id, node, breakpoints, theme },
 	properties
 }) {
 	const { get, set, getOrSet } = icache;
@@ -52,6 +45,7 @@ export const Images = factory(function Images({
 	} = normalizeActivityPub(properties());
 	if (!image.length) { return '' }
 
+	const idBase = id.getId('images');
 	const maxImage = image.slice(0,max+1);
 	const mLength = maxImage.length;
 	if (!get('paginated')) {
@@ -62,7 +56,6 @@ export const Images = factory(function Images({
 		getOrSet('paginated', paginatedImage, false);
 		getOrSet('loaded', paginatedImage.map(() => 0), false);
 	}
-	getOrSet('idBase', uuid(), false);
 	getOrSet('currentPage', 0, false);
 	getOrSet('l', theme.line(), false);
 
@@ -135,21 +128,21 @@ export const Images = factory(function Images({
 						<input
 							type="radio"
 							classes={[themedCss.pageRadio, !paginationInputsVisible && themedCss.hidden]}
-							id={`${get('idBase')}_${i}`}
-							name={`${get('idBase')}_images`}
+							id={`${idBase}_${i}`}
+							name={`${idBase}_images`}
 							data-i={`${i+1}`}
 							checked={i === get('currentPage')}
 							onclick={() => { setPage(i) }}
 						/>
 						{<label key={`prev_${i}`}
-							for={!i ? `${get('idBase')}_${a.length-1}` : `${get('idBase')}_${i-1}`}
+							for={!i ? `${idBase}_${a.length-1}` : `${idBase}_${i-1}`}
 							classes={[themedCss.prevControl, !i && themedCss.firstControl]}
 							onclick={() => { setPage(!i ? a.length-1 : i-1) }}
 						>
 							<Icon size="xl" type="left" />
 						</label>}
 						{<label key={`next_${i}`}
-							for={i === a.length-1 ? `${get('idBase')}_0` : `${get('idBase')}_${i+1}`}
+							for={i === a.length-1 ? `${idBase}_0` : `${idBase}_${i+1}`}
 							classes={[themedCss.nextControl, i === a.length-1 && themedCss.lastControl]}
 							onclick={() => { setPage(i === a.length-1 ? 0 : i+1) }}
 						>

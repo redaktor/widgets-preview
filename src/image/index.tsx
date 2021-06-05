@@ -1,6 +1,5 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import { uuid } from '@dojo/framework/core/util';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import theme from '../middleware/theme';
@@ -42,12 +41,7 @@ export interface ImageChildren {
 }
 
 const icache = createICacheMiddleware<ImageIcache>();
-const factory = create({
-	icache,
-	i18n,
-	theme,
-	breakpoints
-})
+const factory = create({ icache, i18n, theme, breakpoints })
 	.properties<ImageProperties>()
 	.children<ImageChildren | RenderResult | undefined>();
 
@@ -64,7 +58,7 @@ export const Image = factory(function Image({
 	const { messages } = i18n.localize(bundle);
 	const {
 		alt, title, editable, fullscreen, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		blurhash, loading = 'lazy', crossorigin = 'anonymous', widgetId = uuid(), mediaType, baselined = true,
+		blurhash, widgetId, mediaType, loading = 'lazy', crossorigin = 'anonymous', baselined = true,
 		fit = false, width = 80, height = 80, hasContent = true, hasAttachment = true, isRow = false, ..._rest
 	} = normalizeActivityPub(properties());
 
@@ -118,11 +112,9 @@ export const Image = factory(function Image({
 			icache.getOrSet('brightnessClass', o.brightness > 120 ? themedCss.lightImage : themedCss.darkImage)
 		}} />
 		{APo.sensitive && summaryNode}
-
 		{hasAttachment && <div key="images" classes={themedCss.images}>
 			... images
 		</div>}
-
 		{hasContent && <virtual>
 			{!isRow && namesNode}
 			<div classes={themedCss.attributions}>

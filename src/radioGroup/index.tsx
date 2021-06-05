@@ -1,10 +1,10 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import theme from '@dojo/framework/core/middleware/theme';
-import { uuid } from '@dojo/framework/core/util';
-import { Radio, RadioProperties } from '../radio/';
 import { MenuOption } from '../common/interfaces';
+import theme from '@dojo/framework/core/middleware/theme';
+import id from '../middleware/id';
 import { radioGroup } from './middleware';
+import { Radio, RadioProperties } from '../radio/';
 import * as css from '../theme/material/radioGroup.m.css';
 
 export interface RadioGroupProperties extends RadioProperties {
@@ -32,18 +32,18 @@ export interface RadioGroupChildren {
 	label?: RenderResult;
 }
 
-const factory = create({ radioGroup, theme })
+const factory = create({ radioGroup, id, theme })
 	.properties<RadioGroupProperties>()
 	.children<RadioGroupChildren | undefined>();
 
 export const RadioGroup = factory(function({
 	children,
 	properties,
-	middleware: { radioGroup, theme }
+	middleware: { radioGroup, id, theme }
 }) {
 	const {
 		vertical, options, onValue, value, initialValue, disabled,
-		name = '', widgetId = uuid(), ...radioProps
+		name = '', widgetId, ...radioProps
 	} = properties();
 	const [{ inputs, label } = { inputs: undefined, label: undefined }] = children();
 	const radio = radioGroup(initialValue || '', value, onValue);
@@ -56,7 +56,7 @@ export const RadioGroup = factory(function({
 		return options.map(({ value, label, disabled }) => {
 			const { checked } = radio(value);
 			return (
-				<Radio {...radioProps} spaced={true} checked={checked()} disabled={disabled} name={`${name}_${widgetId}`} onValue={checked} value={value}>
+				<Radio {...radioProps} spaced={true} checked={checked()} disabled={disabled} name={widgetId||id.getId(name)} onValue={checked} value={value}>
 					{label || value}
 				</Radio>
 			);

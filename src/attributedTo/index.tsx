@@ -1,11 +1,11 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
-import { uuid } from '@dojo/framework/core/util';
 import { RedaktorActor, ActivityPubObjectNormalized } from '../common/interfaces';
 import { normalizeActivityPub, isActor } from '../common/activityPubUtil';
+import id from '../middleware/id';
+import theme, { ThemedActivityPubObject } from '../middleware/theme';
 import Actor from '../actor';
 import Avatar from '../avatar';
 import * as css from '../theme/material/actors.m.css';
-import theme, { ThemedActivityPubObject } from '../middleware/theme';
 
 export interface ActorsProperties extends ThemedActivityPubObject {
 	openIndex?: number;
@@ -16,11 +16,11 @@ export interface ActorsProperties extends ThemedActivityPubObject {
 	moreCount?: boolean;
 }
 
-const factory = create({ theme }).properties<ActorsProperties>()
-const AttributedTo = factory(function AttributedTo({ properties, middleware: { theme } }) {
+const factory = create({ theme, id }).properties<ActorsProperties>()
+const AttributedTo = factory(function AttributedTo({ properties, middleware: { theme, id } }) {
 	const themedCss = theme.classes(css);
 	const {
-		widgetId = uuid(),
+		widgetId,
 		openIndex,
 		max,
 		more = true,
@@ -29,12 +29,13 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 		color = 'primary',
 		..._rest
 	} = normalizeActivityPub(properties());
+	const idBase = widgetId || id.getId('attributedTo');
 
 	const APo: ActivityPubObjectNormalized = _rest;
 	if (!APo.attributedTo) { return '' }
 
 
-	const closeID = `${widgetId}_closeProfiles`;
+	const closeID = `${idBase}_closeProfiles`;
 	const spaced = APo.attributedTo.length > max ? false : _spaced;
 	const spaceClass = APo.attributedTo.length > max ?
 		themedCss.dense : spaced && themedCss.spaced;
@@ -59,8 +60,8 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 				const name = attrO.name ? attrO.name[0] : '';
 				return isActor(attrO) &&
 					<virtual>
-						<input type="radio" id={`${widgetId}_attr${i}`} name={widgetId} />
-						<label for={`${widgetId}_attr${i}`} classes={themedCss.actor}>
+						<input type="radio" id={`${idBase}_attr${i}`} name={idBase} />
+						<label for={`${idBase}_attr${i}`} classes={themedCss.actor}>
 							<Avatar {...{size, spaced, color, name }}
 								classes={{
 									'@redaktor/widgets/avatar': { content: [themedCss.avatarsContent] }
@@ -75,7 +76,7 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 						/>
 					</virtual>
 			})}
-			<input type="radio" id={closeID} classes={themedCss.closeActors} name={widgetId} />
+			<input type="radio" id={closeID} classes={themedCss.closeActors} name={idBase} />
 			{
 				!!remainingCount && <div classes={themedCss.moreWrapper}>
 					<Avatar {...{size, spaced, color, name }}

@@ -6,6 +6,8 @@ import Image, { ImageProperties } from '@redaktor/widgets/image';
 import Img from '@redaktor/widgets/image/image';
 
 import Table from '@redaktor/widgets/table';
+import * as cardsCSS from '@redaktor/widgets/theme/material/cards.m.css';
+import * as columnsCSS from '@redaktor/widgets/theme/material/_columns.m.css';
 /*
 kind
 How the text track is meant to be used. If omitted the default kind is subtitles.
@@ -140,15 +142,17 @@ export default factory(function Basic() {
     <track label="Chapters" src={vttChapters} kind="chapters" srclang="en" />
   </Audio>;
 
+console.log('Example audio render');
 /* tableRow is meant to be 100vw */
 	return (
 		<Example spaced={true}>
       <virtual>
+        <div><p>x</p></div>
   			<div styles={{ width: '66.666%' }}>{audio()}</div>
         <br /><br />
         <div styles={{ width: '100%' }}>{audio('row')}</div>
         <br /><br />
-        <div styles={{ position: 'absolute', left: '0px', zIndex: '9999' }} >
+        <div styles={{ position: 'absolute', left: '0px', zIndex: '9998' }} >
           <Table columns={['fixed','resizable','resizable','responsive']}>
             {audio('tableRow')}
             {audio('tableRow')}
@@ -161,6 +165,42 @@ export default factory(function Basic() {
           <Image {...exampleImage} />
           <br /><br />
           <Img {...exampleImage} sensitive={false} aspectRatio="16/7" focalPoint={[0, 0.13]} />
+        </div>
+        <div classes={columnsCSS.root} styles={{ position: 'absolute', left: '0px', zIndex: '9998', width: '100%' }}>
+          <ul classes={columnsCSS.columns}>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m9by16]}><div classes={[columnsCSS.content]}>9 by 16</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m2by3]}><div classes={[columnsCSS.content]}>2 by 3</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by4]}><div classes={[columnsCSS.content]}>3 by 4</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m4by5]}><div classes={[columnsCSS.content]}>4 by 5</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m6by7]}><div classes={[columnsCSS.content]}>6 by 7</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m1by1]}><div classes={[columnsCSS.content]}>1 by 1</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m7by6]}><div classes={[columnsCSS.content]}>7 by 6</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m5by4]}><div classes={[columnsCSS.content]}>5 by 4</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m4by3]}><div classes={[columnsCSS.content]}>4 by 3</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by2]}><div classes={[columnsCSS.content]}>3 by 2</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by10]}><div classes={[columnsCSS.content]}>16 by 10</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by9]}><div classes={[columnsCSS.content]}>16 by 9</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m37by20]}><div classes={[columnsCSS.content]}>37 by 20</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by7]}><div classes={[columnsCSS.content]}>16 by 7</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m21by9]}><div classes={[columnsCSS.content]}>21 by 9</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m8by3]}><div classes={[columnsCSS.content]}>8 by 3</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by1]}><div classes={[columnsCSS.content]}>3 by 1</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by5]}><div classes={[columnsCSS.content]}>16 by 5</div></li>
+            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m9by2]}><div classes={[columnsCSS.content]}>9 by 2</div></li>
+            <li classes={[columnsCSS.col1]} />
+            <li classes={[columnsCSS.col2]} />
+            <li classes={[columnsCSS.col3]} />
+            <li classes={[columnsCSS.col4]} />
+            <li classes={[columnsCSS.col5]} />
+            <li classes={[columnsCSS.col6]} />
+            <li classes={[columnsCSS.col1, columnsCSS.breaked]} />
+            <li classes={[columnsCSS.col2, columnsCSS.breaked]} />
+            <li classes={[columnsCSS.col3, columnsCSS.breaked]} />
+            <li classes={[columnsCSS.col4, columnsCSS.breaked]} />
+            <li classes={[columnsCSS.col5, columnsCSS.breaked]} />
+            <li classes={[columnsCSS.col6, columnsCSS.breaked]} />
+          </ul>
+          <div classes={[columnsCSS.breaked]} />
         </div>
       </virtual>
 		</Example>

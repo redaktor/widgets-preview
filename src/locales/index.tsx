@@ -23,7 +23,7 @@ export const Locales = factory(function Locales({ properties, middleware: { them
 				<Icon type="globe" />{' '}
 				<i classes={themedCss.metaSummary}>{
 					locales.map((l,i,a) => {
-						console.log(l.value, locale.locale);
+						// console.log(l.value, locale.locale);
 						const localeCaption = `${l.value}${i < a.length-1 ? ', ' : ''}`;
 						return l.value === locale.locale ? <span classes={themedCss.selected}>{localeCaption}</span> : localeCaption
 					})

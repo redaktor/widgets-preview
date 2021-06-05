@@ -1,6 +1,6 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import { uuid } from '@dojo/framework/core/util';
+import id from '../middleware/id';
 import focus from '@dojo/framework/core/middleware/focus';
 import { FocusProperties } from '@dojo/framework/core/mixins/Focus';
 import { theme, formatAriaProperties, ThemeProperties, Variants } from '../middleware/theme';
@@ -63,15 +63,14 @@ export interface CheckboxProperties extends CheckboxBaseProperties {
 	icon?: 'checkmark' | 'dot';
 }
 
-const factory = create({ theme, focus })
+const factory = create({ theme, id, focus })
 	.properties<CheckboxProperties>()
 	.children<RenderResult | undefined>();
 
 export const Checkbox = factory(function Checkbox({
 	children,
 	properties,
-	id,
-	middleware: { theme, focus }
+	middleware: { theme, id, focus }
 }) {
 	const [label] = children();
 	const themedCss = theme.classes(css);
@@ -95,7 +94,7 @@ export const Checkbox = factory(function Checkbox({
 		value,
 		widgetId
 	} = properties();
-	const idBase = widgetId || `radio-${id}` || uuid();
+	const idBase = id.getId(_inputType);
 
 	return (
 		<label

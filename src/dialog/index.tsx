@@ -1,7 +1,7 @@
 import { DNode } from '@dojo/framework/core/interfaces';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { uuid } from '@dojo/framework/core/util';
+import id from '../middleware/id';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { formatAriaProperties, Keys } from '../common/util';
 import Icon from '../icon';
@@ -59,6 +59,7 @@ export interface DialogState {
 const factory = create({
 	theme,
 	i18n,
+	id,
 	icache: createICacheMiddleware<DialogState>(),
 	inert,
 	bodyScroll
@@ -66,7 +67,7 @@ const factory = create({
 	.properties<DialogProperties>()
 	.children<DialogChild>();
 export const Dialog = factory(function Dialog({
-	middleware: { theme, i18n, icache, inert, bodyScroll },
+	middleware: { theme, i18n, id, icache, inert, bodyScroll },
 	properties,
 	children
 }) {
@@ -84,8 +85,8 @@ export const Dialog = factory(function Dialog({
 	}
 
 	const wasOpen = icache.getOrSet('wasOpen', false);
-	const titleId = icache.getOrSet('titleId', uuid());
-	const contentId = icache.getOrSet('contentId', uuid());
+	const titleId = id.getId('titleId');
+	const contentId = id.getId('contentId');
 
 	const onOpen = () => {
 		const { onOpen } = properties();

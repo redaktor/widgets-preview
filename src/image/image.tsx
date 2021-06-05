@@ -2,10 +2,10 @@ import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import breakpoints from '../middleware/breakpoint';
+import id from '../middleware/id';
 import theme from '../middleware/theme';
 import { ActivityPubObject, ActivityPubObjectNormalized, ActivityPubLinkObject } from '../common/interfaces';
 import { AspectRatioNamed }from '../common/util';
-import { uuid } from '@dojo/framework/core/util';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Srcset from '../srcset';
 import Blurhash, { Brightness } from '../blurhash/';
@@ -51,11 +51,7 @@ export interface ImgChildren {
 }
 
 const icache = createICacheMiddleware<ImgIcache>();
-const factory = create({
-	icache,
-	theme,
-	breakpoints
-})
+const factory = create({ icache, id, theme, breakpoints })
 	.properties<ImgProperties>()
 	.children<ImgChildren | RenderResult | undefined>();
 
@@ -68,7 +64,7 @@ const factory = create({
 */
 
 export const Img = factory(function Img({
-	middleware: { icache, theme, breakpoints},
+	middleware: { icache, id, theme, breakpoints},
 	properties
 }) {
 	const { get, set, getOrSet } = icache;
@@ -96,6 +92,9 @@ export const Img = factory(function Img({
 	/* Baselined to typo grid */
 	const lineCount = !get('l') ? 0 : ((contentRect && cHeight)||0) / get('l');
 	const mml = `--mml: ${!get('l') || !baselined ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount)};`;
+
+// const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+// !!baselined && console.log(lineCount, mml, vw, vw / (lineCount * (width / height)) - 50, vw / ((Math.max(0, Math.ceil(lineCount)) - lineCount)) * (width / height))
 	/* Fixed Aspect Ratio */
 	const aspectRatio = Array.isArray(ratio) && ratio.join('/') in AspectRatioNamed ? ratio.join('/') : ratio;
 	const apt = !aspectRatio || typeof aspectRatio === 'string' ? '' : `--apt: ${100 / aspectRatio[0] * aspectRatio[1]}%;`;
@@ -103,7 +102,7 @@ export const Img = factory(function Img({
 	/* Blurhash and CW */
 	const maxInt = Math.max(width, height);
 	const [blurWidth, blurHeight] = [Math.round(width / maxInt * 80), Math.round(height / maxInt * 80)];
-	const cwId = !sensitive ? '' : uuid();
+	const cwId = !sensitive ? '' : id.getId('sensitive');
 	/* Focal Point */
 	let styles: Partial<CSSStyleDeclaration> = {};
 	const hasFocalPoint = Array.isArray(focalPoint) &&
@@ -187,6 +186,7 @@ export const Img = factory(function Img({
 			</picture>
 			{sensitive && <label classes={themedCss.sensitiveLabel} for={cwId} />}
 		</figure>
+
 	return !sensitive ? img : <virtual>
 		<input
 			type="checkbox"
