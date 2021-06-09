@@ -1,9 +1,8 @@
-import { tsx, create, node } from '@dojo/framework/core/vdom';
+import { tsx, create } from '@dojo/framework/core/vdom';
 import has from '@dojo/framework/core/has';
 import { ActivityPubObject } from '../common/interfaces';
 import id from '../middleware/id';
 import theme, { ViewportProperties} from '../middleware/theme';
-import breakpoints from '../middleware/breakpoint';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Icon from '../icon';
@@ -31,10 +30,10 @@ export interface ImagesIcache {
 	currentPage: number;
 }
 const icache = createICacheMiddleware<ImagesIcache>();
-const factory = create({ icache, id, node, breakpoints, theme }).properties<ImagesProperties>();
+const factory = create({ icache, id, theme }).properties<ImagesProperties>();
 
 export const Images = factory(function Images({
-	middleware: { icache, id, node, breakpoints, theme },
+	middleware: { icache, id, theme },
 	properties
 }) {
 	const { get, set, getOrSet } = icache;
@@ -57,11 +56,17 @@ export const Images = factory(function Images({
 		getOrSet('loaded', paginatedImage.map(() => 0), false);
 	}
 	getOrSet('currentPage', 0, false);
-	getOrSet('l', theme.line(), false);
 
-	const {contentRect: dim = {height: 0}} = breakpoints.get('root')||{};
-	const lineCount = !get('l') ? 0 : ((dim && dim.height)||0) / get('l');
-	const mml = !get('l') || !baselined ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
+	const ratios: [number, any][] = [
+		[0.5625,themedCss.m9by16], [0.6666,themedCss.m2by3], [0.75,themedCss.m3by4],
+		[0.8,themedCss.m4by5], [0.8571,themedCss.m6by7], [1,themedCss.m1by1],
+		[1.1666,themedCss.m7by6], [1.25,themedCss.m5by4], [1.3333,themedCss.m4by3],
+		[1.5,themedCss.m3by2], [1.6,themedCss.m16by10], [1.7777,themedCss.m16by9],
+		[1.85,themedCss.m37by20], [2.2857,themedCss.m16by7], [2.3333,themedCss.m21by9],
+		[2.6666,themedCss.m8by3], [3,themedCss.m3by1], [3.2,themedCss.m16by5], [4.5,themedCss.m9by2]
+	];
+	const ratioClass = (quotient: number) =>
+		ratios.reduce((a, b) => Math.abs(b[0] - quotient) < Math.abs(a[0] - quotient) ? b : a)[1];
 
 	const loadedImg = () => {
 		const current = get('currentPage') || 0;
@@ -71,21 +76,6 @@ export const Images = factory(function Images({
 		loaded[current]++;
 		set('loaded', loaded, (loaded[current] >= count))
 	}
-	const resizeGridItem = (page: number, i: number) => {
-		const [grid, item] = [node.get(`page${page}`), node.get(`image${i}`)];
-		if (!grid || !item || !item.firstChild) { return }
-		const getProp = (name: string) => parseInt(window.getComputedStyle(grid).getPropertyValue(name), 10);
-		const [rowHeight, rowGap] = [getProp('grid-auto-rows'), getProp('grid-row-gap')];
-		item.style.gridRowEnd = `span ${Math.ceil(((item.firstChild as any).offsetHeight||0+rowGap)/(rowHeight+rowGap))}`;
-	}
-	const resizeAllGridItems = () => {
-		const current = get('currentPage') || 0;
-		const paginated = get('paginated') || [];
-		const l = paginated[current].length || 0;
-		for(let n = 0; n < l; n++){
-			resizeGridItem(current, n);
-		}
-	}
 	const setPage = (i: number) => {
 		set('currentPage', i);
 	}
@@ -94,10 +84,7 @@ export const Images = factory(function Images({
 	const paginated = get('paginated') || [];
 	const count = paginated.length && paginated[current].length || 0;
 	const allLoaded = count === (get('loaded') as any)[current];
-	if (!(get('loaded') as any)[current]) {
-		!CSS.supports('grid-template-rows', 'masonry') && !isRow && resizeAllGridItems();
-		onLoad && onLoad()
-	}
+	if (!!allLoaded) { onLoad && onLoad() }
 
 	const paginationInputsVisible = !(paginated.length > 9 || size === 's' && paginated.length > 8 ||
 		size === 'xs' && paginated.length > 7 || size === 'micro' && paginated.length > 6);
@@ -115,7 +102,6 @@ export const Images = factory(function Images({
 			]}
 			aria-label="Images"
 			role="region"
-			style={`--mml: ${mml};`}
 		>
 
 		{paginated.map((imagePage: any, i: number, a: any[]) => {
@@ -154,12 +140,18 @@ export const Images = factory(function Images({
 					<div key={`page${i}`} classes={[themedCss.page]} style={`--count: ${itemsPerPage};`}>
 						{imagePage.map((img: any, j: number) => {
 							if (typeof img === 'string') { img = {type: ['Image'], url: img} }
-							return <div key={`image${j}`}><Image
-								{...img}
-								baselined={false}
-								onLoad={loadedImg}
-								onClick={onClick && onClick(img)}
-							/></div>
+							return <div classes={[
+								themedCss.media,
+								!!img.width && !!img.height && ratioClass(img.width/img.height)
+							]} key={`image${j}`}>
+								<Image
+									{...img}
+									fit={!isRow}
+									baselined={false}
+									onLoad={loadedImg}
+									onClick={onClick && onClick(img)}
+								/>
+							</div>
 						})}
 					</div>
 				}

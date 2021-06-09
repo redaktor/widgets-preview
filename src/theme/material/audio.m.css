@@ -127,13 +127,16 @@ video:picture-in-picture {
 .root:not(.row) .mediaFreshTop,
 .root:not(.row) .mediaTop {
 	position: absolute;
+	top: 0px;
 	max-width: 100%;
 	z-index: 6;
 }
 .mediaFreshTop {
-	padding-top: var(--pt);
 	justify-content: flex-start;
 	z-index: 10;
+}
+.root:not(.row) .mediaFreshTop {
+	top: var(--pt);
 }
 .mediaTop {
 	right: 0px;
@@ -393,10 +396,11 @@ video:picture-in-picture {
 .root.row {
 	flex-direction: row;
 	flex-wrap: wrap;
+	padding-top: var(--pt) !important;
 }
 .row .mediaFreshTop {
 	min-width: var(--line5);
-	margin-right: var(--grid-base);
+	margin: 0 var(--grid-base) var(--mb) 0;
 }
 .row .media {
 	width: var(--line5);

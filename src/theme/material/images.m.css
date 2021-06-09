@@ -1,16 +1,22 @@
 .root {
 	width: 100%;
-	/* padding-top: var(--line2); */
-	margin-bottom: calc(var(--line) * var(--mml,0));
 	background-color: var(--ui-bg, #000);
 	order: 7;
 }
 .loaded { }
-/*
-.root.loaded {
-	padding-top: 0px;
-}
-*/
+
+.media { position: relative; }
+.m9by16 { grid-row-end: span 11; }
+.m2by3 { grid-row-end: span 10; }
+.m3by4 { grid-row-end: span 9; }
+.m4by5 { grid-row-end: span 8; }
+.m6by7 { grid-row-end: span 7; }
+.m1by1, .m7by6 { grid-row-end: span 6; }
+.m5by4, .m4by3 { grid-row-end: span 5; }
+.m3by2, .m37by20, .m16by10, .m16by9 { grid-row-end: span 4; }
+.m16by7, .m21by9, .m8by3, .m3by1 { grid-row-end: span 3; }
+.m16by5, .m9by2 { grid-row-end: span 2; }
+
 .hasPagination {
 	display: flex;
 	flex-wrap: wrap;
@@ -52,7 +58,8 @@
 	display: grid;
 	grid-gap: var(--gap, var(--grid-base, 8px));
 	grid-template-columns: repeat(auto-fill, minmax(calc((var(--minWidth) / 2) - var(--gap)), 1fr));
-	grid-auto-rows: var(--gap, var(--grid-base, 8px));
+	grid-auto-rows: calc(var(--line) - var(--gap));
+	padding-bottom: var(--gap, var(--grid-base, 8px));
 }
 .row .page {
 	display: flex;

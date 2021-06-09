@@ -6,7 +6,7 @@ import { clampStrings } from '../common/activityPubUtil';
 import { ActivityPubObject } from '../common/interfaces';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
-import i18nActivityPub from '../middleware/i18nActivityPub';
+/* import i18nActivityPub from '../middleware/i18nActivityPub'; */
 
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import i18n from '@dojo/framework/core/middleware/i18n';

@@ -171,6 +171,7 @@ console.log('Example audio render');
             <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m9by16]}><div classes={[columnsCSS.content]}>9 by 16</div></li>
             <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m2by3]}><div classes={[columnsCSS.content]}>2 by 3</div></li>
             <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by4]}><div classes={[columnsCSS.content]}>3 by 4</div></li>
+            <p>Lorem Ipsum dolor sunt. Dies ist Blindtext, der mehrzeilig und interessant erscheint.</p>
             <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m4by5]}><div classes={[columnsCSS.content]}>4 by 5</div></li>
             <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m6by7]}><div classes={[columnsCSS.content]}>6 by 7</div></li>
             <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m1by1]}><div classes={[columnsCSS.content]}>1 by 1</div></li>
@@ -185,22 +186,10 @@ console.log('Example audio render');
             <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m21by9]}><div classes={[columnsCSS.content]}>21 by 9</div></li>
             <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m8by3]}><div classes={[columnsCSS.content]}>8 by 3</div></li>
             <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by1]}><div classes={[columnsCSS.content]}>3 by 1</div></li>
+            <p>Lorem Ipsum dolor sunt. Dies ist ein weiterer und längerer Blindtext, der mehrzeilig und ebenfalls sehr interessant erscheint.</p>
             <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by5]}><div classes={[columnsCSS.content]}>16 by 5</div></li>
             <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m9by2]}><div classes={[columnsCSS.content]}>9 by 2</div></li>
-            <li classes={[columnsCSS.col1]} />
-            <li classes={[columnsCSS.col2]} />
-            <li classes={[columnsCSS.col3]} />
-            <li classes={[columnsCSS.col4]} />
-            <li classes={[columnsCSS.col5]} />
-            <li classes={[columnsCSS.col6]} />
-            <li classes={[columnsCSS.col1, columnsCSS.breaked]} />
-            <li classes={[columnsCSS.col2, columnsCSS.breaked]} />
-            <li classes={[columnsCSS.col3, columnsCSS.breaked]} />
-            <li classes={[columnsCSS.col4, columnsCSS.breaked]} />
-            <li classes={[columnsCSS.col5, columnsCSS.breaked]} />
-            <li classes={[columnsCSS.col6, columnsCSS.breaked]} />
           </ul>
-          <div classes={[columnsCSS.breaked]} />
         </div>
       </virtual>
 		</Example>

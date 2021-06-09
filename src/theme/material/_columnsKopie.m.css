@@ -13,8 +13,7 @@
 	margin: 0 auto;
   padding: 0;
   width: 100%;
-  /* Note: This changes to 3320px with larger gap for 4k */
-  max-width: 2248px;
+  max-width: 3320px;
 }
 .item {
 	display: flex;
@@ -1089,9 +1088,6 @@
 @media screen and (min-width: 2246px) {
 	.m6by7 { --l: 25; }
 }
-
-/* <-- max-width */
-
 /*
 @media screen and (min-width: 2258px) {
 	.m9by2 { --l: 5; }
@@ -1105,16 +1101,11 @@
 }
 ...
 */
-/*
-@media screen and (min-width: 2259px) {
-  .root { --minwidth: 480px; }
-  .baselined { margin: var(--line); }
-}
-*/
+
+@media screen and (min-width: 2259px) { .root { --minwidth: 480px; } .baselined { margin: var(--line); } .m1by1 { --l: 27; } }
+@media screen and (min-width: 2327px) { .m1by1 { --l: 28; } } /* 5 87 */
+
 @media screen and (min-width: 2421px) {
-  .root { --minwidth: 480px; }
-  .baselined { margin: var(--line); }
-  .columns { max-width: 3320px; }
 	.m9by2 { --l: 5; }
 	.m16by5 { --l: 7; }
 	.m3by1 { --l: 7; }
