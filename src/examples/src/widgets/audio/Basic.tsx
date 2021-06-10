@@ -6,7 +6,6 @@ import Image, { ImageProperties } from '@redaktor/widgets/image';
 import Img from '@redaktor/widgets/image/image';
 
 import Table from '@redaktor/widgets/table';
-import * as cardsCSS from '@redaktor/widgets/theme/material/cards.m.css';
 import * as columnsCSS from '@redaktor/widgets/theme/material/_columns.m.css';
 /*
 kind
@@ -148,7 +147,7 @@ console.log('Example audio render');
 		<Example spaced={true}>
       <virtual>
         <div><p>x</p></div>
-  			<div styles={{ width: '66.666%' }}>{audio()}</div>
+  			<div classes={[columnsCSS.item]}>{audio()}</div>
         <br /><br />
         <div styles={{ width: '100%' }}>{audio('row')}</div>
         <br /><br />

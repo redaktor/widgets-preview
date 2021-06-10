@@ -6,7 +6,7 @@ import { clampStrings } from '../common/activityPubUtil';
 import { ActivityPubObject } from '../common/interfaces';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
-/* import i18nActivityPub from '../middleware/i18nActivityPub'; */
+import i18nActivityPub from '../middleware/i18nActivityPub';
 
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import i18n from '@dojo/framework/core/middleware/i18n';
@@ -150,24 +150,29 @@ if (!(window as any).AudioContext) {
 }
 
 const icache = createICacheMiddleware<AudioIcache>();
-const factory = create({ icache, node, theme, breakpoints, id, i18n })
+const factory = create({ icache, node, theme, breakpoints, id, i18nActivityPub })
 	.properties<AudioProperties>()
 	.children<AudioChildren | RenderResult | undefined>();
 
 export const Audio = factory(function Audio({
-	middleware: { icache, node, theme, breakpoints, id, i18n /*, resource */ },
+	middleware: { icache, node, theme, breakpoints, id, i18nActivityPub /*, resource */ },
 	properties,
 	children
 }) {
 	const { get, set, getOrSet } = icache;
+	const { localize, normalized, set: setLocale } = i18nActivityPub;
+	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
+	console.log(locale, locales);
+
+
 	const themedCss = theme.classes(css);
-	const { messages } = i18n.localize(bundle);
+	const { messages } = localize(bundle);
 	const {
 		alt, editable, onLoad, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId,
 		baselined = true, hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
 		autoPlay = false, muted = false, view = 'column',
 		crossorigin = 'anonymous', volume = 1, speed = 1, ..._rest
-	} = normalizeActivityPub(properties());
+	} = normalized(properties());
 
 	const APo = _rest;
 	if (APo.type.indexOf('Audio') < 0 && (!APo.mediaType || APo.mediaType.toLowerCase().indexOf('audio') !== 0)) {
@@ -368,7 +373,7 @@ export const Audio = factory(function Audio({
 
 	/* TODO timeupdate event:
 	Should we debounce ???
-	Firefox fires the timeupdate event once per frame.
+	Firefox fires the timeupdate event each frame.
 	Safari/Chrome fire every 250ms. Opera every 200ms.
 	*/
 	const setTime = (v: number) => {
@@ -384,36 +389,22 @@ export const Audio = factory(function Audio({
 		}
 	}
 
-	/*
-		classNames('audio-player', { editable })
-	*/
 	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
 	const sources = !!APo.url && <Srcset url={APo.url} />;
-	// const posterSrc = poster || !!APo.image && !!APo.image[0] && APo.image[0].href;
 	const menuOpen = get('isTrackMenuOpen');
 	const formattedDuration = formatTime(Math.floor(get('duration')||0));
 
 	/*
-	const ratios = [
-		[9,16],[2,3],[3,4],[4,5],[6,7],[1,1],[7,6],[5,4],[4,3],[3,2],[16,10],[16,9],
-	  [37,20],[16,7],[21,9],[8,3],[3,1],[16,5],[9,2]
-	];
-	const closestRatio= (quotient) => ratios.reduce((a, b) =>
-		(Math.abs((b[0]/b[1]) - quotient) < Math.abs((a[0]/a[1]) - quotient) ? b : a)
-	);
-	console.log(closestRatio(0.9));
-
+		TODO - To CSS :
 	*/
 	const {breakpoint: vp = 'm'} = isResponsive ? breakpoints.get('measure')||{} : {};
-	const {contentRect: dim = {height: 0}} = isResponsive ? breakpoints.get('media')||{} : {};
-	let [lineCount, mml, isMini, typoClass, audioAvatarSize] = [0, 0, false, ui.m, 'xl'];
+	let [isMini, typoClass, audioAvatarSize] = [false, ui.m, 'xl'];
 	if (isResponsive && !!get('l')) {
-		lineCount = ((dim && dim.height)||0) / (get('l')||1);
-		mml = !baselined ? 0 : (Math.max(0, Math.ceil(lineCount)) - lineCount);
 		isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
 		typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 		audioAvatarSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
 	}
+	/* <-- */
 
 	const attachmentIcons = hasAttachment ? (APo.attachment||[]).reduce((a: string[], ao) =>
 		a.concat(ao.type.filter((t: string) => (a.indexOf(t) < 0))), []).map((type) =>
@@ -438,7 +429,6 @@ export const Audio = factory(function Audio({
 	}
 	*/
 
-	const [locale, locales] = [i18n.get(), APo.locales];
 	const audioId = id.getId('audio');
 	const vol = get('volume')||0;
 	const playerProps: any = {
@@ -510,10 +500,11 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 			key="media"
 			classes={[
 				themedCss.media,
-				/* TODO isJS */
-				/* theme.isJS() && */
+				isColumn && columns.item,
+				isColumn && columns.baselined,
+				isColumn && columns.ratio,
+				isColumn && columns.m1by1
 			]}
-			style={`--mml: ${mml};`}
 		>
 			{ menuOpen && get('trackMenu') }
 			<div key="avatar" classes={themedCss.audioAvatarWrapper}>
@@ -524,7 +515,7 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 			</noscript>
 			{
 				hasPoster && !!APo.image && !!APo.image[0] &&
-					<Image {...APo.image[0]} fit={true} baselined={false} />
+					<Image {...APo.image[0]} fit={true} />
 			}
 
 			{!get('hasTracks') && !get('isPicInPic') ?
@@ -627,7 +618,7 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 			</div>
 		</div>}
 
-		{!!locales && locales.length > 1 && <Locales locale={locale} locales={locales} onValue={(l) => i18n.set({locale:l})} />}
+		{!!locales && locales.length > 1 && <Locales locale={locale} locales={locales} onValue={(l) => setLocale(l)} />}
 
 		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
 		<div classes={themedCss.attributions}>

@@ -1,12 +1,16 @@
 .root {
-  --gap: var(--line);
-  --asidewidth: 240px;
-  --minwidth: 400px;
 	display: flex;
   flex-direction: column;
 	padding: var(--gap);
 	margin: 0;
 	background-color: var(--paper);
+}
+.root, .item {
+  --gap: var(--line);
+  --cols: 1;
+  --asidewidth: 240px;
+  --minwidth: 400px;
+  --maxvp: 2248px;
 }
 .columns {
 	list-style: none;
@@ -14,22 +18,55 @@
   padding: 0;
   width: 100%;
   /* Note: This changes to 3320px with larger gap for 4k */
-  max-width: 2248px;
+  max-width: var(--maxvp);
 }
 .item {
+  --w: calc((100vw - (var(--gap) * (var(--cols) + 1))) / var(--cols));
+  width: var(--w);
 	display: flex;
 	justify-content: center;
   position: relative;
   padding: 0;
 }
-.baselined {
-  /* height: calc(var(--line) * var(--l, 3)); */
-  margin: 0;
-}
-.fixed.baselined {
-  /* width: calc((100vw / var(--cols)) - (var(--gap) * var(--cols))); */
+/*
+.item.ratio {
   width: calc((var(--line) * var(--l, 3)) / var(--ar2) * var(--ar1));
 }
+*/
+.item.baselined {
+  --h: calc(var(--w) / var(--ar2) * var(--ar1));
+  min-height: var(--h);
+  margin-bottom: calc(var(--line) * var(--l) - var(--h));
+}
+
+.root .item,
+.root .item.ratio,
+.root .item.baselined.ratio,
+.root .item.baselined.ratio.m1by1 {
+  /* handled by grid */
+  width: auto;
+  min-height: var(--line);
+  margin-bottom: 0px;
+}
+
+.root .item.baselined {
+  grid-row-end: span var(--l);
+  margin: 0;
+}
+
+
+
+
+
+@media screen and (max-width: 444px) {
+	.root { padding: 0; }
+	.item { padding: var(--lineHalf, 7px) 0 var(--lineHalf, 7px) 0; }
+}
+@media screen and (min-width: 2421px) {
+  .root { --minwidth: 480px; --maxvp: 3320px; }
+  .item { margin: var(--line); }
+}
+
 .content {
   width: 100%;
   height: 100%;
@@ -48,16 +85,10 @@
     width: 100%;
     position: relative;
   }
-
-  .item {
-    display: block;
+  .root .item {
     margin: 0;
     padding: 0;
   }
-  .baselined {
-    grid-row-end: span var(--l);
-  }
-
 }
 
 @supports (grid-template-rows: masonry) {
@@ -68,22 +99,36 @@
     grid-template-columns: repeat(var(--cols, 2), 1fr);
     grid-template-rows: masonry;
   }
-  .item {
+  .root .item {
     width: 100%;
     padding: 0;
     margin: 0;
   }
 }
 
-@media screen and (max-width: 444px) {
-	.root {
-		padding: 0;
-	}
-	.item {
-		padding: var(--lineHalf, 7px) 0 var(--lineHalf, 7px) 0;
-	}
-}
+.m9by2 { --ar1: 9; --ar2: 2; }
+.m16by5 { --ar1: 16; --ar2: 5; }
+.m3by1 { --ar1: 3; --ar2: 1; }
+.m8by3 { --ar1: 8; --ar2: 3; }
+.m21by9 { --ar1: 21; --ar2: 9; }
+.m16by7 { --ar1: 16; --ar2: 7; }
+.m37by20 { --ar1: 37; --ar2: 20; }
+.m16by9 { --ar1: 16; --ar2: 9; }
+.m16by10 { --ar1: 16; --ar2: 10; }
+.m3by2 { --ar1: 3; --ar2: 2; }
+.m4by3 { --ar1: 4; --ar2: 3; }
+.m5by4 { --ar1: 5; --ar2: 4; }
+.m7by6 { --ar1: 7; --ar2: 6; }
+.m1by1 { --ar1: 1; --ar2: 1; }
+.m6by7 { --ar1: 6; --ar2: 7; }
+.m4by5 { --ar1: 4; --ar2: 5; }
+.m3by4 { --ar1: 3; --ar2: 4; }
+.m2by3 { --ar1: 2; --ar2: 3; }
+.m9by16 { --ar1: 9; --ar2: 16; }
+
+/* Columns and Aspect Ratios */
 @media screen and (min-width: 821px) {
+  .root, .item { --cols: 2; }
 	.m9by2 { --l: 4; }
 	.m16by5 { --l: 6; }
 	.m3by1 { --l: 6; }
@@ -481,6 +526,7 @@
 	.m1by1 { --l: 29; }
 }
 @media screen and (min-width: 1221px) {
+  .root, .item { --cols: 3; }
 	.m9by2 { --l: 4; }
 	.m16by5 { --l: 6; }
 	.m3by1 { --l: 6; }
@@ -757,6 +803,7 @@
 	.m2by3 { --l: 39; }
 }
 @media screen and (min-width: 1621px) {
+  .root, .item { --cols: 4; }
 	.m9by2 { --l: 4; }
 	.m16by5 { --l: 6; }
 	.m3by1 { --l: 6; }
@@ -976,6 +1023,7 @@
 	.m6by7 { --l: 28; }
 }
 @media screen and (min-width: 2021px) {
+  .root, .item { --cols: 5; }
 	.m9by2 { --l: 4; }
 	.m16by5 { --l: 6; }
 	.m3by1 { --l: 6; }
@@ -1105,16 +1153,9 @@
 }
 ...
 */
-/*
-@media screen and (min-width: 2259px) {
-  .root { --minwidth: 480px; }
-  .baselined { margin: var(--line); }
-}
-*/
+
 @media screen and (min-width: 2421px) {
-  .root { --minwidth: 480px; }
-  .baselined { margin: var(--line); }
-  .columns { max-width: 3320px; }
+  .root, .item { --cols: 5; }
 	.m9by2 { --l: 5; }
 	.m16by5 { --l: 7; }
 	.m3by1 { --l: 7; }
@@ -1329,6 +1370,7 @@
 
 /*6 155*/
 @media screen and (min-width: 2901px) {
+  .root, .item { --cols: 6; }
 	.m9by2 { --l: 5; }
 	.m16by5 { --l: 7; }
 	.m3by1 { --l: 7; }

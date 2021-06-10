@@ -1,5 +1,4 @@
 .root {
-	margin-bottom: var(--mb);
 	z-index: 6;
 }
 .row .root {

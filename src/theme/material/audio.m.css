@@ -14,6 +14,37 @@
 .mini, .medium, .large { }
 
 
+.media {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--ui-bg);
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: cover; /*contain;*/
+	filter: contrast(80%);
+	overflow: hidden;
+	z-index: 4;
+	transition: border-radius var(--ui-dpd-16,0.5s) var(--ui-easing);
+	cursor: pointer;
+}
+.root.fresh .media {
+	--wh: calc(var(--h) - var(--line2));
+	border-radius: var(--wh, 50%);
+	width: var(--wh);
+	margin-left: var(--line);
+	min-height: var(--wh);
+	margin-bottom: calc(var(--line) * var(--l) - var(--h) - var(--line));
+}
+.media:not(.fresh .media) {
+	border-top-left-radius: var(--ui-border-radius-emphasized, 0.25rem);
+	border-top-right-radius: var(--ui-border-radius-emphasized, 0.25rem);
+}
+
+.media:hover {
+	filter: contrast(100%);
+}
 
 .menuOpen, .paused { }
 .measure {
@@ -52,6 +83,7 @@ video:picture-in-picture {
 	object-position: 50%;
 }
 .audio.video {
+	top: 0px;
 	height: calc(100% - var(--line));
 	padding: 0 var(--grid-base) 0 var(--grid-base);
 	margin-bottom: var(--line);
@@ -145,62 +177,43 @@ video:picture-in-picture {
 .header {
 	z-index: 3;
 }
-
-.media {
-	position: relative;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: var(--ui-bg);
-	background-position: center center;
-	background-repeat: no-repeat;
-	background-size: cover; /*contain;*/
-	filter: contrast(80%);
-	overflow: hidden;
-	z-index: 4;
-	transition: border-radius var(--ui-dpd-16,0.5s) var(--ui-easing);
-	width: 61.8%;
-	cursor: pointer;
-}
+/*
 .root:not(.row) .media {
 	margin-left: 19.1%;
 	margin-right: 19.1%;
 }
+*/
 .xs:not(.row) .media {
 	width: 75%;
+	/*
 	margin-left: 12.5%;
 	margin-right: 12.5%;
+	*/
 }
 .micro:not(.row) .media {
 	width: calc(100% - var(--line));
+	/*
 	margin-left: 0;
 	margin-right: 0;
+	*/
 }
-.media:not(.fresh .media) {
-	border-top-left-radius: var(--ui-border-radius-emphasized, 0.25rem);
-	border-top-right-radius: var(--ui-border-radius-emphasized, 0.25rem);
-	margin-bottom: calc(var(--line) * var(--mml,0) - var(--line));
-}
-.fresh .media {
-	border-radius: 50%;
-	margin-bottom: calc(var(--line) * var(--mml,0) - var(--line));
-}
-
 .fresh .media ~ details:not(details[open]) > summary .avatar {
 	position: absolute;
 	top: -100%;
 }
+/*
 .media::before {
 	content: '';
 	display: block;
 	margin-top: calc(100% - var(--line2));
 	max-width: calc(100vh - var(--line2));
 }
+
 .fresh .media::before {
 	margin-top: 100%;
 	max-width: 100vh;
 }
-
+*/
 .playPause {
 	--bBase: var(--line2);
 	--bHalf: calc(var(--bBase) / 2);
@@ -214,6 +227,9 @@ video:picture-in-picture {
 	padding: 0 0 var(--line) 0;
 	margin: 0;
 }
+.fresh .playPause {
+	height: calc(100% - var(--line2));
+}
 .root.row .playPause { --bBase: calc(var(--line) * 1.5); }
 .root.preview .playPause { --bBase: var(--line); }
 
@@ -223,7 +239,6 @@ video:picture-in-picture {
 	display: block;
 	border-color: transparent transparent transparent var(--playcolor, #eee);
 	transition: all var(--ui-dpd-0, 100ms) ease-in-out;
-	margin-top: var(--line);
 	width: var(--bBase);
 	height: var(--bBase);
 }

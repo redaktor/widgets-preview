@@ -58,7 +58,7 @@ export const Image = factory(function Image({
 	const { messages } = i18n.localize(bundle);
 	const {
 		alt, title, editable, fullscreen, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		blurhash, widgetId, mediaType, loading = 'lazy', crossorigin = 'anonymous', baselined = true,
+		blurhash, widgetId, mediaType, loading = 'lazy', crossorigin = 'anonymous', baselined = false,
 		fit = false, width = 80, height = 80, hasContent = true, hasAttachment = true, isRow = false, ..._rest
 	} = normalizeActivityPub(properties());
 
