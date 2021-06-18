@@ -7,9 +7,6 @@ import { ActivityPubObject } from '../common/interfaces';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import i18nActivityPub from '../middleware/i18nActivityPub';
-
-import { normalizeActivityPub } from '../common/activityPubUtil';
-import i18n from '@dojo/framework/core/middleware/i18n';
 /*
 import {
 	createResourceTemplate,
@@ -31,7 +28,7 @@ import Chip from '../chip';
 import Button from '../button';
 import Slider from '../slider';
 import Icon from '../icon';
-import Image from '../image/image';
+import Img from '../image/image';
 import Images from '../images';
 import Locales from '../locales';
 import bundle from './nls/Audio';
@@ -160,10 +157,8 @@ export const Audio = factory(function Audio({
 	children
 }) {
 	const { get, set, getOrSet } = icache;
-	const { localize, normalized, set: setLocale } = i18nActivityPub;
+	const { localize, normalized, setLocale } = i18nActivityPub;
 	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
-	console.log(locale, locales);
-
 
 	const themedCss = theme.classes(css);
 	const { messages } = localize(bundle);
@@ -171,10 +166,9 @@ export const Audio = factory(function Audio({
 		alt, editable, onLoad, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId,
 		baselined = true, hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
 		autoPlay = false, muted = false, view = 'column',
-		crossorigin = 'anonymous', volume = 1, speed = 1, ..._rest
-	} = normalized(properties());
+		crossorigin = 'anonymous', volume = 1, speed = 1, ...APo
+	} = normalized();
 
-	const APo = _rest;
 	if (APo.type.indexOf('Audio') < 0 && (!APo.mediaType || APo.mediaType.toLowerCase().indexOf('audio') !== 0)) {
 		return ''
 	}
@@ -202,7 +196,6 @@ export const Audio = factory(function Audio({
 	const tracks = (children() as any || []).filter((c: any) => c.tag === 'track');
 	set('hasTracks', !!tracks.length, false);
 	getOrSet('trackMenu', '', false);
-	getOrSet('l', theme.line(), false);
 	getOrSet('buffer', 0, false);
 	getOrSet('currentTime', 0, false);
 	getOrSet('volume', Math.min(Math.max(0, volume), 1), false);
@@ -390,20 +383,18 @@ export const Audio = factory(function Audio({
 	}
 
 	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
-	const sources = !!APo.url && <Srcset url={APo.url} />;
-	const menuOpen = get('isTrackMenuOpen');
-	const formattedDuration = formatTime(Math.floor(get('duration')||0));
-
-	/*
-		TODO - To CSS :
-	*/
-	const {breakpoint: vp = 'm'} = isResponsive ? breakpoints.get('measure')||{} : {};
-	let [isMini, typoClass, audioAvatarSize] = [false, ui.m, 'xl'];
-	if (isResponsive && !!get('l')) {
+	let [isMini, vp, typoClass, audioAvatarSize] = [false, 'm', ui.m, 'xl'];
+	if (isResponsive) {
+		const {breakpoint: vp = 'm'} = isResponsive ? breakpoints.get('measure')||{} : {};
 		isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
 		typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 		audioAvatarSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
 	}
+	const sources = !!APo.url && <Srcset url={APo.url} />;
+	const menuOpen = get('isTrackMenuOpen');
+	const formattedDuration = formatTime(Math.floor(get('duration')||0));
+
+
 	/* <-- */
 
 	const attachmentIcons = hasAttachment ? (APo.attachment||[]).reduce((a: string[], ao) =>
@@ -436,7 +427,7 @@ export const Audio = factory(function Audio({
 		alt: !!APo.summary && !!APo.summary.length ? APo.summary[0]||'' : '',
 		classes: [
 			themedCss.audio,
-			typoClass,
+			isResponsive ? typoClass : columns.typo,
 			get('hasTracks') || get('isPicInPic') ? themedCss.video : null
 		],
 		preload: autoPlay ? 'auto' : 'metadata',
@@ -515,7 +506,7 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 			</noscript>
 			{
 				hasPoster && !!APo.image && !!APo.image[0] &&
-					<Image {...APo.image[0]} fit={true} />
+					<Img {...APo.image[0]} fit />
 			}
 
 			{!get('hasTracks') && !get('isPicInPic') ?
@@ -618,7 +609,9 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 			</div>
 		</div>}
 
-		{!!locales && locales.length > 1 && <Locales locale={locale} locales={locales} onValue={(l) => setLocale(l)} />}
+		{!!locales && locales.length > 1 && <Locales classes={{
+			'@redaktor/widgets/details': { root: [themedCss.locales] }
+		}} locale={locale} locales={locales} onValue={(l) => setLocale(l)} />}
 
 		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
 		<div classes={themedCss.attributions}>
@@ -629,27 +622,29 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 			{!!isRow && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
 			{
 				APo.summary && <Paginated key="summary" property="summary" classes={{
-						'@redaktor/widgets/paginated': { root: [themedCss.summaryPaginated] }
-					}}
+					'@redaktor/widgets/paginated': { root: [themedCss.summaryPaginated] }
+				}}
 				>
 					{clampStrings(APo.summary, 500).map((_summary, i) =>
-						<MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={_summary} />
+						<MD classes={[themedCss.summary, isResponsive ? typoClass : columns.typo]} key={`summary${i}`} content={_summary} />
 					)}
 				</Paginated>
 			}
 			{
 				APo.content && <Collapsed responsive={!isRow} lines={isRow ? (get('isFresh') ? 2 : 1) : 12} classes={{
-						'@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] }
-					}}>
+					'@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] }
+				}}>
 					{APo.content.map((_content, i) => <virtual>
-						<MD classes={[themedCss.content, typoClass]} key={`content${i}`} content={_content} /><hr />
+						<MD classes={[themedCss.content, isResponsive ? typoClass : columns.typo]} key={`content${i}`} content={_content} /><hr />
 					</virtual>)}
 				</Collapsed>
 			}
 		</div>}
 
 		{hasAttachment && <virtual>
-			<Images key="images" isRow={isRow} image={APo.image} size={(vp as any)} />
+			<Images key="images" isRow={isRow} image={APo.image} size={(vp as any)} classes={{
+				'@redaktor/widgets/images': { root: [themedCss.images] }
+			}} />
 			<div key="attachment" classes={themedCss.attachment}>
 				<div key="attachmentControl" classes={themedCss.attachmentControl}>
 					<Chip>

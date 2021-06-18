@@ -61,6 +61,7 @@
       "src/link",
       "src/list",
       "src/listbox",
+      "src/locales",
       "src/loadingIndicator",
       "src/map",
       "src/MD",

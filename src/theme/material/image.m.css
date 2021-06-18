@@ -107,7 +107,7 @@
 	}
 }
 .media.ratio {
-	aspect-ratio: var(--ar, 16 / 9);
+	aspect-ratio: var(--ar, 16 / 9) !important;
 }
 
 .media.loaded > canvas,

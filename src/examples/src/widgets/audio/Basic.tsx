@@ -141,7 +141,37 @@ export default factory(function Basic() {
     <track label="Chapters" src={vttChapters} kind="chapters" srclang="en" />
   </Audio>;
 
-console.log('Example audio render');
+/* Colums CSS is ready and needs own demo :
+<Example spaced={true}>
+<div classes={columnsCSS.root} styles={{ position: 'absolute', left: '0px', zIndex: '9998', width: '100%' }}>
+  <ul classes={columnsCSS.columns}>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m9by16]}><div classes={[columnsCSS.content]}>9 by 16</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m2by3]}><div classes={[columnsCSS.content]}>2 by 3</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by4]}><div classes={[columnsCSS.content]}>3 by 4</div></li>
+    <p>Lorem Ipsum dolor sunt. Dies ist Blindtext, der mehrzeilig und interessant erscheint.</p>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m4by5]}><div classes={[columnsCSS.content]}>4 by 5</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m6by7]}><div classes={[columnsCSS.content]}>6 by 7</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m1by1]}><div classes={[columnsCSS.content]}>1 by 1</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m7by6]}><div classes={[columnsCSS.content]}>7 by 6</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m5by4]}><div classes={[columnsCSS.content]}>5 by 4</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m4by3]}><div classes={[columnsCSS.content]}>4 by 3</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by2]}><div classes={[columnsCSS.content]}>3 by 2</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by10]}><div classes={[columnsCSS.content]}>16 by 10</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by9]}><div classes={[columnsCSS.content]}>16 by 9</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m37by20]}><div classes={[columnsCSS.content]}>37 by 20</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by7]}><div classes={[columnsCSS.content]}>16 by 7</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m21by9]}><div classes={[columnsCSS.content]}>21 by 9</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m8by3]}><div classes={[columnsCSS.content]}>8 by 3</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by1]}><div classes={[columnsCSS.content]}>3 by 1</div></li>
+    <p>Lorem Ipsum dolor sunt. Dies ist ein weiterer und längerer Blindtext, der mehrzeilig und ebenfalls sehr interessant erscheint.</p>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by5]}><div classes={[columnsCSS.content]}>16 by 5</div></li>
+    <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m9by2]}><div classes={[columnsCSS.content]}>9 by 2</div></li>
+  </ul>
+</div>
+</Example>
+*/
+
+
 /* tableRow is meant to be 100vw */
 	return (
 		<Example spaced={true}>
@@ -149,9 +179,9 @@ console.log('Example audio render');
         <div><p>x</p></div>
   			<div classes={[columnsCSS.item]}>{audio()}</div>
         <br /><br />
-        <div styles={{ width: '100%' }}>{audio('row')}</div>
-        <br /><br />
-        <div styles={{ position: 'absolute', left: '0px', zIndex: '9998' }} >
+        <div styles={{ width: '100%', position: 'absolute', left: '0', zIndex: '9998', background: 'black' }}>{audio('row')}</div>
+        <br /><br /><br /><br /><br /><br />
+        <div styles={{ position: 'absolute', left: '0px', zIndex: '9997' }} >
           <Table columns={['fixed','resizable','resizable','responsive']}>
             {audio('tableRow')}
             {audio('tableRow')}
@@ -164,31 +194,6 @@ console.log('Example audio render');
           <Image {...exampleImage} />
           <br /><br />
           <Img {...exampleImage} sensitive={false} aspectRatio="16/7" focalPoint={[0, 0.13]} />
-        </div>
-        <div classes={columnsCSS.root} styles={{ position: 'absolute', left: '0px', zIndex: '9998', width: '100%' }}>
-          <ul classes={columnsCSS.columns}>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m9by16]}><div classes={[columnsCSS.content]}>9 by 16</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m2by3]}><div classes={[columnsCSS.content]}>2 by 3</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by4]}><div classes={[columnsCSS.content]}>3 by 4</div></li>
-            <p>Lorem Ipsum dolor sunt. Dies ist Blindtext, der mehrzeilig und interessant erscheint.</p>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m4by5]}><div classes={[columnsCSS.content]}>4 by 5</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m6by7]}><div classes={[columnsCSS.content]}>6 by 7</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m1by1]}><div classes={[columnsCSS.content]}>1 by 1</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m7by6]}><div classes={[columnsCSS.content]}>7 by 6</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m5by4]}><div classes={[columnsCSS.content]}>5 by 4</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m4by3]}><div classes={[columnsCSS.content]}>4 by 3</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by2]}><div classes={[columnsCSS.content]}>3 by 2</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by10]}><div classes={[columnsCSS.content]}>16 by 10</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by9]}><div classes={[columnsCSS.content]}>16 by 9</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m37by20]}><div classes={[columnsCSS.content]}>37 by 20</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by7]}><div classes={[columnsCSS.content]}>16 by 7</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m21by9]}><div classes={[columnsCSS.content]}>21 by 9</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m8by3]}><div classes={[columnsCSS.content]}>8 by 3</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by1]}><div classes={[columnsCSS.content]}>3 by 1</div></li>
-            <p>Lorem Ipsum dolor sunt. Dies ist ein weiterer und längerer Blindtext, der mehrzeilig und ebenfalls sehr interessant erscheint.</p>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m16by5]}><div classes={[columnsCSS.content]}>16 by 5</div></li>
-            <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m9by2]}><div classes={[columnsCSS.content]}>9 by 2</div></li>
-          </ul>
         </div>
       </virtual>
 		</Example>

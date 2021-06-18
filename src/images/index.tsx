@@ -6,7 +6,7 @@ import theme, { ViewportProperties} from '../middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Icon from '../icon';
-import Image from '../image/image';
+import Img from '../image/image';
 // import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/images.m.css';
 
@@ -15,7 +15,7 @@ export interface ImagesProperties extends ActivityPubObject, ViewportProperties 
 	isRow?: boolean;
 	/* maximum number of items, default 1000 */
 	max?: number;
-	/* max. items per “page”, default 10 */
+	/* max. manual items per “page”, normally calculated */
 	itemsPerPage?: number;
 	/* when all images have loaded */
 	onLoad?: () => any;
@@ -39,34 +39,31 @@ export const Images = factory(function Images({
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
 	const {
-		image = [], isRow = false, size = 'm', max = 1000, itemsPerPage = 8, baselined = true,
-		onLoad, onClick
+		image = [], isRow = false, size = 'm', max = 1000, baselined = true,
+		itemsPerPage, onLoad, onClick
 	} = normalizeActivityPub(properties());
 	if (!image.length) { return '' }
-
 	const idBase = id.getId('images');
 	const maxImage = image.slice(0,max+1);
 	const mLength = maxImage.length;
+
+	let itemCount = itemsPerPage || (isRow ? 6 : 8);
+	if (!!mLength && !itemsPerPage && !isRow) {
+		if (mLength < 7) { itemCount = mLength }
+		const a = (mLength < 81) ? [7,8,9] : (mLength < 101 ? [9,10,11] : [10,11,12,13,14]);
+		itemCount = a.sort((a, b) => (mLength % a) > (mLength % b) ? 1 : 0)[0];
+	}
+	console.log(isRow ? 'row':'column', itemCount);
+
 	if (!get('paginated')) {
 		const paginatedImage: any[] = [];
-		for (let i = 0; i<mLength; i+=itemsPerPage) {
-	    paginatedImage.push(maxImage.slice(i,i+itemsPerPage));
+		for (let i = 0; i<mLength; i+=itemCount) {
+	    paginatedImage.push(maxImage.slice(i,i+itemCount));
 		}
 		getOrSet('paginated', paginatedImage, false);
 		getOrSet('loaded', paginatedImage.map(() => 0), false);
 	}
 	getOrSet('currentPage', 0, false);
-
-	const ratios: [number, any][] = [
-		[0.5625,themedCss.m9by16], [0.6666,themedCss.m2by3], [0.75,themedCss.m3by4],
-		[0.8,themedCss.m4by5], [0.8571,themedCss.m6by7], [1,themedCss.m1by1],
-		[1.1666,themedCss.m7by6], [1.25,themedCss.m5by4], [1.3333,themedCss.m4by3],
-		[1.5,themedCss.m3by2], [1.6,themedCss.m16by10], [1.7777,themedCss.m16by9],
-		[1.85,themedCss.m37by20], [2.2857,themedCss.m16by7], [2.3333,themedCss.m21by9],
-		[2.6666,themedCss.m8by3], [3,themedCss.m3by1], [3.2,themedCss.m16by5], [4.5,themedCss.m9by2]
-	];
-	const ratioClass = (quotient: number) =>
-		ratios.reduce((a, b) => Math.abs(b[0] - quotient) < Math.abs(a[0] - quotient) ? b : a)[1];
 
 	const loadedImg = () => {
 		const current = get('currentPage') || 0;
@@ -79,13 +76,21 @@ export const Images = factory(function Images({
 	const setPage = (i: number) => {
 		set('currentPage', i);
 	}
-
+	const ratios: [number, any][] = [
+		[0.5625,themedCss.m9by16], [0.6666,themedCss.m2by3], [0.75,themedCss.m3by4],
+		[0.8,themedCss.m4by5], [0.8571,themedCss.m6by7], [1,themedCss.m1by1],
+		[1.1666,themedCss.m7by6], [1.25,themedCss.m5by4], [1.3333,themedCss.m4by3],
+		[1.5,themedCss.m3by2], [1.6,themedCss.m16by10], [1.7777,themedCss.m16by9],
+		[1.85,themedCss.m37by20], [2.2857,themedCss.m16by7], [2.3333,themedCss.m21by9],
+		[2.6666,themedCss.m8by3], [3,themedCss.m3by1], [3.2,themedCss.m16by5], [4.5,themedCss.m9by2]
+	];
+	const ratioClass = (quotient: number) =>
+		ratios.reduce((a, b) => Math.abs(b[0] - quotient) < Math.abs(a[0] - quotient) ? b : a)[1];
 	const current = get('currentPage') || 0;
 	const paginated = get('paginated') || [];
 	const count = paginated.length && paginated[current].length || 0;
 	const allLoaded = count === (get('loaded') as any)[current];
 	if (!!allLoaded) { onLoad && onLoad() }
-
 	const paginationInputsVisible = !(paginated.length > 9 || size === 's' && paginated.length > 8 ||
 		size === 'xs' && paginated.length > 7 || size === 'micro' && paginated.length > 6);
 
@@ -97,7 +102,7 @@ export const Images = factory(function Images({
 				themedCss.root,
 				isRow && themedCss.row,
 				(!!has('host-node') || allLoaded) && themedCss.loaded,
-				(maxImage.length > itemsPerPage) && themedCss.hasPagination,
+				(maxImage.length > itemCount) && themedCss.hasPagination,
 				themedCss[(size as keyof typeof themedCss)]
 			]}
 			aria-label="Images"
@@ -109,7 +114,7 @@ export const Images = factory(function Images({
 			const wasLoaded = count === (get('loaded') as any)[i];
 
 			return <virtual>
-				{(maxImage.length > itemsPerPage) &&
+				{(maxImage.length > itemCount) &&
 					<virtual>
 						<input
 							type="radio"
@@ -137,17 +142,17 @@ export const Images = factory(function Images({
 					</virtual>
 				}
 				{(!has('host-node') && i !== get('currentPage') && !wasLoaded) ? '' :
-					<div key={`page${i}`} classes={[themedCss.page]} style={`--count: ${itemsPerPage};`}>
+					<div key={`page${i}`} classes={[themedCss.page]} style={`--count: ${itemCount};`}>
 						{imagePage.map((img: any, j: number) => {
 							if (typeof img === 'string') { img = {type: ['Image'], url: img} }
+							// if (isRow) { img.aspectRatio = '1/1' }
 							return <div classes={[
 								themedCss.media,
 								!!img.width && !!img.height && ratioClass(img.width/img.height)
 							]} key={`image${j}`}>
-								<Image
+								<Img
 									{...img}
-									fit={!isRow}
-									baselined={false}
+									focalPoint={void 0}
 									onLoad={loadedImg}
 									onClick={onClick && onClick(img)}
 								/>

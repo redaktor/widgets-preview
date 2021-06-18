@@ -1,8 +1,9 @@
 .root {
 	width: 100%;
-	background-color: var(--ui-bg, #000);
+	/* background-color: var(--ui-bg, #000); */
 	order: 7;
 }
+.row { }
 .loaded { }
 
 .media { position: relative; }
@@ -22,7 +23,6 @@
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-around;
-	padding-bottom: var(--line);
 }
 .break {
 	order: 4;
@@ -54,21 +54,99 @@
 	display: flex;
 }
 
-.root:not(.row) .page {
+.root .page {
 	display: grid;
 	grid-gap: var(--gap, var(--grid-base, 8px));
 	grid-template-columns: repeat(auto-fill, minmax(calc((var(--minWidth) / 2) - var(--gap)), 1fr));
 	grid-auto-rows: calc(var(--line) - var(--gap));
 	padding-bottom: var(--gap, var(--grid-base, 8px));
 }
+/*
+.images-m__row__c68b341VHl3 .images-m__page__c68b343-KX2 > * {
+	width: calc(100% / var(--count))) !important;
+	height: var(--line3);
+}
+.images-m__row__c68b341VHl3 .images-m__page__c68b343-KX2 {
+	height: var(--line3);
+*/
+
+/*
+800
+.audio-m__row__c68b342ZSet .contentWrapper {
+	max-width: 464px;
+}
+.row .images {
+	max-width: calc(var(--line) * 7);
+	margin-top: calc(var(--pt) * -1);
+	height: calc(var(--line7) + var(--pt));
+}
 .row .page {
+	--autocount: 1;
+	height: calc(var(--line5) + var(--pt))
+}
+
+1080
+.audio-m__row__c68b342ZSet .contentWrapper {
+	max-width: 480px;
+}
+.row .images {
+	max-width: 440px;
+	margin-top: calc((var(--line) + var(--pt)) * -1);
+	height: calc(var(--line5) + var(--pt));
+	margin-left: var(--line);
+}
+.row .page {
+	--autocount: 4;
+	height: var(--line5);
+}
+
+1860
+.row .images {
+	max-width: 720px;
+	margin-top: calc((var(--line)) + var(--pt))) * -1);
+	height: calc(var(--line6)) + var(--pt)));
+}
+.row .page {
+	--autocount: 8;
+	height: var(--line4);
+}
+*/
+
+
+
+/* ->
+.row .page {
+	--autocount: 8;
 	display: flex;
-	align-items: baseline;
+	align-self: flex-start;
+	align-items: flex-end;
+	height: var(--line3);
+	margin: 0;
+	padding: 0;
 }
 .row .page > * {
-	max-width: calc(100% / var(--count)) !important;
+	max-width: calc(100% / var(--count, var(--autocount))) !important;
 	max-height: calc(var(--minWidth) / 9 * 16);
 }
+@media screen and (min-width: 800px) {
+	.row .page {
+		--autocount: 1;
+		height: calc((var(--line) * 7) + var(--pt));
+	}
+}
+@media screen and (min-width: 1080px) {
+	.row .page {
+		--autocount: 4;
+		height: var(--line5);
+	}
+}
+@media screen and (min-width: 1860px) {
+	.row .page {
+		--autocount: 8;
+		height: var(--line4);
+	}
+}
+*/
 .root .pageRadio:not(:checked) + .prevControl + .nextControl + .page {
 	display: none;
 }

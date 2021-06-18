@@ -11,6 +11,7 @@ import * as checkbox from './checkbox.m.css';
 import * as chip from './chip.m.css';
 import * as combobox from './combobox.m.css';
 import * as dateInput from './inputDate.m.css';
+import * as details from './details.m.css';
 import * as dialog from './dialog.m.css';
 import * as gridBody from './grid-body.m.css';
 import * as gridCell from './grid-cell.m.css';
@@ -84,9 +85,10 @@ export default {
 		'@redaktor/widgets/helperText': helperText,
 		'@redaktor/widgets/icon': icon,
 		'@redaktor/widgets/label': label,
+		'@redaktor/widgets/list': list,
 		'@redaktor/widgets/list-item': listItem,
 		'@redaktor/widgets/loadingIndicator': loadingIndicator,
-		'@redaktor/widgets/list': list,
+		'@redaktor/widgets/locales': details,
 		'@redaktor/widgets/menu-item': menuItem,
 		'@redaktor/widgets/typeaheadMulti': multiSelectTypeahead,
 		'@redaktor/widgets/selectNative': nativeSelect,

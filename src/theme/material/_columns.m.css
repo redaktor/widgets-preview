@@ -28,6 +28,8 @@
   position: relative;
   padding: 0;
 }
+
+.typo { composes: column from './_typo.css'; }
 /*
 .item.ratio {
   width: calc((var(--line) * var(--l, 3)) / var(--ar2) * var(--ar1));
@@ -54,10 +56,6 @@
   margin: 0;
 }
 
-
-
-
-
 @media screen and (max-width: 444px) {
 	.root { padding: 0; }
 	.item { padding: var(--lineHalf, 7px) 0 var(--lineHalf, 7px) 0; }
@@ -82,7 +80,6 @@
     grid-template-rows: min-content auto;
     grid-auto-rows: minmax(min-content, calc(var(--line) - var(--gap)));
     padding-bottom: var(--gap, var(--grid-base, 8px));
-    width: 100%;
     position: relative;
   }
   .root .item {

@@ -15,6 +15,10 @@
 }
 .metaSummary {
 	composes: serif from './_typo.css';
+	display: inline;
+	font-style: italic;
+	list-style: none;
+	padding: 0 0 0 0.618ch;
 }
 .metaSummary > .selected {
 	border-bottom: var(--ui-border-width-emphasized) solid var(--ui-accent);
@@ -27,6 +31,9 @@
 .summary:focus {
 	outline: none;
 	background-color: var(--ui-bg, #7a7a7a);
+}
+.item {
+	display: inline;
 }
 .summary + .content {
 	padding-top: 0 !important;

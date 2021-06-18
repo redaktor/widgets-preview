@@ -4,54 +4,64 @@ import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 
-const icache = createICacheMiddleware<{
-  normalized: ActivityPubObjectNormalized;
-}>();
-const factory = create({ i18n, icache }).properties<{
+interface LocalesProperties extends ActivityPubObject {
   userLocale?: string;
 	locales?: Labeled[];
-}>();
+}
 
-export const ActivityPubCachingMiddleware = factory(({ properties, middleware: { i18n, icache }}) => ({
-  ...i18n,
-  getLocales() {
-    const o = icache.get('normalized') ? icache.get('normalized') : this.normalized(properties());
-    return !!o ? o.locales : []
-  },
-  set(locale: string) {
-    const { locale: userLocale = 'en' } = properties();
+const icache = createICacheMiddleware<{
+  [id: string]: ActivityPubObjectNormalized;
+  normalized: ActivityPubObjectNormalized;
+}>();
+const factory = create({ i18n, icache }).properties<LocalesProperties>();
+
+export const ActivityPubCachingMiddleware = factory(({ properties, middleware: { i18n, icache }}) => {
+
+  const setI18n = (locale?: string) => {
+    const { locale: userLocale = 'en'} = properties();
     if (!locale) { locale = userLocale }
-    if ((locale && !i18n.get().locale) || locale !== i18n.get().locale) { console.log('set', locale); i18n.set({locale}) } // TODO ,rtl
-    return this.normalized(properties(), locale, true)
-  },
-  normalized(o: ActivityPubObject, locale?: string, _invalidate = false) {
-      const { locale: userLocale = 'en' } = properties();
-      if (!locale) { locale = userLocale }
-      if ((locale && !i18n.get().locale) || locale !== i18n.get().locale) {
-        console.log('n set', locale);
-        i18n.set({locale})
-      } // TODO ,rtl
-			if (!_invalidate) {
-      	const cachedValue = icache.get('normalized');
-      	if (!!cachedValue) { return cachedValue }
-			}
-			return icache.set('normalized', normalizeActivityPub(o, locale))
-			/*
-      // Cache miss from server (isStale):
-      const promise = fetchExternalValue(value);
-      // Pause further widget rendering
-      defer.pause();
-      promise.then((result) => {
-          // Cache the value for subsequent renderings
-          icache.set('normalized', normalizeActivityPub(result));
-          // Resume widget rendering once the value is available
-          defer.resume();
-      });
-			*/
-  },
-	invalidate(o: ActivityPubObject, locale?: string) {
-		return this.normalized(o, locale, true)
-	}
-}));
+    if ((locale && !i18n.get().locale) || locale !== i18n.get().locale) {
+      // TODO workaround for bug https://github.com/dojo/framework/issues/906 :
+      const bugLocale = locale.split('-')[0];
+      i18n.set({locale: bugLocale});
+    } // TODO ,rtl
+    return locale;
+  }
+
+  const normalized = (locale?: string, _invalidate = false) => {
+    locale = setI18n(locale);
+    const { id = 'normalized' } = properties();
+    if (!_invalidate) {
+      const cachedValue = icache.get(id);
+      if (!!cachedValue) { return cachedValue }
+    }
+    return icache.set(id, normalizeActivityPub(properties(), locale))
+    /*
+    // Cache miss from server (isStale):
+    const promise = fetchExternalValue(value);
+    // Pause further widget rendering
+    defer.pause();
+    promise.then((result) => {
+        // Cache the value for subsequent renderings
+        icache.set('normalized', normalizeActivityPub(result));
+        // Resume widget rendering once the value is available
+        defer.resume();
+    });
+    */
+  }
+
+  return {
+    ...i18n,
+    getLocales() {
+      const key = properties().id || 'normalized';
+      const o = icache.get(key) ? icache.get(key) : this.normalized();
+      return !!o ? o.locales : []
+    },
+    setLocale(locale: string) {
+      return normalized(locale, true)
+    },
+    normalized
+  }
+});
 
 export default ActivityPubCachingMiddleware;

@@ -1,12 +1,11 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import i18n from '@dojo/framework/core/middleware/i18n';
+import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import { clampStrings } from '../common/activityPubUtil';
 import { ActivityPubObjectNormalized } from '../common/interfaces';
-import { normalizeActivityPub } from '../common/activityPubUtil';
 import Paginated from '../paginated';
 import Collapsed from '../collapsed';
 import Name from '../name';
@@ -17,10 +16,11 @@ import MD from '../MD/';
 import bundle from './nls/Image';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
+import * as columns from '../theme/material/_columns.m.css';
 import * as css from '../theme/material/image.m.css';
 
 export interface ImageProperties extends ImgProperties {
-	isRow?: boolean;
+	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 	editable?: boolean;
 	/** `id` set on the root DOM node */
 	widgetId?: string;
@@ -41,7 +41,7 @@ export interface ImageChildren {
 }
 
 const icache = createICacheMiddleware<ImageIcache>();
-const factory = create({ icache, i18n, theme, breakpoints })
+const factory = create({ icache, i18nActivityPub, theme, breakpoints })
 	.properties<ImageProperties>()
 	.children<ImageChildren | RenderResult | undefined>();
 
@@ -50,17 +50,17 @@ const factory = create({ icache, i18n, theme, breakpoints })
 */
 
 export const Image = factory(function Image({
-	middleware: { icache, i18n, theme, breakpoints /*, resource */ },
+	middleware: { icache, i18nActivityPub, theme, breakpoints /*, resource */ },
 	properties,
 	children
 }) {
 	const themedCss = theme.classes(css);
-	const { messages } = i18n.localize(bundle);
+	const { messages } = i18nActivityPub.localize(bundle); /* TODO click to enlarge ... */
 	const {
 		alt, title, editable, fullscreen, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
 		blurhash, widgetId, mediaType, loading = 'lazy', crossorigin = 'anonymous', baselined = false,
-		fit = false, width = 80, height = 80, hasContent = true, hasAttachment = true, isRow = false, ..._rest
-	} = normalizeActivityPub(properties());
+		fit = false, width = 80, height = 80, hasContent = true, hasAttachment = true, view = 'column', ..._rest
+	} = i18nActivityPub.normalized();
 
 	const APo: ActivityPubObjectNormalized = _rest;
 	if (APo.type.indexOf('Image') < 0 && (!mediaType || mediaType.toLowerCase().indexOf('image') !== 0)) {
@@ -70,10 +70,16 @@ export const Image = factory(function Image({
 	const handleDownload = () => {
 		/* TODO - all variants */
   }
-	const {breakpoint: vp = 's'} = breakpoints.get('measure')||{};
-	const isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
-	const typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 
+	/* TODO */
+	// if (view === 'tableRow') {}
+	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
+	let [isMini, vp, typoClass] = [false, 'm', ui.m];
+	if (isResponsive) {
+		const {breakpoint: vp = 's'} = breakpoints.get('measure')||{};
+		isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
+		typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
+	}
 	const namesNode = (<div classes={themedCss.name}>
 			<Name name={APo.name} isRow={isRow} size={!vp || vp === 'micro' ? 'xs' : (vp as any)} />
 	</div>);
@@ -82,7 +88,7 @@ export const Image = factory(function Image({
 		}}
 	>
 		{clampStrings(APo.summary, 500).map((_summary, i) =>
-			<MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={_summary} />
+			<MD classes={[themedCss.summary, isResponsive ? typoClass : columns.typo]} key={`summary${i}`} content={_summary} />
 		)}
 	</Paginated>);
 
@@ -92,6 +98,8 @@ export const Image = factory(function Image({
 			theme.variant(),
 			themedCss.root,
 			isRow && themedCss.row,
+			isColumn && columns.item,
+			isColumn && columns.baselined,
 			theme.shaped(themedCss),
 			theme.sized(ui),
 			theme.colored(colors),
@@ -128,7 +136,7 @@ export const Image = factory(function Image({
 							'@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] }
 						}}>
 						{APo.content.map((_content, i) => <virtual>
-							<MD classes={[themedCss.content, typoClass]} key={`content${i}`} content={_content} /><hr />
+							<MD classes={[themedCss.content, isResponsive ? typoClass : columns.typo]} key={`content${i}`} content={_content} /><hr />
 						</virtual>)}
 					</Collapsed>
 				}

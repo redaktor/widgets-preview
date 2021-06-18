@@ -22,17 +22,24 @@ export const Locales = factory(function Locales({ properties, middleware: { them
 	const initialValue = !locale.locale ? locales[0].value : !!locales.filter((o) => o.value === locale.locale).length ?
 		locale.locale : locale.locale.split('-')[0];
 
-	return <details {...detailsProps}>
+	return <details {...detailsProps} key="root" classes={[themedCss.root]}>
 			<summary>
 				<Icon type="globe" />{' '}
-				<i classes={themedCss.metaSummary}>{
+				<ul classes={themedCss.metaSummary}>{
 					locales.map((l,i,a) => {
 						const v = (locale.locale||initialValue);
-						const localeCaption = `${l.value}${i < a.length-1 ? ', ' : ''}`;
-						return l.value === v || (typeof v === 'string' && l.value === v.split('-')[0]) ? 
-							<span classes={themedCss.selected}>{localeCaption}</span> : localeCaption
+						const selected = l.value === v || (typeof v === 'string' && l.value === v.split('-')[0]);
+						return <virtual>
+							<li classes={[
+								themedCss.item,
+								selected && themedCss.selected
+							]}>
+								{l.value}
+							</li>
+							{i < a.length-1 ? ', ' : ''}
+						</virtual>
 					})
-				}</i>
+				}</ul>
 			</summary>
 			<DynamicSelect
 				size="s"

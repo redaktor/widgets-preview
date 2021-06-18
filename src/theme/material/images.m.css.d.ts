@@ -1,4 +1,5 @@
 export const root: string;
+export const row: string;
 export const loaded: string;
 export const media: string;
 export const m9by16: string;
@@ -27,7 +28,6 @@ export const lastControl: string;
 export const prevControl: string;
 export const nextControl: string;
 export const pageRadio: string;
-export const row: string;
 export const hidden: string;
 export const pageInfo: string;
 export const micro: string;
