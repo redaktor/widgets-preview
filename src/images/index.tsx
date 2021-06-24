@@ -47,13 +47,15 @@ export const Images = factory(function Images({
 	const maxImage = image.slice(0,max+1);
 	const mLength = maxImage.length;
 
-	let itemCount = itemsPerPage || (isRow ? 6 : 8);
+
+	let itemCount = itemsPerPage || (isRow ? 12 : 8);
 	if (!!mLength && !itemsPerPage && !isRow) {
 		if (mLength < 7) { itemCount = mLength }
-		const a = (mLength < 81) ? [7,8,9] : (mLength < 101 ? [9,10,11] : [10,11,12,13,14]);
+		const a = (mLength < 81) ? [6,7,8,9] : (mLength < 101 ? [8,9,10,11] : [10,11,12,13,14]);
 		itemCount = a.sort((a, b) => (mLength % a) > (mLength % b) ? 1 : 0)[0];
 	}
-	console.log(isRow ? 'row':'column', itemCount);
+	// console.log(window.screen.width)
+	// console.log(isRow ? 'row':'column', itemCount);
 
 	if (!get('paginated')) {
 		const paginatedImage: any[] = [];
@@ -84,8 +86,10 @@ export const Images = factory(function Images({
 		[1.85,themedCss.m37by20], [2.2857,themedCss.m16by7], [2.3333,themedCss.m21by9],
 		[2.6666,themedCss.m8by3], [3,themedCss.m3by1], [3.2,themedCss.m16by5], [4.5,themedCss.m9by2]
 	];
-	const ratioClass = (quotient: number) =>
-		ratios.reduce((a, b) => Math.abs(b[0] - quotient) < Math.abs(a[0] - quotient) ? b : a)[1];
+	const ratioClasses = (quotient: number) => !quotient ? [] :
+		(quotient < 1 && isRow ?
+			[ themedCss.m1by1, themedCss.fix1by1 ] :
+			[ ratios.reduce((a, b) => Math.abs(b[0] - quotient) < Math.abs(a[0] - quotient) ? b : a)[1] ]);
 	const current = get('currentPage') || 0;
 	const paginated = get('paginated') || [];
 	const count = paginated.length && paginated[current].length || 0;
@@ -145,10 +149,9 @@ export const Images = factory(function Images({
 					<div key={`page${i}`} classes={[themedCss.page]} style={`--count: ${itemCount};`}>
 						{imagePage.map((img: any, j: number) => {
 							if (typeof img === 'string') { img = {type: ['Image'], url: img} }
-							// if (isRow) { img.aspectRatio = '1/1' }
 							return <div classes={[
 								themedCss.media,
-								!!img.width && !!img.height && ratioClass(img.width/img.height)
+								...(ratioClasses(!img.width || !img.height ? 0 : img.width/img.height))
 							]} key={`image${j}`}>
 								<Img
 									{...img}

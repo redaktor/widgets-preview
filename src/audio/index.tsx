@@ -477,7 +477,7 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 				{ get('numberOfChannels') && <span classes={ui.muted} key="numberOfChannels"><br />{get('numberOfChannels')}Ch</span> }
 			</details>
 		</div>
-		<div classes={themedCss.mediaTop}>
+		<div classes={themedCss.vttButtonWrapper}>
 			<Button
 				title={messages.captions}
 				variant="flat"

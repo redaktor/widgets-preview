@@ -21,6 +21,7 @@ export const m8by3: string;
 export const m3by1: string;
 export const m16by5: string;
 export const m9by2: string;
+export const fix1by1: string;
 export const hasPagination: string;
 export const page: string;
 export const firstControl: string;

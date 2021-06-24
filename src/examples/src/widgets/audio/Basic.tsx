@@ -70,6 +70,7 @@ const mp3: ActivityPubLink = {type: 'Link', href: 'http://localhost:9999/assets/
 const _1_1: ActivityPubLink = {type: "Link", href: "card-photo-1-1.3vTxmshj.jpg", width: 2717, height: 2717, mediaType: "image/jpg", blurhash: 'UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@'};
 const _1_4: ActivityPubLink = {type: "Link", href: "card-photo-1-4.9vfpAQ1n.jpg", width: 13228, height: 3307, mediaType: "image/jpg", blurhash: 'MlIhplt7t7WB%M~qj[t7WBt7-;ofayWBWB'};
 const _2_3: ActivityPubLink = {type: "Link", href: "card-photo-2-3.3G_muD46.jpg", width: 1417, height: 945, mediaType: "image/jpg", blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP'};
+const _3_2: ActivityPubLink = {type: "Link", href: "card-photo-3-2.1cjXm1gs.jpg", width: 945, height: 1417, mediaType: "image/jpg"}
 
 const exampleData: AudioProperties | ImageProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
@@ -96,7 +97,7 @@ const exampleData: AudioProperties | ImageProperties = {
 
   Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`,
   `2 Jetzt herrscht Goldgräberstimmung an der New Yorker Technologiebörse NASDAQ. Dort will Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Börsenparkett. Gemessen am Referenzpreis der Aktien ist Coinbase rund 68 Milliarden Dollar wert. Analysten trauen Coinbase sogar eine Bewertung von 100 Milliarden Dollar zu – ein aberwitziger Preis für ein Unternehmen mit 56 Millionen Kunden und gut 1700 Mitarbeitern. Die schwindelerregende Bewertung erklären Analysten mit dem Hype um Kryptowährung LOREM IPSUM dolor sit amet, consectetur adipiscing elit. Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`],
-  image: [ _2_3, _1_1, _2_3, _1_4, _1_1, _1_4, _2_3, _2_3, _1_1, _2_3, _1_1, _2_3, _1_4, _1_1, _2_3, _2_3, _2_3, _1_1, _2_3, _1_4, _1_1, _1_4, _2_3, _2_3, _1_1, _2_3, _1_1, _2_3, _1_4, _1_1, _2_3, _2_3, _1_1 ],
+  image: [ _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _2_3, _1_1, _3_2, _1_4, _1_1, _2_3, _3_2, _2_3, _1_1, _2_3, _1_1, _2_3, _1_4, _1_1, _2_3, _2_3, _2_3, _1_1, _2_3, _1_4, _1_1, _1_4, _2_3, _2_3, _1_1, _2_3, _1_1 ],
   privacy: "public",
   published: "23m ago",
   bookmark: false,
@@ -171,15 +172,28 @@ export default factory(function Basic() {
 </Example>
 */
 
+/* -->
+<div classes={[columnsCSS.item]}>{audio()}</div>
+*/
 
 /* tableRow is meant to be 100vw */
 	return (
 		<Example spaced={true}>
       <virtual>
         <div><p>x</p></div>
-  			<div classes={[columnsCSS.item]}>{audio()}</div>
+
         <br /><br />
-        <div styles={{ width: '100%', position: 'absolute', left: '0', zIndex: '9998', background: 'black' }}>{audio('row')}</div>
+        <div styles={{
+          position: 'absolute',
+          left: '0',
+          width: '100%',
+          zIndex: '9998',
+          paddingLeft: 'var(--line)',
+          paddingRight: 'var(--lineHalf)',
+          background: 'black'
+        }}>
+          {audio('row')}
+        </div>
         <br /><br /><br /><br /><br /><br />
         <div styles={{ position: 'absolute', left: '0px', zIndex: '9997' }} >
           <Table columns={['fixed','resizable','resizable','responsive']}>

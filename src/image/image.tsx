@@ -28,6 +28,8 @@ export interface ImgProperties extends ActivityPubObject {
 	blurhash?: string;
 	/* load 'lazy' / when intersecting or 'eager' / directly, default 'lazy' */
 	loading?: 'lazy' | 'eager';
+	/* animate scale on hover / default false */
+	scaleOnHover?: boolean;
 	/* when entering fullscreen */
 	onFullscreen?: () => any;
 	/* when blurhash has loaded and delivers brightness */
@@ -71,7 +73,7 @@ export const Img = factory(function Img({
 	const {
 		sensitive, alt, title, aspectRatio: ratio, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
 		onBrightness, blurhash, focalPoint, mediaType, loading = 'lazy', crossorigin = 'anonymous',
-		baselined = false, fit = false, width = 80, height = 80, ..._rest
+		baselined = false, fit = false, scaleOnHover = false, width = 80, height = 80, ..._rest
 	} = i18nActivityPub.normalized();
 
 	const APo: ActivityPubObjectNormalized = _rest;
@@ -158,6 +160,7 @@ export const Img = factory(function Img({
 		key="media"
 		classes={[
 			themedCss.media,
+			!!scaleOnHover && themedCss.scale,
 			!!sensitive && themedCss.sensitive,
 			!!get('loaded') && themedCss.loaded,
 			!!get('faded') && themedCss.faded,

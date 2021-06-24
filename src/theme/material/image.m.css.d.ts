@@ -49,6 +49,7 @@ export const _9_2: string;
 export const pano4: string;
 export const _12_2: string;
 export const loaded: string;
+export const scale: string;
 export const sensitive: string;
 export const sensitiveLabel: string;
 export const sensitiveCheckbox: string;

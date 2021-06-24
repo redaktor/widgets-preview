@@ -244,6 +244,7 @@ const mediaSrc = require('../card/img/card-photo.jpg');
 const mediaSrc41 = require('../card/img/card-photo-1-4.jpg');
 const mediaSrc11 = require('../card/img/card-photo-1-1.jpg');
 const mediaSrc23 = require('../card/img/card-photo-2-3.jpg');
+const mediaSrc32 = require('../card/img/card-photo-3-2.jpg');
 const medias = [
 	{mediaSrc, aspectRatio: '16:9'},
 	{mediaSrc: mediaSrc41, aspectRatio: '4:1'},

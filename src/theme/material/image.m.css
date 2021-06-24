@@ -131,7 +131,7 @@
 .image {
 	transition: transform var(--ui-dpd-4,372ms) var(--ui-easing);
 }
-.media:not(.sensitive) .image:hover {
+.media.scale:not(.sensitive) .image:hover {
 	transform: scale(1.0618);
 }
 .sensitive.media {
