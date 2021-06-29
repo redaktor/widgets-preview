@@ -7,6 +7,7 @@ import Img from '@redaktor/widgets/image/image';
 
 import Table from '@redaktor/widgets/table';
 import * as columnsCSS from '@redaktor/widgets/theme/material/_columns.m.css';
+import * as columnsDesktop from '@redaktor/widgets/theme/material/_columnsDesktop.m.css';
 /*
 kind
 How the text track is meant to be used. If omitted the default kind is subtitles.
@@ -67,10 +68,10 @@ import Map from '@redaktor/widgets/map';
 
 const ogg: ActivityPubLink = {type: 'Link', href: 'http://localhost:9999/assets/nihWikimedia.ogg', mediaType: 'audio/ogg'};
 const mp3: ActivityPubLink = {type: 'Link', href: 'http://localhost:9999/assets/nihWikimedia.mp3', mediaType: 'audio/mp3'};
-const _1_1: ActivityPubLink = {type: "Link", href: "card-photo-1-1.3vTxmshj.jpg", width: 2717, height: 2717, mediaType: "image/jpg", blurhash: 'UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@'};
-const _1_4: ActivityPubLink = {type: "Link", href: "card-photo-1-4.9vfpAQ1n.jpg", width: 13228, height: 3307, mediaType: "image/jpg", blurhash: 'MlIhplt7t7WB%M~qj[t7WBt7-;ofayWBWB'};
-const _2_3: ActivityPubLink = {type: "Link", href: "card-photo-2-3.3G_muD46.jpg", width: 1417, height: 945, mediaType: "image/jpg", blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP'};
-const _3_2: ActivityPubLink = {type: "Link", href: "card-photo-3-2.1cjXm1gs.jpg", width: 945, height: 1417, mediaType: "image/jpg"}
+const _1_1: ActivityPubLink = {type: "Link", href: "card-photo-1-1.D8Qv-iDb.jpg", width: 600, height: 600, mediaType: "image/jpg", blurhash: 'UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@'};
+const _1_4: ActivityPubLink = {type: "Link", href: "card-photo-1-4.39BgjdJb.jpg", width: 1200, height: 300, mediaType: "image/jpg", blurhash: 'MlIhplt7t7WB%M~qj[t7WBt7-;ofayWBWB'};
+const _2_3: ActivityPubLink = {type: "Link", href: "card-photo-2-3.2sbeBGHg.jpg", width: 1417, height: 945, mediaType: "image/jpg", blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP'};
+const _3_2: ActivityPubLink = {type: "Link", href: "card-photo-3-2.1cjXm1gs.jpg", width: 400, height: 600, mediaType: "image/jpg"}
 
 const exampleData: AudioProperties | ImageProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
@@ -173,7 +174,13 @@ export default factory(function Basic() {
 */
 
 /* -->
-<div classes={[columnsCSS.item]}>{audio()}</div>
+  <div classes={columnsCSS.root} styles={{ position: 'absolute', left: '0px', zIndex: '9998', width: '100%' }}>
+    <ul classes={columnsCSS.columns}>
+      <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m1by1]}><div classes={[columnsCSS.content]}>1/1</div></li>
+      <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m3by2]}><div classes={[columnsCSS.content]}>1/1</div></li>
+      <li classes={[columnsCSS.item, columnsCSS.baselined, columnsCSS.m1by1]}><div classes={[columnsCSS.content]}>1/1</div></li>
+    </ul>
+  </div>
 */
 
 /* tableRow is meant to be 100vw */
@@ -181,7 +188,9 @@ export default factory(function Basic() {
 		<Example spaced={true}>
       <virtual>
         <div><p>x</p></div>
-
+        <div classes={[columnsCSS.root, columnsDesktop.root]}>
+          <ul classes={columnsCSS.columns}>{audio()}</ul>
+        </div>
         <br /><br />
         <div styles={{
           position: 'absolute',

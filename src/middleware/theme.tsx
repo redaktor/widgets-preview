@@ -29,6 +29,7 @@ export interface ViewportProperties extends CoreProps {
 	size?: Viewports;
 }
 export interface ThemeProperties extends CoreProps {
+	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 	/** The size for the button: 'xs', 's', 'm', 'l', 'xl', 'xxl'
 	 * 'm' by default
 	 */
@@ -54,21 +55,43 @@ export interface ThemeProperties extends CoreProps {
 }
 interface ThemeIcache {
 	l: number;
+	viewCSS: {[k:string]: string;};
+	viewDesktopCSS: {[k:string]: string;} | false;
 }
 export type ThemedActivityPubObject = ActivityPubObject & ThemeProperties;
 const icache = createICacheMiddleware<ThemeIcache>();
 const factory = create({ coreTheme, icache }).properties<ThemeProperties>();
 export const theme = factory(function({ middleware: { coreTheme, icache }, properties }) {
-
+	const { get, set, getOrSet } = icache;
 	return {
-		line: () => {
-			return icache.getOrSet('l', () => {
-				const newDiv = document.createElement("div");
-				newDiv.style.height = `${window.getComputedStyle(document.documentElement).getPropertyValue('--line')}`;
-				document.body.appendChild(newDiv);
-				return parseInt(window.getComputedStyle(newDiv).height||''.replace('px',''), 10);
-			});
+		viewDesktopCSS: () => {
+			const { view } = properties();
+			if (!get('viewDesktopCSS')) {
+				if (view === 'column' && window.screen.width > 820) {
+					import('../theme/material/_columnsDesktop.m.css').then((c) => { getOrSet('viewDesktopCSS', c) });
+				} else {
+					getOrSet('viewDesktopCSS', false);
+				}
+			}
+			return get('viewDesktopCSS')
 		},
+		viewCSS: () => {
+			const { view } = properties();
+			if (!get('viewCSS')) {
+				if (view === 'column') {
+					import('../theme/material/_columns.m.css').then((c) => { getOrSet('viewCSS', c) });
+				} else {
+					import('../theme/material/_rows.m.css').then((c) => { getOrSet('viewCSS', c) });
+				}
+			}
+			return get('viewCSS')
+		},
+		line: () => icache.getOrSet('l', () => {
+			const newDiv = document.createElement("div");
+			newDiv.style.height = `${window.getComputedStyle(document.documentElement).getPropertyValue('--line')}`;
+			document.body.appendChild(newDiv);
+			return parseInt(window.getComputedStyle(newDiv).height||''.replace('px',''), 10);
+		}),
 		isJS: () => !document.documentElement.classList.contains('no-js'),
 		sized: <T extends ClassNames>(uiCss: T, _default = 'm' as (keyof typeof uiCss)) => {
 			const { size = _default } = properties();

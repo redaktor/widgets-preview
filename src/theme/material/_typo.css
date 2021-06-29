@@ -239,7 +239,7 @@ Typography
   --caph: 0.6923076923076923;
 }
 /* 14px */
-.m, .m > p, .column, .column > p, .cardsSmall {
+.m, .m > p, .column, .column > p, .row, .row > p, .cardsSmall {
   --size: 1.2173913043478262rem;
   --lh: 1.5;
   --pt: 0.39285714285714285em;
@@ -373,7 +373,17 @@ screen and (min-width: 2901px) and (max-width: 3064px) {
   }
 }
 
-
+@media screen and (max-width: 640px),
+screen and (min-width: 768px) and (max-width: 940px),
+screen and (min-width: 1312px) and (max-width: 1648px) {
+  .row, .row > p { /* s */
+    --size: 1.1304347826086956rem;
+    --lh: 1.6153846153846154;
+    --pt: 0.46153846153846156em;
+    --mb: 1.1538461538461537em;
+    --caph: 0.6923076923076923;
+  }
+}
 
 
 

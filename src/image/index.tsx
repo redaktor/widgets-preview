@@ -71,15 +71,16 @@ export const Image = factory(function Image({
 		/* TODO - all variants */
   }
 
-	/* TODO */
-	// if (view === 'tableRow') {}
 	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
-	let [isMini, vp, typoClass] = [false, 'm', ui.m];
+	let [isMini, vp, typoClass] = [false, 'm', isRow ? themedCss.rowTypo : themedCss.columnTypo];
 	if (isResponsive) {
 		const {breakpoint: vp = 's'} = breakpoints.get('measure')||{};
 		isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
 		typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 	}
+	const viewCSS = theme.viewCSS();
+	const viewDesktopCSS = theme.viewDesktopCSS();
+
 	const namesNode = (<div classes={themedCss.name}>
 			<Name name={APo.name} isRow={isRow} size={!vp || vp === 'micro' ? 'xs' : (vp as any)} />
 	</div>);
@@ -97,9 +98,11 @@ export const Image = factory(function Image({
 		classes={[
 			theme.variant(),
 			themedCss.root,
-			isRow && themedCss.row,
-			isColumn && columns.item,
-			isColumn && columns.baselined,
+			isColumn ? themedCss.column : themedCss.row,
+			!!viewCSS && viewCSS.item,
+			!!viewCSS && viewCSS.baselined,
+			!!viewDesktopCSS && viewDesktopCSS.item,
+			!!viewDesktopCSS && viewDesktopCSS.baselined,
 			theme.shaped(themedCss),
 			theme.sized(ui),
 			theme.colored(colors),

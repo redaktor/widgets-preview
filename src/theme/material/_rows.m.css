@@ -1,0 +1,11 @@
+.root {
+
+}
+.item {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	padding-top: var(--pt) !important;
+	max-width: 3840px;
+}
+.typo { composes: row from './_typo.css'; }

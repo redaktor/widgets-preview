@@ -7,9 +7,23 @@
 	padding: 0 !important;
 	margin-bottom: 0 !important;
 }
+.row {
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+.column {
+	
+}
 .xs, .s, .m, .l, .xl, .xxl { }
 .mini, .medium, .large { }
 .darkImage, .lightImage { }
+.columnTypo {
+	composes: typo from './_columns.m.css';
+}
+.rowTypo {
+	composes: typo from './_rows.m.css';
+}
+
 /* not used, when the blurhash faded to the main image */
 .faded { }
 .measure {
@@ -329,10 +343,7 @@
 .contentCollapsed {
 
 }
-.root.row {
-	flex-direction: row;
-	flex-wrap: wrap;
-}
+
 .row .media {
 	width: var(--line5);
 	max-height: var(--line5);

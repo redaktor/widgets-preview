@@ -34,9 +34,7 @@ import Locales from '../locales';
 import bundle from './nls/Audio';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
-import * as columns from '../theme/material/_columns.m.css';
 import * as css from '../theme/material/audio.m.css';
-
 /* TODO exists in this module: */
 import MD from '../MD/';
 
@@ -383,13 +381,17 @@ export const Audio = factory(function Audio({
 	}
 
 	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
-	let [isMini, vp, typoClass, audioAvatarSize] = [false, 'm', ui.m, 'xl'];
+	let [isMini, vp, typoClass, audioAvatarSize] = [false, 'm', isRow ? themedCss.rowTypo : themedCss.columnTypo, 'xl'];
 	if (isResponsive) {
 		const {breakpoint: vp = 'm'} = isResponsive ? breakpoints.get('measure')||{} : {};
 		isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
 		typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 		audioAvatarSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
 	}
+
+	const viewCSS = theme.viewCSS();
+	const viewDesktopCSS = theme.viewDesktopCSS();
+
 	const sources = !!APo.url && <Srcset url={APo.url} />;
 	const menuOpen = get('isTrackMenuOpen');
 	const formattedDuration = formatTime(Math.floor(get('duration')||0));
@@ -427,7 +429,7 @@ export const Audio = factory(function Audio({
 		alt: !!APo.summary && !!APo.summary.length ? APo.summary[0]||'' : '',
 		classes: [
 			themedCss.audio,
-			isResponsive ? typoClass : columns.typo,
+			typoClass,
 			get('hasTracks') || get('isPicInPic') ? themedCss.video : null
 		],
 		preload: autoPlay ? 'auto' : 'metadata',
@@ -442,14 +444,17 @@ export const Audio = factory(function Audio({
 		crossorigin: crossorigin
 	};
 
+
+
 console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isRow})
 	return <div
 		key="root"
 		classes={[
 			theme.variant(),
 			themedCss.root,
-			isRow && themedCss.row,
-			isColumn && columns.item,
+			isRow ? themedCss.row : themedCss.column,
+			!!viewCSS && viewCSS.item,
+			!!viewDesktopCSS && viewDesktopCSS.item,
 			theme.shaped(themedCss),
 			theme.sized(ui),
 			theme.colored(colors),
@@ -491,10 +496,11 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 			key="media"
 			classes={[
 				themedCss.media,
-				isColumn && columns.item,
-				isColumn && columns.baselined,
-				isColumn && columns.ratio,
-				isColumn && columns.m1by1
+				!!viewCSS && viewCSS.item,
+				!!viewCSS && viewCSS.baselined,
+				!!viewCSS && viewCSS.m1by1,
+				!!viewDesktopCSS && viewDesktopCSS.item,
+				!!viewDesktopCSS && viewDesktopCSS.m1by1
 			]}
 		>
 			{ menuOpen && get('trackMenu') }
@@ -626,7 +632,7 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 				}}
 				>
 					{clampStrings(APo.summary, 500).map((_summary, i) =>
-						<MD classes={[themedCss.summary, isResponsive ? typoClass : columns.typo]} key={`summary${i}`} content={_summary} />
+						<MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={_summary} />
 					)}
 				</Paginated>
 			}
@@ -635,7 +641,7 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 					'@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] }
 				}}>
 					{APo.content.map((_content, i) => <virtual>
-						<MD classes={[themedCss.content, isResponsive ? typoClass : columns.typo]} key={`content${i}`} content={_content} /><hr />
+						<MD classes={[themedCss.content, typoClass]} key={`content${i}`} content={_content} /><hr />
 					</virtual>)}
 				</Collapsed>
 			}
