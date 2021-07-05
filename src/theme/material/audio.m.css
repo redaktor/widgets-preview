@@ -18,6 +18,8 @@
 .mini, .medium, .large { }
 
 .media {
+	--wh: calc(var(--h) - var(--line2));
+	border-radius: var(--wh, 9999px);
 	position: relative;
 	display: flex;
 	align-items: center;
@@ -34,8 +36,6 @@
 	margin: 0 auto;
 }
 .root.fresh .media {
-	--wh: calc(var(--h) - var(--line2));
-	border-radius: var(--wh, 50%);
 	min-height: var(--wh);
 	margin-bottom: calc(var(--line) * var(--l) - var(--h) - var(--line));
 }
@@ -147,7 +147,11 @@ video:picture-in-picture {
 	margin-bottom: calc(var(--mb) - var(--line));
 }
 */
-.content,
+.content {
+	margin: 0;
+	padding: 0;
+}
+.serif,
 .metaSummary,
 .freshDuration {
 	composes: serif from './_typo.css';
@@ -157,10 +161,6 @@ video:picture-in-picture {
 }
 .metaLocale {
 	display: none;
-}
-.root .content {
-	margin: 0;
-	padding: 0;
 }
 .root .freshDuration {
 	padding: 0;

@@ -1,18 +1,15 @@
 .root {
+	/*
 	display: flex;
 	flex-direction: column;
-	position: relative;
-	width: 100%;
-	background-size: cover;
-	padding: 0 !important;
-	margin-bottom: 0 !important;
+	*/
+
 }
 .row {
-	flex-direction: row;
-	flex-wrap: wrap;
+
 }
 .column {
-	
+
 }
 .xs, .s, .m, .l, .xl, .xxl { }
 .mini, .medium, .large { }
@@ -48,6 +45,8 @@
 
 .media {
 	composes: h1 from './_typo.css';
+	position: relative;
+	width: 100%;
 	margin-bottom: calc(var(--line) * var(--mml,0));
 	padding: 0;
 	display: flex;
@@ -58,11 +57,8 @@
 	background-position: center center;
 	background-repeat: no-repeat;
 	background-size: cover; /*contain;*/
-	overflow: hidden;
 	z-index: 4;
-	width: 100%;
 	cursor: pointer;
-	position: relative;
 }
 .media > canvas {
 	width: 100%;
@@ -317,7 +313,8 @@
 	order: 5;
 }
 .images {
-
+	width: 100%;
+	min-height: var(--line2);
 }
 .attachment {
 	min-width: 320px;

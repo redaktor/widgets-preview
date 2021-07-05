@@ -2,7 +2,7 @@ import { tsx, create } from '@dojo/framework/core/vdom';
 import has from '@dojo/framework/core/has';
 import { ActivityPubObject } from '../common/interfaces';
 import id from '../middleware/id';
-import theme, { ViewportProperties} from '../middleware/theme';
+import theme, { ViewportProperties } from '../middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { normalizeActivityPub } from '../common/activityPubUtil';
 import Icon from '../icon';
@@ -12,7 +12,7 @@ import * as css from '../theme/material/images.m.css';
 
 export interface ImagesProperties extends ActivityPubObject, ViewportProperties {
 	baselined?: boolean;
-	isRow?: boolean;
+	view?: 'column' | 'row' | 'full'
 	/* maximum number of items, default 1000 */
 	max?: number;
 	/* max. manual items per “page”, normally calculated */
@@ -39,10 +39,11 @@ export const Images = factory(function Images({
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
 	const {
-		image = [], isRow = false, size = 'm', max = 1000, baselined = true,
+		image = [], view = 'column', size = 'm', max = 1000, baselined = true,
 		itemsPerPage, onLoad, onClick
 	} = normalizeActivityPub(properties());
 	if (!image.length) { return '' }
+	const [isColumn, isRow, isFull] = [(view === 'column'), (view === 'row'), (view === 'full')];
 	const idBase = id.getId('images');
 	const maxImage = image.slice(0,max+1);
 	const mLength = maxImage.length;
@@ -104,7 +105,7 @@ export const Images = factory(function Images({
 			key="root"
 			classes={[
 				themedCss.root,
-				isRow && themedCss.row,
+				isColumn ? themedCss.column : themedCss.row,
 				(!!has('host-node') || allLoaded) && themedCss.loaded,
 				(maxImage.length > itemCount) && themedCss.hasPagination,
 				themedCss[(size as keyof typeof themedCss)]

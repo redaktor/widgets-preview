@@ -26,6 +26,7 @@ export const poster: string;
 export const audioAvatarWrapper: string;
 export const summary: string;
 export const content: string;
+export const serif: string;
 export const metaSummary: string;
 export const freshDuration: string;
 export const selected: string;

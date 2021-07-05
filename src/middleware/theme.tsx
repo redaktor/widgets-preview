@@ -65,7 +65,7 @@ export const theme = factory(function({ middleware: { coreTheme, icache }, prope
 	const { get, set, getOrSet } = icache;
 	return {
 		viewDesktopCSS: () => {
-			const { view } = properties();
+			const { view = 'column' } = properties();
 			if (!get('viewDesktopCSS')) {
 				if (view === 'column' && window.screen.width > 820) {
 					import('../theme/material/_columnsDesktop.m.css').then((c) => { getOrSet('viewDesktopCSS', c) });
@@ -76,7 +76,7 @@ export const theme = factory(function({ middleware: { coreTheme, icache }, prope
 			return get('viewDesktopCSS')
 		},
 		viewCSS: () => {
-			const { view } = properties();
+			const { view = 'column' } = properties();
 			if (!get('viewCSS')) {
 				if (view === 'column') {
 					import('../theme/material/_columns.m.css').then((c) => { getOrSet('viewCSS', c) });

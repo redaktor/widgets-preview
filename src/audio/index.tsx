@@ -435,18 +435,16 @@ export const Audio = factory(function Audio({
 		preload: autoPlay ? 'auto' : 'metadata',
 		onplay: () => onPlay && onPlay(get('currentTime')||0),
 		onpause: () => onPause && onPause(get('currentTime')||0),
-		onended: togglePlay,
+		// onended: togglePlay,
 		onprogress: handleProgress,
 		onloadedmetadata: handleLoadedMetadata,
 		onloadeddata: handleLoadedData,
 		ontimeupdate: setTime,
-		onseeked: togglePlay,
+		// onseeked: togglePlay,
 		crossorigin: crossorigin
 	};
 
-
-
-console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isRow})
+// console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isRow})
 	return <div
 		key="root"
 		classes={[
@@ -505,14 +503,14 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 		>
 			{ menuOpen && get('trackMenu') }
 			<div key="avatar" classes={themedCss.audioAvatarWrapper}>
-				<AudioAvatar audioElement={audio} size={(audioAvatarSize as any)}>SL</AudioAvatar>
+				{audio && <AudioAvatar audioElement={audio} size={(audioAvatarSize as any)}>SL</AudioAvatar>}
 			</div>
 			<noscript>
 				<video controls={true} {...playerProps}>{sources}{children()}</video>
 			</noscript>
 			{
 				hasPoster && !!APo.image && !!APo.image[0] &&
-					<Img {...APo.image[0]} fit />
+					<div classes={themedCss.poster}><Img {...APo.image[0]} fit /></div>
 			}
 
 			{!get('hasTracks') && !get('isPicInPic') ?
@@ -641,14 +639,14 @@ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isR
 					'@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] }
 				}}>
 					{APo.content.map((_content, i) => <virtual>
-						<MD classes={[themedCss.content, typoClass]} key={`content${i}`} content={_content} /><hr />
+						<MD classes={[themedCss.content, isColumn && themedCss.serif, typoClass]} key={`content${i}`} content={_content} /><hr />
 					</virtual>)}
 				</Collapsed>
 			}
 		</div>}
 
 		{hasAttachment && <virtual>
-			<Images key="images" isRow={isRow} image={APo.image} size={(vp as any)} classes={{
+			<Images key="images" view={view} image={APo.image} size={(vp as any)} classes={{
 				'@redaktor/widgets/images': { root: [themedCss.images] }
 			}} />
 			<div key="attachment" classes={themedCss.attachment}>

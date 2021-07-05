@@ -1,5 +1,6 @@
 export const root: string;
 export const row: string;
+export const column: string;
 export const loaded: string;
 export const media: string;
 export const m9by16: string;

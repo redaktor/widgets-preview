@@ -79,6 +79,7 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 	const {width: w, height: h} = dimensions.get('root').offset;
 	const rootWH = [(w * 2)||100, (h * 2)||100];
 	const {width, height} = dimensions.get('canvas').offset;
+	// console.log(w, h, width, height, audio);
 	/**
 	 * Set audio audioCtx analyser.
 	 */
@@ -178,6 +179,7 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 	if (!!audio) {
 		const restart = () => {
 			const audioCtx = get('audioCtx');
+			console.log('restart',audioCtx.state);
 			if (!audioCtx || audioCtx.state === 'closed') { return }
 			audioCtx.close();
 			set('audioCtx',null,false);
@@ -188,15 +190,19 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 		audio.addEventListener('ended', restart);
 		audio.addEventListener('play', () => {
 			const audioCtx = get('audioCtx');
+			console.log('play',audioCtx);
 	    if (!audioCtx || !get('canVisualise')) { setAnalyser() }
-			if (!!audioCtx && audioCtx.state === 'suspended') { // not defined for waveform
+			if (!!audioCtx ) { // not defined for waveform
 				set('animId', requestAnimationFrame(paint), false);
-	      audioCtx.resume();
-	    }
+				audioCtx.onstatechange = function() {
+		      console.log(audioCtx.state);
+					if (audioCtx.state === 'suspended') { audioCtx.resume() }
+		    }
+			}
 	  });
 		audio.addEventListener('pause', () => {
 			const audioCtx = get('audioCtx');
-			if (!!audioCtx && audioCtx.state === 'running') {
+			if (!!audioCtx) {
 	      audioCtx.suspend();
 				cancelAnimationFrame(get('animId')||0);
 	    }

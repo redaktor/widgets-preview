@@ -1,6 +1,7 @@
 export const root: string;
 export const item: string;
 export const columns: string;
+export const ratioContainer: string;
 export const typo: string;
 export const baselined: string;
 export const content: string;

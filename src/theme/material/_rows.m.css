@@ -5,7 +5,13 @@
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
-	padding-top: var(--pt) !important;
+	padding-top: var(--pt);
+	margin-bottom: 0;
 	max-width: 3840px;
+}
+.fix1by1,
+.fix1by1 img {
+	height: calc(var(--line) * 6);
+	object-fit: contain;
 }
 .typo { composes: row from './_typo.css'; }

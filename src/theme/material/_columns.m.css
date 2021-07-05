@@ -1,3 +1,4 @@
+/* https://jsfiddle.net/1j89hrne/ */
 .root {
 	display: flex;
   flex-direction: column;
@@ -19,6 +20,15 @@
   width: 100%;
   /* Note: This changes to 3320px with larger gap for 4k */
   max-width: var(--maxvp);
+}
+.ratioContainer {
+	display: grid;
+	grid-template-rows: calc(var(--line) * var(--l)) auto;
+	position: relative;
+	width: 100%;
+	background-size: cover;
+	padding: 0 !important;
+	margin-bottom: 0 !important;
 }
 .item {
   --w: calc((100vw - (var(--gap) * (var(--cols) + 1))) / var(--cols));

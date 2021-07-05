@@ -21,7 +21,7 @@ TODO:
 
 export interface MDProperties {
 	content: string;
-	classes?: string | string[];
+	classes?: string | false | (string | false)[];
 	rehypePlugins?: unified.PluggableList;
 	remarkPlugins?: unified.PluggableList;
 	/* Ignore HTML in Markdown completely */

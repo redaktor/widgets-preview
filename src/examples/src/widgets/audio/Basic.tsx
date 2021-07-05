@@ -213,10 +213,15 @@ export default factory(function Basic() {
         </div>
         <br /><br /><br /><br /><br /><br />
         <p>Lorem</p>
+        <br /><br />
         <div styles={{ width: '66.666%' }}>
-          <Image {...exampleImage} />
+          <div classes={[columnsCSS.root, columnsDesktop.root]}>
+            <ul classes={columnsCSS.columns}>
+              <Image {...exampleImage} sensitive={false} baselined={true} />
+            </ul>
+          </div>
           <br /><br />
-          <Img {...exampleImage} sensitive={false} aspectRatio="16/7" focalPoint={[0, 0.13]} />
+          <Img {...exampleImage} sensitive={false} baselined={true} aspectRatio="16/7" focalPoint={[0, 0.13]} />
         </div>
       </virtual>
 		</Example>

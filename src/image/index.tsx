@@ -99,10 +99,15 @@ export const Image = factory(function Image({
 			theme.variant(),
 			themedCss.root,
 			isColumn ? themedCss.column : themedCss.row,
-			!!viewCSS && viewCSS.item,
-			!!viewCSS && viewCSS.baselined,
+			!!viewCSS && viewCSS.ratioContainer,
+
+			!!viewCSS && viewCSS.m3by2,
+			!!viewDesktopCSS && viewDesktopCSS.m3by2,
+			/*
 			!!viewDesktopCSS && viewDesktopCSS.item,
-			!!viewDesktopCSS && viewDesktopCSS.baselined,
+			!!baselined && !!viewCSS && viewCSS.baselined,
+			!!baselined && !!viewDesktopCSS && viewDesktopCSS.baselined,
+			*/
 			theme.shaped(themedCss),
 			theme.sized(ui),
 			theme.colored(colors),
@@ -118,10 +123,12 @@ export const Image = factory(function Image({
 		aria-label="Image"
 		role="region"
 	>
-		<div classes={themedCss.measure} key="measure" />
+
 		<Img {...properties()} onBrightness={(o) => {
 			icache.getOrSet('brightnessClass', o.brightness > 120 ? themedCss.lightImage : themedCss.darkImage)
 		}} />
+
+		<div classes={themedCss.measure} key="measure" />
 		{APo.sensitive && summaryNode}
 		{hasAttachment && <div key="images" classes={themedCss.images}>
 			... images
