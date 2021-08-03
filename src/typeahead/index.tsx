@@ -1,25 +1,25 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import theme from '../middleware/theme';
+import theme from '@redaktor/widgets/middleware/theme';
 import focus from '@dojo/framework/core/middleware/focus';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import { dimensions } from '@dojo/framework/core/middleware/dimensions';
 import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
 import { find } from '@dojo/framework/shim/array';
-import List, {ItemRendererProperties,ListOption,ListProperties} from '../list';
-import { ListItemProperties, MenuItemProperties } from '../list/Listitem';
-import TriggerPopup from '../triggerPopup';
-import { PopupPosition } from '../popup';
-import TextInput from '../inputText';
-import HelperText from '../helperText';
-import { Keys } from '../common/util';
-import LoadingIndicator from '../loadingIndicator';
-import bundle from '../select/nls/Select';
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
-import * as css from '../theme/material/typeahead.m.css';
-import * as inputCss from '../theme/material/inputText.m.css';
+import List, {ItemRendererProperties,ListOption,ListProperties} from '@redaktor/widgets/list';
+import { ListItemProperties, MenuItemProperties } from '@redaktor/widgets/list/Listitem';
+import TriggerPopup from '@redaktor/widgets/triggerPopup';
+import { PopupPosition } from '@redaktor/widgets/popup';
+import TextInput from '@redaktor/widgets/inputText';
+import HelperText from '@redaktor/widgets/helperText';
+import { Keys } from '@redaktor/widgets/common/util';
+import LoadingIndicator from '@redaktor/widgets/loadingIndicator';
+import bundle from '@redaktor/widgets/select/nls/Select';
+import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
+import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
+import * as css from '@redaktor/widgets/theme/material/typeahead.m.css';
+import * as inputCss from '@redaktor/widgets/theme/material/inputText.m.css';
 
 export interface TypeaheadProperties {
 	/** Callback called when user selects a value */
@@ -117,7 +117,7 @@ export const Typeahead = factory(function Typeahead({
 		},
 		classes,
 		theme: themeProp,
-		variant,
+		design,
 		color = 'primary',
 		size = 'm',
 	} = properties();
@@ -326,7 +326,7 @@ export const Typeahead = factory(function Typeahead({
 				position={position}
 				classes={classes}
 				theme={themeProp}
-				variant={variant}
+				design={design}
 			>
 				{{
 					trigger: (toggleOpen) => {
@@ -427,7 +427,7 @@ export const Typeahead = factory(function Typeahead({
 										root: [themedCss.trigger]
 									}
 								}}
-								variant={variant}
+								design={design}
 								color={color}
 								size={size}
 								onClick={openMenu}
@@ -460,7 +460,7 @@ export const Typeahead = factory(function Typeahead({
 								'@redaktor/widgets/list': {
 									root: [
 										themedCss.menu,
-										variant && (themedCss as any)[variant],
+										design && (themedCss as any)[design],
 										disabled ? themedCss.disabled : null
 									],
 									transformer: [themedCss.menuTransformer],
@@ -483,7 +483,7 @@ export const Typeahead = factory(function Typeahead({
 							onBlur={closeMenu}
 							initialValue={value}
 							itemsInView={itemsInView}
-							variant={variant}
+							design={design}
 							color={color}
 							size={size}
 							widgetId={listId}
@@ -496,7 +496,7 @@ export const Typeahead = factory(function Typeahead({
 								key="loading"
 								theme={themeProp}
 								classes={classes}
-								variant={variant}
+								design={design}
 								color={color}
 								size={size}
 							/>

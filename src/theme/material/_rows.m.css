@@ -5,6 +5,7 @@
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
+	content-visibility: auto;
 	padding-top: var(--pt);
 	margin-bottom: 0;
 	max-width: 3840px;
@@ -15,3 +16,40 @@
 	object-fit: contain;
 }
 .typo { composes: row from './_typo.css'; }
+
+.content {
+	flex: 1;
+	z-index: 2;
+	min-width: 360px;
+	max-width: calc(50vw - var(--line2));
+}
+@media screen and (max-width: 768px) {
+	.content {
+		max-width: 540px;
+	}
+}
+@media screen and (min-width: 1110px) {
+	.content {
+		max-width: 540px;
+	}
+}
+@media screen and (min-width: 1264px) {
+	.content {
+		min-width: 400px;
+	}
+}
+@media screen and (min-width: 1908px) {
+	.content {
+		min-width: 464px;
+	}
+}
+@media screen and (min-width: 2960px) {
+	.content {
+		min-width: 480px;
+	}
+}
+@media screen and (min-width: 3580px) {
+	.content {
+		max-width: 580px;
+	}
+}

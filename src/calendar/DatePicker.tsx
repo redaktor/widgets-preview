@@ -3,13 +3,13 @@ import { RenderResult } from '@dojo/framework/core/interfaces';
 import icache from '@dojo/framework/core/middleware/icache';
 import focus from '@dojo/framework/core/middleware/focus';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import theme from '../middleware/theme';
-import { Keys } from '../common/util';
+import theme from '@redaktor/widgets/middleware/theme';
+import { Keys } from '@redaktor/widgets/common/util';
 import { monthInMin, monthInMax } from './date-utils';
-import Icon from '../icon/index';
-import * as css from '../theme/material/calendar.m.css';
-import * as baseCss from '../common/styles/base.m.css';
-import * as iconCss from '../theme/material/icon.m.css';
+import Icon from '@redaktor/widgets/icon/index';
+import * as css from '@redaktor/widgets/theme/material/calendar.m.css';
+import * as baseCss from '@redaktor/widgets/common/styles/base.m.css';
+import * as iconCss from '@redaktor/widgets/theme/material/icon.m.css';
 import bundle from './nls/Calendar';
 
 export type CalendarMessages = {
@@ -284,7 +284,7 @@ const DatePicker = create({ theme, focus, icache, i18n }).properties<DatePickerP
 		}
 
 		function renderPagingButtonContent(type: Paging) {
-			const { classes, variant } = properties();
+			const { classes, design } = properties();
 			const iconType = type === Paging.next ? 'right' : 'left';
 			const labelText = type === Paging.next ? labels.nextYears : labels.previousYears;
 
@@ -297,7 +297,7 @@ const DatePicker = create({ theme, focus, icache, i18n }).properties<DatePickerP
 						'datePickerPaging'
 					)}
 					classes={classes}
-					variant={variant}
+					design={design}
 				/>,
 				<span classes={baseCss.visuallyHidden}>{labelText}</span>
 			];

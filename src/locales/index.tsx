@@ -22,6 +22,7 @@ export const Locales = factory(function Locales({ properties, middleware: { them
 	const initialValue = !locale.locale ? locales[0].value : !!locales.filter((o) => o.value === locale.locale).length ?
 		locale.locale : locale.locale.split('-')[0];
 
+console.log(locales, locale, initialValue);
 	return <details {...detailsProps} key="root" classes={[themedCss.root]}>
 			<summary>
 				<Icon type="globe" />{' '}

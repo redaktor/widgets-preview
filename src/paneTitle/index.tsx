@@ -5,7 +5,7 @@ import focus from '@dojo/framework/core/middleware/focus';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { theme, ThemeProperties } from '../middleware/theme';
 
-import Icon from '../icon';
+// import Icon from '../icon';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/paneTitle.m.css';

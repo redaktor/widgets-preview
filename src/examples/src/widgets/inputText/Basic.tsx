@@ -7,13 +7,13 @@ import { ExampleProperties } from '@redaktor/widgets/common/util';
 const factory = create({ icache }).properties<ExampleProperties>();
 
 const Basic = factory(function Basic({ properties, middleware: { icache } }) {
-	const { variant = 'flat' } = properties();
+	const { design = 'flat' } = properties();
 	return (<Example spaced={true}>
 		<span>
 			<TextInput
 				responsive={true}
 				size='xs'
-				variant={variant}
+				design={design}
 				initialValue="Hello World!"
 				onValue={(value) => {
 					icache.set('value', value);
@@ -22,7 +22,7 @@ const Basic = factory(function Basic({ properties, middleware: { icache } }) {
 			<TextInput
 				responsive={true}
 				size='s'
-				variant={variant}
+				design={design}
 				initialValue="Hello World!"
 				onValue={(value) => {
 					icache.set('value', value);
@@ -31,7 +31,7 @@ const Basic = factory(function Basic({ properties, middleware: { icache } }) {
 			<TextInput
 				responsive={true}
 				size='m'
-				variant={variant}
+				design={design}
 				onValue={(value) => {
 					icache.set('value', value);
 				}}
@@ -39,7 +39,7 @@ const Basic = factory(function Basic({ properties, middleware: { icache } }) {
 			<TextInput
 				responsive={true}
 				size='l'
-				variant={variant}
+				design={design}
 				onValue={(value) => {
 					icache.set('value', value);
 				}}
@@ -47,7 +47,7 @@ const Basic = factory(function Basic({ properties, middleware: { icache } }) {
 			<TextInput
 				responsive={true}
 				size='xl'
-				variant={variant}
+				design={design}
 				onValue={(value) => {
 					icache.set('value', value);
 				}}
@@ -55,7 +55,7 @@ const Basic = factory(function Basic({ properties, middleware: { icache } }) {
 			<TextInput
 				responsive={true}
 				size='xxl'
-				variant={variant}
+				design={design}
 				onValue={(value) => {
 					icache.set('value', value);
 				}}

@@ -3,19 +3,19 @@ import { DNode, RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import focus from '@dojo/framework/core/middleware/focus';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import theme from '../middleware/theme';
-import { formatAriaProperties, Keys } from '../common/util';
+import theme from '@redaktor/widgets/middleware/theme';
+import { formatAriaProperties, Keys } from '@redaktor/widgets/common/util';
+import Icon from '@redaktor/widgets/icon/index';
 import {
 	getWeekdays, getMonths, monthInMin, monthInMax, isOutOfDateRange, toDate
 } from './date-utils';
 import CalendarCell, { SelectMode } from './CalendarCell';
 import DatePicker from './DatePicker';
-import Icon from '../icon/index';
 import bundle from './nls/Calendar';
-import * as css from '../theme/material/calendar.m.css';
-import * as baseCss from '../common/styles/base.m.css';
-import * as iconCss from '../theme/material/icon.m.css';
-import * as colors from '../theme/material/_color.m.css';
+import * as css from '@redaktor/widgets/theme/material/calendar.m.css';
+import * as baseCss from '@redaktor/widgets/common/styles/base.m.css';
+import * as iconCss from '@redaktor/widgets/theme/material/icon.m.css';
+import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
 
 export type CalendarMessages = {
 	chooseMonth: string;
@@ -494,7 +494,7 @@ export const Calendar = factory(function Calendar({
 		today: boolean,
 		hoverRange: boolean
 	) {
-		const { minDate, maxDate, theme, classes, variant } = properties();
+		const { minDate, maxDate, theme, classes, design } = properties();
 
 		const day = dateObj.getDate();
 		const outOfRange = isOutOfDateRange(dateObj, minDate, maxDate);
@@ -503,7 +503,7 @@ export const Calendar = factory(function Calendar({
 		return (
 			<CalendarCell
 				classes={classes}
-				variant={variant}
+				design={design}
 				key={`date-${index}`}
 				callFocus={(callDateFocus || shouldFocus) && focusable}
 				date={dateObj}
@@ -527,7 +527,7 @@ export const Calendar = factory(function Calendar({
 		const {
 			theme,
 			classes,
-			variant,
+			design,
 			minDate,
 			maxDate
 		} = properties();
@@ -539,7 +539,7 @@ export const Calendar = factory(function Calendar({
 				<DatePicker
 					key="date-picker"
 					classes={classes}
-					variant={variant}
+					design={design}
 					labelId={monthLabelId}
 					month={month}
 					monthNames={monthNames}
@@ -583,7 +583,7 @@ export const Calendar = factory(function Calendar({
 	}
 
 	function renderPagingButtonContent(type: Paging, labels: CalendarMessages) {
-		const { classes, variant } = properties();
+		const { classes, design } = properties();
 		const iconType = type === Paging.next ? 'right' : 'left';
 		const labelText = type === Paging.next ? labels.nextMonth : labels.previousMonth;
 
@@ -596,7 +596,7 @@ export const Calendar = factory(function Calendar({
 					'calendarPaging'
 				)}
 				classes={classes}
-				variant={variant}
+				design={design}
 			/>,
 			<span classes={[baseCss.visuallyHidden]}>{labelText}</span>
 		];

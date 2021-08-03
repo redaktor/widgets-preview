@@ -1,11 +1,11 @@
-import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import { MenuOption } from '../common/interfaces';
+import { create, tsx } from '@dojo/framework/core/vdom';
+import { MenuOption } from '@redaktor/widgets/common/interfaces';
 import theme from '@dojo/framework/core/middleware/theme';
-import id from '../middleware/id';
+import id from '@redaktor/widgets/middleware/id';
+import { Radio, RadioProperties } from '@redaktor/widgets/radio/';
+import * as css from '@redaktor/widgets/theme/material/radioGroup.m.css';
 import { radioGroup } from './middleware';
-import { Radio, RadioProperties } from '../radio/';
-import * as css from '../theme/material/radioGroup.m.css';
 
 export interface RadioGroupProperties extends RadioProperties {
 	vertical?: boolean;

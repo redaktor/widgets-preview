@@ -1,6 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import { theme } from '../middleware/theme';
-import * as css from '../theme/material/progress.m.css';
+import { theme } from '@redaktor/widgets/middleware/theme';
+import * as css from '@redaktor/widgets/theme/material/progress.m.css';
 
 export interface CircleProperties {
 	percent?: number;

@@ -132,7 +132,7 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 				<details classes={!following ? themedCss.followAction : themedCss.unfollowAction}>
 					{icache.get('open') && !following && <virtual>
 						<Input
-							variant="flat"
+							design="flat"
 							color="primary" spaced={false} required={true} selection={true}
 							initialValue={preferredUsername[0]}
 							onValue={(v = '') => icache.set('preferredUsername', [v])}
@@ -142,7 +142,7 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 						</Input>
 						<summary classes={themedCss.followBtn}>
 							<Button
-							  variant={preferredUsername !== icache.get('preferredUsername') ? 'filled' : 'outlined'}
+							  design={preferredUsername !== icache.get('preferredUsername') ? 'filled' : 'outlined'}
 								color="primary" responsive={true} spaced={false}
 							  onClick={() => _onFollow()}
 							>
@@ -152,7 +152,7 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 					</virtual>
 					}
 					{icache.get('open') && !!following &&
-						<Button variant="outlined" color='secondary' spaced={false}>Unfollow</Button>
+						<Button design="outlined" color='secondary' spaced={false}>Unfollow</Button>
 					}
 				</details>
 			}
@@ -162,7 +162,7 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 						root:[themedCss.trustChip, follow === 'me' ? themedCss.me : null]
 					}
 				}}
-				variant="filled" spaced={false} inline={true}
+				design="filled" spaced={false} inline={true}
 				color={follow === 'me' ? 'neutral' : (!following ? 'blueGrey' : 'secondary')}
 				onClick={() => icache.set('edgeNamesVisible', !icache.get('edgeNamesVisible'))}
 			>

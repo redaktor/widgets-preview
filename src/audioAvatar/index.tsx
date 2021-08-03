@@ -1,7 +1,7 @@
 import { create, tsx, node } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { dimensions } from '@dojo/framework/core/middleware/dimensions';
-import { theme, ThemeProperties, Variants } from '../middleware/theme';
+import { theme, ThemeProperties/*, Designs */} from '../middleware/theme';
 import words from '../framework/String/words';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
@@ -49,19 +49,11 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 		lineWidth = 2.5, lineSpace = 2, barWidth = 1.5, barLength = 0,
 		src, name, alt, radius,
 		shape = 'circle',
-		variant = 'filled' as (keyof typeof buttonCss)
+		design = 'filled' as (keyof typeof buttonCss)
 	} = properties();
 
 	const canvas = node.get('canvas');
 	const ctx = canvas && (canvas as HTMLCanvasElement).getContext('2d');
-
-	let { barColors } = properties();
-	if (!barColors) {
-		barColors = [
-			canvas && getComputedStyle(canvas).getPropertyValue('--m-800') || '#e03c05',
-			canvas && getComputedStyle(canvas).getPropertyValue('--m-500') || '#ff7a00'
-		];
-	}
 
 	const c = children();
 	const avatarStr = (s: string) => {
@@ -115,7 +107,6 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
     return gradient
   }
 
-
   const _setCanvas = () => {
 		if (!ctx || !canvFillColor) { return }
     ctx.clearRect(0, 0, width, height);
@@ -125,6 +116,13 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
     !!ctx && ctx.fillRect(0, 0, width, height)
   }
 
+	let { barColors } = properties();
+	if (!barColors) {
+		barColors = [
+			canvas && getComputedStyle(canvas).getPropertyValue('--m-800') || '#e03c05',
+			canvas && getComputedStyle(canvas).getPropertyValue('--m-500') || '#ff7a00'
+		];
+	}
   const _setBarColor = (cx: number, cy: number) => {
 		if (!ctx) { return }
 		const [w] = rootWH;
@@ -176,38 +174,37 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 		!audio.paused && set('animId', requestAnimationFrame(paint), false)
 	}
 
-	if (!!audio) {
-		const restart = () => {
-			const audioCtx = get('audioCtx');
-			console.log('restart',audioCtx.state);
-			if (!audioCtx || audioCtx.state === 'closed') { return }
-			audioCtx.close();
-			set('audioCtx',null,false);
-			set('canVisualise',false);
-    	cancelAnimationFrame(get('animId')||0);
-		}
+	const restart = () => {
+		const audioCtx = get('audioCtx');
+		console.log('restart',audioCtx.state);
+		if (!audioCtx || audioCtx.state === 'closed') { return }
+		audioCtx.close();
+		set('audioCtx',null,false);
+		set('canVisualise',false);
+		cancelAnimationFrame(get('animId')||0);
+	}
+	audio.addEventListener('loadedmetadata', function metadata() {
+		console.log('loadedmetadata');
 		audio.addEventListener('seeked', restart);
 		audio.addEventListener('ended', restart);
-		audio.addEventListener('play', () => {
+		audio.addEventListener('play', function play() {
 			const audioCtx = get('audioCtx');
-			console.log('play',audioCtx);
 	    if (!audioCtx || !get('canVisualise')) { setAnalyser() }
 			if (!!audioCtx ) { // not defined for waveform
 				set('animId', requestAnimationFrame(paint), false);
 				audioCtx.onstatechange = function() {
-		      console.log(audioCtx.state);
 					if (audioCtx.state === 'suspended') { audioCtx.resume() }
 		    }
 			}
 	  });
-		audio.addEventListener('pause', () => {
+		audio.addEventListener('pause', function pause() {
 			const audioCtx = get('audioCtx');
 			if (!!audioCtx) {
 	      audioCtx.suspend();
 				cancelAnimationFrame(get('animId')||0);
 	    }
-		});
-	}
+		})
+	})
 
 	return (<div
 			key="root"
@@ -223,7 +220,7 @@ export const AudioAvatar = factory(function Avatar({ middleware: { theme, node, 
 				buttonCss.root,
 				themedCss.root,
 				themedCss.audio,
-				buttonCss[variant],
+				buttonCss[design],
 				themedCss[shape]
 				// theme.animated(themedCss)
 			]}

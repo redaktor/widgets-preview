@@ -1,17 +1,15 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import focus from '@dojo/framework/core/middleware/focus';
 import { i18n } from '@dojo/framework/core/middleware/i18n';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { RadioGroupProperties } from '../radioGroup';
-import { theme, formatAriaProperties } from '../middleware/theme';
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
-import * as css from '../theme/material/selectNative.m.css';
-import * as labelCss from '../theme/material/label.m.css';
-import * as iconCss from '../theme/material/icon.m.css';
-import HelperText from '../helperText';
-import Icon from '../icon';
-import Label from '../label';
+import { theme, formatAriaProperties } from '@redaktor/widgets/middleware/theme';
+import * as css from '@redaktor/widgets/theme/material/selectNative.m.css';
+import * as labelCss from '@redaktor/widgets/theme/material/label.m.css';
+import { RadioGroupProperties } from '@redaktor/widgets/radioGroup';
+import HelperText from '@redaktor/widgets/helperText';
+import Icon from '@redaktor/widgets/icon';
+import Label from '@redaktor/widgets/label';
 
 export interface NativeSelectProperties extends RadioGroupProperties {
 	/** Allow multiple selected values, default false */
@@ -21,18 +19,20 @@ export interface NativeSelectProperties extends RadioGroupProperties {
 	/** Represents the number of rows the are visible at one time */
 	rowMax?: number;
 }
-
 interface NativeSelectICache {
 	initial: string;
 	value: string;
 	prependBlank: boolean;
+}
+interface NativeSelectChildren {
+	label?: RenderResult;
 }
 
 const icache = createICacheMiddleware<NativeSelectICache>();
 
 const factory = create({ icache, focus, theme, i18n })
 	.properties<NativeSelectProperties>()
-	.children<any>();
+	.children<NativeSelectChildren | undefined>();
 
 export const NativeSelect = factory(function NativeSelect({
 	properties,
@@ -41,7 +41,7 @@ export const NativeSelect = factory(function NativeSelect({
 	middleware: { icache, theme, focus }
 }) {
 	const {
-		variant = 'flat',
+		design = 'flat',
 		isSerif = false,
 		focusable = true,
 		multiple = false,
@@ -61,7 +61,7 @@ export const NativeSelect = factory(function NativeSelect({
 		onBlur
 	} = properties();
 
-	const [label] = children();
+	const [{ label } = { label: undefined }] = children();
 	let { value } = properties();
 
 	if (value === undefined) {
@@ -89,9 +89,9 @@ export const NativeSelect = factory(function NativeSelect({
 			classes={[
 				theme.variant(),
 				themedCss.root,
-				theme.sized(ui),
-				theme.spaced(ui),
-				theme.colored(colors),
+				theme.uiSize(),
+				theme.uiSpace(),
+				theme.uiColor(),
 				theme.animated(themedCss),
 				disabled && themedCss.disabled,
 				required && themedCss.required,
@@ -142,14 +142,17 @@ export const NativeSelect = factory(function NativeSelect({
 					onpointerleave={() => onOut && onOut()}
 					classes={[
 						themedCss.select,
-						theme.sized(ui),
-						themedCss[variant as (keyof typeof themedCss)],
+						theme.uiSize(),
+						themedCss[design as (keyof typeof themedCss)],
 						isSerif ? themedCss.serif : themedCss.sans
 					]}
 					{...formatAriaProperties(aria)}
 					{...selectProperties}
 				>
-					{icache.get('prependBlank') && <option key="blank-option" value="" />}
+					{
+						icache.get('prependBlank') &&
+						<option key="blank-option" value="">⋮</option>
+					}
 
 					// TODO optgroup / multiple
 					{options.map(({ value, label, disabled = false }, index) => {
@@ -165,17 +168,9 @@ export const NativeSelect = factory(function NativeSelect({
 						);
 					})}
 				</select>
-				<div classes={[themedCss.box, theme.elevated(ui)]} />
+				<div classes={[themedCss.box, theme.uiElevation()]} />
 				<div classes={[themedCss.arrow]}>
-					<Icon
-						type="down"
-						theme={theme.compose(
-							iconCss,
-							css,
-							'icon'
-						)}
-						classes={classes}
-					/>
+					<Icon type="down" />
 				</div>
 			</div>
 			<HelperText key="helperText" text={helperText} />

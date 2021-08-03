@@ -1,8 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import theme from '../middleware/theme';
-
-import * as css from '../theme/default/pagination.m.css';
+import theme from '@redaktor/widgets/middleware/theme';
+import * as css from '@redaktor/widgets/theme/default/pagination.m.css';
 
 export interface PageLinkProperties {
 	onClick(): void;

@@ -31,7 +31,7 @@ export const Collapsed = factory(function Collapsed({ properties, children, midd
 		spaced = false,
 		size = 's',
 		color = 'primary',
-		variant = 'flat',
+		design = 'flat',
 		label = 'readMore'
 	} = properties();
 
@@ -50,7 +50,7 @@ export const Collapsed = factory(function Collapsed({ properties, children, midd
 		<div classes={[themedCss.root]} style={`--l: ${lines};`}>
 			{children()}
 		</div>
-		<Button labelFor={idBase} {...{size, spaced, color, variant, responsive}}>
+		<Button labelFor={idBase} {...{size, spaced, color, design, responsive}}>
 			<span classes={themedCss.more} /> {messages[label]}
 		</Button>
 	</virtual>

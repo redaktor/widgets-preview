@@ -1,7 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import Checkbox, { CheckboxBaseProperties } from '../checkbox';
-import * as css from '../theme/material/radio.m.css';
+import { theme } from '@redaktor/widgets/middleware/theme';
+import Checkbox, { CheckboxBaseProperties } from '@redaktor/widgets/checkbox';
+import * as css from '@redaktor/widgets/theme/material/radio.m.css';
 
 export interface RadioProperties extends CheckboxBaseProperties {
 	/** The icon for the button: 'checkmark', 'dot' TODO
@@ -9,16 +10,15 @@ export interface RadioProperties extends CheckboxBaseProperties {
 	 */
 	icon?: 'checkmark' | 'dot';
 }
-const factory = create().properties<RadioProperties>()
+const factory = create({ theme }).properties<RadioProperties>()
 	.children<RenderResult | undefined>();
 
-const myClasses = {
-	'@redaktor/widgets/checkbox': { box: [css.box] }
-};
-
-export const Radio = factory(function Radio({ properties, children }) {
+export const Radio = factory(function Radio({ properties, middleware: { theme }, children }) {
 	const { icon = 'dot', ...baseProperties } = properties();
-	return <Checkbox {...baseProperties} icon={icon} classes={myClasses} _inputType='radio'>
+	const themedCss = theme.classes(css);
+	const extraClasses = { '@redaktor/widgets/checkbox': { box: [themedCss.box] } };
+
+	return <Checkbox {...baseProperties} icon={icon} classes={extraClasses} _inputType='radio'>
 		{([...children()] as any)}
 	</Checkbox>;
 });

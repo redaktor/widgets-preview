@@ -9,19 +9,19 @@ export default factory(function Basic() {
 	return (<Example spaced={true}>
 		<span>
 			<div styles={{ width: '400px', display: 'flex', justifyContent: 'space-around' }}>
-				<Avatar variant="flat">A</Avatar>
-				<Avatar variant="filled">A</Avatar>
-				<Avatar variant="raised">A</Avatar>
-				<Avatar variant="outlined">A</Avatar>
-				<Avatar variant="shaped">A</Avatar>
+				<Avatar design="flat">A</Avatar>
+				<Avatar design="filled">A</Avatar>
+				<Avatar design="raised">A</Avatar>
+				<Avatar design="outlined">A</Avatar>
+				<Avatar design="shaped">A</Avatar>
 			</div>
 			<br /><br />
 			<div styles={{ width: '400px', display: 'flex', justifyContent: 'space-around' }}>
-				<Avatar variant="flat" src={avatar} alt="Dojo" />
-				<Avatar variant="filled" src={avatar} alt="Dojo" />
-				<Avatar variant="raised" src={avatar} alt="Dojo" />
-				<Avatar variant="outlined" src={avatar} alt="Dojo" />
-				<Avatar variant="shaped" src={avatar} alt="Dojo" />
+				<Avatar design="flat" src={avatar} alt="Dojo" />
+				<Avatar design="filled" src={avatar} alt="Dojo" />
+				<Avatar design="raised" src={avatar} alt="Dojo" />
+				<Avatar design="outlined" src={avatar} alt="Dojo" />
+				<Avatar design="shaped" src={avatar} alt="Dojo" />
 			</div>
 		</span>
 	</Example>);

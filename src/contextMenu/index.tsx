@@ -17,7 +17,7 @@ const factory = create({
 }).properties<ContextMenuProperties>();
 
 export const ContextMenu = factory(function({ properties, children, middleware: { theme } }) {
-	const { resource, onSelect, classes, variant } = properties();
+	const { resource, onSelect, classes, design } = properties();
 	return (
 		<ContextPopup>
 			{{
@@ -33,7 +33,7 @@ export const ContextMenu = factory(function({ properties, children, middleware: 
 							'menu'
 						)}
 						classes={classes}
-						variant={variant}
+						design={design}
 						menu
 						resource={resource}
 						onBlur={close}

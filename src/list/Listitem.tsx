@@ -1,9 +1,9 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { throttle } from '@dojo/framework/core/util';
-import Icon from '../icon';
-import theme from '../middleware/theme';
-import * as listItemCss from '../theme/material/list-item.m.css';
-import * as menuItemCss from '../theme/material/menu-item.m.css';
+import Icon from '@redaktor/widgets/icon';
+import theme from '@redaktor/widgets/middleware/theme';
+import * as listItemCss from '@redaktor/widgets/theme/material/list-item.m.css';
+import * as menuItemCss from '@redaktor/widgets/theme/material/menu-item.m.css';
 
 export interface MenuItemProperties {
 	/** Callback used when the item is clicked */
@@ -30,7 +30,7 @@ export const MenuItem = menuItemFactory(function MenuItem({
 		active = false,
 		onRequestActive,
 		disabled = false,
-		variant = 'flat',
+		design = 'flat',
 		widgetId
 	} = properties();
 
@@ -53,7 +53,7 @@ export const MenuItem = menuItemFactory(function MenuItem({
 			}, 500)}
 			classes={[
 				theme.variant(),
-				themedCss[variant],
+				themedCss[design],
 				theme.animated(themedCss, true),
 				themedCss.root,
 				active && themedCss.active,
@@ -129,7 +129,7 @@ export const ListItem = listItemFactory(function ListItem({
 		movedDown,
 		collapsed,
 		theme: themeProp,
-		variant = 'flat'
+		design = 'flat'
 	} = properties();
 
 	const themedCss = theme.classes(listItemCss);
@@ -151,7 +151,7 @@ export const ListItem = listItemFactory(function ListItem({
 			}, 500)}
 			classes={[
 				theme.variant(),
-				themedCss[variant],
+				themedCss[design],
 				theme.animated(themedCss, true),
 				themedCss.root,
 				spaced && themedCss.height,
@@ -185,7 +185,7 @@ export const ListItem = listItemFactory(function ListItem({
 					type="bars"
 					classes={{ '@redaktor/widgets/icon': { icon: [themedCss.dragIcon] } }}
 					theme={themeProp}
-					variant={variant}
+					design={design}
 				/>
 			)}
 		</div>

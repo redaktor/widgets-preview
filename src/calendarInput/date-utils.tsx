@@ -1,9 +1,9 @@
-import spacetime from '../common/spacetime';
-import { TimeTarget, fixed, numeric } from '../common/data/timeRelative';
+import spacetime from '@redaktor/widgets/common/spacetime';
+import { TimeTarget, fixed, numeric } from '@redaktor/widgets/common/data/timeRelative';
 
 export type ParseableDate = string | number | Date | null | undefined;
 export type Token = [RegExp, { month: number; day: number; year: number }, string];
-export interface Tokens{ [key: string]: Token };
+export interface Tokens { [key: string]: Token }
 export interface RelativeDate { value: Date; expression: [TimeTarget, number]; }
 
 export const translateNumbers = (function () {

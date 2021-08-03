@@ -1,19 +1,17 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import id from '../middleware/id';
+import id from '@redaktor/widgets/middleware/id';
 import focus from '@dojo/framework/core/middleware/focus';
 import { FocusProperties } from '@dojo/framework/core/mixins/Focus';
-import { theme, formatAriaProperties, ThemeProperties, Variants } from '../middleware/theme';
+import { theme, formatAriaProperties, ThemeProperties } from '@redaktor/widgets/middleware/theme';
 
-
-// import Label from '../label/index';
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
-import * as css from '../theme/material/checkbox.m.css';
+import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
+import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
+import * as css from '@redaktor/widgets/theme/material/checkbox.m.css';
 /* TODO
 onChange?(evt: Toggle): void;
 responsive?: boolean;
-customIcon or customIcon-variant
+customIcon or customIcon-design
 */
 
 export interface CheckboxBaseProperties extends ThemeProperties, FocusProperties {
@@ -77,7 +75,7 @@ export const Checkbox = factory(function Checkbox({
 	const {
 		_inputType = 'checkbox',
 		aria = {},
-		variant = 'flat',
+		design = 'flat',
 		checked = false,
 		focusable = true,
 		icon = 'checkmark',
@@ -91,11 +89,12 @@ export const Checkbox = factory(function Checkbox({
 		required,
 		theme: themeProp,
 		valid,
-		value,
-		widgetId
+		value
+		// widgetId
 	} = properties();
 	const idBase = id.getId(_inputType);
 
+console.log('checkbox render');
 	return (
 		<label
 			key="root"
@@ -158,7 +157,7 @@ export const Checkbox = factory(function Checkbox({
 			<div key="box" classes={[
 				themedCss.box,
 				theme.elevated(ui),
-				themedCss[variant as (keyof typeof themedCss)],
+				themedCss[design as (keyof typeof themedCss)],
 				themedCss[icon as (keyof typeof themedCss)]
 			]}></div>
 			{label}

@@ -23,6 +23,10 @@ import CheckboxDisabled from './widgets/checkbox/Disabled';
 import CheckboxReadonly from './widgets/checkbox/Readonly';
 import CheckboxCustomLabel from './widgets/checkbox/CustomLabel';
 
+import IconOverview from './widgets/icon/Overview';
+import IconAltText from './widgets/icon/AltText';
+import IconButton from './widgets/icon/IconButton';
+
 import RadioOverview from './widgets/radio/Overview';
 import RadioFlat from './widgets/radio/Basic';
 import RadioFilled from './widgets/radio/Filled';
@@ -66,17 +70,17 @@ import TextAreaHiddenLabel from './widgets/textArea/HiddenLabel';
 import TextAreaValidatedCustom from './widgets/textArea/ValidatedCustom';
 import TextAreaValidatedRequired from './widgets/textArea/ValidatedRequired';
 
-import CheckboxBasicGroup from './widgets/checkboxGroup/Basic';
-import CheckboxCustomLabelGroup from './widgets/checkboxGroup/CustomLabel';
-import CustomRendererCheckboxGroup from './widgets/checkboxGroup/CustomRenderer';
-import InitialValueCheckboxGroup from './widgets/checkboxGroup/InitialValue';
-import ControlledCheckboxGroup from './widgets/checkboxGroup/Controlled';
+import CheckboxGroupOverview from './widgets/checkboxGroup/Overview';
+import CheckboxGroupCustomLabel from './widgets/checkboxGroup/CustomLabel';
+import CheckboxGroupCustomRenderer from './widgets/checkboxGroup/CustomRenderer';
+import CheckboxGroupInitialValue from './widgets/checkboxGroup/InitialValue';
+import CheckboxGroupControlled from './widgets/checkboxGroup/Controlled';
 
-import RadioBasicGroup from './widgets/radioGroup/Basic';
-import ControlledRadioGroup from './widgets/radioGroup/Basic';
-import CustomLabelRadioGroup from './widgets/radioGroup/CustomLabel';
-import CustomRendererRadioGroup from './widgets/radioGroup/CustomRenderer';
-import InitialValueRadioGroup from './widgets/radioGroup/InitialValue';
+import RadioGroupOverview from './widgets/radioGroup/Overview';
+import RadioGroupControlled from './widgets/radioGroup/Overview';
+import RadioGroupCustomLabel from './widgets/radioGroup/CustomLabel';
+import RadioGroupCustomRenderer from './widgets/radioGroup/CustomRenderer';
+import RadioGroupInitialValue from './widgets/radioGroup/InitialValue';
 
 import ChipOverview from './widgets/chip/Overview';
 import ChipClickable from './widgets/chip/Clickable';
@@ -185,9 +189,6 @@ import Paginated from './widgets/grid/Paginated';
 import Restful from './widgets/grid/Restful';
 import RowSelection from './widgets/grid/RowSelection';
 import Sorting from './widgets/grid/Sorting';
-import AltTextIcon from './widgets/icon/AltText';
-import BasicIcons from './widgets/icon/Basic';
-import IconButton from './widgets/icon/IconButton';
 import BasicLabel from './widgets/label/Basic';
 import HiddenLabel from './widgets/label/HiddenLabel';
 import InvalidLabel from './widgets/label/InvalidLabel';
@@ -236,7 +237,6 @@ import LeadingSnackbar from './widgets/snackbar/Leading';
 import StackedSnackbar from './widgets/snackbar/Stacked';
 import SuccessSnackbar from './widgets/snackbar/Success';
 
-import BasicThreeColumnLayout from './widgets/three-column-layout/Basic';
 import BasicTitlePane from './widgets/paneTitle/Basic';
 import HeadingLevel from './widgets/paneTitle/HeadingLevel';
 import NonCloseable from './widgets/paneTitle/NonCloseable';
@@ -257,9 +257,6 @@ import Pagination from './widgets/pagination/Basic';
 import PaginationPageSizeSelector from './widgets/pagination/PageSizeSelector';
 import PaginationControlled from './widgets/pagination/Controlled';
 import PaginationSiblingCount from './widgets/pagination/SiblingCount';
-import BasicTwoColumnLayout from './widgets/two-column-layout/Basic';
-import TrailingBiasTwoColumnLayout from './widgets/two-column-layout/TrailingBias';
-import CollapsingLayout from './widgets/two-column-layout/Collapsing';
 import BasicTabContainer from './widgets/containerTabs/Basic';
 import ControlledTabContainer from './widgets/containerTabs/Controlled';
 import ButtonAlignmentTabContainer from './widgets/containerTabs/ButtonAlignment';
@@ -286,7 +283,7 @@ export const config = {
 	],
 	tests,
 	readmePath: (widget: string) => `src/${widget}/README.md`,
-	widgetPath: (widget: string, filename: string) => `src/${widget}/${filename || 'index'}.tsx`,
+	widgetPath: (widget: string) => `src/${widget}/index.tsx`,
 	examplePath: (widget: string, filename: string) =>
 		`src/examples/src/widgets/${widget}/${filename || 'index'}.tsx`,
 	codesandboxPath: (widget: string, filename: string, themeName?: string) => {
@@ -466,22 +463,22 @@ export const config = {
 			examples: [
 				{
 					filename: 'InitialValue',
-					module: InitialValueCheckboxGroup,
+					module: CheckboxGroupInitialValue,
 					title: 'Initial Value'
 				},
 				{
 					filename: 'CustomLabel',
-					module: CheckboxCustomLabelGroup,
+					module: CheckboxGroupCustomLabel,
 					title: 'Custom Label'
 				},
 				{
 					filename: 'CustomRenderer',
-					module: CustomRendererCheckboxGroup,
+					module: CheckboxGroupCustomRenderer,
 					title: 'Custom Renderer'
 				},
 				{
 					filename: 'Controlled',
-					module: ControlledCheckboxGroup,
+					module: CheckboxGroupControlled,
 					title: 'Controlled'
 				}
 			],
@@ -489,7 +486,7 @@ export const config = {
 			overview: {
 				example: {
 					filename: 'Basic',
-					module: CheckboxBasicGroup
+					module: CheckboxGroupOverview
 				}
 			}
 		},
@@ -941,7 +938,7 @@ export const config = {
 			examples: [
 				{
 					filename: 'AltText',
-					module: AltTextIcon,
+					module: IconAltText,
 					title: 'With alt text'
 				},
 				{
@@ -953,7 +950,7 @@ export const config = {
 			overview: {
 				example: {
 					filename: 'Basic',
-					module: BasicIcons
+					module: IconOverview
 				}
 			}
 		},
@@ -1247,22 +1244,22 @@ export const config = {
 			examples: [
 				{
 					filename: 'Controlled',
-					module: ControlledRadioGroup,
+					module: RadioGroupControlled,
 					title: 'Controlled radio group'
 				},
 				{
 					filename: 'InitialValue',
-					module: InitialValueRadioGroup,
+					module: RadioGroupInitialValue,
 					title: 'Initial Value'
 				},
 				{
 					filename: 'CustomLabel',
-					module: CustomLabelRadioGroup,
+					module: RadioGroupCustomLabel,
 					title: 'Custom Label'
 				},
 				{
 					filename: 'CustomRenderer',
-					module: CustomRendererRadioGroup,
+					module: RadioGroupCustomRenderer,
 					title: 'Custom Renderer'
 				}
 			],
@@ -1270,7 +1267,7 @@ export const config = {
 			overview: {
 				example: {
 					filename: 'Basic',
-					module: RadioBasicGroup
+					module: RadioGroupOverview
 				}
 			}
 		},
@@ -1709,14 +1706,6 @@ export const config = {
 			],
 			filename: 'index'
 		},
-		'three-column-layout': {
-			overview: {
-				example: {
-					filename: 'BasicThreeColumnLayout',
-					module: BasicThreeColumnLayout
-				}
-			}
-		},
 		'paneTitle': {
 			examples: [
 				{
@@ -1754,26 +1743,6 @@ export const config = {
 				example: {
 					filename: 'Basic',
 					module: BasicTooltip
-				}
-			}
-		},
-		'two-column-layout': {
-			examples: [
-				{
-					filename: 'TrailingBias',
-					module: TrailingBiasTwoColumnLayout,
-					title: 'Trailing section bias'
-				},
-				{
-					filename: 'Collapsing',
-					module: CollapsingLayout,
-					title: 'Collapsing columns'
-				}
-			],
-			overview: {
-				example: {
-					filename: 'Basic',
-					module: BasicTwoColumnLayout
 				}
 			}
 		},

@@ -13,7 +13,7 @@ export default factory(function Basic({ middleware: { icache } }) {
 				<TimePicker responsive={false} step={1800} onValue={(value) => icache.set('value', value)}>
 					{{ label: 'Time: ' }}
 				</TimePicker>
-				<TextInput variant='filled' initialValue="TEST">TEST</TextInput>
+				<TextInput design='filled' initialValue="TEST">TEST</TextInput>
 				<div>The value is {icache.get('value') || 'not set'}</div>
 			</div>
 		</Example>

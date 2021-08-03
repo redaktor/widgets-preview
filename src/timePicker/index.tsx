@@ -1,7 +1,7 @@
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import Map from '@dojo/framework/shim/Map';
 import { create, tsx } from '@dojo/framework/core/vdom';
-import theme from '../middleware/theme';
+import theme from '@redaktor/widgets/middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import {
 	createResourceTemplate,
@@ -9,17 +9,17 @@ import {
 } from '@dojo/framework/core/middleware/resources';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import focus from '@dojo/framework/core/middleware/focus';
-import Icon from '../icon';
-import { Keys } from '../common/util';
-import TextInput from '../inputText';
-import TriggerPopup from '../triggerPopup';
-import Button from '../button';
-import { List, ListOption } from '../list';
-import { TimeInputProperties, TimeInputChildren, TimeInputICache } from '../inputTime';
-import { parseTime, format24HourTime } from '../inputTime/time-utils';
-import bundle from '../inputTime/nls/TimeInput';
-import * as css from '../theme/material/timePicker.m.css';
-import * as inputCss from '../theme/material/inputText.m.css';
+import Icon from '@redaktor/widgets/icon';
+import { Keys } from '@redaktor/widgets/common/util';
+import TextInput from '@redaktor/widgets/inputText';
+import TriggerPopup from '@redaktor/widgets/triggerPopup';
+import Button from '@redaktor/widgets/button';
+import { List, ListOption } from '@redaktor/widgets/list';
+import { TimeInputProperties, TimeInputChildren, TimeInputICache } from '@redaktor/widgets/inputTime';
+import { parseTime, format24HourTime } from '@redaktor/widgets/inputTime/time-utils';
+import bundle from '@redaktor/widgets/inputTime/nls/TimeInput';
+import * as css from '@redaktor/widgets/theme/material/timePicker.m.css';
+import * as inputCss from '@redaktor/widgets/theme/material/inputText.m.css';
 
 /* TODO parse relative w timezone */
 
@@ -220,7 +220,7 @@ export const TimePicker = factory(function TimePicker({
 		value,
 		disabled: timeDisabled ? timeDisabled(new Date(dt)) : false
 	}));
-	const { name, theme: themeProp, classes, variant, color, size } = properties();
+	const { name, theme: themeProp, classes, design, color, size } = properties();
 	const [labelChild] = children();
 	const _label = isTimePickerChildren(labelChild) ? labelChild.label : labelChild;
 
@@ -240,7 +240,7 @@ export const TimePicker = factory(function TimePicker({
 				value={icache.getOrSet('value', '')}
 				aria-hidden="true"
 			/>
-			<TriggerPopup key="popup" theme={themeProp} classes={classes} variant={variant}>
+			<TriggerPopup key="popup" theme={themeProp} classes={classes} design={design}>
 				{{
 					trigger: (toggleOpen) => {
 						function openMenu() {
@@ -265,7 +265,7 @@ export const TimePicker = factory(function TimePicker({
 										'input'
 									)}
 									classes={classes}
-									variant={variant}
+									design={design}
 									color={color}
 									size={size}
 									initialValue={icache.getOrSet('inputValue', '')}
@@ -310,7 +310,7 @@ export const TimePicker = factory(function TimePicker({
 												<Button
 													theme={themeProp}
 													key="clockIcon"
-													variant='flat'
+													design='flat'
 													size={size}
 													disabled={disabled}
 													onClick={openMenu}
@@ -320,7 +320,7 @@ export const TimePicker = factory(function TimePicker({
 														}
 													}}
 												>
-													<Icon type="clockIcon" size={size} />
+													<Icon type="clock" size={size} />
 												</Button>
 										)
 									}}
@@ -344,7 +344,7 @@ export const TimePicker = factory(function TimePicker({
 									animated={true}
 									theme={themeProp}
 									classes={classes}
-									variant={'filled'}
+									design={'filled'}
 									color={color}
 									size={size}
 									focus={() => shouldFocus && focusNode === 'menu'}

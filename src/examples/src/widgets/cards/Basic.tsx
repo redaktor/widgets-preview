@@ -204,7 +204,7 @@ export default factory(function CardsExample({ middleware: { icache } }) {
 											<span classes={asideCss.name}>Robin Rebel</span>
 											<br />
 											<small classes={asideCss.handle}>@robin@rebel.me</small>
-											<Button spaced={false} variant="outlined">
+											<Button spaced={false} design="outlined">
 												Follow
 											</Button>
 										</span>
@@ -220,7 +220,7 @@ export default factory(function CardsExample({ middleware: { icache } }) {
 											<span classes={asideCss.name}>Alyssa P. Hacker</span>
 											<br />
 											<small classes={asideCss.handle}>alyssa@chaos.social</small>
-											<Button spaced={false} variant="outlined">
+											<Button spaced={false} design="outlined">
 												Follow
 											</Button>
 										</span>
@@ -233,7 +233,7 @@ export default factory(function CardsExample({ middleware: { icache } }) {
 											<span classes={asideCss.name}>Ben Bitdiddle</span>
 											<br />
 											<small classes={asideCss.handle}>@ben@octodon.social</small>
-											<Button spaced={false} variant="outlined">
+											<Button spaced={false} design="outlined">
 												Follow
 											</Button>
 										</span>
@@ -246,7 +246,7 @@ export default factory(function CardsExample({ middleware: { icache } }) {
 											<span classes={asideCss.name}>Ed</span>
 											<br />
 											<small classes={asideCss.handle}>@ed@octodon.social</small>
-											<Button spaced={false} variant="outlined">
+											<Button spaced={false} design="outlined">
 												Follow
 											</Button>
 										</span>

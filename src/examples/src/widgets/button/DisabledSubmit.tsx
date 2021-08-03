@@ -6,7 +6,7 @@ const factory = create();
 
 export default factory(function DisabledSubmitButton() {
 	return (<Example spaced={true}>
-		<Button variant="filled" type="submit" disabled>
+		<Button design="filled" type="submit" disabled>
 			Submit
 		</Button>
 	</Example>);

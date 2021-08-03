@@ -1,17 +1,17 @@
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
-import theme from '../middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import focus from '@dojo/framework/core/middleware/focus';
-import { Keys } from '../common/util';
-import TextInput, { BaseInputProperties } from '../inputText';
-
-import { parseDate, formatDateISO, formatDate } from '../calendarInput/date-utils';
-
+import theme from '@redaktor/widgets/middleware/theme';
+import { Keys } from '@redaktor/widgets/common/util';
+import TextInput, { BaseInputProperties } from '@redaktor/widgets/inputText';
+import {
+	parseDate, formatDateISO, formatDate
+} from '@redaktor/widgets/calendarInput/date-utils';
 import bundle from './nls/DateInput';
-import * as css from '../theme/material/timePicker.m.css';
-import * as inputCss from '../theme/material/inputText.m.css';
+import * as css from '@redaktor/widgets/theme/material/timePicker.m.css';
+import * as inputCss from '@redaktor/widgets/theme/material/inputText.m.css';
 
 /* TODO parse relative w datezone */
 
@@ -190,7 +190,7 @@ export const DateInput = factory(function DateInput({
 	}
 
 
-	const { name, classes, variant, color, size, disabled, required } = properties();
+	const { name, classes, design, color, size, disabled, required } = properties();
 	const [labelChild] = children();
 	const _label = isDateInputChildren(labelChild) ? labelChild.label : labelChild;
 
@@ -222,7 +222,7 @@ export const DateInput = factory(function DateInput({
 					'input'
 				)}
 				classes={classes}
-				variant={variant}
+				design={design}
 				color={color}
 				size={size}
 				initialValue={icache.getOrSet('inputValue', '')}

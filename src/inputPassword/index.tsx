@@ -1,12 +1,13 @@
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { create, tsx } from '@dojo/framework/core/vdom';
-import Icon from '../icon';
-import ConstrainedInput, { ConstrainedInputProperties } from '../inputConstrained';
-import theme from '../middleware/theme';
-import * as css from '../theme/default/inputPassword.m.css';
-import * as textInputCss from '../theme/default/inputText.m.css';
-import TextInput, { TextInputChildren, Addon } from '../inputText';
-import { ValidationRules } from '../middleware/validation';
+import { ValidationRules } from '@redaktor/widgets/middleware/validation';
+import theme from '@redaktor/widgets/middleware/theme';
+import Icon from '@redaktor/widgets/icon';
+import ConstrainedInput, { ConstrainedInputProperties } from '@redaktor/widgets/inputConstrained';
+import TextInput, { TextInputChildren, Addon } from '@redaktor/widgets/inputText';
+import * as css from '@redaktor/widgets/theme/material/inputPassword.m.css';
+import * as textInputCss from '@redaktor/widgets/theme/material/inputText.m.css';
 
 export type Omit<T, E> = Pick<T, Exclude<keyof T, E>>;
 
@@ -25,7 +26,7 @@ const factory = create({
 	theme
 })
 	.properties<PasswordInputProperties>()
-	.children<TextInputChildren | undefined>();
+	.children<TextInputChildren | RenderResult | undefined>();
 
 export const PasswordInput = factory(function PasswordInput({
 	middleware: { theme, icache },
@@ -33,6 +34,7 @@ export const PasswordInput = factory(function PasswordInput({
 	children
 }) {
 	const props = properties();
+	const _children: any = Array.isArray(children()) ? children()[0] : children();
 	const showPassword = icache.getOrSet('showPassword', false);
 	const classes = theme.classes(css);
 
@@ -46,7 +48,7 @@ export const PasswordInput = factory(function PasswordInput({
 				classes={classes.toggleButton}
 				type="button"
 			>
-				<Icon type={showPassword ? 'eyeSlashIcon' : 'eyeIcon'} />
+				<Icon type={showPassword ? 'eyeSlash' : 'eye'} />
 			</button>
 		</Addon>
 	);
@@ -67,7 +69,7 @@ export const PasswordInput = factory(function PasswordInput({
 				css
 			)}
 		>
-			{{ ...children()[0], trailing }}
+			{{ label: _children, trailing }}
 		</ConstrainedInput>
 	) : (
 		<TextInput
@@ -81,7 +83,7 @@ export const PasswordInput = factory(function PasswordInput({
 			onValidate={handleValidation}
 			valid={icache.get('valid')}
 		>
-			{{ ...children()[0], trailing }}
+			{{ label: _children, trailing }}
 		</TextInput>
 	);
 });

@@ -1,6 +1,9 @@
 .root {
 	z-index: 6;
 }
+.column {
+	padding: 0 var(--pl);
+}
 .row .root {
 	/* margin-bottom: calc(var(--mb) - var(--line)); */
 }

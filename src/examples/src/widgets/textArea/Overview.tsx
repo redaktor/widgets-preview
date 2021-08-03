@@ -6,30 +6,30 @@ import TextArea from '@redaktor/widgets/textArea';
 const factory = create({ icache });
 
 const Overview = factory(function({ middleware: { icache } }) {
-	const variant = 'flat';
+	const design = 'flat';
 	return (<Example spaced={true}>
 		<span>
-			<p>Medium sized input variants</p>
+			<p>Medium sized input designs</p>
 			<div class="flexRow">
-				<TextArea variant='flat'>flat</TextArea>
-				<TextArea variant='filled'>filled</TextArea>
-				<TextArea variant='outlined'>outlined</TextArea>
-				<TextArea variant='raised'>raised</TextArea>
-				<TextArea variant='shaped'>shaped</TextArea>
+				<TextArea design='flat'>flat</TextArea>
+				<TextArea design='filled'>filled</TextArea>
+				<TextArea design='outlined'>outlined</TextArea>
+				<TextArea design='raised'>raised</TextArea>
+				<TextArea design='shaped'>shaped</TextArea>
 			</div>
 			<br />
 			<div class="flexRow">
-				<TextArea variant='flat' color='secondary'>flat</TextArea>
-				<TextArea variant='filled' color='secondary'>filled</TextArea>
-				<TextArea variant='outlined' color='secondary'>outlined</TextArea>
-				<TextArea variant='raised' color='secondary'>raised</TextArea>
-				<TextArea variant='shaped' color='secondary'>shaped</TextArea>
+				<TextArea design='flat' color='secondary'>flat</TextArea>
+				<TextArea design='filled' color='secondary'>filled</TextArea>
+				<TextArea design='outlined' color='secondary'>outlined</TextArea>
+				<TextArea design='raised' color='secondary'>raised</TextArea>
+				<TextArea design='shaped' color='secondary'>shaped</TextArea>
 			</div>
 			<p>All the sizes</p>
 			<div class="flexRow">
 				<TextArea
 					size='xs'
-					variant={variant}
+					design={design}
 					initialValue="Hello World!"
 					onValue={(value) => {
 						icache.set('value', value);
@@ -37,7 +37,7 @@ const Overview = factory(function({ middleware: { icache } }) {
 				>size xs</TextArea>
 				<TextArea
 					size='s'
-					variant={variant}
+					design={design}
 					initialValue="Hello World!"
 					onValue={(value) => {
 						icache.set('value', value);
@@ -45,28 +45,28 @@ const Overview = factory(function({ middleware: { icache } }) {
 				>size s</TextArea>
 				<TextArea
 					size='m'
-					variant={variant}
+					design={design}
 					onValue={(value) => {
 						icache.set('value', value);
 					}}
 				>size m</TextArea>
 				<TextArea
 					size='l'
-					variant={variant}
+					design={design}
 					onValue={(value) => {
 						icache.set('value', value);
 					}}
 				>size l</TextArea>
 				<TextArea
 					size='xl'
-					variant={variant}
+					design={design}
 					onValue={(value) => {
 						icache.set('value', value);
 					}}
 				>size xl</TextArea>
 				<TextArea
 					size='xxl'
-					variant={variant}
+					design={design}
 					onValue={(value) => {
 						icache.set('value', value);
 					}}

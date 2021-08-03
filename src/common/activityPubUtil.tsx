@@ -346,5 +346,8 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 		) || value;
 		return {label, value}
 	})
+	if (!!userLang && typeof userLang === 'string') {
+		o.locale = userLang.split('-')[0];
+	}
 	return o
 }

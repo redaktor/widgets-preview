@@ -3,15 +3,14 @@ import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import focus from '@dojo/framework/core/middleware/focus';
 import validity from '@dojo/framework/core/middleware/validity';
-import Label from '../label/index';
-import * as labelCss from '../theme/material/label.m.css';
-import HelperText from '../helperText/index';
-// import dimensions from '@dojo/framework/core/middleware/dimensions';
-import { theme, formatAriaProperties, ThemeProperties } from '../middleware/theme';
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
-import * as inputCss from '../theme/material/inputText.m.css';
-import * as css from '../theme/material/textArea.m.css';
+import Label from '@redaktor/widgets/label';
+import * as labelCss from '@redaktor/widgets/theme/material/label.m.css';
+import HelperText from '@redaktor/widgets/helperText';
+import { theme, formatAriaProperties, ThemeProperties } from '@redaktor/widgets/middleware/theme';
+import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
+import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
+import * as inputCss from '@redaktor/widgets/theme/material/inputText.m.css';
+import * as css from '@redaktor/widgets/theme/material/textArea.m.css';
 
 export interface TextAreaProperties extends ThemeProperties {
 	/** Custom aria attributes */
@@ -173,7 +172,7 @@ export const TextArea = factory(function TextArea({
 
 	const {
 		aria = {},
-		variant = 'flat' as (keyof typeof inputCss),
+		design = 'flat' as (keyof typeof inputCss),
 		responsive = false,
 		expand = true,
 		columns = 20,
@@ -237,6 +236,7 @@ export const TextArea = factory(function TextArea({
 				key="wrapper"
 				classes={[
 					themedCss.wrapper,
+					(themedCss as any)[design],
 					disabled ? themedCss.disabled : null,
 					valid === false ? themedCss.invalid : null,
 					valid === true ? themedCss.valid : null,
@@ -271,18 +271,18 @@ export const TextArea = factory(function TextArea({
 					{...formatAriaProperties(aria)}
 					classes={themedCss.input}
 					style={expand && icache.get('style')}
-					cols={`${columns}`}
+					cols={columns}
 					disabled={disabled}
 					focus={focus.shouldFocus}
-					aria-invalid={valid === false ? 'true' : null}
+					aria-invalid={valid === false ? 'true' : void 0}
 					maxlength={maxLength ? `${maxLength}` : null}
 					minlength={minLength ? `${minLength}` : null}
 					name={name}
 					placeholder={placeholder}
 					readOnly={readOnly}
-					aria-readonly={readOnly ? 'true' : null}
+					aria-readonly={readOnly ? 'true' : void 0}
 					required={required}
-					rows={`${rows}`}
+					rows={rows}
 					value={value}
 					wrap={wrapText}
 					onblur={() => {

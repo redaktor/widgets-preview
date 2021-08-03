@@ -1,6 +1,6 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
-import * as css from '../theme/material/calendar.m.css';
-import theme from '../middleware/theme';
+import * as css from '@redaktor/widgets/theme/material/calendar.m.css';
+import theme from '@redaktor/widgets/middleware/theme';
 
 export type SelectMode = boolean | 'start' | 'range' | 'end';
 export interface CalendarCellProperties {

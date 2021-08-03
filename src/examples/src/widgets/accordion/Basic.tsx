@@ -5,7 +5,7 @@ const factory = create();
 
 export default factory(function Basic() {
 	return (<Example spaced={true}><div>
-		<Accordion color="dark" spaced iconLeft variant="raised" exclusive={true} panes={['foo', 'bar', 'baz']}>
+		<Accordion color="dark" spaced iconLeft design="raised" exclusive={true} panes={['foo', 'bar', 'baz']}>
 				<p>
 					foo content Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque id
 					purus ipsum. Aenean ac purus purus. Nam sollicitudin varius augue, sed lacinia

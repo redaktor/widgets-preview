@@ -8,33 +8,33 @@ const greet = "Hello World!";
 
 const Overview = factory(function({ middleware: { icache } }) {
 	icache.getOrSet('value', greet);
-	const variant = 'filled';
+	const design = 'filled';
 	return (<Example spaced={true}>
 		<span>
-			<p>Medium sized input variants</p>
+			<p>Medium sized input designs</p>
 			<div class="flexRow">
 				<TextInput>Input label</TextInput>
 			</div>
 			<div class="flexRow">
-				<TextInput variant='flat'>flat</TextInput>
-				<TextInput variant='filled'>filled</TextInput>
-				<TextInput variant='outlined'>outlined</TextInput>
-				<TextInput variant='raised'>raised</TextInput>
-				<TextInput variant='shaped'>shaped</TextInput>
+				<TextInput design='flat'>flat</TextInput>
+				<TextInput design='filled'>filled</TextInput>
+				<TextInput design='outlined'>outlined</TextInput>
+				<TextInput design='raised'>raised</TextInput>
+				<TextInput design='shaped'>shaped</TextInput>
 			</div>
 			<div class="flexRow">
-				<TextInput variant='flat' color='secondary'>flat</TextInput>
-				<TextInput variant='filled' color='secondary'>filled</TextInput>
-				<TextInput variant='outlined' color='secondary'>outlined</TextInput>
-				<TextInput variant='raised' color='secondary'>raised</TextInput>
-				<TextInput variant='shaped' color='secondary'>shaped</TextInput>
+				<TextInput design='flat' color='secondary'>flat</TextInput>
+				<TextInput design='filled' color='secondary'>filled</TextInput>
+				<TextInput design='outlined' color='secondary'>outlined</TextInput>
+				<TextInput design='raised' color='secondary'>raised</TextInput>
+				<TextInput design='shaped' color='secondary'>shaped</TextInput>
 			</div>
 			<br />
 			<p>All the sizes</p>
 			<div class="flexRow">
 				<TextInput
 					size='xs'
-					variant={variant}
+					design={design}
 					initialValue={greet}
 					value={icache.get('value')}
 					onValue={(value) => {
@@ -43,7 +43,7 @@ const Overview = factory(function({ middleware: { icache } }) {
 				>size xs</TextInput>
 				<TextInput
 					size='s'
-					variant={variant}
+					design={design}
 					initialValue={greet}
 					value={icache.get('value')}
 					onValue={(value) => {
@@ -52,7 +52,7 @@ const Overview = factory(function({ middleware: { icache } }) {
 				>size s</TextInput>
 				<TextInput
 					size='m'
-					variant={variant}
+					design={design}
 					initialValue={greet}
 					value={icache.get('value')}
 					onValue={(value) => {
@@ -61,7 +61,7 @@ const Overview = factory(function({ middleware: { icache } }) {
 				>size m</TextInput>
 				<TextInput
 					size='l'
-					variant={variant}
+					design={design}
 					initialValue={greet}
 					value={icache.get('value')}
 					onValue={(value) => {
@@ -70,7 +70,7 @@ const Overview = factory(function({ middleware: { icache } }) {
 				>size l</TextInput>
 				<TextInput
 					size='xl'
-					variant={variant}
+					design={design}
 					initialValue={greet}
 					value={icache.get('value')}
 					onValue={(value) => {
@@ -79,7 +79,7 @@ const Overview = factory(function({ middleware: { icache } }) {
 				>size xl</TextInput>
 				<TextInput
 					size='xxl'
-					variant={variant}
+					design={design}
 					initialValue={greet}
 					value={icache.get('value')}
 					onValue={(value) => {

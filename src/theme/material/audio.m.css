@@ -1,6 +1,5 @@
-.root {
 
-}
+.root { }
 .column {
 	max-width: 60ch;
 }
@@ -17,7 +16,15 @@
 .micro, .xs, .s, .m, .l, .xl, .xxl { }
 .mini, .medium, .large { }
 
+.row .columnName,
+.column .rowName,
+.column:not(.paused) .columnName,
+.column.menuOpen .columnName {
+	display: none;
+}
+
 .media {
+	--h: calc(var(--line) * var(--l));
 	--wh: calc(var(--h) - var(--line2));
 	border-radius: var(--wh, 9999px);
 	position: relative;
@@ -31,13 +38,20 @@
 	filter: contrast(92%);
 	overflow: hidden;
 	z-index: 4;
-	transition: border-radius var(--ui-dpd-16,0.5s) var(--ui-easing);
+
 	cursor: pointer;
 	margin: 0 auto;
 }
-.root.fresh .media {
+.root.row .media {
 	min-height: var(--wh);
-	margin-bottom: calc(var(--line) * var(--l) - var(--h) - var(--line));
+}
+.root.column .media {
+	height: var(--wh);
+	max-height: calc(var(--line) * 24);
+	max-width: calc(var(--line) * 24);
+}
+.root.fresh .media {
+	margin: 0 auto calc(var(--line) * var(--l) - var(--h) - var(--line)) auto;
 }
 .column.fresh .media {
 	width: var(--wh);
@@ -45,9 +59,9 @@
 .row.fresh .media {
 	margin-left: var(--lineHalf);
 }
-.media:not(.fresh .media) {
-	border-top-left-radius: var(--ui-border-radius-emphasized, 0.25rem);
-	border-top-right-radius: var(--ui-border-radius-emphasized, 0.25rem);
+.root:not(.fresh) .media {
+	transition: border-radius var(--ui-dpd-16,0.5s) var(--ui-easing);
+	border-radius: 0;
 }
 .media:hover {
 	filter: contrast(100%);
@@ -66,10 +80,15 @@
 }
 
 .trackMenu {
+	display: flex;
+	flex-wrap: nowrap;
+	flex-direction: column;
 	width: 100%;
-	padding: var(--line) var(--grid-base) 0 var(--grid-base);
-	margin-bottom: var(--line4);
+	padding: var(--line) var(--line) var(--line4) var(--line2);
 	z-index: 99;
+}
+.menuOpen .trackMenu.multipleVTT ~ video {
+	opacity: 0.4;
 }
 
 /* TODO nojs : */
@@ -124,17 +143,16 @@ video:picture-in-picture {
 	border-radius: 50%;
 }
 
-.audioAvatarWrapper {
+.avatarWrapper {
 	z-index: 5;
 }
-.fresh .audioAvatarWrapper {
-	opacity: 0.64;
-	margin-top: var(--lineHalf);
-}
-.row.fresh .audioAvatarWrapper {
+.row.fresh .avatarWrapper {
 	opacity: 0;
 }
-.root:not(.fresh) .audioAvatarWrapper {
+.fresh .avatarWrapper {
+	opacity: 0.64;
+}
+.root:not(.fresh) .avatarWrapper {
 	opacity: 1;
 }
 
@@ -231,11 +249,9 @@ video:picture-in-picture {
 	transition: all var(--ui-dpd-0, 100ms) ease-in-out;
 	width: var(--bBase);
 	height: var(--bBase);
+	margin-top: calc(var(--bHalf) * -0.5);
 }
-.column:not(.fresh) .playPause::after {
-	margin-top: var(--lineHalf);
-}
-.root:not(.paused) .media:hover .audioAvatarWrapper {
+.root:not(.paused) .media:hover .avatarWrapper {
 	opacity: 0.24;
 }
 .fresh.row .playPause::after {
@@ -253,7 +269,7 @@ video:picture-in-picture {
 	border-width: 0px 0px 0px var(--bBase);
 }
 
-.menuOpen .audioAvatarWrapper,
+.menuOpen .avatarWrapper,
 .menuOpen .playPause {
 	display: none;
 }
@@ -359,107 +375,39 @@ video:picture-in-picture {
 	flex: 1 1 auto;
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
-	padding: 0 var(--p) var(--line) var(--p);
 	order: 5;
 }
-.column .contentWrapper {
-	max-width: 60ch;
-	margin-bottom: var(--line);
-}
-.row .contentWrapper {
-	flex: 1;
-	z-index: 2;
-	min-width: 360px;
-	max-width: calc(50vw - var(--line2));
-}
 
-.row .images {
-	max-width: 480px;
-	margin: calc(var(--pt) * -1) auto 0 auto;
-	height: calc(var(--line5) + var(--pt));
+.root .images {
+	order: 7;
 }
-@media screen and (max-width: 768px) {
-	.row .contentWrapper {
-		max-width: 540px;
-	}
-	.row .images {
-		max-width: 100%;
+@media screen and (max-width: 420px) {
+	.root.column.fresh .media,
+	.root.column .media {
+		--wh: calc(var(--line) * 10);
+		height: var(--wh);
+		width: var(--wh);
 	}
 }
-@media screen and (min-width: 769px) {
-	.row .images {
-		max-width: 240px;
-		height: calc((var(--line) * 12) + var(--pt));
-		margin-top: calc((var(--line2) + var(--pt)) * -1);
-	}
-}
-
 @media screen and (max-width: 820px) {
 	.column::before {
 		padding: 0 !important;
 	}
-	.column.fresh .media,
-	.column .media {
-		--wh: 420px;
-		min-height: var(--wh);
+	.column .avatarWrapper {
+		position: absolute;
 	}
-}
-@media screen and (min-width: 821px) {
-	.row .images {
-		margin-top: calc((var(--line4) + var(--pt)) * -1);
-	}
-}
-@media screen and (min-width: 986px) {
-	.row .images {
-		max-width: 360px;
-	}
-}
-@media screen and (min-width: 1110px) {
-	.row .contentWrapper {
-		max-width: 540px;
-	}
-	.row .images {
-		max-width: 520px;
-		margin-top: calc((var(--line2) + var(--pt)) * -1);
-	}
-}
-@media screen and (min-width: 1264px) {
-	.row .contentWrapper {
-		min-width: 400px;
+	.root.column.fresh .media,
+	.root.column .media {
+		--wh: calc(var(--line) * 20);
+		height: var(--wh);
+		width: var(--wh);
+		margin: 0 auto;
 	}
 }
 @media screen and (min-width: 1908px) {
-	.row .contentWrapper {
-		min-width: 464px;
-	}
 	.row .media {
 		margin-left: var(--line);
 		margin-right: var(--line2);
-	}
-	.row .attachment {
-		max-width: 520px;
-	}
-	.row .images {
-		max-width: 1040px;
-		margin-top: calc(var(--pt) * -1);
-	}
-}
-@media screen and (min-width: 2120px) {
-	.row .images {
-		max-width: 1160px;
-	}
-}
-@media screen and (min-width: 2800px) {
-	.row .attachment {
-		max-width: 680px;
-	}
-	.row .images {
-		max-width: 1540px;
-	}
-}
-@media screen and (min-width: 2960px) {
-	.row .contentWrapper {
-		min-width: 480px;
 	}
 }
 @media screen and (min-width: 3080px) {
@@ -477,9 +425,6 @@ video:picture-in-picture {
 	}
 }
 @media screen and (min-width: 3580px) {
-	.row .contentWrapper {
-		max-width: 580px;
-	}
 	.row.fresh .media,
 	.row .media {
 		margin-left: 2%;
@@ -487,39 +432,13 @@ video:picture-in-picture {
 	}
 }
 
-.attachment {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: baseline;
-	justify-content: space-around;
-	flex: 1;
-	order: 8;
-	max-width: 100%;
-	margin-top: var(--line);
-}
-.column .attachment {
-	min-width: 320px;
-}
-.row .attachment {
-	margin: 0 auto;
-}
-.attachmentControl {
-	display: flex;
-	align-items: baseline;
-	min-width: 100%;
-}
-.attachmentType {
-	min-width: var(--touch-target-min, var(--line2, 32px));
-	text-align: center;
-}
-
 .footer {
 	z-index: 6;
 }
 
-.summaryPaginated,
+.summaryPaginated { }
 .contentCollapsed {
-
+	padding: 0 var(--p);
 }
 
 .row .mediaFreshTop {

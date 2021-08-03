@@ -29,8 +29,7 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 	} = properties();
 
 	const classes = theme.classes(css);
-	return (
-		<virtual>
+	return (<virtual>
 			<i
 				classes={[
 					theme.variant(),
@@ -42,24 +41,12 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 				]}
 				{...formatAriaProperties(aria)}
 			>
-				{type === 'mapOSM' ? (
-					<virtual>
-						<span />
-						<span />
-						<span />
-						<span />
-						<span />
-						<span />
-						<span />
-						<span />
-						<span />
-						<span />
-					</virtual>
-				) : null}
-			</i>
-			{altText ? <span classes={baseCss.visuallyHidden}>{altText}</span> : null}
-		</virtual>
-	);
+			{type === 'mapOSM' ?
+				(<virtual><span /><span /><span /><span /><span /><span /><span /><span /><span /><span /></virtual>) :
+				(type === 'redaktorLogo' ? (<virtual><span /><span /><span /></virtual>) : null)}
+		</i>
+		{altText ? <span classes={baseCss.visuallyHidden}>{altText}</span> : null}
+	</virtual>);
 });
 
 export default Icon;

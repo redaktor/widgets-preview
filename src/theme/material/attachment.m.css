@@ -1,0 +1,47 @@
+.root {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	justify-content: space-around;
+	flex: 1;
+	order: 8;
+	max-width: 100%;
+	margin-top: var(--line);
+}
+.row {
+	margin: 0 auto;
+}
+.column {
+	min-width: 320px;
+}
+.nowrap {
+	position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+	color: var(--text-muted);
+}
+.summary {
+	padding-top: var(--pt);
+}
+
+.attachmentControl {
+	display: flex;
+	align-items: baseline;
+	min-width: 100%;
+}
+.attachmentType {
+	min-width: var(--touch-target-min, var(--line2, 32px));
+	text-align: center;
+}
+
+@media screen and (min-width: 1908px) {
+	.row {
+		max-width: 520px;
+	}
+}
+@media screen and (min-width: 2800px) {
+	.row {
+		max-width: 680px;
+	}
+}

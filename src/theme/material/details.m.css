@@ -64,7 +64,9 @@
 	--fromColor: var(--ui-open, green);
 	--toColor: var(--ui-close, red);
 }
-
+summary::-webkit-details-marker {
+	display: inline-block;
+}
 /*
 .summary:focus::before {
 	content: "";

@@ -2,15 +2,15 @@ import { RenderResult } from '@dojo/framework/core/interfaces';
 import focus from '@dojo/framework/core/middleware/focus';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { create, tsx } from '@dojo/framework/core/vdom';
-import { theme, formatAriaProperties } from '../middleware/theme';
-import progressMiddleware from '../progress/middleware';
-import Ticks from '../progress/ticks';
-import Output, { OutputDisplay } from '../progress/output';
-import { ProgressProperties } from '../progress';
+import { theme, formatAriaProperties } from '@redaktor/widgets/middleware/theme';
+import progressMiddleware from '@redaktor/widgets/progress/middleware';
+import Ticks from '@redaktor/widgets/progress/ticks';
+import Output, { OutputDisplay } from '@redaktor/widgets/progress/output';
+import { ProgressProperties } from '@redaktor/widgets/progress';
 
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
-import * as css from '../theme/material/progress.m.css';
+import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
+import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
+import * as css from '@redaktor/widgets/theme/material/progress.m.css';
 import * as fixedCss from './styles/slider.m.css';
 
 export interface SliderProperties extends ProgressProperties {
@@ -75,7 +75,7 @@ export const Slider = factory(function Slider({
 	const {
 		aria = {},
 		size = 'l',
-		variant = 'flat',
+		design = 'flat',
 		responsive = true,
 		circular = false,
 		rounded = false,
@@ -92,8 +92,6 @@ export const Slider = factory(function Slider({
 		name,
 		readOnly,
 		required,
-		theme: themeProp,
-		classes,
 		onOut,
 		onOver,
 		onBlur,
@@ -152,7 +150,7 @@ export const Slider = factory(function Slider({
 		(outputDisplay === true ? (!vertical ? 'bottom' : 'right') : outputDisplay);
 	const output = typeof onOutput === 'function' ? onOutput(value||0, percent) : <Output {
 		...{
-			vertical, outputDisplay, outputAlign, widgetId, variant, size,
+			vertical, outputDisplay, outputAlign, widgetId, design, size,
 			hasCaption: icache.get('hasCaption'),
 			value: outputValue
 		}

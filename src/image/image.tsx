@@ -103,7 +103,7 @@ export const Img = factory(function Img({
 	const ar = !aspectRatio || typeof aspectRatio === 'string' ? '' : `--ar: ${aspectRatio[0]} / ${aspectRatio[1]};`;
 	/* Blurhash and CW */
 	const maxInt = Math.max(width, height);
-	const [blurWidth, blurHeight] = [Math.round(width / maxInt * 80), Math.round(height / maxInt * 80)];
+	const [blurWidth, blurHeight] = [Math.floor(width / maxInt * 80), Math.floor(height / maxInt * 80)];
 	const cwId = !sensitive ? '' : id.getId('sensitive');
 	/* Focal Point */
 	let styles: Partial<CSSStyleDeclaration> = {};
@@ -147,10 +147,8 @@ export const Img = factory(function Img({
 		styles,
 		classes: [ themedCss.image ],
 		onload: (evt: Event) => {
+			evt.target && evt.target.addEventListener('animationend', () => set('faded',true));
 			set('loaded',true);
-			evt.target && evt.target.addEventListener('animationend', () => {
-			  getOrSet('faded',true);
-			});
 			onLoad && onLoad()
 		},
 		crossOrigin: 'anonymous'
@@ -166,6 +164,7 @@ export const Img = factory(function Img({
 			!!get('faded') && themedCss.faded,
 			!!fit && themedCss.fit,
 			!!aspectRatio && themedCss.ratio,
+			!!hasFocalPoint && themedCss.hasFocalPoint,
 			!!aspectRatio && aspectRatio in AspectRatioNamed && (themedCss as any)[`_${aspectRatio.replace('/','_')}`]
 		]}
 		style={`${mml}${apt}${ar}`}

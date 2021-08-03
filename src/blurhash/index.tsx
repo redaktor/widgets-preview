@@ -1,5 +1,7 @@
 import { create, tsx, node } from '@dojo/framework/core/vdom';
+import theme from '../middleware/theme';
 import { decode } from './woltappBlurhash';
+import * as css from '../theme/material/image.m.css';
 
 export interface Brightness {
 	brightness: number;
@@ -25,9 +27,9 @@ export interface BlurhashProperties {
 	onBrightness?: (brightObject: Brightness) => any;
 }
 
-const factory = create({node}).properties<BlurhashProperties>();
+const factory = create({theme, node}).properties<BlurhashProperties>();
 
-export const Blurhash = factory(function Blurhash({ properties, middleware: { node } }) {
+export const Blurhash = factory(function Blurhash({ properties, middleware: { theme, node } }) {
 	const {
 		blurhash: b,
 		height: h,
@@ -38,6 +40,7 @@ export const Blurhash = factory(function Blurhash({ properties, middleware: { no
 		...canvasProps
 	} = properties();
 	if (!b) { return ''; }
+	const themedCss = theme.classes(css);
 	const blurhash = !Array.isArray(b) ? [b] : b;
 	const height = !h ? width : h;
 
@@ -78,7 +81,7 @@ export const Blurhash = factory(function Blurhash({ properties, middleware: { no
 
 	return <virtual>
 		{blurhash.map((hash: string, i: number) =>
-			<canvas {...canvasProps} key={`canvas${i}`} width={width} height={height} />
+			<canvas {...canvasProps} classes={themedCss.canvas} key={`canvas${i}`} width={width} height={height} />
 		)}
 	</virtual>
 });

@@ -93,7 +93,7 @@ export default factory(function Tree({
 		parentSelection = false,
 		theme: themeProp,
 		classes,
-		variant
+		design
 	} = properties();
 	const {
 		get,
@@ -231,7 +231,7 @@ export default factory(function Tree({
 		);
 
 		if (meta.status !== 'read') {
-			return <LoadingIndicator theme={themeProp} classes={classes} variant={variant} />;
+			return <LoadingIndicator theme={themeProp} classes={classes} design={design} />;
 		}
 
 		const results = get(
@@ -271,7 +271,7 @@ export default factory(function Tree({
 							<TreeNode
 								classes={classes}
 								theme={themeProp}
-								variant={variant}
+								design={design}
 								activeNode={activeNode}
 								checkable={checkable}
 								selectable={selectable}
@@ -351,7 +351,7 @@ export const TreeNode = treeNodeFactory(function TreeNode({
 		parentSelection,
 		theme: themeProp,
 		classes,
-		variant
+		design
 	} = properties();
 	const [itemRenderer] = children();
 	const themedCss = theme.classes(css);
@@ -376,7 +376,7 @@ export const TreeNode = treeNodeFactory(function TreeNode({
 			widgetId={node.id}
 			classes={classes}
 			theme={themeProp}
-			variant={variant}
+			design={design}
 		>
 			<div classes={themedCss.contentWrapper}>
 				<div classes={themedCss.content}>
@@ -386,7 +386,7 @@ export const TreeNode = treeNodeFactory(function TreeNode({
 								type={expanded ? 'down' : 'right'}
 								theme={themeProp}
 								classes={classes}
-								variant={variant}
+								design={design}
 							/>
 						</div>
 					)}
@@ -405,7 +405,7 @@ export const TreeNode = treeNodeFactory(function TreeNode({
 								disabled={disabled}
 								classes={classes}
 								theme={themeProp}
-								variant={variant}
+								design={design}
 							/>
 						</div>
 					)}

@@ -84,14 +84,14 @@ export enum VP {
 }
 export type Viewports = (VP | keyof typeof VP);
 
-export enum Variant {
+export enum Design {
 	'flat' = 'flat',
 	'filled' = 'filled',
 	'outlined' = 'outlined',
 	'raised' = 'raised',
 	'shaped' = 'shaped'
 }
-export type Variants = (Variant | keyof typeof Variant);
+export type Designs = (Design | keyof typeof Design);
 
 export enum Space {
 	'left' = 'left',
@@ -135,5 +135,8 @@ export enum Material {
 export type Materials = (Material | keyof typeof Material);
 
 export interface ExampleProperties {
-	variant?: Variants;
+	design?: Designs;
+	color?: Materials;
 }
+export const designs: ExampleProperties['design'][] = ['flat','filled','outlined','raised','shaped'];
+export const exampleColors: ExampleProperties['color'][] = ['primary','secondary','amber','green','dark','neutral','light'];

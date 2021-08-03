@@ -4,20 +4,19 @@
 
 /* Added to `.root` for an open dialog */
 .open {
-	composes: mdc-dialog from '@material/dialog/dist/mdc.dialog.css';
-	composes: mdc-dialog--open from '@material/dialog/dist/mdc.dialog.css';
+
 }
 
 /* Contains the dialog */
 .main {
-	composes: mdc-dialog__container, mdc-dialog__surface from '@material/dialog/dist/mdc.dialog.css';
+
 	outline: 0;
 	z-index: calc(var(--zindex-dialog) + 1);
 }
 
 /* Contains the title of the dialog */
 .title {
-	composes: mdc-dialog__title from '@material/dialog/dist/mdc.dialog.css';
+
 	padding-top: 20px;
 }
 
@@ -27,7 +26,7 @@
 
 /* Contains the content of the dialog */
 .content {
-	composes: mdc-dialog__content from '@material/dialog/dist/mdc.dialog.css';
+
 }
 
 .close {
@@ -47,10 +46,10 @@
 }
 
 .underlayVisible {
-	composes: mdc-dialog__scrim from '@material/dialog/dist/mdc.dialog.css';
+
 	z-index: var(--zindex-dialog);
 }
 
 .actions {
-	composes: mdc-dialog__actions from '@material/dialog/dist/mdc.dialog.css';
+	
 }

@@ -1,8 +1,10 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import theme from '@dojo/framework/core/middleware/theme';
+import theme from '@redaktor/widgets/middleware/theme';
 import icache from '@dojo/framework/core/middleware/icache';
 import myTheme from '../../theme/material';
 import * as css from './Example.m.css';
+
+export { ExampleProperties, designs, exampleColors } from '@redaktor/widgets/common/util';
 
 interface ExampleProperties {
 	hasFullscreen?: boolean;
@@ -11,7 +13,6 @@ interface ExampleProperties {
 const factory = create({ theme, icache }).properties<ExampleProperties>();
 
 export default factory(function({ children, properties, middleware: { theme, icache } }) {
-	const [example, ...rest] = children();
 	icache.getOrSet('variant', 'dark', false);
 	icache.getOrSet('bg', 'var(--bg)', false);
 	icache.getOrSet('viewSize', 'minimize', false);
@@ -48,9 +49,8 @@ export default factory(function({ children, properties, middleware: { theme, ica
 				</button>}
 			</nav>
 			<div style={`--example-bg: ${icache.get('bg')};`} classes={[themedCss.root, spaced ? themedCss.spaced : null, theme.variant()]}>
-				{example}
+				{children()}
 			</div>
-			{...rest}
 		</virtual>
 	);
 });

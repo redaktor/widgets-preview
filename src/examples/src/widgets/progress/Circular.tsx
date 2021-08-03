@@ -12,11 +12,11 @@ export default factory(function Basic() {
 		<Progress circular size="l" value={50} />
 		<Progress circular size="xl" value={50} />
 
-		<Progress circular color="secondary" variant="flat" value={50} />
-		<Progress circular color="secondary" variant="filled" value={50} />
-		<Progress circular color="secondary" variant="raised" value={50} />
-		<Progress circular color="secondary" variant="outlined" value={50} />
-		<Progress circular color="secondary" variant="shaped" value={50} />
+		<Progress circular color="secondary" design="flat" value={50} />
+		<Progress circular color="secondary" design="filled" value={50} />
+		<Progress circular color="secondary" design="raised" value={50} />
+		<Progress circular color="secondary" design="outlined" value={50} />
+		<Progress circular color="secondary" design="shaped" value={50} />
 
 		<p>Circles</p>
 	</span></Example>;

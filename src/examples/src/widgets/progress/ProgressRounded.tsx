@@ -6,16 +6,16 @@ const factory = create();
 
 export default factory(function Basic() {
 	return <Example spaced={true}><span>
-		<Progress rounded variant="flat" value={50} />
-		<Progress rounded variant="filled" value={50} />
-		<Progress rounded variant="raised" value={50} />
-		<Progress rounded variant="outlined" value={50} />
-		<Progress rounded variant="shaped" value={50} />
+		<Progress rounded design="flat" value={50} />
+		<Progress rounded design="filled" value={50} />
+		<Progress rounded design="raised" value={50} />
+		<Progress rounded design="outlined" value={50} />
+		<Progress rounded design="shaped" value={50} />
 
-		<Progress rounded color="secondary" variant="flat" value={50} />
-		<Progress rounded color="secondary" variant="filled" value={50} />
-		<Progress rounded color="secondary" variant="raised" value={50} />
-		<Progress rounded color="secondary" variant="outlined" value={50} />
-		<Progress rounded color="secondary" variant="shaped" value={50} />
+		<Progress rounded color="secondary" design="flat" value={50} />
+		<Progress rounded color="secondary" design="filled" value={50} />
+		<Progress rounded color="secondary" design="raised" value={50} />
+		<Progress rounded color="secondary" design="outlined" value={50} />
+		<Progress rounded color="secondary" design="shaped" value={50} />
 	</span></Example>;
 });

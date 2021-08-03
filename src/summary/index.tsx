@@ -1,7 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { DimensionResults } from '@dojo/framework/core/meta/Dimensions';
 import { dimensions } from '@dojo/framework/core/middleware/dimensions';
-import { formatAriaProperties, Variants, PointerDevices } from '../common/util';
+import { formatAriaProperties, PointerDevices } from '../common/util';
 import { theme, ThemeProperties } from '../middleware/theme';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
@@ -16,10 +16,6 @@ popup?: { expanded?: boolean; id?: string; type?: string } | boolean;
 export interface SummaryProperties extends ThemeProperties {
 	/** Custom aria attributes */
 	aria?: { [key: string]: string | null };
-	/** The variant for the summary: 'flat', 'outlined', 'raised', 'shaped'
-	 * 'flat' by default
-	 */
-	variant?: Variants;
 	/** Whether the summary is disabled or clickable */
 	disabled?: boolean;
 	/** The name of the summary */
@@ -86,7 +82,7 @@ export const Summary = factory(function Summary({
 	const {
 		aria = {},
 		animated = true,
-		variant = 'outlined' as (keyof typeof themedCss),
+		design = 'outlined' as (keyof typeof themedCss),
 		disabled,
 		widgetId,
 		name,
@@ -106,7 +102,7 @@ export const Summary = factory(function Summary({
 				themedCss.root,
 				summaryFixed.root,
 				isCard ? summaryFixed.cardSummary : null,
-				themedCss[variant],
+				themedCss[design],
 				theme.sized(ui),
 				theme.colored(colors),
 				theme.animated(themedCss),

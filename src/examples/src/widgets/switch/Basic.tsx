@@ -9,10 +9,10 @@ const factory = create({ icache }).properties<ExampleProperties>();
 export default factory(function Basic({ properties, middleware: { icache } }) {
 	const singleSwitched = icache.getOrSet('singleSwitched', true);
 	const switched = icache.getOrSet('switched', false);
-	const { variant = 'flat' } = properties();
+	const { design = 'flat' } = properties();
 	return (<Example spaced={true}>
 		<span>
-			<Switch variant={variant} checked={singleSwitched} name="Switch"
+			<Switch design={design} checked={singleSwitched} name="Switch"
 				onValue={(singleSwitched) => { icache.set('switched', singleSwitched); }}
 			>
 				{{ label: 'On/Off' }}
@@ -20,36 +20,36 @@ export default factory(function Basic({ properties, middleware: { icache } }) {
 
 			<p>All the sizes</p>
 			<br />
-			<Switch variant={variant} size="xs" checked={switched}
+			<Switch design={design} size="xs" checked={switched}
 				onValue={(switched) => { icache.set('switched', switched); }}>
 				XS Box
 			</Switch>
-			<Switch variant={variant} size="s" checked={switched}
+			<Switch design={design} size="s" checked={switched}
 				onValue={(switched) => { icache.set('switched', switched); }}>
 				S Box
 			</Switch>
-			<Switch variant={variant} size="m" checked={switched}
+			<Switch design={design} size="m" checked={switched}
 				onValue={(switched) => { icache.set('switched', switched); }}>
 				M Box
 			</Switch>
-			<Switch variant={variant} size="l" checked={switched}
+			<Switch design={design} size="l" checked={switched}
 				onValue={(switched) => { icache.set('switched', switched); }}>
 				L Box
 			</Switch>
-			<Switch variant={variant} size="xl" checked={switched}
+			<Switch design={design} size="xl" checked={switched}
 				onValue={(switched) => { icache.set('switched', switched); }}>
 				XL Box
 			</Switch>
-			<Switch variant={variant} size="xxl" checked={switched}
+			<Switch design={design} size="xxl" checked={switched}
 				onValue={(switched) => { icache.set('switched', switched); }}>
 				XXL
 			</Switch>
 			<p>Some colors</p>
-			<Switch variant={variant} color="neutral">neutral</Switch>
-			<Switch variant={variant} color="primary">primary</Switch>
-			<Switch variant={variant} color="secondary">secondary</Switch>
-			<Switch variant={variant} color="green">green</Switch>
-			<Switch variant={variant} color="amber">amber</Switch>
+			<Switch design={design} color="neutral">neutral</Switch>
+			<Switch design={design} color="primary">primary</Switch>
+			<Switch design={design} color="secondary">secondary</Switch>
+			<Switch design={design} color="green">green</Switch>
+			<Switch design={design} color="amber">amber</Switch>
 
 			<p>Lorem Ipsum</p>
 		</span>

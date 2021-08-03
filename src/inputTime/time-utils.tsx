@@ -1,6 +1,6 @@
-import spacetime from '../common/spacetime';
 import { padStart } from '@dojo/framework/shim/string';
-import { parseRelative } from '../calendarInput/date-utils';
+// import spacetime from '@redaktor/widgets/common/spacetime';
+import { parseRelative } from '@redaktor/widgets/calendarInput/date-utils';
 
 export interface TimeParser {
 	regex: RegExp;

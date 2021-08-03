@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import theme from '../middleware/theme';
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
-import * as css from '../theme/material/helperText.m.css';
+import theme from '@redaktor/widgets/middleware/theme';
+import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
+import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
+import * as css from '@redaktor/widgets/theme/material/helperText.m.css';
 
 export interface HelperTextProperties {
 	/** The supplied helper text */

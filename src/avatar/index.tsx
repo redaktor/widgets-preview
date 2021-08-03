@@ -1,5 +1,5 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import { theme, ThemeProperties, Variants } from '../middleware/theme';
+import { theme, ThemeProperties } from '../middleware/theme';
 import words from '../framework/String/words';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
@@ -20,7 +20,7 @@ export const Avatar = factory(function Avatar({ middleware: { theme }, propertie
 	const {
 		src, name, alt,
 		shape = 'circle',
-		variant = 'filled' as (keyof typeof buttonCss)
+		design = 'filled' as (keyof typeof buttonCss)
 	} = properties();
 
 	const c = children();
@@ -46,7 +46,7 @@ export const Avatar = factory(function Avatar({ middleware: { theme }, propertie
 				theme.spaced(ui),
 				buttonCss.root,
 				themedCss.root,
-				buttonCss[variant],
+				buttonCss[design],
 				themedCss[shape]
 				// theme.animated(themedCss)
 			]}

@@ -2,9 +2,9 @@ import { create, tsx } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { dimensions } from '@dojo/framework/core/middleware/dimensions';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import Popup, { PopupPosition, BasePopupProperties } from '../popup';
+import Popup, { PopupPosition, BasePopupProperties } from '@redaktor/widgets/popup';
 import * as fixedCss from './styles/triggerPopup.m.css';
-import theme from '../middleware/theme';
+import theme from '@redaktor/widgets/middleware/theme';
 
 export interface TriggerPopupProperties extends BasePopupProperties {
 	/** If the popup wrapper should match the trigger width (defaults to true) */

@@ -2,6 +2,14 @@
   display: grid;
   /* margin-bottom: calc(var(--line) - var(--mb)); */
 }
+.column {
+  padding: 0 var(--pl);
+}
+.root.column {
+  padding: 0 var(--pr) 0 var(--pl);
+}
+.row { }
+
 .pane,
 .input {
   display: none;

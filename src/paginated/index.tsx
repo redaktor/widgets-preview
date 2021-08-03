@@ -7,6 +7,7 @@ import Icon from '../icon';
 import * as css from '../theme/material/paginated.m.css';
 
 export interface PaginatedProperties extends ThemeProperties {
+	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 	/** The property for the named group */
 	property?: string;
 	/** Custom id base attribute, defaults to uuid */
@@ -17,17 +18,24 @@ const factory = create({ id, theme })
 	.properties<PaginatedProperties>();
 
 export const Paginated = factory(function Paginated({ properties, children, middleware: { id, theme } }) {
-	const { property = '' } = properties();
+	const { property = '', view = 'column' } = properties();
 
 	const c = children();
 	if (!c || !c.length) { return '' }
-	if (c.length === 1) { return c }
-
 	const themedCss = theme.classes(css);
+	if (c.length === 1) {
+		return <div classes={[view === 'column' ? themedCss.column : themedCss.row]}>
+			{c}
+		</div>
+	}
+	
 	const idBase = id.getId(property);
 	const ids: any = c.map((node: any, i: number) => node.properties.id || `${idBase}_${i}`);
 
-	return <div classes={[themedCss.root]}>
+	return <div classes={[
+		view === 'column' ? themedCss.column : themedCss.row,
+		themedCss.root
+	]}>
 		{c.map((node: any, i: number, a: RenderResult[]) => {
 			if (!node.properties.id) {
 				node.properties.id = node.properties.id || `${idBase}_${i}`;

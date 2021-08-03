@@ -1,9 +1,9 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 
-import * as baseCss from '../common/styles/base.m.css';
-import theme from '../middleware/theme';
-import * as css from '../theme/default/label.m.css';
-import { formatAriaProperties } from '../common/util';
+import * as baseCss from '@redaktor/widgets/common/styles/base.m.css';
+import theme from '@redaktor/widgets/middleware/theme';
+import * as css from '@redaktor/widgets/theme/material/label.m.css';
+import { formatAriaProperties } from '@redaktor/widgets/common/util';
 
 export interface LabelProperties {
 	/** Custom aria attributes */
@@ -47,7 +47,7 @@ export const Label = factory(function Label({ properties, id, children, middlewa
 		widgetId = `label-${id}`
 	} = properties();
 
-	const themeCss = theme.classes(css);
+	const themedCss = theme.classes(css);
 
 	return (
 		<label
@@ -55,16 +55,16 @@ export const Label = factory(function Label({ properties, id, children, middlewa
 			id={widgetId}
 			classes={[
 				theme.variant(),
-				themeCss.root,
-				disabled ? themeCss.disabled : null,
-				focused ? themeCss.focused : null,
-				valid === true ? themeCss.valid : null,
-				valid === false ? themeCss.invalid : null,
-				readOnly ? themeCss.readonly : null,
-				required ? themeCss.required : null,
-				secondary ? themeCss.secondary : null,
-				active ? themeCss.active : null,
-				hidden ? baseCss.visuallyHidden : null
+				themedCss.root,
+				disabled && themedCss.disabled,
+				focused && themedCss.focused,
+				readOnly && themedCss.readonly,
+				required && themedCss.required,
+				secondary && themedCss.secondary,
+				active && themedCss.active,
+				hidden && baseCss.visuallyHidden,
+				valid === true ? themedCss.valid : null,
+				valid === false ? themedCss.invalid : null
 			]}
 			for={forId}
 		>

@@ -2,7 +2,7 @@ import renderer, { create, tsx, diffProperty } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import theme from '../middleware/theme';
+import theme from '@redaktor/widgets/middleware/theme';
 import dimensions from '@dojo/framework/core/middleware/dimensions';
 import resize from '@dojo/framework/core/middleware/resize';
 import {
@@ -10,13 +10,11 @@ import {
 	createResourceTemplate
 } from '@dojo/framework/core/middleware/resources';
 import global from '@dojo/framework/shim/global';
-
-import Icon from '../icon';
-import Select from '../select';
-
+import { ListOption } from '@redaktor/widgets/list';
+import Icon from '@redaktor/widgets/icon';
+import Select from '@redaktor/widgets/select';
+import * as css from '@redaktor/widgets/theme/default/pagination.m.css';
 import bundle from './nls/Pagination';
-import * as css from '../theme/default/pagination.m.css';
-import { ListOption } from '../list';
 
 export interface PaginationProperties {
 	/** The initial page number */
@@ -151,7 +149,7 @@ export default factory(function Pagination({
 			}}
 		>
 			<div classes={classes.icon}>
-				<Icon type="leftIcon" />
+				<Icon type="left" />
 			</div>
 			<div classes={classes.label}>{messages.previous}</div>
 		</button>
@@ -170,7 +168,7 @@ export default factory(function Pagination({
 			}}
 		>
 			<div classes={classes.icon}>
-				<Icon type="rightIcon" />
+				<Icon type="right" />
 			</div>
 			<div classes={classes.label}>{messages.next}</div>
 		</button>

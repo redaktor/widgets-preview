@@ -35,7 +35,10 @@ export const ActivityPubCachingMiddleware = factory(({ properties, middleware: {
       const cachedValue = icache.get(id);
       if (!!cachedValue) { return cachedValue }
     }
-    return icache.set(id, normalizeActivityPub(properties(), locale))
+
+    const n = {...normalizeActivityPub(properties(), locale), locale};
+    console.log(n);
+    return icache.set(id, n)
     /*
     // Cache miss from server (isStale):
     const promise = fetchExternalValue(value);

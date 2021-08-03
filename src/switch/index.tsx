@@ -1,13 +1,13 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import focus from '@dojo/framework/core/middleware/focus';
-import { theme, formatAriaProperties } from '../middleware/theme';
-import { CheckboxBaseProperties } from '../checkbox';
-// import Label from '../label';
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
-import * as cb from '../theme/material/checkbox.m.css';
-import * as css from '../theme/material/switch.m.css';
+import { theme, formatAriaProperties } from '@redaktor/widgets/middleware/theme';
+import { CheckboxBaseProperties } from '@redaktor/widgets/checkbox';
+// import Label from '@redaktor/widgets/label';
+import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
+import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
+import * as cb from '@redaktor/widgets/theme/material/checkbox.m.css';
+import * as css from '@redaktor/widgets/theme/material/switch.m.css';
 
 interface SwitchProperties extends CheckboxBaseProperties {}
 
@@ -27,7 +27,7 @@ const factory = create({ theme, focus })
 export default factory(function Switch({ children, properties, id, middleware: { theme, focus } }) {
 	const {
 		aria = {},
-		variant,
+		design,
 		disabled,
 		labelHidden,
 		name,
@@ -35,7 +35,7 @@ export default factory(function Switch({ children, properties, id, middleware: {
 		onFocus,
 		onValue,
 		onOut,
-		onOver,
+		onEnter,
 		readOnly,
 		required,
 		theme: themeProp,
@@ -53,7 +53,7 @@ export default factory(function Switch({ children, properties, id, middleware: {
 		<label
 			key={type}
 			classes={[theme.sized(ui), themedCss[type]]}
-			aria-hidden={type && value ? 'true' : null}
+			aria-hidden={type && value ? 'true' : void 0}
 			theme={themeProp}
 			disabled={disabled}
 			focused={focus.isFocused('root')}
@@ -94,15 +94,15 @@ export default factory(function Switch({ children, properties, id, middleware: {
 				checked={!!value}
 				disabled={disabled}
 				focus={focus.shouldFocus()}
-				aria-invalid={valid === false ? 'true' : null}
+				aria-invalid={valid === false ? 'true' : void 0}
 				name={name}
 				readonly={readOnly}
-				aria-readonly={readOnly === true ? 'true' : null}
+				aria-readonly={readOnly === true ? 'true' : void 0}
 				required={required}
 				type="checkbox"
 				value={`${value}`}
 				role="switch"
-				aria-checked={value}
+				aria-checked={value ? 'true' : 'false'}
 				onblur={() => onBlur && onBlur()}
 				onchange={(event: Event) => {
 					event.stopPropagation();
@@ -110,12 +110,12 @@ export default factory(function Switch({ children, properties, id, middleware: {
 					onValue && onValue(checkbox.checked);
 				}}
 				onfocus={() => onFocus && onFocus()}
-				onpointerenter={() => onOver && onOver()}
+				onpointerenter={() => onEnter && onEnter()}
 				onpointerleave={() => onOut && onOut()}
 			/>
 			<div classes={[theme.sized(ui), themedCss.track]}>
 				<div classes={[
-					cb[variant as (keyof typeof cb)],
+					cb[design as (keyof typeof cb)],
 					themedCss.thumb
 				]}/>
 			</div>

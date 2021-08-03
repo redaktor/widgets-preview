@@ -6,3 +6,5 @@ export const content: string;
 export const leaf: string;
 export const title: string;
 export const expander: string;
+export const selectable: string;
+export const selected: string;

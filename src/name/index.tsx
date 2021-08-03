@@ -35,7 +35,7 @@ export const Name = factory(function Name({ properties, children, middleware: { 
 			{clampStrings(name, characters).map((_name, i) =>
 				<h5 key={`name${i}`} classes={[themedCss.root, typoClass]}>{_name}</h5>)}
 		</Paginated>;
-	return <div key="root" classes={[themedCss.root, isRow && themedCss.row]}>
+	return <div key="root" classes={[themedCss.root, isRow ? themedCss.row : themedCss.column]}>
 		{isRow ?
 			namesPaginated :
 			(name && name.length < 4 ? <header key="names" classes={ui.hgroup}>

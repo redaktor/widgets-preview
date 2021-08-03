@@ -10,6 +10,7 @@
 	display: inline-block;
 	position: relative;
 	outline: none;
+	width: 100%;
 	min-width: 0;
 	margin: 0 !important;
 	padding: 0 !important;
@@ -18,9 +19,11 @@
 	margin: calc(var(--line, 16px) * -1) 0 0 0 !important;
 }
 .root.responsive {
-	width: 100%;
+	max-width: 100%;
 }
-
+.root:not(.responsive) {
+	max-width: 320px;
+}
 /* The wrapper around the text input, label, leading, and trailing (not helper text) */
 .wrapper {
 	display: flex;

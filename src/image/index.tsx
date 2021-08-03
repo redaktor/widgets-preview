@@ -10,8 +10,9 @@ import Paginated from '../paginated';
 import Collapsed from '../collapsed';
 import Name from '../name';
 import AttributedTo from '../attributedTo';
-import Img, { ImgProperties } from './image';
-// import Icon from '../icon';
+import Images, { ImgProperties } from '../images';
+import Attachment from '../attachment';
+import Icon from '../icon';
 import MD from '../MD/';
 import bundle from './nls/Image';
 import * as ui from '../theme/material/_ui.m.css';
@@ -68,7 +69,7 @@ export const Image = factory(function Image({
 	}
 
 	const handleDownload = () => {
-		/* TODO - all variants */
+		/* TODO - all image variants/sizes */
   }
 
 	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
@@ -81,12 +82,12 @@ export const Image = factory(function Image({
 	const viewCSS = theme.viewCSS();
 	const viewDesktopCSS = theme.viewDesktopCSS();
 
-	const namesNode = (<div classes={themedCss.name}>
-			<Name name={APo.name} isRow={isRow} size={!vp || vp === 'micro' ? 'xs' : (vp as any)} />
-	</div>);
-	const summaryNode = (APo.summary && <Paginated key="summary" property="summary" classes={{
-			'@redaktor/widgets/paginated': { root: [themedCss.summaryPaginated] }
-		}}
+	const extraClasses = {
+		paginated: { '@redaktor/widgets/paginated': { root: [themedCss.summaryPaginated] } },
+		images: { '@redaktor/widgets/images': { root: [themedCss.images], scrollWrapper: [themedCss.imagesScrollWrapper] } },
+		collapsed: { '@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] } }
+	}
+	const summaryNode = (APo.summary && <Paginated key="summary" property="summary" classes={extraClasses.paginated}
 	>
 		{clampStrings(APo.summary, 500).map((_summary, i) =>
 			<MD classes={[themedCss.summary, isResponsive ? typoClass : columns.typo]} key={`summary${i}`} content={_summary} />
@@ -99,15 +100,8 @@ export const Image = factory(function Image({
 			theme.variant(),
 			themedCss.root,
 			isColumn ? themedCss.column : themedCss.row,
-			!!viewCSS && viewCSS.ratioContainer,
-
-			!!viewCSS && viewCSS.m3by2,
-			!!viewDesktopCSS && viewDesktopCSS.m3by2,
-			/*
+			!!viewCSS && viewCSS.item,
 			!!viewDesktopCSS && viewDesktopCSS.item,
-			!!baselined && !!viewCSS && viewCSS.baselined,
-			!!baselined && !!viewDesktopCSS && viewDesktopCSS.baselined,
-			*/
 			theme.shaped(themedCss),
 			theme.sized(ui),
 			theme.colored(colors),
@@ -115,6 +109,7 @@ export const Image = factory(function Image({
 			theme.animated(themedCss),
 			themedCss[(vp as keyof typeof themedCss)],
 			icache.get('brightnessClass'),
+			hasAttachment && !!APo.image && APo.image.length > 0 && themedCss.hasImages,
 			!!APo.sensitive && themedCss.sensitive,
 			!!fit && themedCss.fit
 		]}
@@ -123,39 +118,42 @@ export const Image = factory(function Image({
 		aria-label="Image"
 		role="region"
 	>
-
-		<Img {...properties()} onBrightness={(o) => {
-			icache.getOrSet('brightnessClass', o.brightness > 120 ? themedCss.lightImage : themedCss.darkImage)
-		}} />
-
 		<div classes={themedCss.measure} key="measure" />
 		{APo.sensitive && summaryNode}
-		{hasAttachment && <div key="images" classes={themedCss.images}>
-			... images
-		</div>}
-		{hasContent && <virtual>
-			{!isRow && namesNode}
-			<div classes={themedCss.attributions}>
-				<AttributedTo {...APo} max={39} />
+		{hasAttachment && APo.image &&
+			<Images itemsPerPage={1} navPosition="top" key="images" view={view}
+				image={[{...(properties() as any), focalPoint: void 0, baselined: false}].concat(APo.image)}
+				size={(vp as any)} classes={extraClasses.images} />
+		}
+
+		{hasContent && <details key="details" classes={themedCss.contentDetails}>
+			<summary key="summary" classes={themedCss.contentDetailsSummary}>
+				<Icon type="info" spaced="right" /> {APo.name ? APo.name[0] : 'info'}
+			</summary>
+			<div classes={themedCss.columnName}>
+					<Name name={APo.name} isRow={isRow} size={!vp || vp === 'micro' ? 'xs' : (vp as any)} />
 			</div>
-			<div classes={themedCss.contentWrapper}>
-				{!!isRow && namesNode}
+			<div classes={[themedCss.contentWrapper, !!viewCSS && viewCSS.content]}>
+				<div classes={themedCss.rowName}>
+						<Name name={APo.name} isRow={isRow} size={!vp || vp === 'micro' ? 'xs' : (vp as any)} />
+				</div>
 				{summaryNode}
 				{
-					APo.content && <Collapsed responsive={!isRow} lines={isRow ? 2 : 12} classes={{
-							'@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] }
-						}}>
+					APo.content && <Collapsed responsive={!isRow} lines={isRow ? 2 : 12} classes={extraClasses.collapsed}>
 						{APo.content.map((_content, i) => <virtual>
-							<MD classes={[themedCss.content, isResponsive ? typoClass : columns.typo]} key={`content${i}`} content={_content} /><hr />
+							<MD classes={[themedCss.content, isResponsive ? typoClass : columns.typo]} key={`content${i}`} content={_content} />
+							<hr />
 						</virtual>)}
 					</Collapsed>
 				}
 			</div>
-		</virtual>}
+		</details>}
 
-		{hasAttachment && <p key="attachment" classes={themedCss.attachment}>
-				... attachment
-			</p>}
+		<div classes={themedCss.attributions}>
+			<AttributedTo {...APo} max={39} />
+		</div>
+
+		{hasAttachment && <Attachment attachment={APo.attachment} isRow={isRow} />}
 	</div>
 
 });

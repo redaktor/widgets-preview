@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import { theme } from '../middleware/theme';
-import NativeSelect, { NativeSelectProperties } from '../selectNative';
-import CheckboxGroup from '../checkboxGroup';
-import RadioGroup, { RadioGroupChildren } from '../radioGroup';
+import { theme } from '@redaktor/widgets/middleware/theme';
+import NativeSelect, { NativeSelectProperties } from '@redaktor/widgets/selectNative';
+import Checkboxes from '@redaktor/widgets/checkboxGroup';
+import Radios, { RadioGroupChildren } from '@redaktor/widgets/radioGroup';
 
 export interface DynamicSelectProperties extends NativeSelectProperties {
 	/** The maximum number of single checkboxes / radios, default 3 */
@@ -35,8 +35,8 @@ export const DynamicSelect = factory(function DynamicSelect({
 		</NativeSelect>
 	}
 	return !multiple ?
-		<RadioGroup options={options} {...selectProperties} /> :
-		<CheckboxGroup options={options} {...selectProperties} />
+		<Radios options={options} {...selectProperties} /> :
+		<Checkboxes options={options} {...selectProperties} />
 });
 
 export default DynamicSelect;

@@ -13,7 +13,7 @@ export default factory(function EventsRadioButton({ middleware: { icache } }) {
 				onBlur={() => icache.set('event', 'onBlur')}
 				onFocus={() => icache.set('event', 'onFocus')}
 				onOut={() => icache.set('event', 'onOut')}
-				onOver={() => icache.set('event', 'onOver')}
+				onEnter={() => icache.set('event', 'onOver')}
 			>
 				{`Last event: ${icache.get('event') || 'Awaiting first event'}`}
 			</Radio>

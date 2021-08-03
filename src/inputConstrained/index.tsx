@@ -1,10 +1,11 @@
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import validation, { ValidationRules } from '../middleware/validation';
-import theme from '../middleware/theme';
-import TextInput, { BaseInputProperties, TextInputType, TextInputChildren } from '../inputText';
-import * as constrainedInputCss from '../theme/default/inputConstrained.m.css';
-import * as textInputCss from '../theme/default/inputText.m.css';
+import validation, { ValidationRules } from '@redaktor/widgets/middleware/validation';
+import theme from '@redaktor/widgets/middleware/theme';
+import TextInput, { BaseInputProperties, TextInputType, TextInputChildren } from '@redaktor/widgets/inputText';
+import * as constrainedInputCss from '@redaktor/widgets/theme/material/inputConstrained.m.css';
+import * as textInputCss from '@redaktor/widgets/theme/material/inputText.m.css';
 
 export interface ConstrainedInputProperties extends BaseInputProperties {
 	/** Validation rules applied to this input */
@@ -25,7 +26,7 @@ const factory = create({
 	theme
 })
 	.properties<ConstrainedInputProperties>()
-	.children<TextInputChildren | undefined>();
+	.children<TextInputChildren | RenderResult | undefined>();
 
 export const ConstrainedInput = factory(function ConstrainedInput({
 	middleware: { icache, validation, theme },
@@ -34,16 +35,15 @@ export const ConstrainedInput = factory(function ConstrainedInput({
 }) {
 	const { rules, onValidate, helperText, ...props } = properties();
 	const valid = icache.get('valid');
-
 	const validator = validation(rules);
-
 	const handleValidation = (valid?: boolean, message?: string) => {
 		icache.set('valid', { valid, message });
 		onValidate && onValidate(valid);
 	};
-
 	const generatedDescribeHelperText =
 		valid && valid.valid === true ? undefined : validator.describe().join(' ');
+
+	const _children: any = Array.isArray(children()) ? children()[0] : children();
 
 	return (
 		<TextInput
@@ -58,7 +58,7 @@ export const ConstrainedInput = factory(function ConstrainedInput({
 			onValidate={handleValidation}
 			helperText={helperText ? helperText : generatedDescribeHelperText}
 		>
-			{children()[0]}
+			{_children}
 		</TextInput>
 	);
 });

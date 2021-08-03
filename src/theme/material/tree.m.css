@@ -35,3 +35,6 @@
 .expander {
 	margin-right: 5px;
 }
+
+.selectable { }
+.selected { }

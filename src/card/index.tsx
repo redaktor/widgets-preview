@@ -363,7 +363,7 @@ console.log(name, s, c, cContent, objectRest);
 				}}
 				size="xl"
 				spaced={false}
-				variant="flat"
+				design="flat"
 				depth={2}
 			>
 				Read

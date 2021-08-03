@@ -2,7 +2,7 @@ import { DimensionResults } from '@dojo/framework/core/meta/Dimensions';
 import { dimensions } from '@dojo/framework/core/middleware/dimensions';
 import { focus } from '@dojo/framework/core/middleware/focus';
 import { create, tsx } from '@dojo/framework/core/vdom';
-import { formatAriaProperties, Variants, Elevation, PointerDevices } from '../common/util';
+import { formatAriaProperties, PointerDevices } from '../common/util';
 import { theme, ThemeProperties } from '../middleware/theme';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
@@ -148,7 +148,7 @@ export const Button = factory(function Button({
 		onanimationend: "this.blur()",
 		...formatAriaProperties(aria)
 	}
-
+	console.log('render btn');
 	return (labelFor ?
 		<label role="button" for={labelFor} key="root" {...buttonProps}>{children()}</label> :
 		<button key="root" {...buttonProps}>{children()}</button>

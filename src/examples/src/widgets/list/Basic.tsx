@@ -10,7 +10,7 @@ export default factory(function Basic({ middleware: { icache } }) {
 	return (
 		<Example>
 			<List
-				variant='flat'
+				design='flat'
 				color='primary'
 				resource={{ template: listOptionTemplate }}
 				onValue={(value) => {

@@ -1,11 +1,11 @@
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import dimensions from '@dojo/framework/core/middleware/dimensions';
-import { theme, ThemeProperties, Variants, formatAriaProperties } from '../middleware/theme';
-import Chip from '../chip';
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
-import * as css from '../theme/material/progress.m.css';
+import { theme, ThemeProperties, Designs } from '@redaktor/widgets/middleware/theme';
+import Chip from '@redaktor/widgets/chip';
+import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
+import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
+import * as css from '@redaktor/widgets/theme/material/progress.m.css';
 
 enum OutputDisplay {
 	'top' = 'top', // vertical default if true
@@ -34,10 +34,10 @@ export interface ProgressProperties extends ThemeProperties {
 	circular?: boolean;
 	/** Rounded Edges */
 	rounded?: boolean;
-	/** The variant for the input: 'flat', 'outlined', 'raised', 'shaped'
+	/** The design for the input: 'flat', 'outlined', 'raised', 'shaped'
 	 * 'flat' by default
 	 */
-	variant?: Variants;
+	design?: Designs;
 	/** Custom aria attributes */
 	aria?: { [key: string]: string | null };
 	/** Value used to calculate percent width or maximum value for sliders */
@@ -79,8 +79,8 @@ export const Progress = factory(function Progress({
 }) {
 	const themedCss = theme.classes(css);
 	const {
-		aria = {},
-		variant = 'flat',
+		// aria = {},
+		design = 'flat',
 		responsive = true,
 		circular = false,
 		rounded = false,
@@ -174,7 +174,7 @@ export const Progress = factory(function Progress({
 			{(typeof _output !== 'string' ? _output :
 				(outPos === 'tooltip' ?
 					<span>{`${_output}`}</span> :
-					<Chip animated={false} variant={variant}>{`${_output}`}</Chip>
+					<Chip animated={false} design={design}>{`${_output}`}</Chip>
 				)
 			)}
 		</output> : null
@@ -202,7 +202,7 @@ export const Progress = factory(function Progress({
 			classes={[
 				themedCss.root,
 				themedCss.progressRoot,
-				themedCss[variant],
+				themedCss[design],
 				theme.variant(),
 				theme.sized(ui),
 				theme.spaced(ui),

@@ -21,9 +21,10 @@
   /* Note: This changes to 3320px with larger gap for 4k */
   max-width: var(--maxvp);
 }
-.ratioContainer {
+.mediaRatio {
 	display: grid;
 	grid-template-rows: calc(var(--line) * var(--l)) auto;
+	grid-template-columns: 100%;
 	position: relative;
 	width: 100%;
 	background-size: cover;
@@ -31,9 +32,13 @@
 	margin-bottom: 0 !important;
 }
 .item {
+	--p: var(--line);
+  --pl: calc(var(--line) * 1.5 + var(--grid-base,8px));
+  --pr: var(--lineHalf);
   --w: calc((100vw - (var(--gap) * (var(--cols) + 1))) / var(--cols));
 	display: flex;
 	flex-direction: column;
+	content-visibility: auto;
   width: var(--w);
 	min-height: var(--line);
 	justify-content: center;
@@ -46,23 +51,37 @@
   /* handled by grid */
   /* width: auto; */
 }
+.content {
+	max-width: 60ch;
+}
 
+@media screen and (max-width: 444px),
+screen and (min-width: 821px) and (max-width: 964px),
+screen and (min-width: 1221px) and (max-width: 1364px),
+screen and (min-width: 1621px) and (max-width: 1764px),
+screen and (min-width: 2021px) and (max-width: 2164px),
+screen and (min-width: 2421px) and (max-width: 2564px),
+screen and (min-width: 2901px) and (max-width: 3064px) {
+  .item {
+		--p: var(--lineHalf);
+    --pl: var(--line);
+    --pr: var(--lineHalf);
+  }
+}
 .typo { composes: column from './_typo.css'; }
 
 .item.baselined {
-  --h: calc(var(--w) / var(--ar2,1) * var(--ar1,1));
 	grid-row-end: span var(--l);
-  min-height: var(--h);
 	max-width: 100%;
   margin: 0 auto calc(var(--line) * var(--l) - var(--h)) auto;
 }
-
+/*
 .content {
   width: 100%;
   padding: var(--line);
   background: #444;
 }
-
+*/
 @media screen and (max-width: 444px) {
 	.root { padding: 0; }
 	.item { padding: var(--lineHalf, 7px) 0 var(--lineHalf, 7px) 0; }

@@ -1,7 +1,7 @@
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { theme, ThemeProperties, Variants, formatAriaProperties } from '../middleware/theme';
+import { theme, ThemeProperties, Designs, formatAriaProperties } from '../middleware/theme';
 import TitlePane, { TitlePaneProperties, TitlePaneChildren } from '../paneTitle';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';

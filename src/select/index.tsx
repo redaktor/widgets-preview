@@ -4,30 +4,30 @@ import { focus } from '@dojo/framework/core/middleware/focus';
 import { i18n } from '@dojo/framework/core/middleware/i18n';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
-import id from '../middleware/id';
+import theme from '@redaktor/widgets/middleware/theme';
+import id from '@redaktor/widgets/middleware/id';
 import { find } from '@dojo/framework/shim/array';
-import { Keys } from '../common/util';
-import HelperText from '../helperText';
-import Icon from '../icon';
-import Label from '../label';
+import { Keys } from '@redaktor/widgets/common/util';
+import HelperText from '@redaktor/widgets/helperText';
+import Icon from '@redaktor/widgets/icon';
+import Label from '@redaktor/widgets/label';
 import {
 	ItemRendererProperties,
 	List,
 	ListOption
-} from '../list';
+} from '@redaktor/widgets/list';
 import {
 	ListItemProperties,
 	MenuItemProperties
-} from '../list/Listitem';
-import theme from '../middleware/theme';
-import { PopupPosition } from '../popup';
-import TriggerPopup from '../triggerPopup';
-import * as listCss from '../theme/material/list.m.css';
-import * as labelCss from '../theme/material/label.m.css';
-import * as iconCss from '../theme/material/icon.m.css';
-import * as css from '../theme/material/select.m.css';
+} from '@redaktor/widgets/list/Listitem';
+import { PopupPosition } from '@redaktor/widgets/popup';
+import TriggerPopup from '@redaktor/widgets/triggerPopup';
+import LoadingIndicator from '@redaktor/widgets/loadingIndicator';
+import * as listCss from '@redaktor/widgets/theme/material/list.m.css';
+import * as labelCss from '@redaktor/widgets/theme/material/label.m.css';
+import * as iconCss from '@redaktor/widgets/theme/material/icon.m.css';
+import * as css from '@redaktor/widgets/theme/material/select.m.css';
 import bundle from './nls/Select';
-import LoadingIndicator from '../loadingIndicator';
 
 
 export interface SelectProperties {
@@ -96,7 +96,7 @@ export const Select = factory(function Select({
 }) {
 	const {
 		classes,
-		variant,
+		design,
 		theme: themeProp,
 		disabled,
 		helperText,
@@ -191,7 +191,7 @@ export const Select = factory(function Select({
 						'label'
 					)}
 					classes={classes}
-					variant={variant}
+					design={design}
 					disabled={disabled}
 					forId={triggerId}
 					valid={valid}
@@ -216,10 +216,10 @@ export const Select = factory(function Select({
 				position={position}
 				theme={themeProp}
 				classes={classes}
-				variant={variant}
+				design={design}
 			>
 				{{
-					trigger: (toggleOpen) => {
+					trigger: (toggleOpen: any) => {
 						function openMenu() {
 							if (!disabled) {
 								icache.set('focusNode', 'menu');
@@ -271,13 +271,13 @@ export const Select = factory(function Select({
 											'icon'
 										)}
 										classes={classes}
-										variant={variant}
+										design={design}
 									/>
 								</span>
 							</button>
 						);
 					},
-					content: (close) => {
+					content: (close: any) => {
 						function closeMenu() {
 							icache.set('focusNode', 'trigger');
 							close();
@@ -287,7 +287,7 @@ export const Select = factory(function Select({
 							<LoadingIndicator
 								key="loading"
 								theme={themeProp}
-								variant={variant}
+								design={design}
 								classes={classes}
 							/>
 						) : (
@@ -314,7 +314,7 @@ export const Select = factory(function Select({
 										'menu'
 									)}
 									classes={classes}
-									variant={variant}
+									design={design}
 									widgetId={menuId}
 								>
 									{items}
@@ -329,7 +329,7 @@ export const Select = factory(function Select({
 				text={valid === false ? messages.requiredMessage : helperText}
 				valid={valid}
 				classes={(classes as any)}
-				variant={variant}
+				design={design}
 				theme={themeProp}
 			/>
 		</div>

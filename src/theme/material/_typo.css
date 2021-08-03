@@ -152,9 +152,6 @@ RESET THE BROWSER STYLES,
 only necessary here TODO FIXME
 */
 html, body { height: 100%; }
-*, *:after, *:before {
-  box-sizing: border-box;
-}
 *, *:before, *:after {
   -webkit-box-sizing: inherit;
   -moz-box-sizing: inherit;
@@ -355,7 +352,6 @@ h1.serif, .h1.serif {
     --caph: 0.7058823529411765;
   }
 }
-
 
 @media screen and (max-width: 444px),
 screen and (min-width: 821px) and (max-width: 964px),

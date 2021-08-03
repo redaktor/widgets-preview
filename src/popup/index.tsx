@@ -1,11 +1,11 @@
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { dimensions } from '@dojo/framework/core/middleware/dimensions';
 import { resize } from '@dojo/framework/core/middleware/resize';
-import theme from '../middleware/theme';
-import { bodyScroll } from '../middleware/bodyScroll';
-import * as css from '../theme/material/popup.m.css';
+import theme from '@redaktor/widgets/middleware/theme';
+import { bodyScroll } from '@redaktor/widgets/middleware/bodyScroll';
+import * as css from '@redaktor/widgets/theme/material/popup.m.css';
 import * as fixedCss from './popup.m.css';
-import { RenderResult } from '@dojo/framework/core/interfaces';
 
 export type PopupPosition = 'above' | 'below' | 'left' | 'right';
 

@@ -30,13 +30,15 @@ import Slider from '../slider';
 import Icon from '../icon';
 import Img from '../image/image';
 import Images from '../images';
+import Attachment from '../attachment';
 import Locales from '../locales';
 import bundle from './nls/Audio';
 import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/audio.m.css';
 /* TODO exists in this module: */
 import MD from '../MD/';
+
+// import Table from '../table';
 
 /* TODO
 
@@ -109,6 +111,7 @@ export interface AudioIcache {
 	l: number;
 	id: string;
 	width: number;
+	currentLocale: {locale: string, rtl?: boolean};
 	currentTime: number;
 	buffer: number;
 	duration: number;
@@ -156,20 +159,20 @@ export const Audio = factory(function Audio({
 }) {
 	const { get, set, getOrSet } = icache;
 	const { localize, normalized, setLocale } = i18nActivityPub;
-	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
 
-	const themedCss = theme.classes(css);
-	const { messages } = localize(bundle);
 	const {
-		alt, editable, onLoad, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId,
+		alt, editable, onLoad, onPlay, onPause, onMouseEnter, onMouseLeave, widgetId, locale: currentLocale,
 		baselined = true, hasPoster = true, hasControls = true, hasContent = true, hasAttachment = true,
 		autoPlay = false, muted = false, view = 'column',
 		crossorigin = 'anonymous', volume = 1, speed = 1, ...APo
 	} = normalized();
-
 	if (APo.type.indexOf('Audio') < 0 && (!APo.mediaType || APo.mediaType.toLowerCase().indexOf('audio') !== 0)) {
 		return ''
 	}
+	const themedCss = theme.classes(css);
+	const { messages } = localize(bundle);
+	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
+	getOrSet('currentLocale', {locale: currentLocale}||locale);
 	getOrSet('duration', parseDuration(APo.duration||''), false);
 	getOrSet('sampleRate', 44100);
 	const [duration, sampleRate, numberOfChannels] = [get('duration'), get('sampleRate'), get('numberOfChannels')];
@@ -222,8 +225,9 @@ export const Audio = factory(function Audio({
     audio.muted = set('isMuted', !get('isMuted'));
   }
 
+/* TODO
 	const handleDownload = () => {
-		/* TODO - transkripts / WebVTT
+		// TODO - transkripts / WebVTT
   	fetch(url).then(res => res.blob()).then(blob => {
     	const element   = document.createElement('a');
     	const objectURL = URL.createObjectURL(blob);
@@ -238,8 +242,8 @@ export const Audio = factory(function Audio({
   	}).catch(err => {
     	console.error(err);
   	});
-		*/
   }
+	*/
 	const handleLoadedMetadata = async () => {
 		if (!audio) { return }
 		const audioCtx = new AudioContext();
@@ -251,13 +255,14 @@ export const Audio = factory(function Audio({
 		audioCtx.decodeAudioData(buf, function(decodedBuffer) {
 			getOrSet('sampleRate', decodedBuffer.sampleRate||44100);
 			getOrSet('numberOfChannels', decodedBuffer.numberOfChannels||1);
-	  }, function(error: Error) {
-	    // console.log(error);
+	  }, function( /*error: Error*/ ) {
+	    // console.log(error); // TODO
 	  });
 
 		set('duration', audio.duration, false);
-		let trackMenu: RenderResult = [];
+		let trackMenu: RenderResult;
 		if (audio.textTracks && audio.textTracks.length) {
+			console.log(audio.textTracks);
 			const textTracks: any = {
 				captions:(new Map()),
 				subtitles:(new Map()),
@@ -278,48 +283,50 @@ export const Audio = factory(function Audio({
 			}
 			/* TODO sorting of languages: userLocale, Int locale, en, ...others  */
 			const tracksVisible: any = get('tracksVisible');
-			trackMenu = textTracks &&
-				<div key="tracksMenu" role="menu" aria-modal="true" classes={themedCss.trackMenu}>
-					{Object.keys(textTracks).map((k) => {
+			const tracksVisibleCount = !tracksVisible ? 0 : Object.values(tracksVisible).join('').length;
+			console.log('tracksVisible',tracksVisible, tracksVisibleCount);
+			trackMenu = textTracks && Object.keys(textTracks).map((k) => {
 						return k === 'metadata' || !textTracks[k].size ? '' :
-							<DynamicSelect
-								singleMax={8}
-								name={k}
-								size="s"
-								vertical={true}
-								initialValue={tracksVisible[k]}
-								options={Array.from(textTracks[k].values()).map((v: any) => {
-									v.label = <virtual>
-										<Chip color="neutral" size="xs" spaced={true}>
-											{{ label: ` ${v.language} ` }}
-										</Chip>
-										{v.label}
-									</virtual>
-									return v
-								})}
-								onValue={(iStr) => {
-									if (!audio) { return }
-									const i = parseInt(iStr, 10);
-									const track = audio.textTracks[i];
-									textTracks[track.kind].forEach((t: any) => {
-										audio.textTracks[t.value].mode = 'hidden';
-									});
-									if (i > -1) { // TODO i -1 = hide all
-										audio.textTracks[i].mode = 'showing';
-										set('tracksVisible', {
-											...get('tracksVisible'),
-											[track.kind]: iStr}
-										)
-									}
-								}}
-							>
-								{{
-									label: (messages as any)[`${k}Track`]
-								}}
-							</DynamicSelect>
+							<virtual>
+								<h5>{k}</h5>
+								<DynamicSelect
+									singleMax={8}
+									name={k}
+									size="s"
+									vertical={true}
+									initialValue={tracksVisible[k]}
+									options={Array.from(textTracks[k].values()).map((v: any) => {
+										v.label = <virtual>
+											<Chip color="neutral" size="xs" spaced={true}>
+												{{ label: ` ${v.language} ` }}
+											</Chip>
+											{v.label}
+										</virtual>
+										return v
+									})}
+									onValue={(iStr) => {
+										if (!audio) { return }
+										const i = parseInt(iStr, 10);
+										const track = audio.textTracks[i];
+										textTracks[track.kind].forEach((t: any) => {
+											audio.textTracks[t.value].mode = 'hidden';
+										});
+										if (i > -1) { // TODO i -1 = hide all
+											audio.textTracks[i].mode = 'showing';
+											set('tracksVisible', {
+												...get('tracksVisible'),
+												[track.kind]: iStr}
+											)
+										}
+									}}
+								>
+									{{
+										label: (messages as any)[`${k}Track`]
+									}}
+								</DynamicSelect>
+							</virtual>
 					}
-				)}
-				</div>
+				)
 		}
 		set('trackMenu', trackMenu);
 	}
@@ -396,14 +403,9 @@ export const Audio = factory(function Audio({
 	const menuOpen = get('isTrackMenuOpen');
 	const formattedDuration = formatTime(Math.floor(get('duration')||0));
 
-
+	const tracksVisible: any = get('tracksVisible');
+	const tracksVisibleCount = !tracksVisible ? 0 : Object.values(tracksVisible).join('').length;
 	/* <-- */
-
-	const attachmentIcons = hasAttachment ? (APo.attachment||[]).reduce((a: string[], ao) =>
-		a.concat(ao.type.filter((t: string) => (a.indexOf(t) < 0))), []).map((type) =>
-			<label classes={themedCss.attachmentType}>
-				<Icon size="xxl" type={(type as any).toLowerCase()} />
-			</label>) : '';
 
 	/*
 	if (get('hasTracks') && !!audio) {
@@ -444,6 +446,16 @@ export const Audio = factory(function Audio({
 		crossorigin: crossorigin
 	};
 
+	const extraClasses = {
+		progress: { '@redaktor/widgets/progress': { root: [themedCss.progress] } },
+		details: { '@redaktor/widgets/details': { root: [themedCss.locales] } },
+		columnName: { '@redaktor/widgets/name': { root: [themedCss.columnName] } },
+		rowName: { '@redaktor/widgets/name': { root: [themedCss.rowName] } },
+		summary: { '@redaktor/widgets/paginated': { root: [themedCss.summaryPaginated] } },
+		collapsed: { '@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] } },
+		images: { '@redaktor/widgets/images': { root: [themedCss.images] } }
+	}
+
 // console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isRow})
 	return <div
 		key="root"
@@ -454,9 +466,9 @@ export const Audio = factory(function Audio({
 			!!viewCSS && viewCSS.item,
 			!!viewDesktopCSS && viewDesktopCSS.item,
 			theme.shaped(themedCss),
-			theme.sized(ui),
-			theme.colored(colors),
-			theme.elevated(ui),
+			theme.uiSize(),
+			theme.uiColor(),
+			theme.uiElevation(),
 			theme.animated(themedCss),
 			get('isFresh') && themedCss.fresh,
 			get('isPaused') && themedCss.paused,
@@ -483,7 +495,7 @@ export const Audio = factory(function Audio({
 		<div classes={themedCss.vttButtonWrapper}>
 			<Button
 				title={messages.captions}
-				variant="flat"
+				design="flat"
 				aria-haspopup="menu"
 				onClick={() => { set('isTrackMenuOpen', !menuOpen) }}
 			>
@@ -501,17 +513,21 @@ export const Audio = factory(function Audio({
 				!!viewDesktopCSS && viewDesktopCSS.m1by1
 			]}
 		>
-			{ menuOpen && get('trackMenu') }
-			<div key="avatar" classes={themedCss.audioAvatarWrapper}>
+			{ !!menuOpen && !!get('trackMenu') &&
+					<div key="tracksMenu" role="menu" aria-modal="true"
+						classes={[themedCss.trackMenu, tracksVisibleCount > 1 && themedCss.multipleVTT]}
+					>
+						{get('trackMenu')}
+					</div>
+			}
+			<div key="avatar" classes={themedCss.avatarWrapper}>
 				{audio && <AudioAvatar audioElement={audio} size={(audioAvatarSize as any)}>SL</AudioAvatar>}
 			</div>
 			<noscript>
 				<video controls={true} {...playerProps}>{sources}{children()}</video>
 			</noscript>
-			{
-				hasPoster && !!APo.image && !!APo.image[0] &&
-					<div classes={themedCss.poster}><Img {...APo.image[0]} fit /></div>
-			}
+			{ hasPoster && !!APo.image && !!APo.image[0] &&
+					<div classes={themedCss.poster}><Img {...APo.image[0]} fit /></div> }
 
 			{!get('hasTracks') && !get('isPicInPic') ?
 				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :
@@ -535,12 +551,10 @@ export const Audio = factory(function Audio({
 				value={get('currentTime')||0}
 				buffer={get('buffer')||0}
 				size="s"
+				classes={extraClasses.progress}
 				onValue={(n) => {
 					togglePlay();
 					setTime(n);
-				}}
-				classes={{
-					'@redaktor/widgets/progress': { root: [themedCss.progress] }
 				}}
 			/>
 			<div classes={themedCss.captionRow}>
@@ -597,7 +611,7 @@ export const Audio = factory(function Audio({
 					/>
 					{!get('isSpeedMenuOpen') &&
 						<Button
-							variant="flat"
+							design="flat"
 							size="xs"
 							onClick={toggleMute}
 							title={get('isMuted') ? messages.unmute : messages.mute}
@@ -613,31 +627,28 @@ export const Audio = factory(function Audio({
 			</div>
 		</div>}
 
-		{!!locales && locales.length > 1 && <Locales classes={{
-			'@redaktor/widgets/details': { root: [themedCss.locales] }
-		}} locale={locale} locales={locales} onValue={(l) => setLocale(l)} />}
-
-		{!isRow && !menuOpen && get('isPaused') && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
+		{!!locales && locales.length > 1 &&
+			<Locales classes={extraClasses.details} locale={get('currentLocale')||{locale:'en'}} locales={locales} onValue={(l) => {
+				console.log(l);
+				setLocale(l)
+			}} />
+		}
+		<Name name={APo.name} isRow={isRow} size={(vp as any)} classes={extraClasses.columnName} />
 		<div classes={themedCss.attributions}>
 			<AttributedTo {...APo} max={39} />
 		</div>
 
-		{hasContent && <div classes={themedCss.contentWrapper}>
-			{!!isRow && <Name name={APo.name} isRow={isRow} size={(vp as any)} />}
+		{hasContent && <div classes={[themedCss.contentWrapper, !!viewCSS && viewCSS.content]}>
+			<Name name={APo.name} isRow={isRow} size={(vp as any)} classes={extraClasses.rowName} />
 			{
-				APo.summary && <Paginated key="summary" property="summary" classes={{
-					'@redaktor/widgets/paginated': { root: [themedCss.summaryPaginated] }
-				}}
-				>
+				APo.summary && <Paginated key="summary" property="summary" classes={extraClasses.summary}>
 					{clampStrings(APo.summary, 500).map((_summary, i) =>
 						<MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={_summary} />
 					)}
 				</Paginated>
 			}
 			{
-				APo.content && <Collapsed responsive={!isRow} lines={isRow ? (get('isFresh') ? 2 : 1) : 12} classes={{
-					'@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] }
-				}}>
+				APo.content && <Collapsed responsive={!isRow} lines={isRow ? (get('isFresh') ? 2 : 1) : 5} classes={extraClasses.collapsed}>
 					{APo.content.map((_content, i) => <virtual>
 						<MD classes={[themedCss.content, isColumn && themedCss.serif, typoClass]} key={`content${i}`} content={_content} /><hr />
 					</virtual>)}
@@ -646,19 +657,8 @@ export const Audio = factory(function Audio({
 		</div>}
 
 		{hasAttachment && <virtual>
-			<Images key="images" view={view} image={APo.image} size={(vp as any)} classes={{
-				'@redaktor/widgets/images': { root: [themedCss.images] }
-			}} />
-			<div key="attachment" classes={themedCss.attachment}>
-				<div key="attachmentControl" classes={themedCss.attachmentControl}>
-					<Chip>
-						{{ label: <virtual><Icon spaced={true} type="pin" color="neutral" /> {(APo.attachment||[]).length}</virtual> }}
-					</Chip>
-					{ attachmentIcons }
-				</div>
-				<span>a</span>
-				<span>b</span>
-			</div>
+			<Images key="images" view={view} image={APo.image} size={(vp as any)} classes={extraClasses.images} />
+			<Attachment attachment={APo.attachment} isRow={isRow} />
 		</virtual>}
 	</div>
 

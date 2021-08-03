@@ -5,16 +5,16 @@ import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { create, renderer, tsx } from '@dojo/framework/core/vdom';
 import global from '@dojo/framework/shim/global';
 import { createResourceMiddleware } from '@dojo/framework/core/middleware/resources';
-import theme, { ThemeProperties } from '../middleware/theme';
-import { Keys } from '../common/util';
-import offscreen from '../middleware/offscreen';
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
-import * as listItemCss from '../theme/material/list-item.m.css';
-import * as menuItemCss from '../theme/material/menu-item.m.css';
-import * as css from '../theme/material/list.m.css';
+import theme, { ThemeProperties } from '@redaktor/widgets/middleware/theme';
+import { Keys } from '@redaktor/widgets/common/util';
+import offscreen from '@redaktor/widgets/middleware/offscreen';
+import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
+import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
+import * as listItemCss from '@redaktor/widgets/theme/material/list-item.m.css';
+import * as menuItemCss from '@redaktor/widgets/theme/material/menu-item.m.css';
+import * as css from '@redaktor/widgets/theme/material/list.m.css';
 import * as fixedCss from './list.m.css';
-import LoadingIndicator from '../loadingIndicator';
+import LoadingIndicator from '@redaktor/widgets/loadingIndicator';
 import { MenuItem, MenuItemProperties, ListItem, ListItemProperties } from './Listitem';
 
 export const offscreenHeight = (dnode: RenderResult) => {
@@ -40,7 +40,7 @@ export interface ListProperties {
 	/** Controlled value property */
 	value?: string;
 	/** Callback called when user selects a value */
-	onValue(value: ListOption, scrollTop: number): void;
+	onValue?(value: ListOption, scrollTop: number): void;
 	/** Called to request that the menu be closed */
 	onRequestClose?(): void;
 	/** Optional callback, when passed, the widget will no longer control it's own active index / keyboard navigation */
@@ -106,8 +106,7 @@ const factory = create({
 	offscreen,
 	node,
 	resource: createResourceMiddleware<ListOption>()
-})
-	.properties<ListProperties>()
+}).properties<ListProperties>()
 	.children<ListChildren | undefined>();
 
 export const List = factory(function List({
@@ -130,7 +129,7 @@ export const List = factory(function List({
 		onValue,
 		widgetId,
 		theme: themeProp,
-		variant,
+		design,
 		resource: {
 			template,
 			options = resource.createOptions((curr, next) => ({ ...curr, ...next }))
@@ -155,7 +154,7 @@ export const List = factory(function List({
 
 	function setValue(value: ListOption) {
 		icache.set('value', value.value);
-		onValue(value, icache.get('scrollTop')||0);
+		onValue && onValue(value, icache.get('scrollTop')||0);
 	}
 
 	function onKeyDown(event: KeyboardEvent, total: number) {
@@ -275,7 +274,7 @@ export const List = factory(function List({
 			},
 			disabled: true,
 			classes,
-			variant
+			design
 		};
 		return menu ? (
 			<MenuItem
@@ -389,7 +388,7 @@ export const List = factory(function List({
 			},
 			disabled: itemDisabled,
 			classes,
-			variant
+			design
 		};
 		let item: RenderResult;
 

@@ -1,5 +1,5 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
-import theme from '../middleware/theme';
+import theme from '@redaktor/widgets/middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import {
 	createResourceTemplate,
@@ -8,18 +8,18 @@ import {
 } from '@dojo/framework/core/middleware/resources';
 import focus from '@dojo/framework/core/middleware/focus';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import { parseDate, formatDateISO, formatDate } from './date-utils';
-import TextInput, { Addon } from '../inputText';
-import TimePicker from '../timePicker';
-import DateInput from '../inputDate';
-import { ListOption } from '../list';
-import Icon from '../icon';
-import Typeahead from '../typeahead';
+import { parseDate, formatDate } from './date-utils';
+import { Addon } from '@redaktor/widgets/inputText';
+import TimePicker from '@redaktor/widgets/timePicker';
+import DateInput from '@redaktor/widgets/inputDate';
+import { ListOption } from '@redaktor/widgets/list';
+import Icon from '@redaktor/widgets/icon';
+import Typeahead from '@redaktor/widgets/typeahead';
+import Calendar, { CalendarProperties, CalendarChildren } from '@redaktor/widgets/calendar';
+import timezones from '@redaktor/widgets/common/data/timezones';
 import bundle from './nls/CalendarInput';
-import * as ui from '../theme/material/_ui.m.css';
-import * as css from '../theme/material/calendar.m.css';
-import Calendar, { CalendarProperties, CalendarChildren } from '../calendar';
-import timezones from '../common/data/timezones';
+import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
+import * as css from '@redaktor/widgets/theme/material/calendar.m.css';
 
 /* TODO parse relative */
 
@@ -89,8 +89,9 @@ export const CalendarInput = factory(function CalendarInput({
 	const {
 		minDate,
 		start: s = new Date(),
-		end,
-		variant,
+		/* TODO */
+		// end,
+		design,
 		color = 'primary',
 		size = 'm',
 		timezone = (new Intl.DateTimeFormat().resolvedOptions().timeZone)||'Europe/Berlin',
@@ -110,9 +111,10 @@ console.log(start, icache.get('end'));
 	}
 
 	const shouldValidate = icache.getOrSet('shouldValidate', true, false);
+	/* TODO
 	const shouldFocus = focus.shouldFocus();
 	const focusNode = icache.getOrSet('focusNode', 'start');
-
+	*/
 	const nextDay = new Date(start.getTime());
 	nextDay.setDate(nextDay.getDate() + 1);
 	icache.getOrSet('startInput', formatDate(start, locales));
@@ -151,7 +153,7 @@ console.log(start, icache.get('end'));
 	const inputSize: any = { xs: 's', s: 'm', m: 'l', l: 'xl', xl: 'xl', xxl: 'xxl' }
 	const input = <div classes={themedCss.inputHeader}>
 		<DateInput
-			{...{variant, color, size: inputSize[size||'m']}}
+			{...{design, color, size: inputSize[size||'m']}}
 			key="start"
 			required={true}
 			initialValue={icache.get('startInput')}
@@ -168,7 +170,7 @@ console.log(start, icache.get('end'));
 
 		{ allowRange && <virtual>
 			<DateInput
-				{...{variant, color, size: inputSize[size||'m']}}
+				{...{design, color, size: inputSize[size||'m']}}
 				key="end"
 				initialValue={icache.get('endInput')}
 				onFocus={() => icache.set('focusNode','end')}
@@ -189,7 +191,7 @@ console.log(start, icache.get('end'));
 		</virtual>}
 		<div classes={themedCss.timeInput}>
 			<TimePicker
-				{...{variant, color, size: inputSize[size||'m']}}
+				{...{design, color, size: inputSize[size||'m']}}
 				key="startTime"
 				placeholder='hh:mm'
 				value={icache.get('startTimeInput')}
@@ -206,7 +208,7 @@ console.log(start, icache.get('end'));
 		</div>
 		<div classes={themedCss.timeInput}>
 			<TimePicker
-				{...{variant, color, size: inputSize[size||'m']}}
+				{...{design, color, size: inputSize[size||'m']}}
 				key="endTime"
 				placeholder='hh:mm'
 				value={icache.get('endTimeInput')}
@@ -222,7 +224,7 @@ console.log(start, icache.get('end'));
 		<Typeahead
 			size={inputSize[size||'m']}
 			key='timezone'
-			variant={variant}
+			design={design}
 			initialValue={timezone}
 			strict={true}
 			resource={resource({

@@ -3,12 +3,12 @@ import focus from '@dojo/framework/core/middleware/focus';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import validity from '@dojo/framework/core/middleware/validity';
 import { create, diffProperty, node, invalidator, tsx } from '@dojo/framework/core/vdom';
-import HelperText from '../helperText/index';
-// import Label from '../label/index';
-import { theme, formatAriaProperties, ThemeProperties } from '../middleware/theme';
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
-import * as css from '../theme/material/inputText.m.css';
+import HelperText from '@redaktor/widgets/helperText';
+// import Label from '@redaktor/widgets/label/index';
+import { theme, formatAriaProperties, ThemeProperties } from '@redaktor/widgets/middleware/theme';
+import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
+import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
+import * as css from '@redaktor/widgets/theme/material/inputText.m.css';
 
 /* TODO
 responsive?: boolean;
@@ -249,7 +249,7 @@ export const TextInput = factory(function TextInput({
 	const {
 		id,
 		aria = {},
-		variant = 'flat' as (keyof typeof themedCss),
+		design = 'flat' as (keyof typeof themedCss),
 		responsive = true,
 		autocomplete = false,
 		selection = false,
@@ -349,17 +349,16 @@ export const TextInput = factory(function TextInput({
 		} else if (Array.isArray(selection)) {
 			(inputNode as HTMLInputElement).setSelectionRange(...(selection as [number, number]));
 		}
-		// focus.focus()
 	}
 	if (inputNode && icache.get('caret')) {
-		(inputNode as any).setSelectionRange(...icache.get('caret'), 1);
+		(inputNode as any).setSelectionRange(...(icache.get('caret') as any), 1);
 	}
 
 	return (
 		<div key="root" id={id} classes={[
 			themedCss.root,
 			theme.variant(),
-			(themedCss as any)[variant],
+			(themedCss as any)[design],
 			theme.sized(ui),
 			theme.sized(themedCss),
 			theme.spaced(ui, false),
@@ -473,11 +472,7 @@ export interface AddonProperties {
 	filled?: boolean;
 }
 
-const addonFactory = create({
-	theme
-})
-	.properties<AddonProperties>()
-	.children();
+const addonFactory = create({ theme }).properties<AddonProperties>().children();
 
 export const Addon = addonFactory(function Addon({ middleware: { theme }, properties, children }) {
 	const themedCss = theme.classes(css);

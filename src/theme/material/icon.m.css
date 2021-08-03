@@ -8,8 +8,8 @@
 	font-display: block;
 }
 
-.icon,
-i.icon {
+.icon {
+	position: relative;
 	/* use !important to prevent issues with browser extensions that change fonts */
 	font-family: 'redaktor' !important;
 	color: inherit !important;
@@ -66,7 +66,7 @@ i.icon {
 /* The official logo of redaktor */
 .redaktorLogo span:nth-child(1)::before {
 	content: '\52';
-	color: rgb(62, 55, 60);
+	color: var(--text-muted, rgb(62, 55, 60));
 }
 .redaktorLogo span:nth-child(2)::before {
 	content: '\53';
@@ -76,10 +76,23 @@ i.icon {
 .redaktorLogo span:nth-child(3)::before {
 	content: '\54';
 	margin-left: -1em;
-	color: rgb(62, 55, 60);
+	color: var(--text-muted, rgb(62, 55, 60));
 }
 .redaktor::before {
 	content: '@';
+}
+/* Actor Types */
+.person:before {
+  content: '\e93c';
+}
+.organization:before {
+  content: '\e93d';
+}
+.service:before {
+  content: '\e93e';
+}
+.application:before {
+  content: '\e93f';
 }
 /* A follow icon */
 .follow::before {
@@ -93,7 +106,8 @@ i.icon {
 .share::before {
 	content: 'a';
 }
-.announced:before {
+.announced:before,
+.shared::before {
   content: '\e902';
 }
 /* ActivityPub Like icon */
@@ -240,6 +254,27 @@ i.icon {
 .collection::before {
 	content: 'C';
 }
+/* ActivityPub CollectionPage object icon */
+.collectionpage::before {
+	content: '\e940';
+}
+/* ActivityPub OrderedCollection object icon */
+.orderedcollection::before {
+	content: '\e941';
+}
+/* ActivityPub OrderedCollectionPage object icon */
+.orderedcollectionpage::before {
+	content: '\e942';
+}
+.profile:before {
+	content: '\e943';
+}
+.relationship:before {
+	content: '\e944';
+}
+.tombstone:before {
+	content: '\e945';
+}
 /* ActivityPub Link object icon */
 .link::before {
 	content: '4';
@@ -253,6 +288,7 @@ i.icon {
   content: '\e906';
 }
 /* Globe icon */
+.globe { top: 2px; }
 .globe::before {
 	content: '1';
 }
@@ -544,6 +580,7 @@ i.icon {
 	content: '\f059';
 }
 /* An info icon */
+.alert, .help, .info { top: 1px; }
 .info:before {
 	content: '\f05a';
 }

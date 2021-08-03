@@ -1,8 +1,8 @@
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
-import { theme, ThemeProperties } from '../middleware/theme';
-import Chip from '../chip';
-import * as css from '../theme/material/progress.m.css';
+import { theme, ThemeProperties } from '@redaktor/widgets/middleware/theme';
+import Chip from '@redaktor/widgets/chip';
+import * as css from '@redaktor/widgets/theme/material/progress.m.css';
 
 enum FlexAlign {
 	start = 'start',
@@ -22,10 +22,6 @@ export type Aligns = (FlexAlign | keyof typeof FlexAlign);
 
 export interface OutputProperties extends ThemeProperties {
 	value?: RenderResult;
-	/** The variant for the input: 'flat', 'outlined', 'raised', 'shaped'
-	 * 'flat' by default
-	 */
-	variant?: any;
 	/** Visibility or type of progress bar output */
 	outputDisplay?: boolean | OutputDisplays;
 	/** Flex alignment of output */
@@ -51,7 +47,7 @@ export const Ticks = factory(function Ticks({
 		value,
 		outputAlign,
 		hasCaption,
-		variant,
+		design,
 		size
 	} = properties();
 
@@ -71,7 +67,7 @@ export const Ticks = factory(function Ticks({
 			{(typeof value !== 'string' ? value :
 				(outPos === 'tooltip' ?
 					<span>{`${value}`}</span> :
-					<Chip animated={false} variant={variant}>{`${value}`}</Chip>
+					<Chip animated={false} design={design}>{`${value}`}</Chip>
 				)
 			)}
 		</output> : null;

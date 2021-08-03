@@ -85,7 +85,7 @@ const exampleData: AudioProperties | ImageProperties = {
     summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
     type: "Person"
   }],
-  nameMap: [{en: "The Government's Secret Campaign Against Cats", de: "Das ist alles nur Blindtext"},{en: "Special Episode", de: "Spezielle Episode"}, {en: "Super", de: "Super"}],
+  nameMap: [{en: "The Government's Secret Campaign Against Cats", de: "Das ist alles nur Blindtext Das ist alles nur Blindtext Das ist alles nur Blindtext Das ist alles nur Blindtext"},{en: "Special Episode", de: "Spezielle Episode"}, {en: "Super", de: "Super"}],
   summary: ["10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For","summary2"],
   content: [`Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs #Parkett. \nParsed handle @sl@sl.de – handle @sl@sl.de – link-handle @https://localhost:9999 – link https://localhost:9999 \n Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Parkett. Dies sind Sätze mit Zeichen bis zu 500 LOREM IPSUM dolor sit amet, consectetur adipiscing elit.
 
@@ -124,15 +124,18 @@ const exampleImage: ImageProperties = {
 const exampleAudio: AudioProperties = {
   ...(exampleData as AudioProperties),
   url: [ ogg, mp3 ],
-  attachment: [ exampleImage ]
+  attachment: [
+    exampleImage, exampleImage, exampleImage, exampleImage,
+    exampleImage, exampleImage, exampleImage, exampleImage
+  ]
 };
 const factory = create();
 
-const vttEn = 'http://localhost:9999/assets/nihWikimedia_en.vtt';
-const vttDe = 'http://localhost:9999/assets/nihWikimedia_de.vtt';
-const vttEs = 'http://localhost:9999/assets/nihWikimedia_es.vtt';
-const vttChapters = 'http://localhost:9999/assets/nihWikimedia_CHA_en.vtt';
-const vtt = 'http://localhost:9999/assets/nihWikimedia_SUB_en.vtt';
+const vttEn = '/assets/nihWikimedia_en.vtt';
+const vttDe = '/assets/nihWikimedia_de.vtt';
+const vttEs = '/assets/nihWikimedia_es.vtt';
+const vttChapters = '/assets/nihWikimedia_CHA_en.vtt';
+const vtt = '/assets/nihWikimedia_SUB_en.vtt';
 
 export default factory(function Basic() {
   const audio = (view: ('column'|'row'|'tableRow') = 'column') => <Audio {...exampleAudio} view={view}>
@@ -214,13 +217,15 @@ export default factory(function Basic() {
         <br /><br /><br /><br /><br /><br />
         <p>Lorem</p>
         <br /><br />
-        <div styles={{ width: '66.666%' }}>
+        <div styles={{ width: '100vw' }}>
           <div classes={[columnsCSS.root, columnsDesktop.root]}>
             <ul classes={columnsCSS.columns}>
               <Image {...exampleImage} sensitive={false} baselined={true} />
             </ul>
           </div>
+        </div>
           <br /><br />
+        <div styles={{ width: '66.666%' }}>
           <Img {...exampleImage} sensitive={false} baselined={true} aspectRatio="16/7" focalPoint={[0, 0.13]} />
         </div>
       </virtual>

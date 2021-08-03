@@ -19,8 +19,8 @@ export interface TableProperties {
 	 is either fixed or the initial width for 'resizable'
 	*/
 	columns?: (ColumnType | ColumnProperties)[];
-	/* max. items per “page”, default 10 */
-	itemsPerPage?: number;
+	/* max. height of table, count of lines or false, default 20 */
+	lines?: number | false;
 }
 export interface RowProperties extends ThemeProperties {
 	/* borders, default true */
@@ -55,8 +55,7 @@ export const Table = factory(function Table({
 	children
 }) {
 	const themedCss = theme.classes(css);
-	const { itemsPerPage = 5, columns = [] } = properties();
-	console.log(itemsPerPage); /* TODO */
+	const { lines = 20, columns = [] } = properties();
 
 	const { getOrSet, get, set } = icache;
 	getOrSet('isResizing', false, false);
@@ -105,18 +104,23 @@ export const Table = factory(function Table({
 	});
 
 	const tableHeader = (headerCols.filter((n) => !!n).length && <thead>
-		<tr>{headerCols.map((n) => <th classes={themedCss.cell}>{n}</th>)}</tr>
+		<tr>{headerCols.map((n) => <th classes={themedCss.th}>{n}</th>)}</tr>
 	</thead>);
 
 	const colgroup = !!tableCols && <colgroup>
 		{tableCols}
 	</colgroup>
 
-	return <div key="root" classes={[themedCss.root, theme.variant(), theme.colored(color)]}>
-		<table key="table" classes={[
-			themedCss.table,
-			get('isResizing') && themedCss.isResizing
-		]}>
+	return <div key="root"
+		classes={[
+			themedCss.root,
+			!!lines && themedCss.scrollTable,
+			theme.variant(),
+			theme.colored(color)
+		]}
+		style={ !lines ? '' : `--l: ${lines};` }
+	>
+		<table key="table" classes={[ themedCss.table, get('isResizing') && themedCss.isResizing ]}>
 			{tableHeader}
 			{colgroup}
 			{children()}

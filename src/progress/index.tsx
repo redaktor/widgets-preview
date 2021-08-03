@@ -1,14 +1,14 @@
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import icache from '@dojo/framework/core/middleware/icache';
-import { theme, ThemeProperties, Variants, formatAriaProperties } from '../middleware/theme';
+import { theme, ThemeProperties } from '@redaktor/widgets/middleware/theme';
 import progressMiddleware from './middleware';
 import Circle from './circle';
-import Ticks, { MarkTypes } from './ticks';
+import Ticks, { MarkTypes } from './ticks'
 import Output, { OutputDisplay, OutputDisplays, Aligns } from './output';
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
-import * as css from '../theme/material/progress.m.css';
+import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
+import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
+import * as css from '@redaktor/widgets/theme/material/progress.m.css';
 
 export interface ProgressProperties extends ThemeProperties {
 	responsive?: boolean;
@@ -49,11 +49,12 @@ const factory = create({ theme, icache, progressMiddleware })
 	.properties<ProgressProperties>();
 
 export const Progress = factory(function Progress({
-	children,
+	// children,
 	id,
 	properties,
 	middleware: { theme, icache, progressMiddleware }
 }) {
+
 	const themedCss = theme.classes(css);
 
 	const {
@@ -62,9 +63,9 @@ export const Progress = factory(function Progress({
 	} = progressMiddleware.format();
 
 	const {
-		aria = {},
+		// aria = {},
 		size = 'l',
-		variant = 'flat',
+		design = 'flat',
 		responsive = true,
 		circular = false,
 		rounded = false,
@@ -95,7 +96,7 @@ export const Progress = factory(function Progress({
 		(outputDisplay === true ? (!vertical ? 'bottom' : 'right') : outputDisplay);
 	const output = typeof onOutput === 'function' ? onOutput(value||0, percent) : <Output {
 		...{
-			vertical, outputDisplay, outputAlign, widgetId, variant, size,
+			vertical, outputDisplay, outputAlign, widgetId, design, size,
 			hasCaption: icache.get('hasCaption'),
 			value: outputValue
 		}

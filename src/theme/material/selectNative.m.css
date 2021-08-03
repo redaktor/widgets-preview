@@ -1,6 +1,7 @@
 .root {
 	composes: uiVar ui-transition from './_ui.m.css';
 	min-height: var(--ui-wrap-h);
+	max-width: 760px;
 	position: relative;
 	cursor: pointer;
 	outline: none;
@@ -80,6 +81,7 @@
 }
 
 .arrow {
+	pointer-events: none;
 	position: absolute;
 	right: var(--grid-base);
 	top: var(--pt);
@@ -101,6 +103,9 @@
 	display: none;
 }
 
+.blankOption {
+	opacity: 0;
+}
 
 /* Class for disabled select state */
 .disabled {

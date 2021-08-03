@@ -89,26 +89,26 @@
 	transform: rotate(90deg) scaleX(1);
 }
 
-summary {
+.root details summary {
   list-style-image: none;
 }
-details summary::-webkit-details-marker {
+.root details summary::-webkit-details-marker {
   display:none;
 }
 
-details.spaced[open],
-details.spaced[open] .title {
+.root details.spaced[open],
+.root details.spaced[open] .title {
 	margin-bottom: var(--lineHalf);
 }
-details[open] .title {
+.root details[open] .title {
 	/* background-color: var(--ui-filled); */
 	padding-top: calc(var(--line) + var(--mb));
 }
-details[open] .chevron::before,
-details[open] .plusClose {
+.root details[open] .chevron::before,
+.root details[open] .plusClose {
 	transform: rotate(45deg);
 }
-details[open] .plusMinus::after {
+.root details[open] .plusMinus::after {
 	transform: rotate(90deg) scaleX(0);
 }
 

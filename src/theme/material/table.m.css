@@ -4,32 +4,22 @@
 }
 .headerOuter {
   overflow: hidden;
-  height: 25px;
-  background-color: #666;
-  color: #fff;
+  height: var(--line);
+  background-color: var(--highlight, #666);
+  color: var(--text, #fff);
 }
 .headerInner {
   overflow: hidden;
   height: 100%;
 }
 .headerInner .item {
-  line-height: 25px;
+  line-height: var(--line);
 }
 .headerInner .first, .headerInner .last,
 .headerInner .resizable, .headerInner .flexible {
-  background-color: #666;
+  background-color: var(--highlight, #666);
 }
 
-.containerOuter {
-  overflow: hidden;
-  height: 210px;
-}
-.containerInner {
-  overflow: hidden;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  height: calc(100% - 5px);
-}
 .table {
   display: table;
   table-layout: fixed;
@@ -45,13 +35,59 @@
 	user-select: none;
 }
 
+
+.scrollTable {
+  overflow: auto;
+  height: calc(var(--line) * var(--l,20) - var(--pt,4px) - 2px);
+  margin-bottom: calc(var(--pt,4px) + 2px);
+  padding: 2px 0px;
+}
+.scrollTable .th {
+  position: sticky; top: 0; z-index: 1;
+}
+
+/* 2018 spec - For Safari 11, Chrome 69+ */
+.scrollTable {
+  scroll-snap-type: y mandatory; /* proximity */
+  -webkit-overflow-scrolling: touch; /* Needed to work on iOS Safari */
+}
+.scrollTable tr {
+  scroll-snap-align: start;
+}
+
+/* 2015 spec - For Firefox, Edge, IE */
+.scrollTable {
+	--step: calc(var(--line) * 15);
+  scroll-snap-type: mandatory;
+  -ms-scroll-snap-type: mandatory;
+  scroll-snap-points-x: repeat(var(--step, 100%));
+  -ms-scroll-snap-points-x: repeat(var(--step, 100%));
+}
+
+.scrollTable::-webkit-scrollbar {
+  width: 11px;
+}
+.scrollTable {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ui-flat-off) var(--ui-bg);
+}
+.scrollTable::-webkit-scrollbar-track {
+  background: var(--ui-bg);
+}
+.scrollTable::-webkit-scrollbar-thumb {
+  background-color: var(--ui-flat-on);
+  border-radius: 6px;
+  border: 3px solid var(--ui-bg);
+}
+
+
 .item {
 	cursor: pointer;
 	height: var(--fullH, var(--line2));
 	white-space: nowrap;
 	overflow: hidden;
 }
-.cell {
+.cell, .th {
 	position: relative;
   white-space: nowrap;
   overflow: hidden;

@@ -37,7 +37,7 @@ export default factory(function Basic({ middleware: { icache, resource } }) {
 		<Example spaced={true}>
 			<div class="flexRow">
 				<Typeahead
-					variant='filled'
+					design='filled'
 					initialValue={'Europe/Berlin'}
 					strict={strict}
 					resource={resource({

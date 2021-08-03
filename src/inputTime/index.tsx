@@ -1,18 +1,18 @@
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import Map from '@dojo/framework/shim/Map';
 import { create, tsx } from '@dojo/framework/core/vdom';
-import theme from '../middleware/theme';
+import theme from '@redaktor/widgets/middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import focus from '@dojo/framework/core/middleware/focus';
-import { Keys } from '../common/util';
-import TextInput, { BaseInputProperties } from '../inputText';
-import { ListOption } from '../list';
+import { Keys } from '@redaktor/widgets/common/util';
+import TextInput, { BaseInputProperties } from '@redaktor/widgets/inputText';
+import { ListOption } from '@redaktor/widgets/list';
+import * as css from '@redaktor/widgets/theme/material/timePicker.m.css';
+import * as inputCss from '@redaktor/widgets/theme/material/inputText.m.css';
+
 import { parseTime, format24HourTime } from './time-utils';
 import bundle from './nls/TimeInput';
-import * as css from '../theme/material/timePicker.m.css';
-import * as inputCss from '../theme/material/inputText.m.css';
-
 /* TODO parse relative w timezone */
 
 export interface TimeInputProperties extends BaseInputProperties {
@@ -253,7 +253,7 @@ export const TimeInput = factory(function TimeInput({
 		icache.set('max', max);
 		icache.set('step', step);
 	}
-	const { name, classes, variant, color, size, disabled, required } = properties();
+	const { name, classes, design, color, size, disabled, required } = properties();
 	const [labelChild] = children();
 	const _label = isTimeInputChildren(labelChild) ? labelChild.label : labelChild;
 	const p = parseTime((icache.get('nextValue') || icache.get('inputValue') || ''), false, locales, relativeTo, timezone);
@@ -284,7 +284,7 @@ export const TimeInput = factory(function TimeInput({
 					'input'
 				)}
 				classes={classes}
-				variant={variant}
+				design={design}
 				color={color}
 				size={size}
 				initialValue={icache.getOrSet('inputValue', '')}
