@@ -22,9 +22,11 @@ export default factory(function({ children, properties, middleware: { theme, ica
 	const themedCss = theme.classes(css);
 
 	document.documentElement.style.setProperty('--color-baseline',
-		`var(--color-baseline-${icache.get('variant')}`);
+		`var(--color-baseline-${icache.get('variant')});`);
 	document.documentElement.style.setProperty('--surface',
 		icache.get('variant') === 'light' ? '#fff' : '#000');
+	document.documentElement.style.setProperty('--text',
+		icache.get('variant') === 'light' ? '#000' : '#fff');
 
 	const { hasFullscreen = false, spaced = false } = properties();
 	return (

@@ -3,10 +3,10 @@
   /* margin-bottom: calc(var(--line) - var(--mb)); */
 }
 .column {
-  padding: 0 var(--pl);
+  padding: 0px var(--pl,0px);
 }
 .root.column {
-  padding: 0 var(--pr) 0 var(--pl);
+  padding: 0px var(--pr,0px) 0px var(--pl,0px);
 }
 .row { }
 

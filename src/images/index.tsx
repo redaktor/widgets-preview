@@ -1,29 +1,56 @@
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import { tsx, create } from '@dojo/framework/core/vdom';
-import has from '@dojo/framework/core/has';
-import { ActivityPubObject } from '../common/interfaces';
-import id from '../middleware/id';
-import theme, { ViewportProperties } from '../middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { normalizeActivityPub } from '../common/activityPubUtil';
+import has from '@dojo/framework/core/has';
+import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
+import id from '../middleware/id';
+import i18nActivityPub from '../middleware/i18nActivityPub';
+import theme, { ViewportProperties } from '../middleware/theme';
+import { clampStrings } from '../common/activityPubUtil';
+import MD from '../MD/';
+import Paginated from '../paginated';
+import Collapsed from '../collapsed';
+import Name from '../name';
+import AttributedTo from '../attributedTo';
+import Attachment from '../attachment';
 import Icon from '../icon';
+import ImageCaption from '../imageCaption';
 import Img from '../image/image';
-// import * as colors from '../theme/material/_color.m.css';
+import bundle from './nls/Image';
 import * as css from '../theme/material/images.m.css';
+import * as ui from '../theme/material/_ui.m.css';
+import * as columns from '../theme/material/_columns.m.css';
+
+
+export interface ImageChildren {
+	/** Optional Header */
+	header?: RenderResult;
+	/** Optional Footer */
+	footer?: RenderResult;
+}
+
 
 export { ImgProperties } from '../image/image';
 export interface ImagesProperties extends ActivityPubObject, ViewportProperties {
 	baselined?: boolean;
-	view?: 'column' | 'row' | 'full'
+	editable?: boolean;
+	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 	/* navigation position, top or bottom, default top */
 	navPosition?: 'top' | 'bottom';
 	/* maximum number of items, default 1000 */
 	max?: number;
 	/* max. manual items per “page”, normally calculated */
 	itemsPerPage?: number;
+	/* hover animation for scroller, grayscale -> colors, default true */
+	desaturateScroll?: boolean;
+	/* show summary and content for itemsPerPage=1, default true */
+	hasContent?: boolean;
+	/* show attachments, default true */
+	hasAttachment?: boolean;
 	/* when all images have loaded */
 	onLoad?: () => any;
 	/* when clicking an image */
-	onClick?: (img: ActivityPubObject) => any;
+	onClick?: (img: ActivityPubObjectNormalized) => any;
 }
 
 export interface ImagesIcache {
@@ -32,28 +59,51 @@ export interface ImagesIcache {
 	lightImages: boolean[];
 	loaded: number[];
 	currentPage: number;
+	brightnessClass: string;
 }
+
 const icache = createICacheMiddleware<ImagesIcache>();
-const factory = create({ icache, id, theme }).properties<ImagesProperties>();
+const factory = create({ icache, id, theme, i18nActivityPub }).properties<ImagesProperties>();
+
+/* TODO
+	blurhash output image if noJS and CSS accordingly
+*/
 
 export const Images = factory(function Images({
-	middleware: { icache, id, theme },
-	properties
+	middleware: { icache, id, theme, i18nActivityPub }
 }) {
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
 	const viewCSS = theme.viewCSS();
 	const viewDesktopCSS = theme.viewDesktopCSS();
+	const { messages } = i18nActivityPub.localize(bundle); /* TODO click to enlarge ... */
+
 	const {
-		image = [], view = 'column', size = 'm', navPosition = 'top',
-		max = 1000, baselined = true, itemsPerPage, onLoad, onClick
-	} = normalizeActivityPub(properties());
-	if (!image.length) { return '' }
-	const [isColumn, isRow, isFull] = [(view === 'column'), (view === 'row'), (view === 'full')];
+		itemsPerPage,	image = [], view = 'column', size = 'm', navPosition = 'top',
+		max = 1000, desaturateScroll = true, hasContent = true, hasAttachment = true,
+		onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen, ..._rest
+		// fit = false, width = 80, height = 80,
+
+	} = i18nActivityPub.normalized();
+	const APo: ActivityPubObjectNormalized = _rest;
+	console.log(APo);
+	if (!image.length) {
+		return ''
+	}
+
+	const handleDownload = () => {
+		/* TODO - all image variants/sizes */
+	}
+
+	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
+	let [vp, isMini, typoClass] = [size, false, isRow ? themedCss.rowTypo : themedCss.columnTypo];
+	if (isResponsive) {
+		isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
+		typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
+	}
 	const idBase = id.getId('images');
 	const maxImages = image.slice(0,max+1);
 	const mLength = maxImages.length;
-
 
 	let itemCount = itemsPerPage || (isRow ? 12 : 8);
 	if (!!mLength && !itemsPerPage && !isRow) {
@@ -113,8 +163,9 @@ export const Images = factory(function Images({
 	if (!!allLoaded) { onLoad && onLoad() }
 	const paginationInputsVisible = !(paginated.length > 9 || size === 's' && paginated.length > 8 ||
 		size === 'xs' && paginated.length > 7 || size === 'micro' && paginated.length > 6);
+
 	const isLight = (i: number) => {
-		const lights = icache.get('lightImages');
+		const lights = get('lightImages');
 		return !!lights && !!lights[i] ? themedCss.lightImage : themedCss.darkImage;
 	}
 
@@ -124,8 +175,12 @@ export const Images = factory(function Images({
 			key="root"
 			classes={[
 				themedCss.root,
+				theme.uiSize(),
+				theme.uiColor(),
+				theme.uiElevation(),
 				isColumn ? themedCss.column : themedCss.row,
 				navPosition === 'bottom' && themedCss.navBottom,
+				!paginationInputsVisible && themedCss.hasCounter,
 				(!!has('host-node') || allLoaded) && themedCss.loaded,
 				(maxImages.length > itemCount) && themedCss.hasPagination,
 				itemCount === 1 ? themedCss.singleItem : themedCss.multiItem,
@@ -136,17 +191,29 @@ export const Images = factory(function Images({
 			aria-label="Images"
 			role="region"
 		>
+		{view !== 'row' && itemsPerPage === 1 &&
+			<div key="scrollWrapper" classes={[themedCss.scrollWrapper, themedCss.snap, desaturateScroll && themedCss.desaturateScroll]}>
+				{maxImages.map((img: any, i: number) => {
+					if (typeof img === 'string') { img = {type: ['Image'], url: img} }
+					return <label key={`to_${i}`}
+						for={`${idBase}_${i}`}
+						classes={[themedCss.media, ...(ratioClasses(!img.width || !img.height ? 0 : img.width/img.height, true))]}
+					>
+						<Img {...img} onClick={() => {}} />
+					</label>
+				})}
+			</div>
+		}
 
 		{paginated.map((imagePage: any, i: number, a: any[]) => {
 			const count = paginated.length && paginated[i].length || 0;
 			const wasLoaded = count === (get('loaded') as any)[i];
-
 			return <virtual>
 				{(maxImages.length > itemCount) &&
 					<virtual>
 						<input
 							type="radio"
-							classes={[themedCss.pageRadio, !paginationInputsVisible && themedCss.hidden]}
+							classes={themedCss.pageRadio}
 							id={`${idBase}_${i}`}
 							name={`${idBase}_images`}
 							data-i={`${i+1}`}
@@ -155,59 +222,49 @@ export const Images = factory(function Images({
 						/>
 						{<label key={`prev_${i}`}
 							for={!i ? `${idBase}_${a.length-1}` : `${idBase}_${i-1}`}
-							classes={[themedCss.prevControl, !i && themedCss.firstControl, isLight(i)]}
+							classes={[themedCss.prev, themedCss.control, !i && themedCss.firstControl, isLight(i)]}
 							onclick={() => { setPage(!i ? a.length-1 : i-1) }}
 						>
 							<Icon size="xl" type="left" />
 						</label>}
 						{<label key={`next_${i}`}
 							for={i === a.length-1 ? `${idBase}_0` : `${idBase}_${i+1}`}
-							classes={[themedCss.nextControl, i === a.length-1 && themedCss.lastControl, isLight(i)]}
+							classes={[themedCss.next, themedCss.control, i === a.length-1 && themedCss.lastControl, isLight(i)]}
 							onclick={() => { setPage(i === a.length-1 ? 0 : i+1) }}
 						>
 							<Icon size="xl" type="right" />
 						</label>}
 					</virtual>
 				}
-				{(!has('host-node') && i !== get('currentPage') && !wasLoaded) ? '' :
-					<div key={`page${i}`} classes={[ themedCss.page, isLight(i) ]}>
-						{imagePage.map((img: any, j: number) => {
-							if (typeof img === 'string') { img = {type: ['Image'], url: img} }
-							return <div classes={[
-								themedCss.media,
-								...(ratioClasses(!img.width || !img.height ? 0 : img.width/img.height))
-							]} key={`image${j}`}>
-								<Img
-									{...img}
-									focalPoint={void 0}
-									onLoad={loadedImg}
-									onClick={onClick && onClick(img)}
-									onBrightness={(o) => {
-										const lightImages = icache.get('lightImages') || paginated.map(() => false);
-										lightImages[i] = o.brightness > 120;
-										icache.set('lightImages', lightImages);
-									}}
-								/>
-							</div>
-						})}
-					</div>
+				{/* (!has('host-node') && i !== get('currentPage') && !wasLoaded) ? '' : */
+					<virtual>
+						<div key={`page${i}`} data-count={`${i+1} / ${paginated.length}`} classes={[ themedCss.page, isLight(i) ]}>
+							{imagePage.map((img: any, j: number) => {
+								if (typeof img === 'string') { img = {type: ['Image'], url: img} }
+								return <div classes={[
+									themedCss.media,
+									...(ratioClasses(!img.width || !img.height ? 0 : img.width/img.height))
+								]} key={`image${j}`}>
+									<Img
+										{...img}
+										hasSensitiveSwitch={!isRow}
+										focalPoint={void 0}
+										onLoad={loadedImg}
+										onClick={onClick && onClick(img)}
+										onBrightness={(o) => {
+											const lightImages = icache.get('lightImages') || paginated.map(() => false);
+											lightImages[i] = o.brightness > 120;
+											set('lightImages', lightImages);
+										}}
+									/>
+								</div>
+							})}
+						</div>
+						{ itemCount === 1 && hasContent && <ImageCaption {...imagePage[0]} /> }
+					</virtual>
 				}
 			</virtual>
 		})}
-		{view !== 'row' && itemsPerPage === 1 && <div key="scrollWrapper" classes={[themedCss.scrollWrapper, themedCss.snap]}>
-			{maxImages.map((img: any, i: number) => {
-				if (typeof img === 'string') { img = {type: ['Image'], url: img} }
-				return <label key={`to_${i}`}
-					for={`${idBase}_${i}`}
-					classes={[themedCss.media, ...(ratioClasses(!img.width || !img.height ? 0 : img.width/img.height, true))]}
-				>
-					<Img {...img} onClick={() => {}} />
-				</label>
-			})}
-		</div>}
-		{!paginationInputsVisible &&
-			<p classes={themedCss.pageInfo}>{(get('currentPage')||0)+1} / {paginated.length}</p>
-		}
 		</div>
 	</virtual>
 });

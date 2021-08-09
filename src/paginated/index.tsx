@@ -28,9 +28,12 @@ export const Paginated = factory(function Paginated({ properties, children, midd
 			{c}
 		</div>
 	}
-	
+
 	const idBase = id.getId(property);
 	const ids: any = c.map((node: any, i: number) => node.properties.id || `${idBase}_${i}`);
+	const stopEventJS = (e?: Event) => {
+		e && e.stopPropagation();
+	}
 
 	return <div classes={[
 		view === 'column' ? themedCss.column : themedCss.row,
@@ -49,9 +52,15 @@ export const Paginated = factory(function Paginated({ properties, children, midd
 					{node}
 					{
 						i === a.length-1 && a.length > 2 ?
-							<label role="button" classes={themedCss.prev} for={ids[0]}><Icon type="left" /><Icon type="left" /></label> :
-							((i < a.length-1) ? <label role="button" classes={themedCss.next} for={ids[i+1]}><Icon type="right" /></label> :
-								(!!i ? <label role="button" classes={themedCss.prev} for={ids[i-1]}><Icon type="left" /></label> : ''))
+							<label role="button" classes={themedCss.prev} for={ids[0]} onclick={stopEventJS}>
+								<Icon type="left" />
+							</label> :
+							((i < a.length-1) ? <label role="button" classes={themedCss.next} for={ids[i+1]} onclick={stopEventJS}>
+								<Icon type="right" />
+							</label> :
+								(!!i ? <label role="button" classes={themedCss.prev} for={ids[i-1]} onclick={stopEventJS}>
+									<Icon type="left" />
+								</label> : ''))
 					}
 				</div>
 			</virtual>

@@ -171,20 +171,21 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 	}
 
 	if (Array.isArray(url)) {
-		o.url = url.filter(isLink)
+		o.url = url.filter(isLink).map((_o:any) => normalizeActivityPub(_o, language))
 	} else if (isLink(url)) {
-		o.url = toArray(url)
+		o.url = toArray(url).map((_o:any) => normalizeActivityPub(_o, language))
 	}
 	if (Array.isArray(icon)) {
-		o.icon = icon.filter(isLinkOrImage)
+		o.icon = icon.filter(isLinkOrImage).map((_o:any) => normalizeActivityPub(_o, language))
 	} else if (isLinkOrImage(icon)) {
-		o.icon = toArray(icon)
+		o.icon = toArray(icon).map((_o:any) => normalizeActivityPub(_o, language))
 	}
 	if (Array.isArray(image)) {
-		o.image = image.filter(isLinkOrImage)
+		o.image = image.filter(isLinkOrImage).map((_o:any) => normalizeActivityPub(_o, language))
 	} else if (isLinkOrImage(image)) {
-		o.image = toArray(image)
+		o.image = toArray(image).map((_o:any) => normalizeActivityPub(_o, language))
 	}
+	
 	if (typeof mediaType === 'string') { o.mediaType = mediaType }
 
 	if (isCaption(name, nameMap)) {

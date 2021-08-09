@@ -2,12 +2,12 @@ import { create, tsx } from '@dojo/framework/core/vdom';
 import { ActivityPubLink } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Audio, { AudioProperties } from '@redaktor/widgets/audio';
-import Image, { ImageProperties } from '@redaktor/widgets/image';
-import Img from '@redaktor/widgets/image/image';
+import { ImageProperties } from '@redaktor/widgets/image';
 
 import Table from '@redaktor/widgets/table';
 import * as columnsCSS from '@redaktor/widgets/theme/material/_columns.m.css';
 import * as columnsDesktop from '@redaktor/widgets/theme/material/_columnsDesktop.m.css';
+
 /*
 kind
 How the text track is meant to be used. If omitted the default kind is subtitles.
@@ -73,7 +73,7 @@ const _1_4: ActivityPubLink = {type: "Link", href: "card-photo-1-4.39BgjdJb.jpg"
 const _2_3: ActivityPubLink = {type: "Link", href: "card-photo-2-3.2sbeBGHg.jpg", width: 1417, height: 945, mediaType: "image/jpg", blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP'};
 const _3_2: ActivityPubLink = {type: "Link", href: "card-photo-3-2.1cjXm1gs.jpg", width: 400, height: 600, mediaType: "image/jpg"}
 
-const exampleData: AudioProperties | ImageProperties = {
+const exampleData: AudioProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
   type: "Audio",
   id: "#0",
@@ -98,7 +98,7 @@ const exampleData: AudioProperties | ImageProperties = {
 
   Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`,
   `2 Jetzt herrscht Goldgräberstimmung an der New Yorker Technologiebörse NASDAQ. Dort will Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Börsenparkett. Gemessen am Referenzpreis der Aktien ist Coinbase rund 68 Milliarden Dollar wert. Analysten trauen Coinbase sogar eine Bewertung von 100 Milliarden Dollar zu – ein aberwitziger Preis für ein Unternehmen mit 56 Millionen Kunden und gut 1700 Mitarbeitern. Die schwindelerregende Bewertung erklären Analysten mit dem Hype um Kryptowährung LOREM IPSUM dolor sit amet, consectetur adipiscing elit. Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`],
-  image: [ _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _2_3, _1_1, _3_2, _1_4, _1_1, _2_3, _3_2, _2_3, _1_1, _2_3, _1_1, _2_3, _1_4, _1_1, _2_3, _2_3, _2_3, _1_1, _2_3, _1_4, _1_1, _1_4, _2_3, _2_3, _1_1, _2_3, _1_1 ],
+  image: [ _1_1, _2_3, _1_1, _3_2, _1_4, _1_1, _2_3, _3_2, _2_3, _1_1, _2_3, _1_1, _2_3, _1_4, _1_1, _2_3, _2_3, _2_3, _1_1, _2_3, _1_4, _1_1, _1_4, _2_3, _2_3, _1_1, _2_3, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1 ],
   privacy: "public",
   published: "23m ago",
   bookmark: false,
@@ -186,11 +186,13 @@ export default factory(function Basic() {
   </div>
 */
 
+console.log('render');
 /* tableRow is meant to be 100vw */
 	return (
 		<Example spaced={true}>
       <virtual>
-        <div><p>x</p></div>
+        <div><h5>Audio ActivityPub Object</h5><p>column</p></div>
+
         <div classes={[columnsCSS.root, columnsDesktop.root]}>
           <ul classes={columnsCSS.columns}>{audio()}</ul>
         </div>
@@ -202,32 +204,20 @@ export default factory(function Basic() {
           zIndex: '9998',
           paddingLeft: 'var(--line)',
           paddingRight: 'var(--lineHalf)',
-          background: 'black'
+          background: 'var(--surface)'
         }}>
+          <p>row (responsive for fullscreen)</p>
           {audio('row')}
-        </div>
-        <br /><br /><br /><br /><br /><br />
-        <div styles={{ position: 'absolute', left: '0px', zIndex: '9997' }} >
+          <br /><br /><br />
+          <p>tableRow (responsive for fullscreen)</p>
           <Table columns={['fixed','resizable','resizable','responsive']}>
             {audio('tableRow')}
             {audio('tableRow')}
             {audio('tableRow')}
           </Table>
         </div>
-        <br /><br /><br /><br /><br /><br />
-        <p>Lorem</p>
-        <br /><br />
-        <div styles={{ width: '100vw' }}>
-          <div classes={[columnsCSS.root, columnsDesktop.root]}>
-            <ul classes={columnsCSS.columns}>
-              <Image {...exampleImage} sensitive={false} baselined={true} />
-            </ul>
-          </div>
-        </div>
-          <br /><br />
-        <div styles={{ width: '66.666%' }}>
-          <Img {...exampleImage} sensitive={false} baselined={true} aspectRatio="16/7" focalPoint={[0, 0.13]} />
-        </div>
+
+
       </virtual>
 		</Example>
 	);

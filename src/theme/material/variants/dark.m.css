@@ -11,7 +11,7 @@
 	--bg: var(--r-dark, #1c191b);
 	--paper: #303030;
 
-	--text: var(--full-white);
+	--text: var(--full-white, #fff);
 	--text-flat: var(--m-400);
 	--text-flat-hover: var(--m-50);
 	--text-colored: #ffaf00;

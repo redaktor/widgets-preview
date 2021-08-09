@@ -166,7 +166,16 @@ pre, sub, sup, button, input, label, select, textarea {
 }
 ul, ol {
   margin: 0px 0px var(--line) 0px;
-  padding-top: 0px;
+  padding: 0px;
+  list-style: disc inside;
+}
+ul li::marker,
+ol li::marker {
+  color: var(--kicker, #ff7a00);
+}
+details ul,
+details ol {
+  padding: 0px 0px 0px 3px;
 }
 hr {
   height: 2px;

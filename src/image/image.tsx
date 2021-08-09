@@ -1,14 +1,18 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import { ActivityPubObject, ActivityPubObjectNormalized, ActivityPubLinkObject } from '../common/interfaces';
+import { AspectRatioNamed } from '../common/util';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import breakpoints from '../middleware/breakpoint';
 import id from '../middleware/id';
 import theme from '../middleware/theme';
-import { ActivityPubObject, ActivityPubObjectNormalized, ActivityPubLinkObject } from '../common/interfaces';
-import { AspectRatioNamed }from '../common/util';
+import MD from '../MD/';
+import { clampStrings } from '../common/activityPubUtil';
+import Paginated from '../paginated';
 import Srcset from '../srcset';
 import Blurhash, { Brightness } from '../blurhash/';
+import * as columns from '../theme/material/_columns.m.css';
 import * as css from '../theme/material/image.m.css';
 
 export interface ImgProperties extends ActivityPubObject {
@@ -26,6 +30,7 @@ export interface ImgProperties extends ActivityPubObject {
 	baselined?: boolean;
 	/* blurhash to render as background or as CW-onclick */
 	blurhash?: string;
+	hasSensitiveSwitch?: boolean;
 	/* load 'lazy' / when intersecting or 'eager' / directly, default 'lazy' */
 	loading?: 'lazy' | 'eager';
 	/* animate scale on hover / default false */
@@ -55,7 +60,7 @@ export interface ImgChildren {
 const icache = createICacheMiddleware<ImgIcache>();
 const factory = create({ icache, i18nActivityPub, id, theme, breakpoints })
 	.properties<ImgProperties>()
-	.children<ImgChildren | RenderResult | undefined>();
+	.children<ImgChildren | undefined>();
 
 
 
@@ -63,17 +68,20 @@ const factory = create({ icache, i18nActivityPub, id, theme, breakpoints })
 	blurhash output image if noJS and CSS accordingly
 	alternative placeholders to blurhash :
 	// color or LQIP (shapes) SQIP (gradient) TRACE (silhouette) - see priv repo
+
+	TODO [header, footer] children
 */
 
 export const Img = factory(function Img({
-	middleware: { icache, i18nActivityPub, id, theme, breakpoints}
+	middleware: { icache, i18nActivityPub, id, theme, breakpoints} /*, children */
 }) {
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
 	const {
 		sensitive, alt, title, aspectRatio: ratio, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
 		onBrightness, blurhash, focalPoint, mediaType, loading = 'lazy', crossorigin = 'anonymous',
-		baselined = false, fit = false, scaleOnHover = false, width = 80, height = 80, ..._rest
+		baselined = false, fit = false, scaleOnHover = false, hasSensitiveSwitch = false,
+		width = 80, height = 80, ..._rest
 	} = i18nActivityPub.normalized();
 
 	const APo: ActivityPubObjectNormalized = _rest;
@@ -154,6 +162,21 @@ export const Img = factory(function Img({
 		crossOrigin: 'anonymous'
 	};
 
+	/* TODO
+	const { footer = '', header = '' } = children();
+	*/
+	const extraClasses = {
+		paginated: { '@redaktor/widgets/paginated': { root: [themedCss.summaryPaginated] } }
+	}
+	const summaryNode = !sensitive || !hasSensitiveSwitch ? '' :
+		(APo.summary && <figcaption classes={themedCss.sensitiveSummary}>
+			<Paginated key="summary" property="summary" classes={extraClasses.paginated}>
+				{clampStrings(APo.summary, 500).map((_summary, i) =>
+					<MD classes={[themedCss.summary, columns.typo]} key={`summary${i}`} content={_summary} />
+				)}
+			</Paginated>
+		</figcaption>);
+
 	const img = <figure
 		key="media"
 		classes={[
@@ -186,8 +209,10 @@ export const Img = factory(function Img({
 			{<img {...imgProps} key="image" />}
 		</picture>
 		{sensitive && <label classes={themedCss.sensitiveLabel} for={cwId} />}
+		{summaryNode}
 	</figure>
 
+console.log('img render');
 	return !sensitive ? img : <virtual>
 		<input
 			type="checkbox"
@@ -195,6 +220,7 @@ export const Img = factory(function Img({
 			id={cwId}
 			key="sensitive"
 			checked={true}
+			disabled={!hasSensitiveSwitch}
 		/>
 		{img}
 	</virtual>;

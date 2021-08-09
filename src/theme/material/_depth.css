@@ -48,6 +48,7 @@
     --ui-dpd-enter: 225ms;
     --ui-dpd-leave: 200ms;
     --ui-dpd-pass: 195ms;
+    --ui-dpd-animation-short: 640ms;
     --ui-dpd-animation: 760ms;
     --ui-dpd-0: 120ms;
     --ui-dpd-1: 240ms; --ui-dpd-2: 260ms; --ui-dpd-3: 265ms; --ui-dpd-4: 270ms; --ui-dpd-5: 275ms;

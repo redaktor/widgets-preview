@@ -1,4 +1,5 @@
 export const root: string;
+export const micro: string;
 export const row: string;
 export const column: string;
 export const nowrap: string;

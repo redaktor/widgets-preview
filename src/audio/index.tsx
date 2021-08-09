@@ -1,6 +1,7 @@
-import { tsx, create, node } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import id from '../middleware/id';
+import { tsx, create, node } from '@dojo/framework/core/vdom';
+import id from '@redaktor/widgets/middleware/id';
+import focus from '@dojo/framework/core/middleware/focus';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { clampStrings } from '../common/activityPubUtil';
 import { ActivityPubObject } from '../common/interfaces';
@@ -24,6 +25,7 @@ import Name from '../name';
 import AttributedTo from '../attributedTo';
 import AudioAvatar from '../audioAvatar';
 import DynamicSelect from '../selectDynamic';
+import Details from '../details';
 import Chip from '../chip';
 import Button from '../button';
 import Slider from '../slider';
@@ -148,12 +150,12 @@ if (!(window as any).AudioContext) {
 }
 
 const icache = createICacheMiddleware<AudioIcache>();
-const factory = create({ icache, node, theme, breakpoints, id, i18nActivityPub })
+const factory = create({ icache, node, focus, theme, breakpoints, id, i18nActivityPub })
 	.properties<AudioProperties>()
 	.children<AudioChildren | RenderResult | undefined>();
 
 export const Audio = factory(function Audio({
-	middleware: { icache, node, theme, breakpoints, id, i18nActivityPub /*, resource */ },
+	middleware: { icache, node, focus, theme, breakpoints, id, i18nActivityPub /*, resource */ },
 	properties,
 	children
 }) {
@@ -193,6 +195,46 @@ export const Audio = factory(function Audio({
 	  </Row>
 	}
 
+
+	/* TODO
+	const handleDownload = () => {
+		// TODO - transkripts / WebVTT
+		fetch(url).then(res => res.blob()).then(blob => {
+			const element   = document.createElement('a');
+			const objectURL = URL.createObjectURL(blob);
+
+			element.setAttribute('href', objectURL);
+			// element.setAttribute('download', fileNameFromURL(url));
+			document.body.appendChild(element);
+			element.click();
+			document.body.removeChild(element);
+
+			URL.revokeObjectURL(objectURL);
+		}).catch(err => {
+			console.error(err);
+		});
+	}
+	*/
+
+	/* <-- */
+
+	/*
+	if (get('hasTracks') && !!audio) {
+		VTT CSS Extensions https://w3c.github.io/webvtt/#css-extensions
+		kind: "subtitles"
+		label: "English"
+		language: "en"
+		mode: "showing"
+		*/
+		/*
+		audio.textTracks.addEventListener('addtrack', (e: TrackEvent) => {
+			// TODO : begin to cache media
+		});
+
+		content, instrument, location
+	}
+	*/
+
 	const audio = (node.get('audio') as HTMLAudioElement);
 	const tracks = (children() as any || []).filter((c: any) => c.tag === 'track');
 	set('hasTracks', !!tracks.length, false);
@@ -213,6 +255,7 @@ export const Audio = factory(function Audio({
   const togglePlay = (e?: Event) => {
 		e && e.preventDefault();
 		e && e.stopPropagation();
+		if (!!menuOpen) { return }
 		set('isPaused', !get('isPaused'));
 		!!audio && audio[!get('isPaused') ? 'play' : 'pause']();
 		if (!get('isPaused') && onPlay) {
@@ -221,29 +264,11 @@ export const Audio = factory(function Audio({
 			onPause(get('currentTime')||0)
 		}
   }
+
   const toggleMute = () => {
     audio.muted = set('isMuted', !get('isMuted'));
   }
 
-/* TODO
-	const handleDownload = () => {
-		// TODO - transkripts / WebVTT
-  	fetch(url).then(res => res.blob()).then(blob => {
-    	const element   = document.createElement('a');
-    	const objectURL = URL.createObjectURL(blob);
-
-    	element.setAttribute('href', objectURL);
-    	// element.setAttribute('download', fileNameFromURL(url));
-    	document.body.appendChild(element);
-    	element.click();
-    	document.body.removeChild(element);
-
-    	URL.revokeObjectURL(objectURL);
-  	}).catch(err => {
-    	console.error(err);
-  	});
-  }
-	*/
 	const handleLoadedMetadata = async () => {
 		if (!audio) { return }
 		const audioCtx = new AudioContext();
@@ -283,8 +308,8 @@ export const Audio = factory(function Audio({
 			}
 			/* TODO sorting of languages: userLocale, Int locale, en, ...others  */
 			const tracksVisible: any = get('tracksVisible');
-			const tracksVisibleCount = !tracksVisible ? 0 : Object.values(tracksVisible).join('').length;
-			console.log('tracksVisible',tracksVisible, tracksVisibleCount);
+			// const tracksVisibleCount = !tracksVisible ? 0 : Object.values(tracksVisible).join('').length;
+			// console.log('tracksVisible',tracksVisible, tracksVisibleCount);
 			trackMenu = textTracks && Object.keys(textTracks).map((k) => {
 						return k === 'metadata' || !textTracks[k].size ? '' :
 							<virtual>
@@ -351,9 +376,14 @@ export const Audio = factory(function Audio({
     }
   }
 	const handleKeyDown = (e: KeyboardEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
+
+		console.log(e.key);
 		switch(e.key) {
+			case 'Enter':
+				e.preventDefault();
+				e.stopPropagation();
+				focus.isFocused('media') && togglePlay();
+				break;
 			case 'k':
 				togglePlay();
 				break;
@@ -390,7 +420,8 @@ export const Audio = factory(function Audio({
 	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
 	let [isMini, vp, typoClass, audioAvatarSize] = [false, 'm', isRow ? themedCss.rowTypo : themedCss.columnTypo, 'xl'];
 	if (isResponsive) {
-		const {breakpoint: vp = 'm'} = isResponsive ? breakpoints.get('measure')||{} : {};
+		const {breakpoint = 'm'} = isResponsive ? breakpoints.get('measure')||{} : {};
+		vp = breakpoint;
 		isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
 		typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 		audioAvatarSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
@@ -405,24 +436,6 @@ export const Audio = factory(function Audio({
 
 	const tracksVisible: any = get('tracksVisible');
 	const tracksVisibleCount = !tracksVisible ? 0 : Object.values(tracksVisible).join('').length;
-	/* <-- */
-
-	/*
-	if (get('hasTracks') && !!audio) {
-		VTT CSS Extensions https://w3c.github.io/webvtt/#css-extensions
-		kind: "subtitles"
-		label: "English"
-		language: "en"
-		mode: "showing"
-		*/
-		/*
-		audio.textTracks.addEventListener('addtrack', (e: TrackEvent) => {
-			// TODO : begin to cache media
-		});
-
-		content, instrument, location
-	}
-	*/
 
 	const audioId = id.getId('audio');
 	const vol = get('volume')||0;
@@ -447,6 +460,7 @@ export const Audio = factory(function Audio({
 	};
 
 	const extraClasses = {
+		audioAvatar: { '@redaktor/widgets/avatar': { root: [themedCss.audioAvatar] } },
 		progress: { '@redaktor/widgets/progress': { root: [themedCss.progress] } },
 		details: { '@redaktor/widgets/details': { root: [themedCss.locales] } },
 		columnName: { '@redaktor/widgets/name': { root: [themedCss.columnName] } },
@@ -456,7 +470,7 @@ export const Audio = factory(function Audio({
 		images: { '@redaktor/widgets/images': { root: [themedCss.images] } }
 	}
 
-// console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isRow})
+ console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isRow})
 	return <div
 		key="root"
 		classes={[
@@ -475,22 +489,27 @@ export const Audio = factory(function Audio({
 			themedCss[(vp as keyof typeof themedCss)],
 			menuOpen && themedCss.menuOpen
 		]}
-		onMouseEnter={onMouseEnter && onMouseEnter(get('currentTime')||0)}
-		onMouseLeave={onMouseLeave && onMouseLeave(get('currentTime')||0)}
-		onKeyDown={handleKeyDown}
+		onkeydown={handleKeyDown}
+		onmouseenter={onMouseEnter && onMouseEnter(get('currentTime')||0)}
+		onmouseleave={onMouseLeave && onMouseLeave(get('currentTime')||0)}
 		aria-label="Audio Player"
 		role="region"
 	>
 		{isResponsive && <div classes={themedCss.measure} key="measure" />}
 		<div classes={themedCss.mediaFreshTop}>
-			<details>
-				<summary>
-					<Icon type="listen" spaced={true} />
-					<i classes={themedCss.freshDuration}>{formattedDuration}</i>
-				</summary>
-				{ get('sampleRate') && <span classes={ui.muted} key="sampleRate">{get('sampleRate')}Hz</span> }
-				{ get('numberOfChannels') && <span classes={ui.muted} key="numberOfChannels"><br />{get('numberOfChannels')}Ch</span> }
-			</details>
+			<Details serif>
+			{{
+				summary: <virtual><Icon type="listen" spaced /><i>{formattedDuration}</i></virtual>,
+				content: <ul>
+					{get('sampleRate') && <li>
+						<span classes={ui.muted} key="sampleRate">{get('sampleRate')}Hz</span>
+					</li>}
+					{get('numberOfChannels') && <li>
+						<span classes={ui.muted} key="numberOfChannels">{get('numberOfChannels')}Ch</span>
+					</li>}
+				</ul>
+			}}
+			</Details>
 		</div>
 		<div classes={themedCss.vttButtonWrapper}>
 			<Button
@@ -504,6 +523,12 @@ export const Audio = factory(function Audio({
 		</div>
 		<div
 			key="media"
+			tabIndex={0}
+			role="button"
+			title={get('isPaused') ? messages.play : messages.pause}
+			aria-controls={audioId}
+			aria-label={get('isPaused') ? messages.play : messages.pause}
+			onclick={togglePlay}
 			classes={[
 				themedCss.media,
 				!!viewCSS && viewCSS.item,
@@ -521,7 +546,10 @@ export const Audio = factory(function Audio({
 					</div>
 			}
 			<div key="avatar" classes={themedCss.avatarWrapper}>
-				{audio && <AudioAvatar audioElement={audio} size={(audioAvatarSize as any)}>SL</AudioAvatar>}
+				{audio &&
+					<AudioAvatar audioElement={audio} size={(audioAvatarSize as any)} classes={extraClasses.audioAvatar}>
+						SL
+					</AudioAvatar>}
 			</div>
 			<noscript>
 				<video controls={true} {...playerProps}>{sources}{children()}</video>
@@ -532,15 +560,6 @@ export const Audio = factory(function Audio({
 			{!get('hasTracks') && !get('isPicInPic') ?
 				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :
 				<video key="audio" {...playerProps}>{sources}{children()}</video>
-			}
-			{!menuOpen &&
-				<button
-					type="button"
-					title={get('isPaused') ? messages.play : messages.pause}
-					aria-controls={audioId}
-					aria-label={get('isPaused') ? messages.play : messages.pause}
-					classes={themedCss.playPause} onclick={togglePlay}
-				/>
 			}
 		</div>
 
@@ -629,7 +648,6 @@ export const Audio = factory(function Audio({
 
 		{!!locales && locales.length > 1 &&
 			<Locales classes={extraClasses.details} locale={get('currentLocale')||{locale:'en'}} locales={locales} onValue={(l) => {
-				console.log(l);
 				setLocale(l)
 			}} />
 		}

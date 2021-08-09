@@ -27,6 +27,8 @@ import IconOverview from './widgets/icon/Overview';
 import IconAltText from './widgets/icon/AltText';
 import IconButton from './widgets/icon/IconButton';
 
+import ImageOverview from './widgets/image/Basic';
+
 import RadioOverview from './widgets/radio/Overview';
 import RadioFlat from './widgets/radio/Basic';
 import RadioFilled from './widgets/radio/Filled';
@@ -283,7 +285,7 @@ export const config = {
 	],
 	tests,
 	readmePath: (widget: string) => `src/${widget}/README.md`,
-	widgetPath: (widget: string) => `src/${widget}/index.tsx`,
+	widgetPath: (widget: string) => { return `src/${widget}/index.tsx` },
 	examplePath: (widget: string, filename: string) =>
 		`src/examples/src/widgets/${widget}/${filename || 'index'}.tsx`,
 	codesandboxPath: (widget: string, filename: string, themeName?: string) => {
@@ -291,13 +293,13 @@ export const config = {
 	},
 	widgets: {
 		accordion: {
+			filename: 'index',
 			examples: [
 				{
 					filename: 'Exclusive',
 					module: Exclusive
 				}
 			],
-			filename: 'index',
 			overview: {
 				example: {
 					filename: 'Basic',
@@ -951,6 +953,21 @@ export const config = {
 				example: {
 					filename: 'Basic',
 					module: IconOverview
+				}
+			}
+		},
+		image: {
+			examples: [
+				{
+					filename: 'Overview',
+					module: AudioOverview
+				}
+			],
+			filename: 'index',
+			overview: {
+				example: {
+					filename: 'Basic',
+					module: ImageOverview
 				}
 			}
 		},

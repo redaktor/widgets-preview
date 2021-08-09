@@ -1,13 +1,12 @@
-import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
-import id from '@redaktor/widgets/middleware/id';
-import focus from '@dojo/framework/core/middleware/focus';
 import { FocusProperties } from '@dojo/framework/core/mixins/Focus';
-import { theme, formatAriaProperties, ThemeProperties } from '@redaktor/widgets/middleware/theme';
-
-import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
-import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
-import * as css from '@redaktor/widgets/theme/material/checkbox.m.css';
+import { tsx, create } from '@dojo/framework/core/vdom';
+import focus from '@dojo/framework/core/middleware/focus';
+import id from '../middleware/id';
+import { theme, formatAriaProperties, ThemeProperties } from '../middleware/theme';
+import * as ui from '../theme/material/_ui.m.css';
+import * as colors from '../theme/material/_color.m.css';
+import * as css from '../theme/material/checkbox.m.css';
 /* TODO
 onChange?(evt: Toggle): void;
 responsive?: boolean;
@@ -94,7 +93,6 @@ export const Checkbox = factory(function Checkbox({
 	} = properties();
 	const idBase = id.getId(_inputType);
 
-console.log('checkbox render');
 	return (
 		<label
 			key="root"

@@ -8,8 +8,13 @@
 	max-width: 100%;
 	margin-top: var(--line);
 }
+.micro {
+	min-width: 224px;
+}
 .row {
 	margin: 0 auto;
+	padding-right: var(--line);
+	min-width: 240px;
 }
 .column {
 	min-width: 320px;
@@ -37,11 +42,22 @@
 
 @media screen and (min-width: 1908px) {
 	.row {
-		max-width: 520px;
+		min-width: 320px;
+		max-width: 584px;
 	}
 }
 @media screen and (min-width: 2800px) {
 	.row {
 		max-width: 680px;
+	}
+}
+@media screen and (min-width: 3200px) {
+	.row {
+		margin: 0;
+	}
+}
+@media screen and (min-width: 3400px) {
+	.row {
+		margin: 0 auto;
 	}
 }

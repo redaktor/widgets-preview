@@ -6,7 +6,7 @@
 	flex-direction: row;
 	flex-wrap: wrap;
 	content-visibility: auto;
-	padding-top: var(--pt);
+	padding-top: 0; /* var(--pt); */
 	margin-bottom: 0;
 	max-width: 3840px;
 }
@@ -36,6 +36,29 @@
 @media screen and (min-width: 1264px) {
 	.content {
 		min-width: 400px;
+	}
+	.item {
+		margin-left: var(--line);
+	}
+}
+@media screen and (min-width: 1294px) {
+	.item {
+		margin-left: var(--line2);
+	}
+}
+@media screen and (min-width: 1324px) {
+	.item {
+		margin-left: 0;
+	}
+}
+@media screen and (min-width: 1688px) {
+	.item {
+		margin-left: var(--line);
+	}
+}
+@media screen and (min-width: 1710px) {
+	.item {
+		margin-left: var(--line2);
 	}
 }
 @media screen and (min-width: 1908px) {

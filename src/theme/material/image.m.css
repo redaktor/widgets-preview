@@ -21,12 +21,6 @@
 .xs, .s, .m, .l, .xl, .xxl { }
 .mini, .medium, .large { }
 .darkImage, .lightImage { }
-.columnTypo {
-	composes: typo from './_columns.m.css';
-}
-.rowTypo {
-	composes: typo from './_rows.m.css';
-}
 
 .media {
 	composes: h1 from './_typo.css';
@@ -46,45 +40,7 @@
 	z-index: 4;
 	cursor: pointer;
 }
-.column .contentDetails {
-	order: 3;
-	padding-top: var(--pt);
-	margin-bottom: var(--mb);
-}
-.row .contentDetails,
-.column .attributions {
-	order: 2;
-	margin-top: var(--line);
-	transition: margin-left var(--ui-dpd-4,320ms) var(--ui-easing);
-}
-.column .contentDetails[open] + .attributions {
-	margin-left: var(--line);
-}
-.row .attributions {
-	order: 1;
-	width: 50%;
-	min-width: 320px;
-}
 
-.contentDetailsSummary {
-	text-overflow: ellipsis;
-	white-space: nowrap;
-  width: 100%;
-  overflow: hidden;
-	outline: none;
-	background: var(--bg);
-	font-weight: var(--weight-semibold);
-	padding-left: 4px;
-}
-.hasImages .contentDetails {
-	transition: margin-top var(--ui-dpd-0,120ms) var(--ui-easing-leave);
-	z-index: 9999;
-	background: var(--bg);
-}
-.hasImages .contentDetails[open] {
-	transition: margin-top var(--ui-dpd-2,240ms) var(--ui-easing);
-	margin-top: calc(var(--line) * (var(--l, 0) + 9) * -1);
-}
 /* not used here, when the blurhash faded to the main image */
 .faded { }
 .measure {
@@ -207,12 +163,13 @@
 	composes: h3 from './_typo.css';
 	color: var(--text);
 	position: absolute;
+	top: 0px;
 	width: 100%;
 	height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	z-index: 99;
+	z-index: 7;
 	cursor: pointer;
 	margin: 0;
 	padding: 0;
@@ -242,14 +199,20 @@
 	vertical-align: baseline;
 	transition: color var(--ui-dpd-2,240ms) var(--ui-easing);
 }
-.sensitiveCheckbox:checked + .media::after {
+.sensitiveCheckbox:not(:disabled):checked + .media::after {
 	content: '\f06e';
-	margin-top: calc(var(--line3) * -1);
+	text-align: center;
+	top: 50%;
+	width: 100%;
+	margin-top: calc(var(--line) * -2.5);
+}
+.sensitiveCheckbox:disabled + .media .sensitiveLabel {
+	pointer-events: none;
 }
 .sensitiveCheckbox:checked + .media .sensitiveLabel::before {
 	content: 'NSFW';
 	position: absolute;
-	z-index: 99;
+	z-index: 7;
 	font: inherit;
 	transition: color var(--ui-dpd-2,240ms) var(--ui-easing);
 }
@@ -269,12 +232,13 @@
 	color: #000;
 }
 .sensitiveCheckbox:not(:checked) + .media .sensitiveLabel {
-	width: var(--line2);
-	height: var(--line2);
-	bottom: 0px;
+	width: var(--touch-target-min, 40px);
+	height: var(--touch-target-min, 40px);
+	top: var(--sensitivecbtop,0px);
 	right: 0px;
 	background-color: var(--ui-bg-opaque);
 	border-top-left-radius: var(--ui-border-radius-emphasized);
+	border-bottom-left-radius: var(--ui-border-radius-emphasized);
 }
 
 /* only js autofade, note must be animation for listener */
@@ -300,9 +264,21 @@
 	animation: fadein var(--ui-dpd-8,440ms) var(--ui-easing) 0ms forwards;
 }
 /* <-- */
+
+.sensitiveSummary {
+	z-index: 9;
+	position: absolute;
+	bottom: 0px;
+	background-color: var(--ui-bg-opaque);
+	transition: opacity var(--ui-dpd-2,240ms) var(--ui-easing);
+}
+.faded .sensitiveSummary {
+	pointer-events: none;
+	opacity: 0;
+}
 .root .summary {
 	padding: 0;
-	margin-bottom: calc(var(--mb) - var(--line));
+	margin-bottom: 0;
 }
 .sensitiveCheckbox:checked ~ .summaryPaginated {
 	background-color: var(--ui-bg-opaque);
@@ -311,17 +287,6 @@
 	margin-left: var(--lineHalf);
 	padding-left: var(--lineHalf);
 	margin-right: var(--line);
-}
-.row .columnName,
-.column .rowName,
-.column:not(.paused) .columnName,
-.column.menuOpen .columnName,
-.sensitiveCheckbox:checked ~ .rowName,
-.sensitiveCheckbox:checked ~ .columnName,
-.sensitiveCheckbox:not(:checked) ~ .summaryPaginated,
-.sensitiveCheckbox:checked ~ .contentWrapper,
-.sensitiveCheckbox:checked ~ .attachment {
-	display: none;
 }
 /*
 .micro:not(.row) .media {
@@ -335,10 +300,6 @@
 }
 .caption {
 
-}
-
-.content {
-	/* composes: serif from './_typo.css'; */
 }
 
 .header {
@@ -363,56 +324,9 @@
 	padding: 0;
 	margin-top: var(--pt);
 }
-.contentWrapper {
-	display: flex;
-	flex-direction: column;
-	flex: 1 1 auto;
-	-webkit-box-orient: vertical;
-	-webkit-box-direction: normal;
-	max-width: 64ch;
-	padding: 0;
-	order: 5;
-}
-.images {
-	width: 100%;
-	min-height: var(--line2);
-	order: 1;
-}
-.imagesScrollWrapper { }
-/* The weird CSS rule for only hover devices */
-@media not all and (hover: none) {
-	.imagesScrollWrapper {
-		transition: filter var(--ui-dpd-2,240ms) var(--ui-easing);
-		filter: grayscale(1) opacity(0.618);
-	}
-	.root:hover .imagesScrollWrapper {
-		filter: grayscale(0) opacity(1);
-	}
-}
 
-.attachment {
-	min-width: 320px;
-	max-width: 100%;
-}
-.attachment {
-	display: flex;
-	flex: 1;
-}
-
-.micro .attachment {
-	min-width: 240px;
-}
-
-.attachment {
-	background: green;
-	order: 8;
-}
 .footer {
 	z-index: 6;
-}
-
-.contentCollapsed {
-	padding: 0 var(--p);
 }
 
 .row .media {
@@ -427,14 +341,5 @@
 .row .controls {
 	order: 2;
 	width: 50%;
-	min-width: 240px;
-}
-.row .contentWrapper {
-	min-width: 38ch;
-	flex: 1;
-	z-index: 2;
-}
-.micro.row .contentWrapper,
-.xs.row .contentWrapper {
 	min-width: 240px;
 }

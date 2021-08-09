@@ -1,5 +1,6 @@
 # @redaktor/widgets/audio
-Dojo's `Audio` renders TODO.
+redaktor's `Audio` renders an ActivityPub Audio Object.
+TODO.
 
 ## Features
 

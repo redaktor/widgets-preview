@@ -4,11 +4,8 @@ import { focus } from '@dojo/framework/core/middleware/focus';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { formatAriaProperties, PointerDevices } from '../common/util';
 import { theme, ThemeProperties } from '../middleware/theme';
-import * as ui from '../theme/material/_ui.m.css';
-import * as colors from '../theme/material/_color.m.css';
 import * as css from '../theme/material/button.m.css';
 /* TODO:
-responsive?: boolean;
 wide?: boolean;
 popup?: { expanded?: boolean; id?: string; type?: string } | boolean;
 --> aria-haspopup
@@ -116,12 +113,12 @@ export const Button = factory(function Button({
 		classes: [
 			theme.variant(),
 			themedCss.root,
+			theme.uiSize(),
+			theme.uiColor(),
+			theme.uiElevation(),
 			theme.shaped(themedCss),
-			theme.sized(ui),
-			theme.colored(colors),
-			theme.elevated(ui),
 			theme.animated(themedCss),
-			group ? themedCss.group : theme.spaced(ui),
+			group ? themedCss.group : theme.uiSpace(),
 			responsive || group ? themedCss.responsive : null,
 			disabled ? themedCss.disabled : null,
 			pressed ? themedCss.pressed : null
@@ -148,7 +145,7 @@ export const Button = factory(function Button({
 		onanimationend: "this.blur()",
 		...formatAriaProperties(aria)
 	}
-	console.log('render btn');
+console.log('button render');	
 	return (labelFor ?
 		<label role="button" for={labelFor} key="root" {...buttonProps}>{children()}</label> :
 		<button key="root" {...buttonProps}>{children()}</button>
