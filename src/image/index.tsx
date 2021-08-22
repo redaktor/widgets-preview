@@ -6,6 +6,8 @@ import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import Images from '../images';
+import * as ui from '../theme/material/_ui.m.css';
+import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/image.m.css';
 
 export interface ImageProperties extends ActivityPubObject {
@@ -29,6 +31,7 @@ export interface ImageProperties extends ActivityPubObject {
 }
 
 export interface ImageIcache {
+	currentLocale: {locale: string, rtl?: boolean};
 	brightnessClass: string;
 }
 export interface ImageChildren {
@@ -57,7 +60,9 @@ export const Image = factory(function Image({
 	if (APo.type.indexOf('Image') < 0 && (!mediaType || mediaType.toLowerCase().indexOf('image') !== 0)) {
 		return ''
 	}
-
+	if (view === 'tableRow') {
+		return 'TODO'
+	}
 	const allImages = !hasAttachment ? APo.image :
 		[{...(properties() as any), focalPoint: void 0, baselined: false}].concat(APo.image);
 
@@ -66,15 +71,12 @@ export const Image = factory(function Image({
 
   }
 	*/
-
-	const [isColumn, isResponsive] = [(view === 'column'), (view === 'responsive')];
-	let [vp] = ['m'];
-	if (isResponsive) {
+	const viewDesktopCSS = theme.viewDesktopCSS();
+	let vp = 'm' ;
+	if (view === 'responsive') {
 		const {breakpoint = 's'} = breakpoints.get('measure')||{};
 		vp = breakpoint;
 	}
-	const viewCSS = theme.viewCSS();
-	const viewDesktopCSS = theme.viewDesktopCSS();
 
 console.log('IMAGE render');
 	return <div
@@ -82,8 +84,8 @@ console.log('IMAGE render');
 		classes={[
 			theme.variant(),
 			themedCss.root,
-			isColumn ? themedCss.column : themedCss.row,
-			!!viewCSS && viewCSS.item,
+			// isColumn ? themedCss.column : themedCss.row,
+			viewCSS.item,
 			!!viewDesktopCSS && viewDesktopCSS.item,
 			theme.shaped(themedCss),
 			theme.uiSize(),
@@ -92,7 +94,7 @@ console.log('IMAGE render');
 			theme.animated(themedCss),
 			themedCss[(vp as keyof typeof themedCss)],
 			icache.get('brightnessClass'),
-			hasAttachment && !!APo.image && APo.image.length > 0 && themedCss.hasImages,
+			// hasAttachment && !!APo.image && APo.image.length > 0 && themedCss.hasImages,
 			!!APo.sensitive && themedCss.sensitive,
 			!!fit && themedCss.fit
 		]}
@@ -113,7 +115,6 @@ console.log('IMAGE render');
 			/>
 		}
 
-		<p>actions</p>
 	</div>
 
 });

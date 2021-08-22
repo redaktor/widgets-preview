@@ -200,6 +200,8 @@ body {
 /*--------------------------------------------------------------
 Typography
 --------------------------------------------------------------*/
+
+/* TODO .viewTypo */
 .column {
   display: flex;
   flex-direction: column;
@@ -245,7 +247,7 @@ Typography
   --caph: 0.6923076923076923;
 }
 /* 14px */
-.m, .m > p, .column, .column > p, .row, .row > p, .cardsSmall {
+.m, .m > p, .viewTypo, .viewTypo > p, .cardsSmall {
   --size: 1.2173913043478262rem;
   --lh: 1.5;
   --pt: 0.39285714285714285em;
@@ -361,41 +363,6 @@ h1.serif, .h1.serif {
     --caph: 0.7058823529411765;
   }
 }
-
-@media screen and (max-width: 444px),
-screen and (min-width: 821px) and (max-width: 964px),
-screen and (min-width: 1221px) and (max-width: 1364px),
-screen and (min-width: 1621px) and (max-width: 1764px),
-screen and (min-width: 2021px) and (max-width: 2164px),
-screen and (min-width: 2421px) and (max-width: 2564px),
-screen and (min-width: 2901px) and (max-width: 3064px) {
-  .column, .column > p { /* s */
-    --size: 1.1304347826086956rem;
-    --lh: 1.6153846153846154;
-    --pt: 0.46153846153846156em;
-    --mb: 1.1538461538461537em;
-    --caph: 0.6923076923076923;
-  }
-}
-
-@media screen and (max-width: 640px),
-screen and (min-width: 768px) and (max-width: 940px),
-screen and (min-width: 1312px) and (max-width: 1648px) {
-  .row, .row > p { /* s */
-    --size: 1.1304347826086956rem;
-    --lh: 1.6153846153846154;
-    --pt: 0.46153846153846156em;
-    --mb: 1.1538461538461537em;
-    --caph: 0.6923076923076923;
-  }
-}
-
-
-
-
-
-
-
 
 @media screen and (max-width: 572px),
 screen and (min-width: 712px),

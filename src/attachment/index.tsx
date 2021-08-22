@@ -4,7 +4,7 @@ import { ActivityPubObject } from '../common/interfaces';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import Icon from '../icon';
 import Table, { Row, Cell } from '../table';
-
+import bundle from './nls/Attachment';
 import * as css from '../theme/material/attachment.m.css';
 
 export interface AttachmentProperties extends ActivityPubObject, ViewportProperties {
@@ -29,19 +29,23 @@ export const Attachment = factory(function Attachment({
 	middleware: { i18nActivityPub, theme }
 }) {
 
-	const themedCss = theme.classes(css);
+
 	const {
 		attachment = [], isRow = false, lines = 7
 	} = i18nActivityPub.normalized();
 
 	if (!attachment.length) { return '' }
+	const themedCss = theme.classes(css);
+	const { localize } = i18nActivityPub;
+	const { messages } = localize(bundle);
 
 	return <details key="attachment" classes={[
 		themedCss.root,
 		isRow ? themedCss.row : themedCss.column
 	]}>
 		<summary classes={themedCss.summary}>
-			<Icon spaced={'right'} type="pin" color="neutral" /><b>3</b> attachments
+			<Icon spaced={'right'} type="pin" color="neutral" />
+			{attachment.length} {attachment.length === 1 ? messages.singular : messages.plural}
 		</summary>
 		<Table lines={lines} columns={[{type:'flexible', width:'40px'},'flexible']}>
 			{ attachment && attachment.map((o) => <Row onClick={(i) => {!i && console.log('row click',i)}}>

@@ -1,5 +1,6 @@
+
 @media screen and (min-width: 821px) {
-  .root, .item { --cols: 2; --maxvp: 2248px; }
+  .root, .root .item { --cols: 2; --maxvp: 2248px; }
 	.m9by2 { --l: 4; }
 	.m16by5 { --l: 6; }
 	.m3by1 { --l: 6; }
@@ -397,7 +398,7 @@
 	.m1by1 { --l: 29; }
 }
 @media screen and (min-width: 1221px) {
-  .root, .item { --cols: 3; }
+  .root, .root .item { --cols: 3; }
 	.m9by2 { --l: 4; }
 	.m16by5 { --l: 6; }
 	.m3by1 { --l: 6; }
@@ -674,7 +675,7 @@
 	.m2by3 { --l: 39; }
 }
 @media screen and (min-width: 1621px) {
-  .root, .item { --cols: 4; }
+  .root, .root .item { --cols: 4; }
 	.m9by2 { --l: 4; }
 	.m16by5 { --l: 6; }
 	.m3by1 { --l: 6; }
@@ -894,7 +895,7 @@
 	.m6by7 { --l: 28; }
 }
 @media screen and (min-width: 2021px) {
-  .root, .item { --cols: 5; }
+  .root, .root .item { --cols: 5; }
 	.m9by2 { --l: 4; }
 	.m16by5 { --l: 6; }
 	.m3by1 { --l: 6; }
@@ -1011,8 +1012,8 @@
 
 @media screen and (min-width: 2421px) {
 	.root { --minwidth: 480px; --maxvp: 3320px; }
-  .item { margin: var(--line); }
-  .root, .item { --cols: 5; }
+  .root .item { margin: var(--line); }
+  .root, .root .item { --cols: 5; }
 	.m9by2 { --l: 5; }
 	.m16by5 { --l: 7; }
 	.m3by1 { --l: 7; }
@@ -1227,7 +1228,7 @@
 
 /*6 155*/
 @media screen and (min-width: 2901px) {
-  .root, .item { --cols: 6; }
+  .root, .root .item { --cols: 6; }
 	.m9by2 { --l: 5; }
 	.m16by5 { --l: 7; }
 	.m3by1 { --l: 7; }

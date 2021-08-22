@@ -3,9 +3,20 @@ import { ActivityPubLink } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Image, { ImageProperties } from '@redaktor/widgets/image';
 import Images from '@redaktor/widgets/images';
-
+/*
 import Table from '@redaktor/widgets/table';
-import * as columnsCSS from '@redaktor/widgets/theme/material/_columns.m.css';
+
+<br /><br /><br />
+<div>
+<p>tableRow</p>
+<Table columns={['fixed','resizable','resizable','responsive']}>
+  {<Image {...exampleImage} view="tableRow" />}
+  {<Image {...exampleImage} view="tableRow" />}
+  {<Image {...exampleImage} view="tableRow" />}
+</Table>
+</div>
+*/
+import * as viewCSS from '@redaktor/widgets/theme/material/_view.m.css';
 import * as columnsDesktop from '@redaktor/widgets/theme/material/_columnsDesktop.m.css';
 
 const _1_1: ActivityPubLink = {type: "Link", href: "card-photo-1-1.D8Qv-iDb.jpg", width: 600, height: 600, mediaType: "image/jpg", blurhash: 'UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@'};
@@ -61,6 +72,8 @@ const exampleImage: ImageProperties = {
   blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP',
   url: [ _2_3 ]
 };
+exampleImage.image && exampleImage.image.unshift({...exampleImage, ..._3_2, type:"Image", id:'test1000', image: [], sensitive: false, url: [ _3_2 ]})
+exampleImage.attachment = [ {...exampleImage, id:'xyz'} ];
 const factory = create();
 export default factory(function Basic() {
 
@@ -71,31 +84,28 @@ console.log('render');
       <virtual>
         <div><h5>Image ActivityPub Object</h5><p>column</p></div>
 
-        <div classes={[columnsCSS.root, columnsDesktop.root]}>
-          <ul classes={columnsCSS.columns}>
-            <Images key="images" itemsPerPage={2} image={exampleImage.image} />
+        <div classes={[viewCSS.root, columnsDesktop.root]}>
+          <ul classes={viewCSS.items}>
             <Image {...exampleImage} />
           </ul>
         </div>
         <br /><br />
-        <div styles={{
+        <p>row</p>
+        <input type="checkbox" checked={true} classes={viewCSS.isRow} />
+        <div
+        classes={[viewCSS.root]}
+        styles={{
           position: 'absolute',
           left: '0',
           width: '100%',
           zIndex: '9998',
           paddingLeft: 'var(--line)',
           paddingRight: 'var(--lineHalf)',
-          background: 'black'
+          background: 'var(--bg)'
         }}>
-          <p>row</p>
-          {<Image {...exampleImage} view="row" />}
-          <br /><br /><br />
-          <p>tableRow</p>
-          <Table columns={['fixed','resizable','resizable','responsive']}>
-            {<Image {...exampleImage} view="tableRow" />}
-            {<Image {...exampleImage} view="tableRow" />}
-            {<Image {...exampleImage} view="tableRow" />}
-          </Table>
+          <ul classes={viewCSS.items}>
+            <Image {...exampleImage} view="row" />
+          </ul>
         </div>
 
         <p>Lorem Ipsum</p>

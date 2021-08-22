@@ -9,15 +9,9 @@
 	margin: 0;
 	padding: 0;
 }
-.row {
-
-}
-.column {
-
-}
-.hasFocalPoint {
-
-}
+.row { }
+.column { }
+.hasFocalPoint { }
 .xs, .s, .m, .l, .xl, .xxl { }
 .mini, .medium, .large { }
 .darkImage, .lightImage { }
@@ -41,6 +35,21 @@
 	cursor: pointer;
 }
 
+.media.cover,
+.media.contain {
+	display: flex;
+	height: 100%;
+	object-fit: cover;
+	align-items: center;
+	justify-content: center;
+}
+.media.cover {
+	object-fit: cover;
+}
+.media.contain {
+	object-fit: contain;
+}
+
 /* not used here, when the blurhash faded to the main image */
 .faded { }
 .measure {
@@ -50,7 +59,7 @@
 	top: -1px;
 }
 .picture {
-	width: 100%;
+
 }
 
 .image, .canvas {
@@ -62,10 +71,8 @@
 }
 .canvas {
 	position: absolute;
-	top: 0px;
 	left: 0px;
 	width: 100%;
-	height: 100%;
 	transition: opacity var(--ui-dpd-2,240ms) var(--ui-easing);
 }
 
@@ -143,10 +150,8 @@
 .media.loaded > .canvas,
 .media:not(.loaded) > *:not(i) + .picture {
 	position: absolute;
-	top: 0px;
 	left: 0px;
 }
-.media.loaded > .canvas,
 .media.fit > .picture {
 	height: 100%;
 }
@@ -159,21 +164,6 @@
 .sensitive.media {
 
 }
-.sensitiveLabel {
-	composes: h3 from './_typo.css';
-	color: var(--text);
-	position: absolute;
-	top: 0px;
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 7;
-	cursor: pointer;
-	margin: 0;
-	padding: 0;
-}
 .sensitiveCheckbox {
 	visibility: hidden;
 	position: absolute;
@@ -183,10 +173,32 @@
 .sensitiveCheckbox:checked + .media .picture {
 	opacity: 0;
 }
+.sensitiveLabel {
+	composes: h3 from './_typo.css';
+	color: var(--text);
+	position: absolute;
+	top: var(--sensitivecbtop,0px);
+	right: 0px;
+	width: var(--touch-target-min, 40px);
+	height: var(--touch-target-min, 40px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 7;
+	cursor: pointer;
+	margin: 0;
+	padding: 0;
+	background-color: var(--ui-bg-opaque);
+	border-top-left-radius: var(--ui-border-radius-emphasized);
+	border-bottom-left-radius: var(--ui-border-radius-emphasized);
+}
 .sensitiveLabel::after,
 .sensitiveCheckbox:checked + .media::after {
 	position: absolute;
 	display: inline-block;
+	transition: color var(--ui-dpd-2,240ms) var(--ui-easing);
+}
+.sensitiveLabel::after {
 	font-family: 'redaktor' !important;
 	speak: never;
 	color: inherit;
@@ -197,28 +209,23 @@
 	text-transform: none;
 	line-height: 1;
 	vertical-align: baseline;
-	transition: color var(--ui-dpd-2,240ms) var(--ui-easing);
 }
-.sensitiveCheckbox:not(:disabled):checked + .media::after {
+.sensitiveCheckbox:not(:disabled):checked + .media .sensitiveLabel::after {
 	content: '\f06e';
-	text-align: center;
-	top: 50%;
-	width: 100%;
-	margin-top: calc(var(--line) * -2.5);
+}
+.sensitiveCheckbox:not(:disabled):not(:checked) + .media .sensitiveLabel::after {
+	content: '\f070';
 }
 .sensitiveCheckbox:disabled + .media .sensitiveLabel {
 	pointer-events: none;
 }
-.sensitiveCheckbox:checked + .media .sensitiveLabel::before {
+.sensitiveCheckbox:checked + .media::after {
 	content: 'NSFW';
-	position: absolute;
 	z-index: 7;
 	font: inherit;
 	transition: color var(--ui-dpd-2,240ms) var(--ui-easing);
 }
-.sensitiveCheckbox:not(:checked) + .media .sensitiveLabel::after {
-	content: '\f070';
-}
+
 .darkImage .sensitiveCheckbox:checked + .media:hover {
 	color: rgba(255, 255, 255, 0.8);
 }
@@ -230,15 +237,6 @@
 }
 .lightImage .sensitiveLabel:hover {
 	color: #000;
-}
-.sensitiveCheckbox:not(:checked) + .media .sensitiveLabel {
-	width: var(--touch-target-min, 40px);
-	height: var(--touch-target-min, 40px);
-	top: var(--sensitivecbtop,0px);
-	right: 0px;
-	background-color: var(--ui-bg-opaque);
-	border-top-left-radius: var(--ui-border-radius-emphasized);
-	border-bottom-left-radius: var(--ui-border-radius-emphasized);
 }
 
 /* only js autofade, note must be animation for listener */
@@ -272,7 +270,7 @@
 	background-color: var(--ui-bg-opaque);
 	transition: opacity var(--ui-dpd-2,240ms) var(--ui-easing);
 }
-.faded .sensitiveSummary {
+.sensitiveCheckbox:not(:checked) + .faded .sensitiveSummary {
 	pointer-events: none;
 	opacity: 0;
 }
@@ -330,16 +328,47 @@
 }
 
 .row .media {
-	width: var(--line5);
-	max-height: var(--line5);
-	margin-top: 0;
-	margin-right: var(--line);
+	--h: var(--line5);
+	width: var(--h);
+	min-height: var(--wh);
+	max-height: var(--h);
+	margin: 0 var(--lineHalf);
 	background: none;
 	z-index: 1;
-	order: 3;
+	order: 4;
 }
-.row .controls {
+.row .metaTop {
+	order: 0;
+	min-width: var(--line5);
+	margin: 0 var(--grid-base) calc(var(--mb) - var(--line)) 0;
+	justify-content: flex-start;
+	z-index: 1;
+}
+.row .images {
+	order: 7;
+}
+.row .contentWrapper {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 auto;
+	-webkit-box-orient: vertical;
+	-webkit-box-direction: normal;
+	order: 5;
+}
+.row .content {
+	margin: 0;
+	padding: 0;
+}
+.row .locales {
+	order: 1;
+}
+.row .attributions {
+	margin-left: var(--line3);
+	width: calc(100% - var(--grid-base) - var(--line) * 7);
 	order: 2;
-	width: 50%;
+	z-index: 2;
+}
+.micro.row .contentWrapper,
+.xs.row .contentWrapper {
 	min-width: 240px;
 }

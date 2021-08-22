@@ -20,11 +20,13 @@ export const ActivityPubCachingMiddleware = factory(({ properties, middleware: {
   const setI18n = (locale?: string) => {
     const { locale: userLocale = 'en'} = properties();
     if (!locale) { locale = userLocale }
+
     if ((locale && !i18n.get().locale) || locale !== i18n.get().locale) {
       // TODO workaround for bug https://github.com/dojo/framework/issues/906 :
       const bugLocale = locale.split('-')[0];
       i18n.set({locale: bugLocale});
     } // TODO ,rtl
+
     return locale;
   }
 

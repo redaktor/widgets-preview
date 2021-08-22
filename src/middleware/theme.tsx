@@ -43,7 +43,6 @@ export interface ThemeProperties extends CoreProps {
 }
 interface ThemeIcache {
 	l: number;
-	viewCSS: {[k:string]: string;};
 	viewDesktopCSS: {[k:string]: string;} | false;
 }
 export type ThemedActivityPubObject = ActivityPubObject & ThemeProperties;
@@ -191,6 +190,9 @@ export const theme = factory(function({ middleware: { coreTheme, icache }, prope
 			};
 		},
 		viewDesktopCSS: () => {
+
+			/* TODO : MUST be included in `noscript` build flag builds ! */
+
 			const { view = 'column' } = properties();
 			if (!get('viewDesktopCSS')) {
 				if (view === 'column' && window.screen.width > 820) {
@@ -200,17 +202,6 @@ export const theme = factory(function({ middleware: { coreTheme, icache }, prope
 				}
 			}
 			return get('viewDesktopCSS')
-		},
-		viewCSS: () => {
-			const { view = 'column' } = properties();
-			if (!get('viewCSS')) {
-				if (view === 'column') {
-					import('../theme/material/_columns.m.css').then((c) => { getOrSet('viewCSS', c) });
-				} else {
-					import('../theme/material/_rows.m.css').then((c) => { getOrSet('viewCSS', c) });
-				}
-			}
-			return get('viewCSS')
 		},
 		line: () => icache.getOrSet('l', () => {
 			const newDiv = document.createElement("div");

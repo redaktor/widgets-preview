@@ -13,7 +13,7 @@ export interface CollapsedProperties extends ThemeProperties {
 	lines?: number;
 	/** Initially expaned, default false */
 	expanded?: boolean;
-	/** full width */
+	/** full width, default true */
 	responsive?: boolean;
 	/** label content */
 	label?: 'read'|'readMore'|'view'|'viewMore';

@@ -6,21 +6,12 @@ import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interf
 import id from '../middleware/id';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme, { ViewportProperties } from '../middleware/theme';
-import { clampStrings } from '../common/activityPubUtil';
-import MD from '../MD/';
-import Paginated from '../paginated';
-import Collapsed from '../collapsed';
-import Name from '../name';
-import AttributedTo from '../attributedTo';
-import Attachment from '../attachment';
 import Icon from '../icon';
 import ImageCaption from '../imageCaption';
 import Img from '../image/image';
 import bundle from './nls/Image';
+import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/images.m.css';
-import * as ui from '../theme/material/_ui.m.css';
-import * as columns from '../theme/material/_columns.m.css';
-
 
 export interface ImageChildren {
 	/** Optional Header */
@@ -28,7 +19,6 @@ export interface ImageChildren {
 	/** Optional Footer */
 	footer?: RenderResult;
 }
-
 
 export { ImgProperties } from '../image/image';
 export interface ImagesProperties extends ActivityPubObject, ViewportProperties {
@@ -41,8 +31,8 @@ export interface ImagesProperties extends ActivityPubObject, ViewportProperties 
 	max?: number;
 	/* max. manual items per “page”, normally calculated */
 	itemsPerPage?: number;
-	/* hover animation for scroller, grayscale -> colors, default true */
-	desaturateScroll?: boolean;
+	/* hover animation for scroller, grayscale -> colors, default 'column' */
+	desaturateScroll?: boolean | 'column' | 'row';
 	/* show summary and content for itemsPerPage=1, default true */
 	hasContent?: boolean;
 	/* show attachments, default true */
@@ -67,6 +57,9 @@ const factory = create({ icache, id, theme, i18nActivityPub }).properties<Images
 
 /* TODO
 	blurhash output image if noJS and CSS accordingly
+
+	<Icon type="link" spaced="right" />{!!imagePage[0].name ? imagePage[0].name : ''}</p>
+	--> NAME from href ???
 */
 
 export const Images = factory(function Images({
@@ -74,19 +67,18 @@ export const Images = factory(function Images({
 }) {
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
-	const viewCSS = theme.viewCSS();
 	const viewDesktopCSS = theme.viewDesktopCSS();
 	const { messages } = i18nActivityPub.localize(bundle); /* TODO click to enlarge ... */
 
 	const {
 		itemsPerPage,	image = [], view = 'column', size = 'm', navPosition = 'top',
-		max = 1000, desaturateScroll = true, hasContent = true, hasAttachment = true,
+		desaturateScroll = 'column', max = 1000, hasContent = true, hasAttachment = true,
 		onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen, ..._rest
 		// fit = false, width = 80, height = 80,
 
 	} = i18nActivityPub.normalized();
-	const APo: ActivityPubObjectNormalized = _rest;
-	console.log(APo);
+	// const APo: ActivityPubObjectNormalized = _rest;
+
 	if (!image.length) {
 		return ''
 	}
@@ -96,11 +88,6 @@ export const Images = factory(function Images({
 	}
 
 	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
-	let [vp, isMini, typoClass] = [size, false, isRow ? themedCss.rowTypo : themedCss.columnTypo];
-	if (isResponsive) {
-		isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
-		typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
-	}
 	const idBase = id.getId('images');
 	const maxImages = image.slice(0,max+1);
 	const mLength = maxImages.length;
@@ -111,8 +98,6 @@ export const Images = factory(function Images({
 		const a = (mLength < 81) ? [6,7,8,9] : (mLength < 101 ? [8,9,10,11] : [10,11,12,13,14]);
 		itemCount = a.sort((a, b) => (mLength % a) > (mLength % b) ? 1 : 0)[0];
 	}
-	// console.log(window.screen.width)
-	// console.log(isRow ? 'row':'column', itemCount);
 
 	if (!get('paginated')) {
 		const paginatedImages: any[] = [];
@@ -143,12 +128,12 @@ export const Images = factory(function Images({
 		[1.85,'m37by20'], [2.2857,'m16by7'], [2.3333,'m21by9'],
 		[2.6666,'m8by3'], [3,'m3by1'], [3.2,'m16by5'], [4.5,'m9by2']
 	];
-	const ratioClasses = (quotient: number, isManualRow = false) => !quotient ? [] :
-		(quotient < 1 && (isRow || isManualRow) ?
+	const ratioClasses = (quotient: number, isMultiRow = false) => !quotient ? [] :
+		(quotient < 1 && isMultiRow ?
 			[ themedCss.m1by1, themedCss.fix1by1 ] :
 			[ ratios.reduce((a, b) => Math.abs(b[0] - quotient) < Math.abs(a[0] - quotient) ? b : a)[1] ].reduce((a, s) => {
-				if (itemCount === 1 && isColumn && !isManualRow) {
-					a.push(viewCSS && viewCSS[s]);
+				if (itemCount === 1 && isColumn && !isMultiRow) {
+					a.push(viewCSS && (viewCSS as any)[s]);
 					a.push(viewDesktopCSS && viewDesktopCSS[s]);
 				} else {
 					a.push((themedCss as any)[s]);
@@ -169,6 +154,7 @@ export const Images = factory(function Images({
 		return !!lights && !!lights[i] ? themedCss.lightImage : themedCss.darkImage;
 	}
 
+/*.row .hasPagination.singleItem */
 	return <virtual>
 		<noscript><i classes={themedCss.noscript} /></noscript>
 		<div
@@ -178,28 +164,34 @@ export const Images = factory(function Images({
 				theme.uiSize(),
 				theme.uiColor(),
 				theme.uiElevation(),
-				isColumn ? themedCss.column : themedCss.row,
+				// isColumn ? themedCss.column : themedCss.row,
 				navPosition === 'bottom' && themedCss.navBottom,
 				!paginationInputsVisible && themedCss.hasCounter,
 				(!!has('host-node') || allLoaded) && themedCss.loaded,
 				(maxImages.length > itemCount) && themedCss.hasPagination,
 				itemCount === 1 ? themedCss.singleItem : themedCss.multiItem,
 				(itemCount === 2 || itemCount === 3) && view !== 'full' && themedCss.singleRow,
-				themedCss[(size as keyof typeof themedCss)]
+				themedCss[(size as keyof typeof themedCss)],
+
+				itemCount === 1 && viewCSS.gridItem
 			]}
 			style={`--count: ${itemCount};`}
 			aria-label="Images"
 			role="region"
 		>
-		{view !== 'row' && itemsPerPage === 1 &&
-			<div key="scrollWrapper" classes={[themedCss.scrollWrapper, themedCss.snap, desaturateScroll && themedCss.desaturateScroll]}>
+		{hasAttachment && itemsPerPage === 1 &&
+			<div key="scrollWrapper" classes={[
+				themedCss.scrollWrapper,
+				themedCss.snap,
+				desaturateScroll && themedCss.desaturateScroll
+			]}>
 				{maxImages.map((img: any, i: number) => {
 					if (typeof img === 'string') { img = {type: ['Image'], url: img} }
 					return <label key={`to_${i}`}
 						for={`${idBase}_${i}`}
 						classes={[themedCss.media, ...(ratioClasses(!img.width || !img.height ? 0 : img.width/img.height, true))]}
 					>
-						<Img {...img} onClick={() => {}} />
+						<Img {...img} hasSensitiveSwitch={false} onClick={() => {}} />
 					</label>
 				})}
 			</div>
@@ -221,14 +213,14 @@ export const Images = factory(function Images({
 							onclick={() => { setPage(i) }}
 						/>
 						{<label key={`prev_${i}`}
-							for={!i ? `${idBase}_${a.length-1}` : `${idBase}_${i-1}`}
+							for={`${idBase}_${!i ? (a.length-1) : (i-1)}`}
 							classes={[themedCss.prev, themedCss.control, !i && themedCss.firstControl, isLight(i)]}
 							onclick={() => { setPage(!i ? a.length-1 : i-1) }}
 						>
 							<Icon size="xl" type="left" />
 						</label>}
 						{<label key={`next_${i}`}
-							for={i === a.length-1 ? `${idBase}_0` : `${idBase}_${i+1}`}
+							for={`${idBase}_${i === a.length-1 ? 0 : (i+1)}`}
 							classes={[themedCss.next, themedCss.control, i === a.length-1 && themedCss.lastControl, isLight(i)]}
 							onclick={() => { setPage(i === a.length-1 ? 0 : i+1) }}
 						>
@@ -238,16 +230,36 @@ export const Images = factory(function Images({
 				}
 				{/* (!has('host-node') && i !== get('currentPage') && !wasLoaded) ? '' : */
 					<virtual>
-						<div key={`page${i}`} data-count={`${i+1} / ${paginated.length}`} classes={[ themedCss.page, isLight(i) ]}>
+						<div
+							key={`page${i}`}
+							data-count={`${i+1} / ${paginated.length}`}
+							classes={[
+								themedCss.page,
+								viewCSS.page,
+								!i && themedCss.firstPage,
+								isLight(i),
+								...(itemCount !== 1 ? [] : ratioClasses(!imagePage[0].width || !imagePage[0].height ? 0 : imagePage[0].width/imagePage[0].height, false))
+							]}
+						>
 							{imagePage.map((img: any, j: number) => {
 								if (typeof img === 'string') { img = {type: ['Image'], url: img} }
 								return <div classes={[
-									themedCss.media,
-									...(ratioClasses(!img.width || !img.height ? 0 : img.width/img.height))
-								]} key={`image${j}`}>
+										themedCss.media,
+										viewCSS.gridMedia,
+										...(ratioClasses(!img.width || !img.height ? 0 : img.width/img.height, isRow && itemCount > 1))
+									]}
+									key={`image${j}`}
+									style={itemCount !== 1 ? void 0 :
+										`--maxl: ${Math.max(5, Math.min(
+												(Math.floor(window.screen.height / theme.line()) - 5),
+												Math.floor((img.height||4800) / theme.line())
+										))}`
+									}
+								>
 									<Img
 										{...img}
-										hasSensitiveSwitch={!isRow}
+										classes={{ '@redaktor/widgets/image': { sensitiveSummary: [themedCss.sensitiveSummary] } }}
+										fit={itemCount === 1 ? 'cover' : false}
 										focalPoint={void 0}
 										onLoad={loadedImg}
 										onClick={onClick && onClick(img)}
@@ -260,7 +272,19 @@ export const Images = factory(function Images({
 								</div>
 							})}
 						</div>
-						{ itemCount === 1 && hasContent && <ImageCaption {...imagePage[0]} /> }
+						{
+							itemCount === 1 && hasContent && <ImageCaption {...(imagePage[0])} />
+						}
+
+						{	!!i && itemCount === 1 && hasContent &&
+							<label key="homelabel"
+								for={`${idBase}_0`}
+								classes={[themedCss.control, themedCss.homeControl]}
+								onclick={() => { setPage(0) }}
+							>
+								<Icon size="xl" type="up" />
+							</label>
+						}
 					</virtual>
 				}
 			</virtual>

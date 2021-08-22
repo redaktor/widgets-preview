@@ -3,9 +3,18 @@ import { ActivityPubLink } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Audio, { AudioProperties } from '@redaktor/widgets/audio';
 import { ImageProperties } from '@redaktor/widgets/image';
-
+/*
 import Table from '@redaktor/widgets/table';
-import * as columnsCSS from '@redaktor/widgets/theme/material/_columns.m.css';
+
+<br /><br /><br />
+<p>tableRow (responsive for fullscreen)</p>
+<Table columns={['fixed','resizable','resizable','responsive']}>
+  {audio('tableRow')}
+  {audio('tableRow')}
+  {audio('tableRow')}
+</Table>
+*/
+import * as viewCSS from '@redaktor/widgets/theme/material/_view.m.css';
 import * as columnsDesktop from '@redaktor/widgets/theme/material/_columnsDesktop.m.css';
 
 /*
@@ -193,11 +202,15 @@ console.log('render');
       <virtual>
         <div><h5>Audio ActivityPub Object</h5><p>column</p></div>
 
-        <div classes={[columnsCSS.root, columnsDesktop.root]}>
-          <ul classes={columnsCSS.columns}>{audio()}</ul>
+        <div classes={[viewCSS.root, columnsDesktop.root]}>
+          <ul classes={viewCSS.items}>{audio()}</ul>
         </div>
         <br /><br />
-        <div styles={{
+        <p>row (responsive for fullscreen)</p>
+        <input type="checkbox" checked={true} classes={viewCSS.isRow} />
+        <div
+        classes={[viewCSS.root]}
+        styles={{
           position: 'absolute',
           left: '0',
           width: '100%',
@@ -206,15 +219,7 @@ console.log('render');
           paddingRight: 'var(--lineHalf)',
           background: 'var(--surface)'
         }}>
-          <p>row (responsive for fullscreen)</p>
-          {audio('row')}
-          <br /><br /><br />
-          <p>tableRow (responsive for fullscreen)</p>
-          <Table columns={['fixed','resizable','resizable','responsive']}>
-            {audio('tableRow')}
-            {audio('tableRow')}
-            {audio('tableRow')}
-          </Table>
+          <ul classes={viewCSS.items}>{audio('row')}</ul>
         </div>
 
 

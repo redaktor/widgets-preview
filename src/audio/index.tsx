@@ -8,14 +8,6 @@ import { ActivityPubObject } from '../common/interfaces';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import i18nActivityPub from '../middleware/i18nActivityPub';
-/*
-import {
-	createResourceTemplate,
-	createResourceMiddleware,
-	defaultFilter
-} from '@dojo/framework/core/middleware/resources';
-import focus from '@dojo/framework/core/middleware/focus';
-*/
 import { Row, Cell } from '../table';
 import { parseDuration, formatTime } from '../duration';
 import Paginated from '../paginated';
@@ -36,6 +28,7 @@ import Attachment from '../attachment';
 import Locales from '../locales';
 import bundle from './nls/Audio';
 import * as ui from '../theme/material/_ui.m.css';
+import * as viewCss from '../theme/material/_view.m.css';
 import * as css from '../theme/material/audio.m.css';
 /* TODO exists in this module: */
 import MD from '../MD/';
@@ -43,6 +36,7 @@ import MD from '../MD/';
 // import Table from '../table';
 
 /* TODO
+columnName, rowName, media
 
 - VTT flag for Meta
 - attachment with tableRow -> tableRow w. preview or row
@@ -174,7 +168,7 @@ export const Audio = factory(function Audio({
 	const themedCss = theme.classes(css);
 	const { messages } = localize(bundle);
 	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
-	getOrSet('currentLocale', {locale: currentLocale}||locale);
+	getOrSet('currentLocale', currentLocale ? {locale: currentLocale} : locale);
 	getOrSet('duration', parseDuration(APo.duration||''), false);
 	getOrSet('sampleRate', 44100);
 	const [duration, sampleRate, numberOfChannels] = [get('duration'), get('sampleRate'), get('numberOfChannels')];
@@ -417,8 +411,9 @@ export const Audio = factory(function Audio({
 		}
 	}
 
+	const viewDesktopCSS = theme.viewDesktopCSS();
 	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
-	let [isMini, vp, typoClass, audioAvatarSize] = [false, 'm', isRow ? themedCss.rowTypo : themedCss.columnTypo, 'xl'];
+	let [isMini, vp, typoClass, audioAvatarSize] = [false, 'm', viewCss.typo, 'xl'];
 	if (isResponsive) {
 		const {breakpoint = 'm'} = isResponsive ? breakpoints.get('measure')||{} : {};
 		vp = breakpoint;
@@ -426,9 +421,6 @@ export const Audio = factory(function Audio({
 		typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 		audioAvatarSize = vp === 'micro' || vp === 'xs' || vp === 's' ? 'l' : 'xl';
 	}
-
-	const viewCSS = theme.viewCSS();
-	const viewDesktopCSS = theme.viewDesktopCSS();
 
 	const sources = !!APo.url && <Srcset url={APo.url} />;
 	const menuOpen = get('isTrackMenuOpen');
@@ -463,21 +455,20 @@ export const Audio = factory(function Audio({
 		audioAvatar: { '@redaktor/widgets/avatar': { root: [themedCss.audioAvatar] } },
 		progress: { '@redaktor/widgets/progress': { root: [themedCss.progress] } },
 		details: { '@redaktor/widgets/details': { root: [themedCss.locales] } },
-		columnName: { '@redaktor/widgets/name': { root: [themedCss.columnName] } },
-		rowName: { '@redaktor/widgets/name': { root: [themedCss.rowName] } },
+		columnName: { '@redaktor/widgets/name': { root: [themedCss.columnName, viewCss.columnName] } },
+		rowName: { '@redaktor/widgets/name': { root: [viewCss.rowName] } },
 		summary: { '@redaktor/widgets/paginated': { root: [themedCss.summaryPaginated] } },
 		collapsed: { '@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] } },
 		images: { '@redaktor/widgets/images': { root: [themedCss.images] } }
 	}
 
- console.log('Audio render', {column: isColumn, responsive: isResponsive, row:isRow})
+ console.log('Audio render')
 	return <div
 		key="root"
 		classes={[
 			theme.variant(),
 			themedCss.root,
-			isRow ? themedCss.row : themedCss.column,
-			!!viewCSS && viewCSS.item,
+			viewCss.item,
 			!!viewDesktopCSS && viewDesktopCSS.item,
 			theme.shaped(themedCss),
 			theme.uiSize(),
@@ -496,7 +487,7 @@ export const Audio = factory(function Audio({
 		role="region"
 	>
 		{isResponsive && <div classes={themedCss.measure} key="measure" />}
-		<div classes={themedCss.mediaFreshTop}>
+		<div classes={[themedCss.metaTop, viewCss.metaTop]}>
 			<Details serif>
 			{{
 				summary: <virtual><Icon type="listen" spaced /><i>{formattedDuration}</i></virtual>,
@@ -531,9 +522,10 @@ export const Audio = factory(function Audio({
 			onclick={togglePlay}
 			classes={[
 				themedCss.media,
-				!!viewCSS && viewCSS.item,
-				!!viewCSS && viewCSS.baselined,
-				!!viewCSS && viewCSS.m1by1,
+				viewCss.media,
+				viewCss.item,
+				viewCss.baselined,
+				viewCss.m1by1,
 				!!viewDesktopCSS && viewDesktopCSS.item,
 				!!viewDesktopCSS && viewDesktopCSS.m1by1
 			]}
@@ -563,7 +555,7 @@ export const Audio = factory(function Audio({
 			}
 		</div>
 
-		{hasControls && <div classes={themedCss.controls}>
+		{hasControls && <div classes={[themedCss.controls, viewCss.controls]}>
 			<Slider
 				key="progress"
 				max={audio ? audio.duration : 100}
@@ -651,13 +643,13 @@ export const Audio = factory(function Audio({
 				setLocale(l)
 			}} />
 		}
-		<Name name={APo.name} isRow={isRow} size={(vp as any)} classes={extraClasses.columnName} />
+		{get('isPaused') && <Name name={APo.name} isRow={false} size={(vp as any)} classes={extraClasses.columnName} />}
 		<div classes={themedCss.attributions}>
 			<AttributedTo {...APo} max={39} />
 		</div>
 
-		{hasContent && <div classes={[themedCss.contentWrapper, !!viewCSS && viewCSS.content]}>
-			<Name name={APo.name} isRow={isRow} size={(vp as any)} classes={extraClasses.rowName} />
+		{hasContent && <div classes={[themedCss.contentWrapper, viewCss.content]}>
+			<Name name={APo.name} isRow={true} size={(vp as any)} classes={extraClasses.rowName} />
 			{
 				APo.summary && <Paginated key="summary" property="summary" classes={extraClasses.summary}>
 					{clampStrings(APo.summary, 500).map((_summary, i) =>

@@ -3,19 +3,19 @@ import { DNode, RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import focus from '@dojo/framework/core/middleware/focus';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import theme from '@redaktor/widgets/middleware/theme';
-import { formatAriaProperties, Keys } from '@redaktor/widgets/common/util';
-import Icon from '@redaktor/widgets/icon/index';
+import theme from '../middleware/theme';
+import { formatAriaProperties, Keys } from '../common/util';
+import Icon from '../icon/index';
 import {
 	getWeekdays, getMonths, monthInMin, monthInMax, isOutOfDateRange, toDate
 } from './date-utils';
 import CalendarCell, { SelectMode } from './CalendarCell';
 import DatePicker from './DatePicker';
 import bundle from './nls/Calendar';
-import * as css from '@redaktor/widgets/theme/material/calendar.m.css';
-import * as baseCss from '@redaktor/widgets/common/styles/base.m.css';
-import * as iconCss from '@redaktor/widgets/theme/material/icon.m.css';
-import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
+import * as css from '../theme/material/calendar.m.css';
+import * as baseCss from '../common/styles/base.m.css';
+import * as iconCss from '../theme/material/icon.m.css';
+import * as colors from '../theme/material/_color.m.css';
 
 export type CalendarMessages = {
 	chooseMonth: string;

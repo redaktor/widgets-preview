@@ -12,7 +12,7 @@ import { clampStrings } from '../common/activityPubUtil';
 import Paginated from '../paginated';
 import Srcset from '../srcset';
 import Blurhash, { Brightness } from '../blurhash/';
-import * as columns from '../theme/material/_columns.m.css';
+import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/image.m.css';
 
 export interface ImgProperties extends ActivityPubObject {
@@ -23,7 +23,7 @@ export interface ImgProperties extends ActivityPubObject {
 	/* fixed aspect ratio, e.g. ratio={16/9} */
 	aspectRatio?: AspectRatioNamed | keyof typeof AspectRatioNamed | [number, number];
 	/* object-fit logic */
-	fit?: boolean;
+	fit?: 'contain' | 'cover' | 'fit' | false;
 	/* crossorigin parameter, default 'anonymous' */
 	crossorigin?: 'anonymous' | 'use-credentials';
 	/* snap to baseline, default false */
@@ -80,7 +80,7 @@ export const Img = factory(function Img({
 	const {
 		sensitive, alt, title, aspectRatio: ratio, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
 		onBrightness, blurhash, focalPoint, mediaType, loading = 'lazy', crossorigin = 'anonymous',
-		baselined = false, fit = false, scaleOnHover = false, hasSensitiveSwitch = false,
+		baselined = false, fit = false, scaleOnHover = false, hasSensitiveSwitch = true,
 		width = 80, height = 80, ..._rest
 	} = i18nActivityPub.normalized();
 
@@ -172,7 +172,7 @@ export const Img = factory(function Img({
 		(APo.summary && <figcaption classes={themedCss.sensitiveSummary}>
 			<Paginated key="summary" property="summary" classes={extraClasses.paginated}>
 				{clampStrings(APo.summary, 500).map((_summary, i) =>
-					<MD classes={[themedCss.summary, columns.typo]} key={`summary${i}`} content={_summary} />
+					<MD classes={[themedCss.summary, viewCSS.typo]} key={`summary${i}`} content={_summary} />
 				)}
 			</Paginated>
 		</figcaption>);
@@ -185,7 +185,9 @@ export const Img = factory(function Img({
 			!!sensitive && themedCss.sensitive,
 			!!get('loaded') && themedCss.loaded,
 			!!get('faded') && themedCss.faded,
-			!!fit && themedCss.fit,
+			fit === 'cover' && themedCss.cover,
+			fit === 'contain' && themedCss.contain,
+			fit === 'fit' && themedCss.fit,
 			!!aspectRatio && themedCss.ratio,
 			!!hasFocalPoint && themedCss.hasFocalPoint,
 			!!aspectRatio && aspectRatio in AspectRatioNamed && (themedCss as any)[`_${aspectRatio.replace('/','_')}`]
@@ -212,7 +214,6 @@ export const Img = factory(function Img({
 		{summaryNode}
 	</figure>
 
-console.log('img render');
 	return !sensitive ? img : <virtual>
 		<input
 			type="checkbox"

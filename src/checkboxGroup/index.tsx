@@ -1,10 +1,10 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import theme from '@dojo/framework/core/middleware/theme';
-import id from '@redaktor/widgets/middleware/id';
-import { Checkbox, CheckboxProperties } from '@redaktor/widgets/checkbox';
+import id from '../middleware/id';
+import { Checkbox, CheckboxProperties } from '../checkbox';
 import { checkboxGroup } from './middleware';
-import * as css from '@redaktor/widgets/theme/material/checkboxGroup.m.css';
+import * as css from '../theme/material/checkboxGroup.m.css';
 
 type CheckboxOptions = { value: string; label?: string }[];
 

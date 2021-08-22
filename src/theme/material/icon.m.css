@@ -510,7 +510,10 @@
 .timing:before {
   content: '\e914';
 }
-
+.timing:before {
+	transform: rotate(180deg);
+	display: inline-block;
+}
 /* A down icon */
 .down:before {
 	content: '\f078';
