@@ -9,6 +9,10 @@
 	/* margin-top: var(--line); */
 	margin-bottom: var(--mb);
 }
+.root:not([open]) {
+	height: var(--line2);
+	margin: 0px;
+}
 .micro {
 	min-width: 224px;
 }

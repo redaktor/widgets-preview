@@ -84,6 +84,9 @@ export const ImageCaption = factory(function ImageCaption({
 
 	return <div key="root" classes={[themedCss.pageCaption, viewCss.pageCaption]}>
 		{children()}
+		<div classes={themedCss.attributions}>
+			<AttributedTo {...rest} max={39} />
+		</div>
 		{!hasContent ? <div classes={[themedCss.contentDetailsSummary, themedCss.muted]}>{name ? name[0] : ''}</div> :
 		<details key="details" classes={themedCss.contentDetails}>
 			<summary key="summary" classes={themedCss.contentDetailsSummary}>
@@ -114,10 +117,6 @@ export const ImageCaption = factory(function ImageCaption({
 				}
 			</div>
 		</details>}
-
-		<div classes={themedCss.attributions}>
-			<AttributedTo {...rest} max={39} />
-		</div>
 
 		{attachment && <hr classes={viewCss.hrAttachment} />}
 		{attachment && <Attachment attachment={attachment} isRow={isRow} />}

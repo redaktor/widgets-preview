@@ -1,17 +1,21 @@
 import { tsx, create, dom } from '@dojo/framework/core/vdom';
 // import { Base as MetaBase } from "@dojo/framework/core/meta/Base";
-// import { systemLocale } from "@dojo/framework/i18n/i18n";
-import theme from '@dojo/framework/core/middleware/theme';
+// import { systemLocale } from "@dojo/framework/i18n/i18n"; /* TODO */
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import theme from '../middleware/theme';
 import { LatLng } from './interfaces';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import Button from '../Button';
 import Icon from '../Icon';
 // import Select from '@redaktor/widgets/select';
 // import * as UriTemplate from 'uritemplate';
+
+import Providers from './mapProviders';
 import { loadModules } from 'esri-loader';
 // import bundle from './nls/';
-import * as css from './Map.m.css';
+import * as viewCss from '../theme/material/_view.m.css';
+import * as css from './styles/Map.m.css';
+
 /* // TODO:
 https://docs.graphhopper.com
 https://graphhopper.com/api/1/examples/#routing
@@ -44,13 +48,15 @@ function latLngFromO(o: any): LatLngArray {
 }
 
 // Creates actions in the LayerList.
-function defineActions(event: any) {
+function defineActions(event: any) { /* TODO */
 	// The event object contains an item property.
 	// is is a ListItem referencing the associated layer
 	// and other properties. You can control the visibility of the
 	// item, its title, and actions using this object.
 
 	const item = event.item;
+	// Opens the layer's item in the LayerList programmatically
+	item.open = true;
 
 	if (item.title === 'US Demographics') {
 		// An array of objects defining actions to place in the LayerList.
@@ -138,8 +144,9 @@ export default factory(function lMap({
 }) {
 	// const { messages } = i18n.localize(bundle);
 	const themedCss = theme.classes(css);
+	const viewDesktopCSS = theme.viewDesktopCSS();
 	const {
-		proxy,
+		proxy = 'http://localhost:8080/',
 		mapId = 'fae788aa91e54244b161b59725dcbb2a',
 		center = [-118.71511, 34.09042],
 		zoom = 11
@@ -170,9 +177,7 @@ export default factory(function lMap({
 						id = id.split('://')[1];
 					}
 					try {
-						const urlTemplate = !!proxy
-							? id
-							: `https://cors-anywhere.herokuapp.com/${id}`;
+						const urlTemplate = id;
 						map = new _Map({
 							basemap: new BaseMap({
 								id,
@@ -199,12 +204,23 @@ export default factory(function lMap({
 
 	const createMap = (): any => {
 		const node = document.createElement('div');
-		node.style.height = '100%';
-		node.style.width = '100%';
+		// node.style.height = '100%';
+		// node.style.width = '100%';
+
+		node.className = [
+			themedCss.map,
+			viewCss.media,
+			viewCss.item,
+			viewCss.baselined,
+			viewCss.m1by1,
+			!!viewDesktopCSS && viewDesktopCSS.item,
+			!!viewDesktopCSS && viewDesktopCSS.m1by1
+		].join(' ')
 
 		// if (!Math.max(0,zoom||0)) { zoom = 11 }
 		icache.getOrSet('defaultId', mapId, false);
 		icache.getOrSet('mapId', mapId, false);
+
 		return dom({
 			node,
 			onAttach: () => {
@@ -229,29 +245,25 @@ export default factory(function lMap({
 							WebTileLayer,
 							LayerList
 						]) => {
-							esriConfig.request.proxyUrl = proxy;
-
+							// esriConfig.request.proxyUrl = proxy;
+							console.log(`${proxy}tile.thunderforest.com`);
 							// Create layers
 							const publicTransportLayers = [
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tile.thunderforest.com/transport/{level}/{col}/{row}@2x.png?apikey=7c352c8ff1244dd8b732e349e0b0fe8d',
-									title: 'Transport Map'
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tileserver.memomaps.de/tilegen/{level}/{col}/{row}.png',
-									title: 'ÖPNV Karte'
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/openptmap.org/tiles/{level}/{col}/{row}.png',
-									title: 'Open Public Transport',
+										`${proxy}tile.thunderforest.com/transport/{level}/{col}/{row}@2x.png?apikey=7c352c8ff1244dd8b732e349e0b0fe8d`,
+									title: 'Transport Map',
 									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/b.tiles.openrailwaymap.org/standard/{level}/{col}/{row}.png',
+										`${proxy}tileserver.memomaps.de/tilegen/{level}/{col}/{row}.png`,
+									title: 'ÖPNV Karte',
+									visible: false
+								}),
+								new WebTileLayer({
+									urlTemplate:
+										`${proxy}b.tiles.openrailwaymap.org/standard/{level}/{col}/{row}.png`,
 									title: 'Open Railway Map',
 									visible: false
 								})
@@ -260,36 +272,38 @@ export default factory(function lMap({
 							const bikeLayers = [
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tile.thunderforest.com/cycle/{level}/{col}/{row}@2x.png?apikey=7c352c8ff1244dd8b732e349e0b0fe8d',
-									title: 'Cycle Map'
+										`${proxy}tile.thunderforest.com/cycle/{level}/{col}/{row}@2x.png?apikey=7c352c8ff1244dd8b732e349e0b0fe8d`,
+									title: 'Cycle Map',
+									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/dev.a.tile.openstreetmap.fr/cyclosm/{level}/{col}/{row}.png',
+										`${proxy}dev.a.tile.openstreetmap.fr/cyclosm/{level}/{col}/{row}.png`,
 									subDomains: ['a', 'b'],
-									title: 'CYCLOSM'
+									title: 'CYCLOSM',
+									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tiles.wmflabs.org/hikebike/{level}/{col}/{row}.png',
+										`${proxy}tiles.wmflabs.org/hikebike/{level}/{col}/{row}.png`,
 									title: 'HikeBike',
 									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tile.mtbmap.cz/mtbmap_tiles/{level}/{col}/{row}.png',
+										`${proxy}tile.mtbmap.cz/mtbmap_tiles/{level}/{col}/{row}.png`,
 									title: 'MTB Map',
 									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tile.waymarkedtrails.org/cycling/{level}/{col}/{row}.png',
+										`${proxy}tile.waymarkedtrails.org/cycling/{level}/{col}/{row}.png`,
 									title: 'Waymarked Cycling Trails',
 									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tile.waymarkedtrails.org/cycling/{level}/{col}/{row}.png',
+										`${proxy}tile.waymarkedtrails.org/cycling/{level}/{col}/{row}.png`,
 									title: 'Waymarked MTB Trails',
 									visible: false
 								})
@@ -298,25 +312,25 @@ export default factory(function lMap({
 							const hikeLayers = [
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tiles.wmflabs.org/hikebike/{level}/{col}/{row}.png',
+										`${proxy}tiles.wmflabs.org/hikebike/{level}/{col}/{row}.png`,
 									title: 'HikeBike',
 									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tiles.wmflabs.org/hillshading/{level}/{col}/{row}.png',
+										`${proxy}tiles.wmflabs.org/hillshading/{level}/{col}/{row}.png`,
 									title: 'HillShading',
 									visible: false
 								}),
 								new WebTileLayer({
-									urlTemplate: 'https://cors-anywhere.herokuapp.com/',
+									urlTemplate: '${proxy}',
 									// https://sebilasse.maps.arcgis.com/home/webmap/viewer.html?webmap=a7bca5f65fb74daba6dedacb7a90d115
 									title: 'ESRI Community',
 									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tile.waymarkedtrails.org/hiking/{level}/{col}/{row}.png',
+										`${proxy}tile.waymarkedtrails.org/hiking/{level}/{col}/{row}.png`,
 									title: 'Waymarked Hiking Trails',
 									visible: false
 								})
@@ -335,20 +349,20 @@ export default factory(function lMap({
 						*/
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/a.tile.openstreetmap.fr/hot/{level}/{col}/{row}.png',
+										`${proxy}a.tile.openstreetmap.fr/hot/{level}/{col}/{row}.png`,
 									subDomains: ['a', 'b'],
 									title: 'OSM Humanitarian',
 									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/openfiremap.org/hytiles/{level}/{col}/{row}.png',
+										`${proxy}openfiremap.org/hytiles/{level}/{col}/{row}.png`,
 									title: 'OSM OpenFireMap',
 									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/s3.amazonaws.com/te512.safecast.org/{level}/{col}/{row}.png',
+										`${proxy}s3.amazonaws.com/te512.safecast.org/{level}/{col}/{row}.png`,
 									title: 'safecast',
 									visible: false
 								})
@@ -357,19 +371,19 @@ export default factory(function lMap({
 							const hobbyLayers = [
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tile.waymarkedtrails.org/riding/{level}/{col}/{row}.png',
+										`${proxy}tile.waymarkedtrails.org/riding/{level}/{col}/{row}.png`,
 									title: 'Waymarked Riding Trails',
 									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tile.waymarkedtrails.org/skating/{level}/{col}/{row}.png',
+										`${proxy}tile.waymarkedtrails.org/skating/{level}/{col}/{row}.png`,
 									title: 'Waymarked Skating',
 									visible: false
 								}),
 								new WebTileLayer({
 									urlTemplate:
-										'https://cors-anywhere.herokuapp.com/tile.waymarkedtrails.org/slopes/{level}/{col}/{row}.png',
+										`${proxy}tile.waymarkedtrails.org/slopes/{level}/{col}/{row}.png`,
 									title: 'Waymarked Slopes',
 									visible: false
 								})
@@ -385,38 +399,32 @@ export default factory(function lMap({
 
 							const layers = [
 								new GroupLayer({
-									title: 'Hobby',
-									visible: false,
-									visibilityMode: 'exclusive',
-									opacity: 0.75,
-									layers: hobbyLayers
-								}),
-								new GroupLayer({
 									title: 'Humanitarian',
-									visible: false,
-									visibilityMode: 'exclusive',
+									visible: true,
+									visibilityMode: 'independent',
 									opacity: 0.75,
 									layers: humanitarianLayers
 								}),
 								new GroupLayer({
 									title: 'Hiking',
-									visible: false,
-									visibilityMode: 'exclusive',
+									visible: true,
+									visibilityMode: 'independent',
 									opacity: 0.75,
 									layers: hikeLayers
 								}),
 								new GroupLayer({
 									title: 'Bike',
-									visible: false,
-									visibilityMode: 'exclusive',
+									visible: true,
+									visibilityMode: 'independent',
 									opacity: 0.75,
 									layers: bikeLayers
 								}),
 								new GroupLayer({
 									title: 'Public Transport',
-									visible: false,
-									visibilityMode: 'exclusive',
+									visible: true,
+									visibilityMode: 'independent',
 									opacity: 0.75,
+									listMode: 'show',
 									layers: publicTransportLayers
 								})
 							];
@@ -456,6 +464,7 @@ export default factory(function lMap({
 								// and add it to the top-right corner of the view.
 								const layerList = new LayerList({
 									view: view,
+									showSubLayers: true,
 									// executes for each ListItem in the LayerList
 									listItemCreatedFunction: defineActions
 								});
@@ -560,8 +569,10 @@ export default factory(function lMap({
 	const curId = icache.get('mapId');
 
 	return (
-		<div classes={[themedCss.root]}>
-			<div classes={[themedCss.mapSwitch]}>
+		<div key="root" classes={[
+			themedCss.root
+		]}>
+			<div key="mapSwitch" classes={[themedCss.mapSwitch]}>
 				<Button
 					onClick={switchMap(baseIds[0])}
 					disabled={curId === baseIds[0]}

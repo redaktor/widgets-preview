@@ -26,6 +26,8 @@
 .hrAttachment {
 	order: 3;
 	width: var(--w,100%);
+	margin-top: calc(var(--lineHalf) - 2px);
+	margin-bottom: var(--lineHalf);
 	color: var(--paper);
 	border-color: var(--paper);
 	border-style: dashed;

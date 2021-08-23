@@ -31,7 +31,7 @@
 	position: absolute;
 	top: calc(var(--line) * -1.5);
 	right: 50%;
-	width: 64px;
+	width: var(--line5);
 	text-align: center;
 	z-index: -1;
 	pointer-events: none;
@@ -39,10 +39,13 @@
 .singleItem.hasCounter > .page::before {
 	margin: 0;
 	top: calc(var(--line) * -1.5);
-	left: var(--line2);
+	left: auto;
+	right: 0px;
 }
-.singleItem.hasCounter > .firstPage::before {
+.singleItem.hasCounter > .page.firstPage::before {
 	left: 0px;
+	right: auto;
+	text-align: left;
 }
 .navBottom .page {
 	order: 0;
@@ -438,6 +441,10 @@ TODO above
 	order: 2;
 	margin-top: var(--line);
 	transition: margin-left var(--ui-dpd-4,320ms) var(--ui-easing);
+}
+.contentDetails:not([open]) {
+	height: var(--line2);
+	margin: 0px;
 }
 .contentDetails[open] + .attributions {
 	margin-left: var(--line);

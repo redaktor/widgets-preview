@@ -331,14 +331,6 @@ export const actor = {
 			de: `(c) [OpenSeaMap](http://www.openseamap.org) Mitwirkende`
 		}
 	},
-	OPENPTMAP: {
-		...ORG('OpenPtMap'),
-		url: 'http://www.openptmap.org/',
-		summaryMap: {
-			en: `(c) [OpenPtMap](http://www.openptmap.org) contributors`,
-			de: `(c) [OpenPtMap](http://www.openptmap.org) Mitwirkende`
-		}
-	},
 	OPENRAILWAYMAP: OSMlayerORG('OpenRailwayMap', 'https://www.OpenRailwayMap.org'),
 	OPENFIREMAP: OSMlayerORG('OpenFireMap', 'http://www.openfiremap.org'),
 	SAFECAST: OSMlayerORG('SafeCast', 'https://blog.safecast.org/about/')
@@ -1338,18 +1330,6 @@ Einkaufsmöglichkeiten, Restaurants und Sehenswürdigkeiten.`
 		},
 		attributedTo: [actor.OPENSEAMAP]
 	},
-	OPENPTMAP: {
-		name: 'OpenPtMap',
-		preview: 'http://openptmap.org',
-		url: 'http://openptmap.org/tiles/{z}/{x}/{y}.png',
-		tag: [TAG.TOPO, TAG.TRANSIT],
-		contentMap: {
-			en: `OpenPtMap shows Public Transport Lines and Railroads.`,
-			de: `OpenPtMap zeigt Öffi - ÖV-Linien und Bahnstrecken.`
-		},
-		height: 17,
-		attributedTo: [actor.OPENPTMAP]
-	},
 	OPENRAILWAYMAP: {
 		name: 'OpenRailwayMap',
 		preview: 'https://openrailwaymap.org',
@@ -1400,8 +1380,8 @@ und Infrastruktur basierend auf OpenStreetMap Daten.`
 		]
 	}
 
-	//"LABELS","HUM","GEOPOL","TOPO","TERRAIN","SAT","CLIMATE","WEATHER","ECONOMIC","TRANSIT","CAR",
-	//"PARKING","BIKE","WALK","BOAT","AIR","SEATING","VENUE","FLOOR","HISTORY","ART","LIGHT","DARK","CONTRAST"
+	// "LABELS","HUM","GEOPOL","TOPO","TERRAIN","SAT","CLIMATE","WEATHER","ECONOMIC","TRANSIT","CAR",
+	// "PARKING","BIKE","WALK","BOAT","AIR","SEATING","VENUE","FLOOR","HISTORY","ART","LIGHT","DARK","CONTRAST"
 	/*
 	OpenMapSurfer: {
 		name: '',
@@ -1602,7 +1582,7 @@ const PresetItems = [
 		orderedItems: [
 			getMap('ESRI World Imagery', [basemap.ESRI_WORLDIMAGERY, layer.ESRI_HYBRID_REF]),
 			getMap('NASA Blue Marble', [basemap.NASA_BLUEMARBLE, layer.ESRI_HYBRID_REF])
-			//TODO getMap('', [ basemap. ]), // https://www.maptiler.com/cloud/
+			// TODO getMap('', [ basemap. ]), // https://www.maptiler.com/cloud/
 		]
 	},
 	{
@@ -1636,7 +1616,6 @@ const PresetItems = [
 		type: ['OrderedCollection'],
 		totalItems: 5,
 		orderedItems: [
-			getMap('Open Public Transport', [basemap.OSM, layer.OPENPTMAP]),
 			getMap('Open Railway', [basemap.OSM, layer.OPENRAILWAYMAP]),
 			getMap('Open Sea', [basemap.OSM, layer.OPENSEAMAP]),
 			getMap('ESRI Community', [basemap.ESRI_COMMUNITY]),
@@ -1748,7 +1727,6 @@ var isOverlay = function (providerName, layer) {
 	var overlayPatterns = [
 		'OpenWeatherMap',
 		'OpenSeaMap',
-		'OpenPtMap',
 		'OpenRailwayMap',
 		'OpenFireMap',
 		'OpenMapSurfer.(Hybrid|AdminBounds|ContourLines|Hillshade|ElementsAtRisk)',
@@ -1760,7 +1738,7 @@ var isOverlay = function (providerName, layer) {
 };
 */
 
-//const attr = (k: keyof typeof LP) => LP[k].options.attribution;
+// const attr = (k: keyof typeof LP) => LP[k].options.attribution;
 
 /*
 

@@ -92,6 +92,8 @@ import ClosableRendererChip from './widgets/chip/ClosableRenderer';
 import ChipDisabled from './widgets/chip/Disabled';
 import ChipIcon from './widgets/chip/Icon';
 
+import MapOverview from './widgets/map/Basic';
+
 import ActionButtons from './widgets/card/ActionButtons';
 import ActionButtonsAndIcons from './widgets/card/ActionButtonsAndIcons';
 import ActionIcons from './widgets/card/ActionIcons';
@@ -574,6 +576,22 @@ export const config = {
 				example: {
 					filename: 'Basic',
 					module: BasicCard
+				}
+			}
+		},
+		'map': {
+			examples: [
+				{
+					title: 'Basic Map',
+					module: MapOverview,
+					filename: 'MapOverview'
+				}
+			],
+			filename: 'index',
+			overview: {
+				example: {
+					filename: 'Basic',
+					module: MapOverview
 				}
 			}
 		},

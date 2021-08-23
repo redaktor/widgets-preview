@@ -1,3 +1,4 @@
+@import 'https://js.arcgis.com/4.16/esri/themes/light/main.css';
 .root {
 	--disabledAlpha: 0.72;
 	--pulseAlpha: 0.64;
