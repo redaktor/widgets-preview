@@ -1,7 +1,8 @@
-import { tsx, create, dom } from '@dojo/framework/core/vdom';
+import { tsx, create, node, dom } from '@dojo/framework/core/vdom';
 // import { Base as MetaBase } from "@dojo/framework/core/meta/Base";
 // import { systemLocale } from "@dojo/framework/i18n/i18n"; /* TODO */
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import idMiddleware from '../middleware/id';
 import theme from '../middleware/theme';
 import { LatLng } from './interfaces';
 import i18n from '@dojo/framework/core/middleware/i18n';
@@ -97,13 +98,6 @@ function createLeafletLatLng(props: Partial<Props>) {
 	return latLng(centerArray)
 }
 */
-interface MapCache {
-	map: any;
-	view: any;
-	defaultId: string;
-	[mapId: string]: any;
-}
-
 const wellKnownMapIds = {
 	topo: 1,
 	streets: 1,
@@ -124,6 +118,13 @@ const wellKnownMapIds = {
 	'streets-relief-vector': 1
 };
 
+interface MapCache {
+	map: any;
+	view: any;
+	defaultId: string;
+	searchLoaded: boolean;
+	[mapId: string]: any;
+}
 export interface BaseMapProperties {
 	id?: (keyof typeof wellKnownMapIds) | string;
 }
@@ -133,15 +134,18 @@ export interface MapProperties {
 
 	center?: LatLng;
 	zoom?: number;
+
+	hasSearch?: boolean;
 }
 
 const icache = createICacheMiddleware<MapCache>();
-const factory = create({ i18n, theme, icache }).properties<MapProperties>();
+const factory = create({ i18n, idMiddleware, theme, icache, node }).properties<MapProperties>();
 
 export default factory(function lMap({
 	/*children,*/ properties,
-	middleware: { /*i18n,*/ theme, icache }
+	middleware: { /*i18n,*/ theme, idMiddleware, icache, node }
 }) {
+	const { getOrSet, get, set } = icache;
 	// const { messages } = i18n.localize(bundle);
 	const themedCss = theme.classes(css);
 	const viewDesktopCSS = theme.viewDesktopCSS();
@@ -149,10 +153,12 @@ export default factory(function lMap({
 		proxy = 'http://localhost:8080/',
 		mapId = 'fae788aa91e54244b161b59725dcbb2a',
 		center = [-118.71511, 34.09042],
-		zoom = 11
+		zoom = 11,
+		hasSearch = true
 	} = properties();
 
-	icache.getOrSet(
+	getOrSet('searchLoaded', false, false);
+	getOrSet(
 		'mapOptions',
 		{
 			center: Array.isArray(center) ? center : [-118.71511, 34.09042], // TODO lat lng
@@ -160,6 +166,7 @@ export default factory(function lMap({
 		},
 		false
 	);
+
 	const switchMap = (
 		id: string = mapId,
 		subDomains: string[] = ['a', 'b', 'c'],
@@ -169,9 +176,9 @@ export default factory(function lMap({
 			([_Map, BaseMap, WebMap, WebTileLayer]) => {
 				let map;
 				if (wellKnownMapIds.hasOwnProperty(id)) {
-					map = icache.getOrSet(id, BaseMap.fromId(id), false);
+					map = getOrSet(id, BaseMap.fromId(id), false);
 				} else if (/^[a-z|A-Z|0-9]{32}$/.test(id)) {
-					map = icache.getOrSet(id, new WebMap({ portalItem: { id } }), false);
+					map = getOrSet(id, new WebMap({ portalItem: { id } }), false);
 				} else if (typeof id === 'string') {
 					if (!proxy && id.substr(0, 4) === 'http') {
 						id = id.split('://')[1];
@@ -190,350 +197,382 @@ export default factory(function lMap({
 						console.error(e);
 					}
 				}
-				map.layers = icache.get('layers') || [];
-				icache.set(
+				map.layers = get('layers') || [];
+				/* set(
 					'view',
-					{ ...icache.get('view'), map, ...icache.get('mapOptions') },
+					{ ...get('view'), map, ...get('mapOptions') },
 					false
-				);
-				icache.set('mapId', id, false);
-				icache.set('map', map);
+				); */
+				set('mapId', id, false);
+				set('map', map);
 			}
 		);
 	};
 
 	const createMap = (): any => {
-		const node = document.createElement('div');
-		// node.style.height = '100%';
-		// node.style.width = '100%';
+		let container = document.createElement('div');
+		// container.style.height = '100%';
+		// container.style.width = '100%';
 
-		node.className = [
+		container.className = [
 			themedCss.map,
 			viewCss.media,
-			viewCss.item,
 			viewCss.baselined,
 			viewCss.m1by1,
+			viewCss.item,
 			!!viewDesktopCSS && viewDesktopCSS.item,
 			!!viewDesktopCSS && viewDesktopCSS.m1by1
 		].join(' ')
 
 		// if (!Math.max(0,zoom||0)) { zoom = 11 }
-		icache.getOrSet('defaultId', mapId, false);
-		icache.getOrSet('mapId', mapId, false);
+		getOrSet('defaultId', mapId, false);
+		getOrSet('mapId', mapId, false);
 
 		return dom({
-			node,
+			node: container,
 			onAttach: () => {
 				loadModules([
 					'esri/config',
 					'esri/views/MapView',
 					'esri/Map',
+					'esri/Basemap',
 					'esri/WebMap',
 					'esri/layers/GroupLayer',
 					'esri/layers/MapImageLayer',
 					'esri/layers/WebTileLayer',
-					'esri/widgets/LayerList'
-				])
-					.then(
-						([
-							esriConfig,
-							MapView,
-							_Map,
-							WebMap,
-							GroupLayer,
-							MapImageLayer,
-							WebTileLayer,
-							LayerList
-						]) => {
-							// esriConfig.request.proxyUrl = proxy;
-							console.log(`${proxy}tile.thunderforest.com`);
-							// Create layers
-							const publicTransportLayers = [
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tile.thunderforest.com/transport/{level}/{col}/{row}@2x.png?apikey=7c352c8ff1244dd8b732e349e0b0fe8d`,
-									title: 'Transport Map',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tileserver.memomaps.de/tilegen/{level}/{col}/{row}.png`,
-									title: 'ÖPNV Karte',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}b.tiles.openrailwaymap.org/standard/{level}/{col}/{row}.png`,
-									title: 'Open Railway Map',
-									visible: false
-								})
-							];
+					'esri/widgets/LayerList',
+					'esri/widgets/BasemapGallery'
+				]).then(([
+					esriConfig,
+					MapView,
+					_Map,
+					BaseMap,
+					WebMap,
+					GroupLayer,
+					MapImageLayer,
+					WebTileLayer,
+					LayerList,
+					BasemapGallery
+				]) => {
+					// esriConfig.request.proxyUrl = proxy;
 
-							const bikeLayers = [
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tile.thunderforest.com/cycle/{level}/{col}/{row}@2x.png?apikey=7c352c8ff1244dd8b732e349e0b0fe8d`,
-									title: 'Cycle Map',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}dev.a.tile.openstreetmap.fr/cyclosm/{level}/{col}/{row}.png`,
-									subDomains: ['a', 'b'],
-									title: 'CYCLOSM',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tiles.wmflabs.org/hikebike/{level}/{col}/{row}.png`,
-									title: 'HikeBike',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tile.mtbmap.cz/mtbmap_tiles/{level}/{col}/{row}.png`,
-									title: 'MTB Map',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tile.waymarkedtrails.org/cycling/{level}/{col}/{row}.png`,
-									title: 'Waymarked Cycling Trails',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tile.waymarkedtrails.org/cycling/{level}/{col}/{row}.png`,
-									title: 'Waymarked MTB Trails',
-									visible: false
-								})
-							];
+					// Create layers
+					const tileLayers = (_a: [string, string, string[]?][]) => _a.map((a) => {
+						const tileLayer = new WebTileLayer({
+							title: a[0],
+							urlTemplate: `${proxy}${a[1]}`,
+							visible: false
+						});
+						if (a.length > 2) { tileLayer.subDomains = a[2] }
+						return tileLayer
+					});
+					const orderedLayers = {
+						publicTransport: tileLayers([
+							['Transport Map', 'tile.thunderforest.com/transport/{level}/{col}/{row}@2x.png?apikey=7c352c8ff1244dd8b732e349e0b0fe8d'],
+							['ÖPNV Karte', 'tileserver.memomaps.de/tilegen/{level}/{col}/{row}.png'],
+							['Open Railway Map', 'b.tiles.openrailwaymap.org/standard/{level}/{col}/{row}.png']
+						]),
+						bike: tileLayers([
+							['Cycle Map', 'tile.thunderforest.com/cycle/{level}/{col}/{row}@2x.png?apikey=7c352c8ff1244dd8b732e349e0b0fe8d'],
+							['CYCLOSM', 'dev.a.tile.openstreetmap.fr/cyclosm/{level}/{col}/{row}.png', ['a', 'b']],
+							['HikeBike', 'tiles.wmflabs.org/hikebike/{level}/{col}/{row}.png'],
+							['MTB Map', 'tile.mtbmap.cz/mtbmap_tiles/{level}/{col}/{row}.png'],
+							['Waymarked Cycling Trails', 'tile.waymarkedtrails.org/cycling/{level}/{col}/{row}.png'],
+							['Waymarked MTB Trails', 'tile.waymarkedtrails.org/cycling/{level}/{col}/{row}.png']
+						]),
+						hike: tileLayers([
+							['HikeBike', 'tiles.wmflabs.org/hikebike/{level}/{col}/{row}.png'],
+							['HillShading', 'tiles.wmflabs.org/hillshading/{level}/{col}/{row}.png'],
+							['Waymarked Hiking Trails', 'tile.waymarkedtrails.org/hiking/{level}/{col}/{row}.png']
+						]),
+						humanitarian: tileLayers([
+							['OSM Humanitarian', 'a.tile.openstreetmap.fr/hot/{level}/{col}/{row}.png', ['a', 'b']],
+							['OSM OpenFireMap', 'openfiremap.org/hytiles/{level}/{col}/{row}.png'],
+							['safecast', 's3.amazonaws.com/te512.safecast.org/{level}/{col}/{row}.png']
+						]),
+						hobby: tileLayers([
+							['Waymarked Riding Trails', 'tile.waymarkedtrails.org/riding/{level}/{col}/{row}.png'],
+							['Waymarked Skating', 'tile.waymarkedtrails.org/skating/{level}/{col}/{row}.png'],
+							['Waymarked Slopes', 'tile.waymarkedtrails.org/slopes/{level}/{col}/{row}.png']
+						])
+					}
+					const layers = [
+						['Hobby', orderedLayers.hobby],
+						['Humanitarian', orderedLayers.humanitarian],
+						['Hiking', orderedLayers.hike],
+						['Bike', orderedLayers.bike],
+						['Public Transport', orderedLayers.publicTransport]
+					].map((a) => new GroupLayer({
+						title: a[0],
+						layers: a[1],
+						visible: true,
+						visibilityMode: 'independent',
+						listMode: 'show',
+						opacity: 0.75
+					}));
+					getOrSet('layers', layers, false);
 
-							const hikeLayers = [
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tiles.wmflabs.org/hikebike/{level}/{col}/{row}.png`,
-									title: 'HikeBike',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tiles.wmflabs.org/hillshading/{level}/{col}/{row}.png`,
-									title: 'HillShading',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate: '${proxy}',
-									// https://sebilasse.maps.arcgis.com/home/webmap/viewer.html?webmap=a7bca5f65fb74daba6dedacb7a90d115
-									title: 'ESRI Community',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tile.waymarkedtrails.org/hiking/{level}/{col}/{row}.png`,
-									title: 'Waymarked Hiking Trails',
-									visible: false
-								})
-							];
+// new Map({ basemap: "dark-gray" })
+					// then we load a * web map * from an id
+					const map = getOrSet(
+						'map',
+						wellKnownMapIds.hasOwnProperty(mapId) ? BaseMap.fromId(mapId) :
+							new WebMap({
+								portalItem: { id: mapId },
+								layers
+							}),
+						false
+					);
+					// then we load a map from an id
+					// const map = new MMap({ basemap: "osm" });
+					// and we show that map in a container w/ id #viewDiv
 
-							const humanitarianLayers = [
-								/*
-						7 {en: "Humanitarian", de: "Humanitär"}
-						[[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"]],
-						[{"en":"ESRI Human Geo dark","de":"ESRI Human Geo dark"},["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]],
-						[{"en":"ESRI Human Geo","de":"ESRI Human Geo"},["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]],
-						[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png"]],
-						[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","http://openfiremap.org/hytiles/{z}/{x}/{y}.png"]],
-						[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","https://s3.amazonaws.com/te512.safecast.org/{z}/{x}/{y}.png"]]]
-
-						*/
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}a.tile.openstreetmap.fr/hot/{level}/{col}/{row}.png`,
-									subDomains: ['a', 'b'],
-									title: 'OSM Humanitarian',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}openfiremap.org/hytiles/{level}/{col}/{row}.png`,
-									title: 'OSM OpenFireMap',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}s3.amazonaws.com/te512.safecast.org/{level}/{col}/{row}.png`,
-									title: 'safecast',
-									visible: false
-								})
-							];
-
-							const hobbyLayers = [
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tile.waymarkedtrails.org/riding/{level}/{col}/{row}.png`,
-									title: 'Waymarked Riding Trails',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tile.waymarkedtrails.org/skating/{level}/{col}/{row}.png`,
-									title: 'Waymarked Skating',
-									visible: false
-								}),
-								new WebTileLayer({
-									urlTemplate:
-										`${proxy}tile.waymarkedtrails.org/slopes/{level}/{col}/{row}.png`,
-									title: 'Waymarked Slopes',
-									visible: false
-								})
-							];
-							/*
-					6 {en: "Nautical & Aeronautical", de: "Nautisch & Aeronautisch"}
-					[[{"en":"OpenSeaMap","de":"OpenSeaMap"},["https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png","https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png"]],
-					[{"en":"ESRI Ocean","de":"ESRI Ocean"},["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]]]
+					console.log(center, zoom);
+					const view = new MapView({
+						...get('mapOptions'),
+						map,
+						container,
+						navigation: {
+							mouseWheelZoomEnabled: false,
+							browserTouchPanEnabled: false
+						},
+						constraints: {}
+					});
 
 
-					8 ACCESSIBILITY >
-					*/
 
-							const layers = [
-								new GroupLayer({
-									title: 'Humanitarian',
-									visible: true,
-									visibilityMode: 'independent',
-									opacity: 0.75,
-									layers: humanitarianLayers
-								}),
-								new GroupLayer({
-									title: 'Hiking',
-									visible: true,
-									visibilityMode: 'independent',
-									opacity: 0.75,
-									layers: hikeLayers
-								}),
-								new GroupLayer({
-									title: 'Bike',
-									visible: true,
-									visibilityMode: 'independent',
-									opacity: 0.75,
-									layers: bikeLayers
-								}),
-								new GroupLayer({
-									title: 'Public Transport',
-									visible: true,
-									visibilityMode: 'independent',
-									opacity: 0.75,
-									listMode: 'show',
-									layers: publicTransportLayers
-								})
-							];
-							icache.getOrSet('layers', layers, false);
+					// get('mapId')
+					view.when(function() {
+						console.log('view when 1');
+						// Add the basemaps gallery for the more button
+						container = document.createElement('div');
+						container.setAttribute("id", idMiddleware.getId('basemaps'));
+						container.style.display = 'none';
+						const basemapGallery = new BasemapGallery({
+							view,
+							container
+						});
+					  view.ui.add(basemapGallery, { position: "top-right" });
+						basemapGallery.watch('activeBasemap', function(_map: any) {
+							const c = document.getElementById(idMiddleware.getId('basemaps'));
+							if (c) { c.style.display = 'none' }
+							set('mapId', _map.portalItem.id);
+					  });
+						// Create the LayerList widget with the associated actions
+						// and add it to the top-right corner of the view.
+						container = document.createElement('div');
+						container.setAttribute("id", idMiddleware.getId('layer'));
+						container.style.display = 'none';
+						const layerList = new LayerList({
+							view,
+							container,
+							showSubLayers: true,
+							listItemCreatedFunction: defineActions // executes for each ListItem in the LayerList
+						});
 
-							// then we load a * web map * from an id
-							const map = icache.getOrSet(
-								'map',
-								new WebMap({
-									portalItem: {
-										// autocasts as new PortalItem()
-										id: mapId // 'fae788aa91e54244b161b59725dcbb2a'
-									},
-									layers
-								}),
-								false
-							);
-							// then we load a map from an id
-							// const map = new MMap({ basemap: "osm" });
-							// and we show that map in a container w/ id #viewDiv
 
-							console.log(center, zoom);
-							const view = new MapView({
-								map,
-								...icache.get('mapOptions'),
-								container: node,
-								navigation: {
-									mouseWheelZoomEnabled: false,
-									browserTouchPanEnabled: false
-								},
-								constraints: {}
-							});
-
-							view.when(function() {
-								console.log('view when 1');
-								// Create the LayerList widget with the associated actions
-								// and add it to the top-right corner of the view.
-								const layerList = new LayerList({
-									view: view,
-									showSubLayers: true,
-									// executes for each ListItem in the LayerList
-									listItemCreatedFunction: defineActions
+						const mapSearchNode = node.get('mapSearch')
+						if (hasSearch && mapSearchNode && !get('searchLoaded')) {
+							// set('searchLoaded', true, false);
+							console.log('searchLoaded');
+							loadModules([
+								'esri/widgets/Search'
+							]).then(([
+								Search
+							]) => {
+								const showPopup = (address: string, pt: any) => {
+									view.popup.open({
+										title:  + Math.round(pt.longitude * 100000)/100000 + ", " +
+											Math.round(pt.latitude * 100000)/100000,
+										content: address,
+										location: pt
+									});
+								}
+								// Add Search widget
+								container = document.createElement('div');
+								mapSearchNode.innerHTML = '';
+								mapSearchNode.appendChild(container);
+								const search = new Search({
+									view,
+									container
 								});
+								// view.ui.add(search, "top-right"); // Add to the map
 
-								// Event listener that fires each time an action is triggered
-								layerList.on('trigger-action', function(event: any) {
-									// The layer visible in the view at the time of the trigger.
-									const visibleLayer = layers.filter((l) => l.visible)[0];
-
-									// Capture the action id.
-									const id = event.action.id;
-
-									if (id === 'full-extent') {
-										// if the full-extent action is triggered then navigate
-										// to the full extent of the visible layer
-										view.goTo(visibleLayer.fullExtent).catch(function(
-											error: Error
-										) {
-											if (error.name !== 'AbortError') {
-												console.error(error);
-											}
-										});
-									} else if (id === 'information') {
-										// if the information action is triggered, then
-										// open the item details page of the service layer
-										window.open(visibleLayer.url);
-									} else if (id === 'increase-opacity') {
-										// if the increase-opacity action is triggered, then
-										// increase the opacity of the GroupLayer by 0.25
-
-										if (visibleLayer.opacity < 1) {
-											visibleLayer.opacity += 0.25;
-										}
-									} else if (id === 'decrease-opacity') {
-										// if the decrease-opacity action is triggered, then
-										// decrease the opacity of the GroupLayer by 0.25
-
-										if (visibleLayer.opacity > 0) {
-											visibleLayer.opacity -= 0.25;
-										}
+								// Find address
+								view.on("click", function(evt: Event & {mapPoint: any}){
+									search.clear();
+									view.popup.clear();
+									if (search.activeSource) {
+										const geocoder = search.activeSource.locator; // World geocode service
+										const params = {
+											location: evt.mapPoint
+										};
+										geocoder.locationToAddress(params)
+											.then(function({address}: {address?: string}) { // Show the address found
+												address && showPopup(address, evt.mapPoint);
+											}, function(err: Error) { // Show no address found
+												showPopup("No address found.", evt.mapPoint);
+											});
 									}
 								});
-								// Add widget to the top right corner of the view
-								view.ui.add(layerList, 'top-right');
-								icache.getOrSet('view', view);
-							});
-
-							view.watch('stationary', () => {
-								console.log(view.center.longitude, view.center.latitude, view.zoom);
-								icache.set(
-									'mapOptions',
-									{
-										center: view
-											? [view.center.longitude, view.center.latitude]
-											: center,
-										zoom: view ? view.zoom : zoom
-									},
-									false
-								);
 							});
 						}
-					)
-					.catch((err) => {
-						// handle any errors
-						console.error(err);
+
+						// Event listener that fires each time an action is triggered
+						layerList.on('trigger-action', function(event: any) {
+							// The layer visible in the view at the time of the trigger.
+							const visibleLayer = layers.filter((l) => l.visible)[0];
+
+							// Capture the action id.
+							const id = event.action.id;
+
+							if (id === 'full-extent') {
+								// if the full-extent action is triggered then navigate
+								// to the full extent of the visible layer
+								view.goTo(visibleLayer.fullExtent).catch(function(
+									error: Error
+								) {
+									if (error.name !== 'AbortError') {
+										console.error(error);
+									}
+								});
+							} else if (id === 'information') {
+								// if the information action is triggered, then
+								// open the item details page of the service layer
+								window.open(visibleLayer.url);
+							} else if (id === 'increase-opacity') {
+								// if the increase-opacity action is triggered, then
+								// increase the opacity of the GroupLayer by 0.25
+
+								if (visibleLayer.opacity < 1) {
+									visibleLayer.opacity += 0.25;
+								}
+							} else if (id === 'decrease-opacity') {
+								// if the decrease-opacity action is triggered, then
+								// decrease the opacity of the GroupLayer by 0.25
+
+								if (visibleLayer.opacity > 0) {
+									visibleLayer.opacity -= 0.25;
+								}
+							}
+						});
+
+						// Add widget to the top right corner of the view
+						view.ui.add(layerList, 'top-right');
+						// getOrSet('view', view);
 					});
-			}
-		});
+
+					view.watch('stationary', () => {
+						console.log(view.center.longitude, view.center.latitude, view.zoom);
+						set(
+							'mapOptions',
+							{
+								center: view
+									? [view.center.longitude, view.center.latitude]
+									: center,
+								zoom: view ? view.zoom : zoom
+							},
+							false
+						);
+					});
+				}
+			)
+			.catch((err) => {
+				// handle any errors
+				console.error(err);
+			});
+		}});
 	};
+
+	const btnProps: any = {
+		color: 'secondary',
+		spaced: false,
+		responsive: true,
+		animated: false
+	};
+	const baseIds = [
+		{icon: 'map', id: get('defaultId')}, // 'fae788aa91e54244b161b59725dcbb2a' /* osm daylight */
+		{icon: 'mapSat', id: 'da10cf4ba254469caf8016cd66369157'}, /* world image clarity */
+		{icon: 'mapStreet', id: '9d150cad73e248c29c7149e84915a1c5'}, /* OSM Esri World Street Map style */
+		/*	'd167e0b1e9ed4abf982ab1aecc97e3ce' w relief
+				'55ebf90799fa4a3fa57562700a68c405' World Street Map */
+		{icon: 'mapTopo', id: '67372ff42cd145319639a99152b15bc3'},
+	];
+
+/* https://www.arcgis.com/sharing/rest/content/items/
+	6cf42d6ad9e3480696c5021546e76fab	sat img
+	34a7f521276a40ddabe5b012c3b1f607	hybrid img
+	bc68233b448b4a39a10e2aca8ea48fdb	street
+	03714c4eac0e4fca8e3b863ec768bcf2	topo
+	7ac83bff30ea49c0a5d1b3a21c8cced4	navigation
+	4aa1788830fd4adeaa2561555189c9bd	streetnight
+	f8cf1a4115b9416680d35f8bf22bb63e	terrain labels webmap
+	d0ee2af09e834c5cad92bed939006571	lightgray
+	e68ff0b5a0f84cfda9acf3686dcce492	darkgray
+	f0c119410f5e4d54be7545657f9768cb	ocean
+	9213bb45776e48edab35ac64a6fa57f1	nat. geo.
+	83fcab56ac6142668f4828984b347cc2	OSM
+	a149cb017b044027bb29a44dfac62063	charted territory worldmap
+	06743c3f4dee46cc8aafd9d9888ec668	community map
+	d27314802fd7456d993679d0239f1b99	navigation dark
+	abc33869ef34485bac55dfd588d8f2db	newspaper
+	fc841e1f61cf4c7c948192a0e40190d1	human geography
+	8de0609893384ba687eae0a6ce2204c0	human geography dark
+	7823927a547b40be8aaf65b0f06af990	modern Antique
+	682bfcfcc0d347019396090ba33ee6bf	mid Century
+	a504e8b3f0c047a19e76d80cc9cc8cd0	nova
+	a4c0ba7feb364a53a4adb804cb6fd182	colored pencil
+	13b3e755300a4a9c86e0ce7583817e48	firefly imagery hybrid
+*/
+
+	const curId = get('mapId');
+	const extraClasses = {
+		button: {'@redaktor/widgets/button': { root: [themedCss.button] }},
+		basemapButton: {'@redaktor/widgets/button': { root: [themedCss.button, themedCss.basemapButton] }},
+		layerButton: {'@redaktor/widgets/button': { root: [themedCss.button, themedCss.layerButton] }},
+		icon: {'@redaktor/widgets/icon': { icon: [themedCss.mapSwitchIcon] }}
+	}
+	const getElements = (...cacheKeys: string[]) =>
+	 	cacheKeys.map((k) => document.getElementById(idMiddleware.getId(k)));
+console.log('map render');
+	return (
+		<div key="root"
+			classes={[
+				themedCss.root,
+				viewCss.item,
+				!!viewDesktopCSS && viewDesktopCSS.item
+			]}
+		>
+			<div key="mapSearch"></div>
+			<div key="mapSwitch" classes={[themedCss.mapSwitch]}>
+				{baseIds.map((o, i) =>
+					<Button {...btnProps} classes={extraClasses.button} onClick={switchMap(o.id)} disabled={curId === o.id}>
+						<Icon classes={extraClasses.icon} size="xxl" type={(baseIds[i].icon as any)} />
+					</Button>
+				)}
+				{([
+					['basemaps', 'layer', extraClasses.basemapButton, 'plus'],
+					['layer', 'basemaps', extraClasses.layerButton, 'stack']
+				] as [string, string, any, 'plus'|'stack'][]).map((a) =>
+					<Button {...btnProps} design="outlined" classes={a[2]}
+						onClick={() => {
+							const [toggle, hidden] = getElements(a[0],a[1]);
+							if (toggle) {
+								toggle.style.display = (toggle.style.display === 'block') ? 'none' : 'block'
+							}
+							if (hidden) { hidden.style.display = 'none' }
+						}}
+					>
+						<Icon classes={extraClasses.icon} size="xxl" type={a[3]} />
+					</Button>
+				)}
+			</div>
+
+			{node.get('mapSearch') && createMap()}
+		</div>
+	);
+});
+
 
 	// const { center } = properties();
 	/*
@@ -543,73 +582,38 @@ export default factory(function lMap({
 	});
 	*/
 	// const el = ElementMeta.get('mapcontainer')
+
+
 	/*
-  osm           fae788aa91e54244b161b59725dcbb2a
   imagery meta  c03a526d94704bfb839445e80de95495
-  imagery       da10cf4ba254469caf8016cd66369157
-  streets       55ebf90799fa4a3fa57562700a68c405
-  topo          67372ff42cd145319639a99152b15bc3
   nav           c50de463235e4161b206d000587af18b
 
 	<span onclick={switchMap('https://www.wanderreitkarte.de/topo/{level}/{col}/{row}.png')}>c</span>
   */
-	const btnProps: any = {
-		color: 'secondary',
-		spaced: false,
-		responsive: true,
-		animated: false
-	};
-	const baseIds = [
-		icache.get('defaultId'),
-		'fae788aa91e54244b161b59725dcbb2a',
-		'da10cf4ba254469caf8016cd66369157',
-		'55ebf90799fa4a3fa57562700a68c405',
-		'67372ff42cd145319639a99152b15bc3'
-	];
-	const curId = icache.get('mapId');
 
-	return (
-		<div key="root" classes={[
-			themedCss.root
-		]}>
-			<div key="mapSwitch" classes={[themedCss.mapSwitch]}>
-				<Button
-					onClick={switchMap(baseIds[0])}
-					disabled={curId === baseIds[0]}
-					{...btnProps}
-				>
-					<Icon size="xxl" type="map" />
-				</Button>
-				<Button
-					onClick={switchMap(baseIds[1])}
-					disabled={curId === baseIds[1]}
-					{...btnProps}
-				>
-					<Icon size="xxl" type="mapOSM" />
-				</Button>
-				<Button
-					onClick={switchMap(baseIds[2])}
-					disabled={curId === baseIds[2]}
-					{...btnProps}
-				>
-					<Icon size="xxl" type="mapSat" />
-				</Button>
-				<Button
-					onClick={switchMap(baseIds[3])}
-					disabled={curId === baseIds[3]}
-					{...btnProps}
-				>
-					<Icon size="xxl" type="mapStreet" />
-				</Button>
-				<Button
-					onClick={switchMap(baseIds[4])}
-					disabled={curId === baseIds[4]}
-					{...btnProps}
-				>
-					<Icon size="xxl" type="mapTopo" />
-				</Button>
-			</div>
-			{createMap()}
-		</div>
-	);
-});
+/* new WebTileLayer({
+urlTemplate: '${proxy}',
+// https://sebilasse.maps.arcgis.com/home/webmap/viewer.html?webmap=a7bca5f65fb74daba6dedacb7a90d115
+title: 'ESRI Community',
+visible: false
+})
+*/
+
+/*
+7 {en: "Humanitarian", de: "Humanitär"}
+[[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"]],
+[{"en":"ESRI Human Geo dark","de":"ESRI Human Geo dark"},["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]],
+[{"en":"ESRI Human Geo","de":"ESRI Human Geo"},["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]],
+[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png"]],
+[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","http://openfiremap.org/hytiles/{z}/{x}/{y}.png"]],
+[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","https://s3.amazonaws.com/te512.safecast.org/{z}/{x}/{y}.png"]]]
+
+*/
+/*
+6 {en: "Nautical & Aeronautical", de: "Nautisch & Aeronautisch"}
+[[{"en":"OpenSeaMap","de":"OpenSeaMap"},["https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png","https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png"]],
+[{"en":"ESRI Ocean","de":"ESRI Ocean"},["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]]]
+
+
+8 ACCESSIBILITY >
+*/

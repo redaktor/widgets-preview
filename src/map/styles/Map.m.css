@@ -1,6 +1,8 @@
 .root {
-	width: 100%;
 	min-height: var(--line4);
+}
+.root.responsive {
+	width: 100%;
 }
 .map {
 	--h: calc(var(--line) * var(--l));
@@ -24,16 +26,61 @@
 	display: flex;
 	justify-content: space-around;
 }
-.mapSwitch > button {
+.button {
 	margin-top: calc(var(--m) * 2) !important;
 	margin-bottom: 0 !important;
 	border-radius: 0 !important;
+	padding: 0;
+	align-items: center;
 }
-.mapSwitch > button > i {
-	--size: 1.6666em;
+.basemapButton { }
+.layerButton { }
+
+.mapSwitchIcon {
+	composes: wide from '../../theme/material/_typo.css';
+	margin: 0;
+	padding: 0;
+	line-height: 1;
 }
-:global .esri-view-root {
+label.mapSwitchIcon {
+	min-width: calc(var(--touch-target-min,40px) + var(--grid-base,40px));
+}
+.input {
+	position: absolute;
+	top: -99999px;
+	visibility: hidden;
+	pointer-events: none;
+}
+.input:checked + .mapSwitchIcon {
+	background: red;
+}
+:global .esri-view-root,
+:global .esri-search {
+	min-height: var(--line2);
 	width: 100% !important;
+}
+:global .esri-search__suggestions-menu {
+	z-index: 9999;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ui-flat-off) var(--ui-bg);
+}
+:global .esri-search__suggestions-menu::-webkit-scrollbar {
+  width: 11px;
+}
+:global .esri-search__suggestions-menu::-webkit-scrollbar-track {
+  background: var(--ui-bg);
+}
+:global .esri-search__suggestions-menu::-webkit-scrollbar-thumb {
+  background-color: var(--ui-flat-on);
+  border-radius: 6px;
+  border: 3px solid var(--ui-bg);
+}
+:global .esri-search .esri-input[type="text"] {
+	height: 100%;
+	padding: 0 1rem;
+}
+:global .esri-search--show-suggestions .esri-search__suggestions-menu {
+	min-height: calc(var(--line2) + var(--pt));
 }
 :global .esri-attribution__sources {
 	padding: 5px;
@@ -41,6 +88,11 @@
 }
 :global .esri-attribution__powered-by {
 	align-self: center;
+}
+
+/*
+:global .esri-layer-list:not(:hover) {
+	display: none;
 }
 
 :global div.esri-layer-list:not(:hover) {
@@ -51,6 +103,4 @@
 	background-repeat: no-repeat;
 	background-position: center;
 }
-:global .esri-layer-list:not(:hover) .esri-layer-list__list--root {
-	display: none;
-}
+*/

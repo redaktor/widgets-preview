@@ -295,6 +295,7 @@ p:not(.uiClick) > .uiClick {
 	top: 0;
 	height: 100%;
 }
+.input-box,
 .outlined:not(.box),
 .shaped:not(.box) {
 	border-radius: var(--ui-border-radius-emphasized);
@@ -302,7 +303,6 @@ p:not(.uiClick) > .uiClick {
 .input-box,
 .outlined:not(.box)::before,
 .shaped:not(.box)::before {
-	border-radius: var(--ui-border-radius-emphasized);
 	border: var(--ui-border-width-emphasized) solid var(--ui-outline);
 }
 .input-box::after {
@@ -470,6 +470,7 @@ a[rel~=contact]:active {
 	padding: var(--t) var(--lr) var(--b) var(--lr);
 	margin: 0;
 }
+
 
 /* FIXME ::
 .ui-input { /*inputText.m.css:48

@@ -46,7 +46,7 @@
 }
 /* The icon for the 'more' menu */
 .more {
-	min-width: 52px;
+	min-width: var(--touch-target-min,40px);
 	min-height: calc(var(--line) - var(--pt));
 	align-self: stretch;
 }
