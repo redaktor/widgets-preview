@@ -151,14 +151,14 @@ export class JSONpointer {
 	walk(iterator: pointerCB, descend: any = function (value: any) {
 		const type = Object.prototype.toString.call(value);
 		return type === '[object Object]' || type === '[object Array]';
-	}) {
+	}, conditionFn?: (value: any, pointer: string) => boolean) {
 	  const refTokens: string[] = [];
 		const next = (cur: any) => {
 			for (let key in cur) {
 				refTokens.push(String(key));
 				if (descend(cur[key])) {
 					next(cur[key]);
-				} else {
+				} else if (!conditionFn || !!conditionFn(cur, key)) {
 					iterator(cur[key], this.compile(refTokens));
 				}
 				refTokens.pop();

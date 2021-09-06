@@ -71,6 +71,15 @@ const factory = create({ icache, i18nActivityPub, id, theme, breakpoints })
 
 	TODO [header, footer] children
 */
+export const getWH = (o: ActivityPubObjectNormalized) => {
+	const {width, height} = (
+		o.hasOwnProperty('url') && !!o.url && typeof o.url[0] === 'object' &&
+		!!(o.url[0] as ActivityPubLinkObject).width && !!(o.url[0] as ActivityPubLinkObject).height
+	) ?
+		(o.url[0] as ActivityPubLinkObject) : o;
+	return {width, height};
+}
+
 
 export const Img = factory(function Img({
 	middleware: { icache, i18nActivityPub, id, theme, breakpoints} /*, children */
@@ -81,7 +90,7 @@ export const Img = factory(function Img({
 		sensitive, alt, title, aspectRatio: ratio, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
 		onBrightness, blurhash, focalPoint, mediaType, loading = 'lazy', crossorigin = 'anonymous',
 		baselined = false, fit = false, scaleOnHover = false, hasSensitiveSwitch = true,
-		width = 80, height = 80, ..._rest
+		..._rest
 	} = i18nActivityPub.normalized();
 
 	const APo: ActivityPubObjectNormalized = _rest;
@@ -93,6 +102,7 @@ export const Img = factory(function Img({
 	getOrSet('loaded', false, false);
 	getOrSet('faded', false, false);
 
+	const {width, height} = getWH(APo);
 	let mml = '--mml: 0;';
 	let [cWidth, cHeight] = [0, 0];
 	if (Array.isArray(focalPoint) || (baselined && getOrSet('l', theme.line(), false))) {

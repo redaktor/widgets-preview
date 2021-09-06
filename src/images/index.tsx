@@ -1,14 +1,17 @@
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import focus from '@dojo/framework/core/middleware/focus';
 import has from '@dojo/framework/core/has';
+import { LngLat } from '../map/interfaces';
 import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
 import id from '../middleware/id';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme, { ViewportProperties } from '../middleware/theme';
 import Icon from '../icon';
 import ImageCaption from '../imageCaption';
-import Img from '../image/image';
+import Img, { getWH } from '../image/image';
+import Map from '../map';
 import bundle from './nls/Image';
 import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/images.m.css';
@@ -19,7 +22,9 @@ export interface ImageChildren {
 	/** Optional Footer */
 	footer?: RenderResult;
 }
+/* TODO ISSUE
 
+*/
 export { ImgProperties } from '../image/image';
 export interface ImagesProperties extends ActivityPubObject, ViewportProperties {
 	baselined?: boolean;
@@ -37,6 +42,8 @@ export interface ImagesProperties extends ActivityPubObject, ViewportProperties 
 	hasContent?: boolean;
 	/* show attachments, default true */
 	hasAttachment?: boolean;
+	/* open caption details, default false */
+	captionsOpen?: boolean;
 	/* when all images have loaded */
 	onLoad?: () => any;
 	/* when clicking an image */
@@ -50,10 +57,16 @@ export interface ImagesIcache {
 	loaded: number[];
 	currentPage: number;
 	brightnessClass: string;
+	focusKey: string;
+
+	captionsOpen: boolean;
+	mapOpen: false | LngLat;
+	map: any;
+	mapView: any;
 }
 
 const icache = createICacheMiddleware<ImagesIcache>();
-const factory = create({ icache, id, theme, i18nActivityPub }).properties<ImagesProperties>();
+const factory = create({ icache, id, theme, focus, i18nActivityPub }).properties<ImagesProperties>();
 
 /* TODO
 	blurhash output image if noJS and CSS accordingly
@@ -63,7 +76,7 @@ const factory = create({ icache, id, theme, i18nActivityPub }).properties<Images
 */
 
 export const Images = factory(function Images({
-	middleware: { icache, id, theme, i18nActivityPub }
+	middleware: { icache, id, theme, focus, i18nActivityPub }
 }) {
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
@@ -73,7 +86,7 @@ export const Images = factory(function Images({
 	const {
 		itemsPerPage,	image = [], view = 'column', size = 'm', navPosition = 'top',
 		desaturateScroll = 'column', max = 1000, hasContent = true, hasAttachment = true,
-		onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen, ..._rest
+		captionsOpen = false, onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen, ...ap
 		// fit = false, width = 80, height = 80,
 
 	} = i18nActivityPub.normalized();
@@ -108,6 +121,8 @@ export const Images = factory(function Images({
 		getOrSet('loaded', paginatedImages.map(() => 0), false);
 	}
 	getOrSet('currentPage', 0, false);
+	getOrSet('mapOpen', false, false);
+	getOrSet('captionsOpen', captionsOpen, false);
 
 	const loadedImg = () => {
 		const current = get('currentPage') || 0;
@@ -117,8 +132,49 @@ export const Images = factory(function Images({
 		loaded[current]++;
 		set('loaded', loaded, (loaded[current] >= count))
 	}
-	const setPage = (i: number) => {
+	const setMap = (location: [number, number]) => {
+
+		const view = get('mapView');
+		if (view) {
+			const [x, y] = location;
+			view.graphics.items[0].set('geometry', { type: "point", x, y });
+			view.center = [x, y];
+		} else {
+			set('mapOpen', location)
+		}
+
+	}
+	const setPage = (i: number, focusPrefix?: 'prev'|'next') => {
 		set('currentPage', i);
+		if (focusPrefix) {
+			set('focusKey', `${focusPrefix}_${i}`);
+    	focus.focus();
+		}
+		if (get('mapOpen') && paginated[i][0].location) {
+			const {longitude, latitude} = paginated[i][0].location[0];
+			if (longitude && latitude) {
+				setMap([longitude, latitude]);
+			}
+		}
+	}
+	const handleKeydown = (i: number, keyTrigger?: 'prev'|'next', max?: number) => {
+		return (e: KeyboardEvent) => {
+			const cur = get('currentPage');
+			switch (e.key) {
+				case 'Enter':
+					setPage(i, keyTrigger)
+				break;
+				case 'ArrowLeft':
+					setPage(!cur ? (max ? max-1 : 0) : cur-1, 'prev')
+				break;
+				case 'ArrowRight':
+					setPage(cur === (max ? max-1 : 0) ? 0 : (cur||0)+1, 'next')
+				break;
+				case 'ArrowUp':
+					setPage(0)
+				break;
+			}
+		}
 	}
 	const ratios: [number, any][] = [
 		[0.5625,'m9by16'], [0.6666,'m2by3'], [0.75,'m3by4'],
@@ -156,6 +212,28 @@ export const Images = factory(function Images({
 
 /*.row .hasPagination.singleItem */
 	return <virtual>
+		{get('mapOpen') &&
+			getOrSet('map', <Map
+				{...{type: 'Image', image}}
+				hasCenterMarker={true}
+				center={get('mapOpen')||void 0}
+				zoom={15}
+				onView={(view) => { set('mapView', view, false) }}
+				onActivityPubLocation={({pointer}) => {
+					const [slash, property, indexStr = '0'] = pointer.split('/');
+					console.log(pointer.split('/'), property, indexStr)
+					const index = parseInt(indexStr, 10);
+					if (property) {
+						switch (property) {
+							case 'image':
+								setPage(index)
+							break;
+							/* TODO : attachment */
+						}
+					}
+				}}
+			/>
+		)}
 		<noscript><i classes={themedCss.noscript} /></noscript>
 		<div
 			key="root"
@@ -177,29 +255,38 @@ export const Images = factory(function Images({
 			]}
 			style={`--count: ${itemCount};`}
 			aria-label="Images"
+			aria-live="polite"
 			role="region"
 		>
-		{hasAttachment && itemsPerPage === 1 &&
+		{!get('mapOpen') && hasAttachment && itemsPerPage === 1 &&
 			<div key="scrollWrapper" classes={[
 				themedCss.scrollWrapper,
 				themedCss.snap,
 				desaturateScroll && themedCss.desaturateScroll
 			]}>
 				{maxImages.map((img: any, i: number) => {
+					/*
+						Note: img.url is an Array (e.g. srcset), but the ratio class will be the same.
+						If width or height would be needed for max-width/max-height it must be reduced.
+					*/
 					if (typeof img === 'string') { img = {type: ['Image'], url: img} }
+					const {width, height} = getWH(img);
 					return <label key={`to_${i}`}
 						for={`${idBase}_${i}`}
-						classes={[themedCss.media, ...(ratioClasses(!img.width || !img.height ? 0 : img.width/img.height, true))]}
+						classes={[
+							themedCss.media,
+							...(ratioClasses(!width || !height ? 0 : width/height, true))
+						]}
 					>
 						<Img {...img} hasSensitiveSwitch={false} onClick={() => {}} />
 					</label>
 				})}
 			</div>
 		}
-
 		{paginated.map((imagePage: any, i: number, a: any[]) => {
 			const count = paginated.length && paginated[i].length || 0;
 			const wasLoaded = count === (get('loaded') as any)[i];
+			const {width, height} = getWH(imagePage[0]);
 			return <virtual>
 				{(maxImages.length > itemCount) &&
 					<virtual>
@@ -210,19 +297,27 @@ export const Images = factory(function Images({
 							name={`${idBase}_images`}
 							data-i={`${i+1}`}
 							checked={i === get('currentPage')}
-							onclick={() => { setPage(i) }}
+							onclick={() => { itemCount !== 1 && setPage(i) }}
 						/>
 						{<label key={`prev_${i}`}
+							aria-label={messages.prev}
+							focus={get('focusKey') === `prev_${i}` ? focus.shouldFocus : undefined}
+							tabIndex={0}
 							for={`${idBase}_${!i ? (a.length-1) : (i-1)}`}
 							classes={[themedCss.prev, themedCss.control, !i && themedCss.firstControl, isLight(i)]}
-							onclick={() => { setPage(!i ? a.length-1 : i-1) }}
+							onclick={() => { setPage(!i ? a.length-1 : i-1, 'prev') }}
+							onkeydown={handleKeydown(!i ? a.length-1 : i-1, 'prev', a.length)}
 						>
 							<Icon size="xl" type="left" />
 						</label>}
 						{<label key={`next_${i}`}
+							aria-label={messages.next}
+							focus={get('focusKey') === `next_${i}` ? focus.shouldFocus : undefined}
+							tabIndex={0}
 							for={`${idBase}_${i === a.length-1 ? 0 : (i+1)}`}
 							classes={[themedCss.next, themedCss.control, i === a.length-1 && themedCss.lastControl, isLight(i)]}
-							onclick={() => { setPage(i === a.length-1 ? 0 : i+1) }}
+							onclick={() => { setPage(i === a.length-1 ? 0 : i+1, 'next') }}
+							onkeydown={handleKeydown(i === a.length-1 ? 0 : i+1, 'next', a.length)}
 						>
 							<Icon size="xl" type="right" />
 						</label>}
@@ -233,26 +328,28 @@ export const Images = factory(function Images({
 						<div
 							key={`page${i}`}
 							data-count={`${i+1} / ${paginated.length}`}
+							aria-hidden={i !== get('currentPage') ? 'true' : 'false'}
 							classes={[
 								themedCss.page,
 								viewCSS.page,
 								!i && themedCss.firstPage,
 								isLight(i),
-								...(itemCount !== 1 ? [] : ratioClasses(!imagePage[0].width || !imagePage[0].height ? 0 : imagePage[0].width/imagePage[0].height, false))
+								...(itemCount !== 1 ? [] : ratioClasses(!width || !height ? 0 : width/height, false))
 							]}
 						>
 							{imagePage.map((img: any, j: number) => {
 								if (typeof img === 'string') { img = {type: ['Image'], url: img} }
+								const {width, height} = getWH(img);
 								return <div classes={[
 										themedCss.media,
 										viewCSS.gridMedia,
-										...(ratioClasses(!img.width || !img.height ? 0 : img.width/img.height, isRow && itemCount > 1))
+										...(ratioClasses(!width || !height ? 0 : width/height, isRow && itemCount > 1))
 									]}
 									key={`image${j}`}
 									style={itemCount !== 1 ? void 0 :
 										`--maxl: ${Math.max(5, Math.min(
 												(Math.floor(window.screen.height / theme.line()) - 5),
-												Math.floor((img.height||4800) / theme.line())
+												Math.floor((height||4800) / theme.line())
 										))}`
 									}
 								>
@@ -273,22 +370,52 @@ export const Images = factory(function Images({
 							})}
 						</div>
 						{
-							itemCount === 1 && hasContent && <ImageCaption {...(imagePage[0])} />
+							itemCount === 1 && hasContent &&
+								<ImageCaption
+									{...(imagePage[0])}
+									isOpen={ get('captionsOpen') }
+									onToggle={(isOpen) => { set('captionsOpen', isOpen) }}
+								/>
 						}
-
-						{	!!i && itemCount === 1 && hasContent &&
-							<label key="homelabel"
-								for={`${idBase}_0`}
-								classes={[themedCss.control, themedCss.homeControl]}
-								onclick={() => { setPage(0) }}
-							>
-								<Icon size="xl" type="up" />
-							</label>
+						{ itemCount === 1 && hasContent &&
+							<div classes={[themedCss.meta]}>
+								{
+									<time classes={themedCss.time} datetime="2021-05-15 19:00">
+										15. 05. 2021
+									</time>
+								}
+								{ itemCount === 1 && imagePage[0] && imagePage[0].location &&
+									<address
+										classes={themedCss.location}
+										onclick={() => {
+											const {longitude, latitude} = imagePage[0].location[0];
+											if (longitude && latitude) {
+												setMap([longitude, latitude]);
+											}
+										}}
+									>
+										<Icon size="xl" type="mapMarker" spaced="right"
+											classes={{'@redaktor/widgets/icon': {icon: [themedCss.locationIcon]}}}
+										/>
+										location
+									</address>
+								}
+							</div>
 						}
 					</virtual>
 				}
-			</virtual>
-		})}
+			</virtual> })}
+
+			<label key="homelabel"
+				aria-label={messages.home}
+				tabIndex={0}
+				for={`${idBase}_0`}
+				classes={[themedCss.control, themedCss.homeControl]}
+				onclick={() => { setPage(0) }}
+				onkeydown={handleKeydown(0)}
+			>
+				<Icon size="xl" type="up" />
+			</label>
 		</div>
 	</virtual>
 });

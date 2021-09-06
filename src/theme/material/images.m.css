@@ -22,9 +22,11 @@
 	order: 5;
 	z-index: 2;
 }
+.firstPage { }
 
 .hasCounter > .page::before {
 	content: attr(data-count);
+	color: var(--text-muted);
 	margin: 0 -32px 0 0;
 	padding: 0;
 	order: 2;
@@ -38,14 +40,8 @@
 }
 .singleItem.hasCounter > .page::before {
 	margin: 0;
-	top: calc(var(--line) * -1.5);
-	left: auto;
+	top: calc(var(--line) * -2 + var(--pt));
 	right: 0px;
-}
-.singleItem.hasCounter > .page.firstPage::before {
-	left: 0px;
-	right: auto;
-	text-align: left;
 }
 .navBottom .page {
 	order: 0;
@@ -227,6 +223,9 @@ TODO above
 	transition: color var(--ui-dpd-0,80ms) var(--ui-easing);
 	user-select: none;
 }
+.control:focus {
+	outline: none;
+}
 .control > * {
 	margin: 0 !important;
 	padding: 0 !important;
@@ -236,6 +235,44 @@ TODO above
 }
 .next.control {
 	order: 3;
+}
+.meta {
+	composes: s sans from './_typo.css';
+	padding-left: var(--touch-target-min);
+}
+.firstPage + .meta,
+.firstPage + .pageCaption + .meta {
+	--homebtn: 0;
+	padding-left: 0;
+}
+.time {
+	color: var(--text-muted);
+	margin-left: var(--grid-base);
+	min-width: var(--line2);
+	min-height: var(--line);
+}
+.location {
+	font-style: normal;
+	color: var(--text-muted);
+	grid-area: navigation;
+	margin-left: var(--grid-base);
+	padding-left: 1rem;
+	width: 75%;
+	width: calc(var(--w) - var(--touch-target-min) * (3 + var(--homebtn,1)) - (var(--grid-base) * 4));
+	text-overflow: ellipsis;
+	white-space: nowrap;
+  overflow: hidden;
+	position: relative;
+	cursor: pointer;
+}
+.locationIcon {
+	position: absolute;
+	left: 0px;
+	padding: 0px;
+}
+.time + .location {
+	width: 65%;
+	width: calc(var(--w) - var(--touch-target-min) * (3 + var(--homebtn,1)) - 80px);
 }
 .firstControl { }
 .lastControl { }
@@ -248,29 +285,37 @@ TODO above
 	top: -4000px;
 	height: 0px;
 }
-
+.singleItem .meta,
 .singleItem .control {
 	display: flex;
 	grid-area: navigation;
 	place-self: start right;
 	z-index: 8;
 	margin: 0px;
+	align-items: flex-start;
+	padding-top: var(--pt);
 }
-.singleItem .control.homeControl {
+.singleItem .control.homeControl,
+.singleItem .meta {
 	place-self: start left;
 }
-.isRow:checked + * .singleItem .control:not(.homeControl) {
+.singleItem .pageRadio:first-of-type:checked ~ .control.homeControl {
+	display: none;
+}
+
+.isRow:checked + * .singleItem .control:not(.meta) {
 	grid-area: media;
 	place-self: start left;
 	margin-top: var(--lineHalf);
 }
-.isRow:checked + * .singleItem .homeControl {
+.isRow:checked + * .singleItem .meta {
 	order: 4;
+	position: absolute;
 	bottom: 0px;
 	left: 0px;
 	right: auto;
 }
-.singleItem .control::after {
+.singleItem .control:not(.homeControl)::after {
 	content: "";
 	position: absolute;
 	top: calc(var(--grid-base,8px) * -1);
@@ -301,7 +346,7 @@ TODO above
 }
 .pageRadio:not(:checked) + .prev.control + .next.control + .page,
 .pageRadio:not(:checked) + .prev.control + .next.control + .page + .pageCaption,
-.pageRadio:not(:checked) + .prev.control + .next.control + .page + .pageCaption + .homeControl {
+.pageRadio:not(:checked) + .prev.control + .next.control + .page + .pageCaption + .meta {
 	display: none;
 }
 
@@ -364,12 +409,19 @@ TODO above
 		border-color: var(--border, #666);
 	}
 	.control {
-		color: var(--text);
+		color: var(--text-muted);
 	}
-	.homeControl:hover,
-	.root .pageRadio:checked + .prev.control:hover,
-	.root .pageRadio:checked + .prev.control + .next.control:hover {
+	.control:hover {
 		color: var(--ui-filled, #eee);
+	}
+	.root .pageRadio:checked + .prev.control:focus,
+	.root .pageRadio:checked + .prev.control + .next.control:focus {
+		outline: none;
+		color: var(--ui-focus, #fff);
+	}
+
+	.location:hover > .locationIcon {
+		color: var(--ui-filled, #eee) !important;
 	}
 
 	.root .snap::-webkit-scrollbar-thumb {
@@ -379,26 +431,20 @@ TODO above
 	  background-color: var(--ui-flat-on);
 	}
 
-	.singleItem .control {
+	.singleItem .control:not(.homeControl) {
 		opacity: 0;
 		pointer-events: none;
 	}
 	.singleItem .control,
 	.singleItem .page {
-		transition: opacity, color var(--ui-dpd-0,80ms) var(--ui-easing);
+		transition: color var(--ui-dpd-0,80ms) var(--ui-easing);
 	}
 	.singleItem.hasCounter > .page::before,
 	.singleItem .pageRadio:checked + .prev.control,
 	.singleItem .pageRadio:checked + .prev.control + .next.control,
-	.singleItem .pageRadio:checked + .prev.control + .next.control + .page + .pageCaption + .homeControl {
-		opacity: 0.4;
-		pointer-events: auto;
-	}
-	.singleItem:hover .pageRadio:checked + .prev.control + .next.control + .page::before,
-	.singleItem:hover .pageRadio:checked + .prev.control,
-	.singleItem:hover .pageRadio:checked + .prev.control + .next.control,
-	.singleItem:hover .pageRadio:checked + .prev.control + .next.control + .page + .pageCaption + .homeControl {
+	.singleItem .pageRadio:checked + .prev.control + .next.control + .page + .pageCaption + .meta {
 		opacity: 1;
+		pointer-events: auto;
 	}
 }
 

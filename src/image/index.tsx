@@ -6,10 +6,10 @@ import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import Images from '../images';
-import * as ui from '../theme/material/_ui.m.css';
+// import * as ui from '../theme/material/_ui.m.css';
 import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/image.m.css';
-
+/* TODO ISSUE in /images */
 export interface ImageProperties extends ActivityPubObject {
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 	fullscreen?: boolean;
@@ -50,6 +50,7 @@ export const Image = factory(function Image({
 	middleware: { icache, i18nActivityPub, theme, breakpoints /*, resource */ },
 	properties
 }) {
+
 	const themedCss = theme.classes(css);
 	const {
 		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,

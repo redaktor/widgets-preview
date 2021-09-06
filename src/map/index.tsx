@@ -1,20 +1,24 @@
 import { tsx, create, node, dom } from '@dojo/framework/core/vdom';
+import { loadModules } from 'esri-loader';
 // import { Base as MetaBase } from "@dojo/framework/core/meta/Base";
 // import { systemLocale } from "@dojo/framework/i18n/i18n"; /* TODO */
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import { JSONpointer } from '../framework/JSON/Pointer';
 import idMiddleware from '../middleware/id';
 import theme from '../middleware/theme';
-import { LatLng } from './interfaces';
-import i18n from '@dojo/framework/core/middleware/i18n';
+import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
+import { LngLat } from './interfaces';
+import i18nActivityPub from '../middleware/i18nActivityPub';
 import Button from '../Button';
 import Icon from '../Icon';
+import Pathes from '../Icon/path';
 // import Select from '@redaktor/widgets/select';
 // import * as UriTemplate from 'uritemplate';
 
-import Providers from './mapProviders';
-import { loadModules } from 'esri-loader';
+// import Providers from './mapProviders';
 // import bundle from './nls/';
 import * as viewCss from '../theme/material/_view.m.css';
+// import * as iconCss from '../theme/material/icon.m.css';
 import * as css from './styles/Map.m.css';
 
 /* // TODO:
@@ -28,12 +32,46 @@ https://thenounproject.com/YuguDesign/collection/map-location-pointers-glyphs/
 https://thenounproject.com/vectormarket01/collection/travelling/
 */
 
-type LatLngArray = [number, number] | [number, number, number];
+
+export function apToGeoJSON(ap: ActivityPubObjectNormalized, oKey = '#') {
+	const [seen, results, features] = [new Set<string>(), new Set<string>(), []];
+	const jp = (new JSONpointer(ap));
+	jp.walk((value: any, pointer: string) => {
+		const matches = pointer.match(/(longitude|latitude)$/g);
+		if (matches && !!matches.length) {
+			const repl: any = {longitude: 'latitude', latitude: 'longitude'};
+			seen.add(pointer);
+			if (seen.has(pointer.replace(new RegExp(matches[0]+'$'), repl[matches[0]]))) {
+				results.add(pointer.split('/location')[0])
+			}
+		}
+	});
+	results.forEach((pointer) => {
+		const {id = '', type = ['Object'], location} = jp.get(pointer);
+		location.forEach(({longitude, latitude}: any) => {
+			if (longitude && latitude) {
+				type.forEach((apType: string) => {
+					(features as any[]).push({
+						type: "Feature",
+						geometry: {
+							type: "Point",
+							coordinates: [longitude, latitude]
+						},
+						properties: {id, pointer, apType}
+					})
+				})
+			}
+		});
+	});
+	return {type: "FeatureCollection", features}
+}
+
+type LngLatArray = [number, number] | [number, number, number];
 function isNr(n: any) {
 	return typeof n === 'number' && !isNaN(n);
 }
-function latLngFromO(o: any): LatLngArray {
-	let a: LatLngArray = [0, 0];
+function lngLatFromO(o: any): LngLatArray {
+	let a: LngLatArray = [0, 0];
 	if (isNr(o.latitude) && isNr(o.longitude)) {
 		const alt = typeof o.altitude === 'number' && !isNaN(o.altitude) && o.altitude;
 		a = !!alt ? [o.latitude, o.longitude, alt] : [o.latitude, o.longitude];
@@ -92,10 +130,10 @@ function defineActions(event: any) { /* TODO */
 	}
 }
 /*
-function createLeafletLatLng(props: Partial<Props>) {
-	const centerArray: LatLngArray = Array.isArray(props.center) ? props.center :
-		(!!props.center && typeof props.center === 'object' ? latLngFromO(props.center) : [0, 0]);
-	return latLng(centerArray)
+function createLeafletLngLat(props: Partial<Props>) {
+	const centerArray: LngLatArray = Array.isArray(props.center) ? props.center :
+		(!!props.center && typeof props.center === 'object' ? lngLatFromO(props.center) : [0, 0]);
+	return LngLat(centerArray)
 }
 */
 const wellKnownMapIds = {
@@ -123,27 +161,32 @@ interface MapCache {
 	view: any;
 	defaultId: string;
 	searchLoaded: boolean;
+	isCenterUpdate: boolean;
 	[mapId: string]: any;
 }
 export interface BaseMapProperties {
 	id?: (keyof typeof wellKnownMapIds) | string;
 }
-export interface MapProperties {
+export interface MapProperties extends ActivityPubObject {
 	proxy?: string;
 	mapId?: (keyof typeof wellKnownMapIds) | string;
 
-	center?: LatLng;
+	center?: LngLat;
 	zoom?: number;
-
+	hasCenterMarker?: boolean;
 	hasSearch?: boolean;
+	onView?: (view: any) => any;
+	onActivityPubLocation?: (attributes: {id: string, pointer: string, [k: string]: any}) => any;
+	/* use geojson, overrides activitypub */
+	geojson?: any;
 }
 
 const icache = createICacheMiddleware<MapCache>();
-const factory = create({ i18n, idMiddleware, theme, icache, node }).properties<MapProperties>();
+const factory = create({ i18nActivityPub, idMiddleware, theme, icache, node }).properties<MapProperties>();
 
 export default factory(function lMap({
 	/*children,*/ properties,
-	middleware: { /*i18n,*/ theme, idMiddleware, icache, node }
+	middleware: { i18nActivityPub, theme, idMiddleware, icache, node }
 }) {
 	const { getOrSet, get, set } = icache;
 	// const { messages } = i18n.localize(bundle);
@@ -152,20 +195,21 @@ export default factory(function lMap({
 	const {
 		proxy = 'http://localhost:8080/',
 		mapId = 'fae788aa91e54244b161b59725dcbb2a',
-		center = [-118.71511, 34.09042],
+		center: c = [-118.71511, 34.09042],
 		zoom = 11,
-		hasSearch = true
-	} = properties();
+		hasCenterMarker = false,
+		hasSearch = false,
+		onView,
+		onActivityPubLocation,
+		geojson: g,
+		...ap
+	} = i18nActivityPub.normalized();
+
+	const center = Array.isArray(c) ? c : lngLatFromO(c);
+	const geojson = (!!g && !!g.type) ? g : (!!ap.type && apToGeoJSON(ap));
 
 	getOrSet('searchLoaded', false, false);
-	getOrSet(
-		'mapOptions',
-		{
-			center: Array.isArray(center) ? center : [-118.71511, 34.09042], // TODO lat lng
-			zoom: !Math.max(0, zoom || 0) ? 11 : zoom
-		},
-		false
-	);
+	getOrSet('mapOptions', { center, zoom: !Math.max(0, zoom || 0) ? 11 : zoom }, false);
 
 	const switchMap = (
 		id: string = mapId,
@@ -233,6 +277,7 @@ export default factory(function lMap({
 			onAttach: () => {
 				loadModules([
 					'esri/config',
+					'esri/Graphic',
 					'esri/views/MapView',
 					'esri/Map',
 					'esri/Basemap',
@@ -240,10 +285,14 @@ export default factory(function lMap({
 					'esri/layers/GroupLayer',
 					'esri/layers/MapImageLayer',
 					'esri/layers/WebTileLayer',
+					'esri/layers/GeoJSONLayer',
+        	"esri/renderers/UniqueValueRenderer",
 					'esri/widgets/LayerList',
-					'esri/widgets/BasemapGallery'
+					'esri/widgets/BasemapGallery',
+					"esri/widgets/ScaleBar"
 				]).then(([
-					esriConfig,
+					esriConfig, // TODO
+					Graphic,
 					MapView,
 					_Map,
 					BaseMap,
@@ -251,8 +300,11 @@ export default factory(function lMap({
 					GroupLayer,
 					MapImageLayer,
 					WebTileLayer,
+					GeoJSONLayer,
+					UniqueValueRenderer,
 					LayerList,
-					BasemapGallery
+					BasemapGallery,
+					ScaleBar
 				]) => {
 					// esriConfig.request.proxyUrl = proxy;
 
@@ -312,7 +364,113 @@ export default factory(function lMap({
 					}));
 					getOrSet('layers', layers, false);
 
-// new Map({ basemap: "dark-gray" })
+					console.log(center, zoom);
+
+					if (!!geojson.features.length) {
+						const uniqueValueInfos = [['Object','#51565c'],['Audio','#ffaf00'],['Article','#dc0005'],
+						['Document','#74757a'],['Event','#fadc00'],['Image','#ff7a00'],['Note','#dfdc00'],
+						['Page','#1c191b'],['Place','#00b1cc'],['Video','#ff2800'],['Profile','#c30c70'],
+						['Relationship','#eb2f59'],['Tombstone','#000000'],['Collection','#3e373c'],
+						['OrderedCollection','#3e373c'],['CollectionPage','#3e373c'],['OrderedCollectionPage','#3e373c'],
+						['Link','#0d7ecc'],['Travel','#cbbb9d'],['Arrive','#13b20b'],['','#000000']].map((a) => {
+							const [value, color] = a;
+							const path = Pathes.hasOwnProperty(value) ?
+								Pathes[(value as keyof typeof Pathes)] :
+								Pathes.marker;
+							return {
+								value,
+								label: value,
+								symbol: {type: "simple-marker", size: "16px", color, path},
+								// visualVariables: [{ type: "size", field: "mag", stops: [{value: 2.5, size: "4px"}, {value: 8, size: "32px"}] }]
+							}
+						})
+						console.log(JSON.stringify(geojson), uniqueValueInfos);
+
+						const renderer = new UniqueValueRenderer({
+							field: "apType",
+							uniqueValueInfos
+						});
+						/*
+						const marker = new SimpleMarkerSymbol({color, path});
+						marker.setColor(new Color(color));
+						marker.setPath(path);
+						marker.setStyle(SimpleMarkerSymbol.STYLE_PATH);
+
+						const renderer = {
+		          type: "simple",
+		          field: "mag",
+							symbol:	{ type: "simple-marker", color: "#000000", outline: {color: "#d32403"}, path: Pathes.Place },
+		          visualVariables: [{ type: "size", field: "mag", stops: [{value: 2.5, size: "4px"}, {value: 8, size: "40px"}] }]
+		        };*/
+						const blob = new Blob([JSON.stringify(geojson)], {type: "application/geo+json"});
+						const url  = URL.createObjectURL(blob);
+						const geojsonLayer = new GeoJSONLayer({
+							url,
+							renderer,
+							outFields: "*",
+							featureReduction: {
+								type: "cluster",
+								clusterRadius: "64px",
+								clusterMaxSize: "32px",
+								clusterMinSize: "24px",
+								labelingInfo: [{
+									labelExpressionInfo: {
+										expression: "Text($feature.cluster_count, '#,###')"
+									},
+									symbol: {
+										type: "text",
+										color: "#1988d1"
+									},
+									labelPlacement: "above-center"
+								}],
+								popupTemplate: {
+			            title: "Cluster summary",
+			            content: "This cluster represents {cluster_count} objects.",
+			            fieldInfos: [{
+			              fieldName: "cluster_count",
+			              format: {
+			                places: 0,
+			                digitSeparator: true
+			              }
+			            }]
+			          }
+							},
+							popupTemplate: {
+								title: `{apType}`,
+								content: "{id}"
+							}
+						});
+
+						layers.push(geojsonLayer);
+					}
+						/*
+						const geojson = { "type": "FeatureCollection",
+					    "features": [
+					      { "type": "Feature",
+					        "geometry": {
+					          "type": "Point",
+					          "coordinates": center
+				          },
+				          "properties": {
+				            "type": "Image"
+				          }
+				        }
+							]
+						};
+						const renderer = {
+		          type: "simple",
+		          field: "mag",
+							symbol:	{ type: "simple-marker", color: "#000000", outline: {color: "#d32403"}, path: Pathes.marker },
+		          visualVariables: [{ type: "size", field: "mag", stops: [{value: 2.5, size: "4px"}, {value: 8, size: "40px"}] }]
+		        };
+						const blob = new Blob([JSON.stringify(geojson)], {type: "application/geo+json"});
+						const url  = URL.createObjectURL(blob);
+						layers.push(new GeoJSONLayer({ url, renderer }));
+						*/
+
+					/*
+
+					*/
 					// then we load a * web map * from an id
 					const map = getOrSet(
 						'map',
@@ -326,8 +484,6 @@ export default factory(function lMap({
 					// then we load a map from an id
 					// const map = new MMap({ basemap: "osm" });
 					// and we show that map in a container w/ id #viewDiv
-
-					console.log(center, zoom);
 					const view = new MapView({
 						...get('mapOptions'),
 						map,
@@ -336,13 +492,30 @@ export default factory(function lMap({
 							mouseWheelZoomEnabled: false,
 							browserTouchPanEnabled: false
 						},
+						popup: {
+							collapseEnabled: false,
+							collapsed: false,
+							headingLevel: 4
+						},
 						constraints: {}
 					});
-
-
+					if (hasCenterMarker) {
+						view.graphics.add(new Graphic({
+							geometry: { type: "point", x: center[0], y: center[1] },
+							symbol:	{ type: "simple-marker", size: 16, color: [255, 255, 255, 0], outline: {color: "#d32403"}, style: 'circle' }
+						}));
+					}
 
 					// get('mapId')
 					view.when(function() {
+						onView && onView(view);
+
+						const scaleBar = new ScaleBar({
+		          view: view,
+		          unit: "dual" // TODO i18n ? The scale bar displays both metric and non-metric units.
+		        });
+		        view.ui.add(scaleBar, { position: "bottom-left" });
+
 						console.log('view when 1');
 						// Add the basemaps gallery for the more button
 						container = document.createElement('div');
@@ -370,53 +543,66 @@ export default factory(function lMap({
 							listItemCreatedFunction: defineActions // executes for each ListItem in the LayerList
 						});
 
-
-						const mapSearchNode = node.get('mapSearch')
-						if (hasSearch && mapSearchNode && !get('searchLoaded')) {
-							// set('searchLoaded', true, false);
-							console.log('searchLoaded');
-							loadModules([
-								'esri/widgets/Search'
-							]).then(([
-								Search
-							]) => {
-								const showPopup = (address: string, pt: any) => {
-									view.popup.open({
-										title:  + Math.round(pt.longitude * 100000)/100000 + ", " +
-											Math.round(pt.latitude * 100000)/100000,
-										content: address,
-										location: pt
-									});
-								}
-								// Add Search widget
-								container = document.createElement('div');
+						const mapSearchNode = node.get('mapSearch');
+						loadModules([
+							'esri/widgets/Search',
+							// 'esri/widgets/Directions'
+						]).then(([
+							Search,
+							// Directions
+						]) => {
+							const showPopup = (address: string, pt: any) => {
+								view.popup.open({
+									title:  + Math.round(pt.longitude * 100000)/100000 + ", " +
+										Math.round(pt.latitude * 100000)/100000,
+									content: address,
+									location: pt
+								});
+							}
+							// Add Search widget
+							container = document.createElement('div');
+							if (hasSearch && mapSearchNode && !get('searchLoaded')) {
 								mapSearchNode.innerHTML = '';
 								mapSearchNode.appendChild(container);
-								const search = new Search({
-									view,
-									container
-								});
-								// view.ui.add(search, "top-right"); // Add to the map
-
-								// Find address
-								view.on("click", function(evt: Event & {mapPoint: any}){
-									search.clear();
-									view.popup.clear();
-									if (search.activeSource) {
-										const geocoder = search.activeSource.locator; // World geocode service
-										const params = {
-											location: evt.mapPoint
-										};
-										geocoder.locationToAddress(params)
-											.then(function({address}: {address?: string}) { // Show the address found
-												address && showPopup(address, evt.mapPoint);
-											}, function(err: Error) { // Show no address found
-												showPopup("No address found.", evt.mapPoint);
-											});
+							}
+							const search = new Search({
+								view,
+								container
+							});
+							// Add to the map (instead container, too much mapspace in column)
+							// view.ui.add(search, "top-right");
+/*
+							container = document.createElement('div');
+							mapSearchNode.appendChild(container);
+							const directions = new Directions({
+				        view,
+								container,
+				        routeServiceUrl: "https://utility.arcgis.com/usrsvcs/appservices/7d0Q6PhsVvdlP0nO/rest/services/World/Route/NAServer/Route_World"
+				      });
+*/
+							// Find address
+							view.on("click", function(evt: Event & {mapPoint: any}){
+								view.hitTest(evt).then((response: any) => {
+									/* short circuit, no other info elements */
+									if (response.results.length === 1) {
+										console.log(evt);
+										search.clear();
+										view.popup.clear();
+										if (search.activeSource) {
+											const geocoder = search.activeSource.locator; // World geocode service
+											const location = evt.mapPoint;
+											geocoder.locationToAddress({ location })
+												.then(function({address}: {address?: string}) { // Show the address found
+													address && showPopup(address, evt.mapPoint);
+												}, function(err: Error) { // Show no address found
+													showPopup("No address found.", evt.mapPoint);
+												});
+										}
 									}
 								});
 							});
-						}
+						});
+
 
 						// Event listener that fires each time an action is triggered
 						layerList.on('trigger-action', function(event: any) {
@@ -462,8 +648,18 @@ export default factory(function lMap({
 						// getOrSet('view', view);
 					});
 
+
+					view.popup.watch("selectedFeature", function(graphic: any) {
+					  if (graphic) {
+					    // const graphicTemplate = graphic.getEffectivePopupTemplate();
+					    // graphicTemplate.actions.items[0].visible = graphic.attributes.website ? true : false;
+							if (graphic.attributes.hasOwnProperty('apType')) {
+								onActivityPubLocation && onActivityPubLocation(graphic.attributes)
+							}
+					  }
+					});
 					view.watch('stationary', () => {
-						console.log(view.center.longitude, view.center.latitude, view.zoom);
+						// console.log(view.center.longitude, view.center.latitude, view.zoom);
 						set(
 							'mapOptions',
 							{
@@ -530,14 +726,17 @@ export default factory(function lMap({
 		button: {'@redaktor/widgets/button': { root: [themedCss.button] }},
 		basemapButton: {'@redaktor/widgets/button': { root: [themedCss.button, themedCss.basemapButton] }},
 		layerButton: {'@redaktor/widgets/button': { root: [themedCss.button, themedCss.layerButton] }},
-		icon: {'@redaktor/widgets/icon': { icon: [themedCss.mapSwitchIcon] }}
+		icon: {'@redaktor/widgets/icon': { icon: [themedCss.mapSwitchIcon] }},
+		openIcon: {'@redaktor/widgets/icon': { icon: [themedCss.mapSwitchIcon, themedCss.openIcon] }},
+		closeIcon: {'@redaktor/widgets/icon': { icon: [themedCss.mapSwitchIcon, themedCss.closeIcon] }}
 	}
 	const getElements = (...cacheKeys: string[]) =>
 	 	cacheKeys.map((k) => document.getElementById(idMiddleware.getId(k)));
-console.log('map render');
+
 	return (
 		<div key="root"
 			classes={[
+				'redaktorMap',
 				themedCss.root,
 				viewCss.item,
 				!!viewDesktopCSS && viewDesktopCSS.item
@@ -551,11 +750,18 @@ console.log('map render');
 					</Button>
 				)}
 				{([
-					['basemaps', 'layer', extraClasses.basemapButton, 'plus'],
+					['basemaps', 'layer', extraClasses.basemapButton, 'moreIcon'],
 					['layer', 'basemaps', extraClasses.layerButton, 'stack']
 				] as [string, string, any, 'plus'|'stack'][]).map((a) =>
-					<Button {...btnProps} design="outlined" classes={a[2]}
-						onClick={() => {
+					<Button {...btnProps} key={a[0]} design="outlined" classes={a[2]}
+						onClick={(k) => {
+							const mapSwitch = node.get('mapSwitch');
+							const el = document.getElementById(k);
+							if (!!el) { el.classList.toggle(themedCss.open) }
+							mapSwitch && mapSwitch.querySelectorAll(`.${themedCss.button}`).forEach((_el) => {
+								if (_el.id !== k) { _el.classList.remove(themedCss.open) }
+							});
+
 							const [toggle, hidden] = getElements(a[0],a[1]);
 							if (toggle) {
 								toggle.style.display = (toggle.style.display === 'block') ? 'none' : 'block'
@@ -563,7 +769,8 @@ console.log('map render');
 							if (hidden) { hidden.style.display = 'none' }
 						}}
 					>
-						<Icon classes={extraClasses.icon} size="xxl" type={a[3]} />
+						<Icon classes={extraClasses.openIcon} size="xxl" type={a[3]} />
+						<Icon classes={extraClasses.closeIcon} size="l" type="close" />
 					</Button>
 				)}
 			</div>

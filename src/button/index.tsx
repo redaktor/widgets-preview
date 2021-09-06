@@ -26,7 +26,7 @@ export interface ButtonProperties extends ThemeProperties {
 	/** Handler for events triggered by button losing focus */
 	onBlur?(): void;
 	/** Handler for events triggered by a button click */
-	onClick?(): void;
+	onClick?(id: string): void;
 	/** Handler for events triggered by "on down" */
 	onDown?(e: PointerEvent): void;
 	/** Handler for events triggered by "on focus" */
@@ -127,8 +127,9 @@ export const Button = factory(function Button({
 		focus: focus.shouldFocus(),
 		onblur: () => onBlur && onBlur(),
 		onclick: (event: MouseEvent) => {
+			console.log('CLICK');
 			event.stopPropagation();
-			onClick && onClick();
+			onClick && onClick(idBase);
 		},
 		onfocus: () => onFocus && onFocus(),
 		onpointerenter: () => onOver && onOver(),
@@ -145,7 +146,7 @@ export const Button = factory(function Button({
 		onanimationend: "this.blur()",
 		...formatAriaProperties(aria)
 	}
-console.log('button render');	
+
 	return (labelFor ?
 		<label role="button" for={labelFor} key="root" {...buttonProps}>{children()}</label> :
 		<button key="root" {...buttonProps}>{children()}</button>

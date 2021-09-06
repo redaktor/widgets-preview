@@ -1,5 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
-import { ActivityPubLink } from '../../../../common/interfaces';
+import { uuid } from '@dojo/framework/core/util';
+import { ActivityPubObject, ActivityPubImage, ActivityPubLink } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Image, { ImageProperties } from '@redaktor/widgets/image';
 import Images from '@redaktor/widgets/images';
@@ -18,11 +19,16 @@ import Table from '@redaktor/widgets/table';
 */
 import * as viewCSS from '@redaktor/widgets/theme/material/_view.m.css';
 import * as columnsDesktop from '@redaktor/widgets/theme/material/_columnsDesktop.m.css';
+const LOC: any = [
+  [7.475748821884049, 51.49455016726148], [7.47267, 51.49518],
+  [7.47756, 51.49446], [7.47709, 51.49633], [7.47934, 51.49374], [7.47867, 51.49518]
+].map((a) => ({location: {id: uuid(), type: "Place", name: "Test", longitude: a[0], latitude: a[1]}}));
+const _1_1: ActivityPubImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-1-1.D8Qv-iDb.jpg", width: 600, height: 600, mediaType: "image/jpg"}, blurhash: 'UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@', ...LOC[1]};
+const _1_4: ActivityPubImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-1-4.39BgjdJb.jpg", width: 1200, height: 300, mediaType: "image/jpg"}, blurhash: 'MlIhplt7t7WB%M~qj[t7WBt7-;ofayWBWB', ...LOC[2]};
+const _2_3: ActivityPubImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-2-3.2sbeBGHg.jpg", width: 1417, height: 945, mediaType: "image/jpg"}, blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP', ...LOC[3]};
+const _3_2: ActivityPubImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-3-2.1cjXm1gs.jpg", width: 400, height: 600, mediaType: "image/jpg"}, ...LOC[4]}
 
-const _1_1: ActivityPubLink = {type: "Link", href: "card-photo-1-1.D8Qv-iDb.jpg", width: 600, height: 600, mediaType: "image/jpg", blurhash: 'UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@'};
-const _1_4: ActivityPubLink = {type: "Link", href: "card-photo-1-4.39BgjdJb.jpg", width: 1200, height: 300, mediaType: "image/jpg", blurhash: 'MlIhplt7t7WB%M~qj[t7WBt7-;ofayWBWB'};
-const _2_3: ActivityPubLink = {type: "Link", href: "card-photo-2-3.2sbeBGHg.jpg", width: 1417, height: 945, mediaType: "image/jpg", blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP'};
-const _3_2: ActivityPubLink = {type: "Link", href: "card-photo-3-2.1cjXm1gs.jpg", width: 400, height: 600, mediaType: "image/jpg"}
+
 
 const exampleData: ImageProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
@@ -49,7 +55,7 @@ const exampleData: ImageProperties = {
 
   Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`,
   `2 Jetzt herrscht Goldgräberstimmung an der New Yorker Technologiebörse NASDAQ. Dort will Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Börsenparkett. Gemessen am Referenzpreis der Aktien ist Coinbase rund 68 Milliarden Dollar wert. Analysten trauen Coinbase sogar eine Bewertung von 100 Milliarden Dollar zu – ein aberwitziger Preis für ein Unternehmen mit 56 Millionen Kunden und gut 1700 Mitarbeitern. Die schwindelerregende Bewertung erklären Analysten mit dem Hype um Kryptowährung LOREM IPSUM dolor sit amet, consectetur adipiscing elit. Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`],
-  image: [ {..._1_1, name:'test'}, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _1_1, _2_3, _1_1, _3_2, _1_4, _1_1, _2_3, _3_2, _2_3, _1_1, _2_3, _1_1, _2_3, _1_4, _1_1, _2_3, _2_3, _2_3, _1_1, _2_3, _1_4, _1_1, _1_4, _2_3, _2_3, _1_1, _2_3, _1_1 ],
+  image: [ {..._1_1, name:'test'}, _2_3, _3_2, _1_4],
   privacy: "public",
   published: "23m ago",
   bookmark: false,
@@ -70,10 +76,10 @@ const exampleImage: ImageProperties = {
   width: 1417,
   height: 945,
   blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP',
-  url: [ _2_3 ]
+  url: [ _2_3.url ],
+  ...LOC[0]
 };
-exampleImage.image && exampleImage.image.unshift({...exampleImage, ..._3_2, type:"Image", id:'test1000', image: [], sensitive: false, url: [ _3_2 ]})
-exampleImage.attachment = [ {...exampleImage, id:'xyz'} ];
+exampleImage.attachment = [ _1_1 ];
 const factory = create();
 export default factory(function Basic() {
 

@@ -20,6 +20,8 @@ export interface ImageCaptionProperties extends ActivityPubObject, ViewportPrope
 	baselined?: boolean;
 	editable?: boolean;
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
+	/* details are opened */
+	isOpen?: boolean;
 	/* navigation position, top or bottom, default top */
 	navPosition?: 'top' | 'bottom';
 	/* maximum number of items, default 1000 */
@@ -32,6 +34,8 @@ export interface ImageCaptionProperties extends ActivityPubObject, ViewportPrope
 	hasContent?: boolean;
 	/* show attachments, default true */
 	hasAttachment?: boolean;
+	/* when details are opened */
+	onToggle?: (isOpen: boolean) => any;
 	/* when all images have loaded */
 	onLoad?: () => any;
 	/* when clicking an image */
@@ -54,8 +58,8 @@ export const ImageCaption = factory(function ImageCaption({
 	const viewDesktopCSS = theme.viewDesktopCSS();
 
 	const {
-		size = 'm', view = 'column', name: n, summary, content, href = '', sensitive, attachment,
-		locale: currentLocale, ...rest
+		size = 'm', view = 'column', href = '', isOpen = false, name: n, locale: currentLocale,
+		summary, content, sensitive, attachment, onToggle, ...rest
 	} = i18nActivityPub.normalized();
 
 	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
@@ -81,14 +85,18 @@ export const ImageCaption = factory(function ImageCaption({
 		)}
 	</ImageCaption>
 	*/
-
+console.log('caption render', isOpen)
 	return <div key="root" classes={[themedCss.pageCaption, viewCss.pageCaption]}>
 		{children()}
 		<div classes={themedCss.attributions}>
 			<AttributedTo {...rest} max={39} />
 		</div>
 		{!hasContent ? <div classes={[themedCss.contentDetailsSummary, themedCss.muted]}>{name ? name[0] : ''}</div> :
-		<details key="details" classes={themedCss.contentDetails}>
+		<details key="details" classes={themedCss.contentDetails} open={isOpen} ontoggle={
+			(evt: MouseEvent<HTMLDetailsElement>) => {
+				onToggle && onToggle(evt.target.open)
+			}
+		}>
 			<summary key="summary" classes={themedCss.contentDetailsSummary}>
 				<Icon type="info" spaced="right" /> {name ? name[0] : 'info'}
 			</summary>

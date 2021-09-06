@@ -8,7 +8,10 @@ const locales = {
 };
 const messages = {
 	enlarge: 'Enlarge',
-	info: 'Info'
+	info: 'Info',
+	next: 'Next image',
+	prev: 'Previous image',
+	home: 'First Image'
 };
 
 export default { locales, messages };

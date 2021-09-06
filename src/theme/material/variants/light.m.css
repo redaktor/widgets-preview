@@ -1,5 +1,6 @@
 
 .root {
+	--mutedAlpha: 0.84;
 	--disabledAlpha: 0.72;
 	--pulseAlpha: 0.64;
 	--surface: #d6d6d6;

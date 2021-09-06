@@ -310,7 +310,7 @@ export interface ActivityPubBaseNormalized extends ActivityPubBase {
 	content?: string[];
 	contentMap?: LangMap[];
 
-	location?: APnormalized;
+	location?: APnormalized & ActivityPubPlace;
 
 	inReplyTo?: APnormalized;
 	audience?: APnormalized;

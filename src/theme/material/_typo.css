@@ -247,6 +247,16 @@ Typography
   --caph: 0.6923076923076923;
 }
 /* 14px */
+:global .esri-basemap-gallery__item,
+:global .esri-basemap-gallery__item-title,
+:global .esri-layer-list__list--independent .esri-layer-list__item-label,
+:global .esri-popup__content {
+  --size: 1.2173913043478262rem;
+  --lh: 1.5;
+  --pt: 0.39285714285714285em;
+  --mb: 1.1071428571428572em;
+  --caph: 0.7142857142857143;
+}
 .m, .m > p, .viewTypo, .viewTypo > p, .cardsSmall {
   --size: 1.2173913043478262rem;
   --lh: 1.5;
@@ -287,6 +297,14 @@ h5, .h5, .xxl, .xxl > p {
   --caph: 0.7058823529411765;
 }
 /* 18px */
+:global .esri-layer-list__list--independent .esri-layer-list__child-toggle + .esri-layer-list__item-label,
+:global .esri-popup__header-title {
+  --size: 1.565217391304348rem;
+  --lh: 1.1666666666666667;
+  --pt: 0.22222222222222227em;
+  --mb: 0.9444444444444444em;
+  --caph: 0.7222222222222222;
+}
 h4, .h4, .text-2xl {
   --size: 1.565217391304348rem;
   --lh: 1.1666666666666667;
