@@ -11,7 +11,7 @@ import theme, { ViewportProperties } from '../middleware/theme';
 import Icon from '../icon';
 import ImageCaption from '../imageCaption';
 import Img, { getWH } from '../image/image';
-import Map from '../map';
+import Map, { setActivityPubMap } from '../map';
 import bundle from './nls/Image';
 import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/images.m.css';
@@ -29,7 +29,7 @@ export { ImgProperties } from '../image/image';
 export interface ImagesProperties extends ActivityPubObject, ViewportProperties {
 	baselined?: boolean;
 	editable?: boolean;
-	view?: 'responsive' | 'column' | 'row' | 'tableRow';
+	view?: 'responsive' | 'column' | 'row' | 'tableRow' | 'full';
 	/* navigation position, top or bottom, default top */
 	navPosition?: 'top' | 'bottom';
 	/* maximum number of items, default 1000 */
@@ -60,7 +60,7 @@ export interface ImagesIcache {
 	focusKey: string;
 
 	captionsOpen: boolean;
-	mapOpen: false | LngLat;
+	mapOpen: false | ActivityPubObjectNormalized;
 	map: any;
 	mapView: any;
 }
@@ -89,7 +89,7 @@ export const Images = factory(function Images({
 		captionsOpen = false, onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen, ...ap
 		// fit = false, width = 80, height = 80,
 
-	} = i18nActivityPub.normalized();
+	} = i18nActivityPub.normalized<ImagesProperties>();
 	// const APo: ActivityPubObjectNormalized = _rest;
 
 	if (!image.length) {
@@ -132,17 +132,15 @@ export const Images = factory(function Images({
 		loaded[current]++;
 		set('loaded', loaded, (loaded[current] >= count))
 	}
-	const setMap = (location: [number, number]) => {
 
+
+	const setMap = (location: ActivityPubObjectNormalized) => {
 		const view = get('mapView');
 		if (view) {
-			const [x, y] = location;
-			view.graphics.items[0].set('geometry', { type: "point", x, y });
-			view.center = [x, y];
+			setActivityPubMap(view, location);
 		} else {
 			set('mapOpen', location)
 		}
-
 	}
 	const setPage = (i: number, focusPrefix?: 'prev'|'next') => {
 		set('currentPage', i);
@@ -151,10 +149,7 @@ export const Images = factory(function Images({
     	focus.focus();
 		}
 		if (get('mapOpen') && paginated[i][0].location) {
-			const {longitude, latitude} = paginated[i][0].location[0];
-			if (longitude && latitude) {
-				setMap([longitude, latitude]);
-			}
+			setMap(paginated[i][0].location[0]);
 		}
 	}
 	const handleKeydown = (i: number, keyTrigger?: 'prev'|'next', max?: number) => {
@@ -214,11 +209,14 @@ export const Images = factory(function Images({
 	return <virtual>
 		{get('mapOpen') &&
 			getOrSet('map', <Map
-				{...{type: 'Image', image}}
+				{...{type: 'Image', id: image[0].id, image}}
 				hasCenterMarker={true}
 				center={get('mapOpen')||void 0}
 				zoom={15}
-				onView={(view) => { set('mapView', view, false) }}
+				onView={(view) => {
+					set('mapView', view, false);
+					setMap(paginated[0][0].location[0]);
+				}}
 				onActivityPubLocation={({pointer}) => {
 					const [slash, property, indexStr = '0'] = pointer.split('/');
 					console.log(pointer.split('/'), property, indexStr)
@@ -244,7 +242,7 @@ export const Images = factory(function Images({
 				theme.uiElevation(),
 				// isColumn ? themedCss.column : themedCss.row,
 				navPosition === 'bottom' && themedCss.navBottom,
-				!paginationInputsVisible && themedCss.hasCounter,
+				(itemCount === 1 || !paginationInputsVisible) && themedCss.hasCounter,
 				(!!has('host-node') || allLoaded) && themedCss.loaded,
 				(maxImages.length > itemCount) && themedCss.hasPagination,
 				itemCount === 1 ? themedCss.singleItem : themedCss.multiItem,
@@ -258,7 +256,7 @@ export const Images = factory(function Images({
 			aria-live="polite"
 			role="region"
 		>
-		{!get('mapOpen') && hasAttachment && itemsPerPage === 1 &&
+		{hasAttachment && itemsPerPage === 1 &&
 			<div key="scrollWrapper" classes={[
 				themedCss.scrollWrapper,
 				themedCss.snap,
@@ -387,12 +385,7 @@ export const Images = factory(function Images({
 								{ itemCount === 1 && imagePage[0] && imagePage[0].location &&
 									<address
 										classes={themedCss.location}
-										onclick={() => {
-											const {longitude, latitude} = imagePage[0].location[0];
-											if (longitude && latitude) {
-												setMap([longitude, latitude]);
-											}
-										}}
+										onclick={() => { setMap(imagePage[0].location[0]) }}
 									>
 										<Icon size="xl" type="mapMarker" spaced="right"
 											classes={{'@redaktor/widgets/icon': {icon: [themedCss.locationIcon]}}}

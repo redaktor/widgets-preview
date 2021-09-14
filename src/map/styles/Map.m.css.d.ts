@@ -8,5 +8,7 @@ export const basemapButton: string;
 export const layerButton: string;
 export const open: string;
 export const openIcon: string;
+export const smallTypo: string;
+export const largeTypo: string;
 export const mapSwitchIcon: string;
 export const input: string;

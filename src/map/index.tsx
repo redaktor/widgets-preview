@@ -1,25 +1,25 @@
-import { tsx, create, node, dom } from '@dojo/framework/core/vdom';
-import { loadModules } from 'esri-loader';
-// import { Base as MetaBase } from "@dojo/framework/core/meta/Base";
-// import { systemLocale } from "@dojo/framework/i18n/i18n"; /* TODO */
-import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { JSONpointer } from '../framework/JSON/Pointer';
-import idMiddleware from '../middleware/id';
-import theme from '../middleware/theme';
 import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
 import { LngLat } from './interfaces';
+import { tsx, create, node, dom } from '@dojo/framework/core/vdom';
+import { loadModules } from 'esri-loader';
+import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import { apToGeoJSON, latLngStr, lngLatFromO, radiusFromO, isNr } from './util';
+import idMiddleware from '../middleware/id';
+import theme from '../middleware/theme';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import Button from '../Button';
 import Icon from '../Icon';
-import Pathes from '../Icon/path';
+import config, { MapConfig } from './config';
+import { uniqueValueInfos, centerSymbol, centerSymbolRadius, radiusSymbol } from './configMarker';
+import * as viewCss from '../theme/material/_view.m.css';
+import * as iconCss from '../theme/material/icon.m.css';
+import * as css from './styles/Map.m.css';
+// import { Base as MetaBase } from "@dojo/framework/core/meta/Base";
+// import { systemLocale } from "@dojo/framework/i18n/i18n"; /* TODO */
 // import Select from '@redaktor/widgets/select';
 // import * as UriTemplate from 'uritemplate';
-
 // import Providers from './mapProviders';
 // import bundle from './nls/';
-import * as viewCss from '../theme/material/_view.m.css';
-// import * as iconCss from '../theme/material/icon.m.css';
-import * as css from './styles/Map.m.css';
 
 /* // TODO:
 https://docs.graphhopper.com
@@ -32,62 +32,67 @@ https://thenounproject.com/YuguDesign/collection/map-location-pointers-glyphs/
 https://thenounproject.com/vectormarket01/collection/travelling/
 */
 
-
-export function apToGeoJSON(ap: ActivityPubObjectNormalized, oKey = '#') {
-	const [seen, results, features] = [new Set<string>(), new Set<string>(), []];
-	const jp = (new JSONpointer(ap));
-	jp.walk((value: any, pointer: string) => {
-		const matches = pointer.match(/(longitude|latitude)$/g);
-		if (matches && !!matches.length) {
-			const repl: any = {longitude: 'latitude', latitude: 'longitude'};
-			seen.add(pointer);
-			if (seen.has(pointer.replace(new RegExp(matches[0]+'$'), repl[matches[0]]))) {
-				results.add(pointer.split('/location')[0])
-			}
-		}
-	});
-	results.forEach((pointer) => {
-		const {id = '', type = ['Object'], location} = jp.get(pointer);
-		location.forEach(({longitude, latitude}: any) => {
-			if (longitude && latitude) {
-				type.forEach((apType: string) => {
-					(features as any[]).push({
-						type: "Feature",
-						geometry: {
-							type: "Point",
-							coordinates: [longitude, latitude]
-						},
-						properties: {id, pointer, apType}
-					})
-				})
-			}
-		});
-	});
-	return {type: "FeatureCollection", features}
-}
-
-type LngLatArray = [number, number] | [number, number, number];
-function isNr(n: any) {
-	return typeof n === 'number' && !isNaN(n);
-}
-function lngLatFromO(o: any): LngLatArray {
-	let a: LngLatArray = [0, 0];
-	if (isNr(o.latitude) && isNr(o.longitude)) {
-		const alt = typeof o.altitude === 'number' && !isNaN(o.altitude) && o.altitude;
-		a = !!alt ? [o.latitude, o.longitude, alt] : [o.latitude, o.longitude];
-	} else if (isNr(o.lat)) {
-		const lon = isNr(o.lon) ? o.lon : isNr(o.lng) ? o.lng : null;
-		if (!isNr(lon)) {
-			return a;
-		}
-		const alt = isNr(o.alt) && o.alt;
-		a = !!alt ? [o.lat, lon, alt] : [o.lat, lon];
+export function setActivityPubMap(view: any, ap: any, setLocation = true) {
+	if (!ap || typeof ap.latitude !== 'number' || typeof ap.longitude !== 'number') {
+		return
 	}
-	return a;
-}
+	const hasCenter = isNr(ap.latitude) && isNr(ap.longitude) && view.graphics && !!view.graphics.items.length;
+	if (hasCenter && setLocation) {
+		const hasRadius = isNr(ap.radius) && view.graphics && view.graphics.items && view.graphics.items.length > 1;
+		const [x, y] = lngLatFromO(ap);
+		const geometry = { type: "point", x, y };
+		view.center = [x, y];
+		view.graphics.items[0].set('geometry', geometry);
+		view.graphics.items[0].set('symbol', hasRadius ? centerSymbolRadius : centerSymbol);
+		if (hasRadius) {
+			view.graphics.items[1].set('visible', true);
+			loadModules([ 'esri/geometry/Circle' ]).then(([Circle]) => {
+				const {radius, radiusUnit} = radiusFromO(ap);
+				view.graphics.items[1].set('geometry', new Circle({
+					center: geometry,
+					radius,
+					radiusUnit,
+					geodesic: true,
+					numberOfPoints: 100
+				}));
+			});
+		} else {
+			view.graphics.items[1].set('visible', false);
+		}
+	}
 
+	if (view.geojsonMapping && isNr(view.geojsonMapping.dict[ap.id])) {
+		const { properties: p } = view.geojsonMapping.geojson.features[view.geojsonMapping.dict[ap.id]];
+		if (!!p) {
+			console.log('properties', p);
+			const { apType, latLng, name, geoMeta, summary } = p;
+			const copyIcon = `<i class="${iconCss.icon} ${iconCss.eyedropper}"></i>`;
+			const apIcon = `<i class="${iconCss.icon} ${(iconCss as any)[apType.toLowerCase()]}"></i>`;
+			view.popup.clear();
+			view.popup.open({
+				title: `<span class="${css.smallTypo}">${copyIcon} ${latLng}</span><br />${name}`,
+				content: `${apIcon} <span class="${css.smallTypo}">${geoMeta}<br />${summary}</span>`
+			});
+			/*
+			const el = document.createElement('textarea');
+			el.value = 'Lorem Ipsum';
+			document.body.appendChild(el);
+			el.select();
+			document.execCommand('copy');
+			document.body.removeChild(el);
+			*/
+		}
+
+	}
+
+};
+
+
+const { wellKnownMapIds } = config;
+
+/* TODO */
 // Creates actions in the LayerList.
-function defineActions(event: any) { /* TODO */
+function defineLayerActions(event: any) {
 	// The event object contains an item property.
 	// is is a ListItem referencing the associated layer
 	// and other properties. You can control the visibility of the
@@ -129,32 +134,6 @@ function defineActions(event: any) { /* TODO */
 		];
 	}
 }
-/*
-function createLeafletLngLat(props: Partial<Props>) {
-	const centerArray: LngLatArray = Array.isArray(props.center) ? props.center :
-		(!!props.center && typeof props.center === 'object' ? lngLatFromO(props.center) : [0, 0]);
-	return LngLat(centerArray)
-}
-*/
-const wellKnownMapIds = {
-	topo: 1,
-	streets: 1,
-	satellite: 1,
-	hybrid: 1,
-	gray: 1,
-	oceans: 1,
-	osm: 1,
-	terrain: 1,
-	'national-geographic': 1,
-	'dark-gray': 1,
-	'dark-gray-vector': 1,
-	'gray-vector': 1,
-	'streets-vector': 1,
-	'streets-night-vector': 1,
-	'streets-navigation-vector': 1,
-	'topo-vector': 1,
-	'streets-relief-vector': 1
-};
 
 interface MapCache {
 	map: any;
@@ -162,17 +141,24 @@ interface MapCache {
 	defaultId: string;
 	searchLoaded: boolean;
 	isCenterUpdate: boolean;
+	centerMarkerVisible: boolean;
+	radiusVisible: boolean;
+	apVisible: boolean;
 	[mapId: string]: any;
 }
 export interface BaseMapProperties {
 	id?: (keyof typeof wellKnownMapIds) | string;
 }
+
 export interface MapProperties extends ActivityPubObject {
 	proxy?: string;
 	mapId?: (keyof typeof wellKnownMapIds) | string;
-
-	center?: LngLat;
+	mapOptions?: MapConfig['map'];
+	center?: ActivityPubObjectNormalized | LngLat;
 	zoom?: number;
+	featureReduction?: MapConfig['featureReduction'];
+	basemaps?: MapConfig['basemaps'];
+	tileLayers?: MapConfig['tileLayers'];
 	hasCenterMarker?: boolean;
 	hasSearch?: boolean;
 	onView?: (view: any) => any;
@@ -185,7 +171,6 @@ const icache = createICacheMiddleware<MapCache>();
 const factory = create({ i18nActivityPub, idMiddleware, theme, icache, node }).properties<MapProperties>();
 
 export default factory(function lMap({
-	/*children,*/ properties,
 	middleware: { i18nActivityPub, theme, idMiddleware, icache, node }
 }) {
 	const { getOrSet, get, set } = icache;
@@ -193,26 +178,34 @@ export default factory(function lMap({
 	const themedCss = theme.classes(css);
 	const viewDesktopCSS = theme.viewDesktopCSS();
 	const {
-		proxy = 'http://localhost:8080/',
-		mapId = 'fae788aa91e54244b161b59725dcbb2a',
 		center: c = [-118.71511, 34.09042],
 		zoom = 11,
+		proxy = 'http://localhost:8080/',
+		mapId = 'fae788aa91e54244b161b59725dcbb2a',
+		mapOptions = config.map,
+		featureReduction = config.featureReduction,
+		basemaps = config.basemaps,
+		tileLayers = config.tileLayers,
 		hasCenterMarker = false,
 		hasSearch = false,
 		onView,
 		onActivityPubLocation,
 		geojson: g,
 		...ap
-	} = i18nActivityPub.normalized();
+	} = i18nActivityPub.normalized<MapProperties>();
 
 	const center = Array.isArray(c) ? c : lngLatFromO(c);
+	const {radius, radiusUnit} = radiusFromO(c);
 	const geojson = (!!g && !!g.type) ? g : (!!ap.type && apToGeoJSON(ap));
 
 	getOrSet('searchLoaded', false, false);
 	getOrSet('mapOptions', { center, zoom: !Math.max(0, zoom || 0) ? 11 : zoom }, false);
+	getOrSet('apVisible', true, false);
+	getOrSet('radiusVisible', true, false);
+	getOrSet('centerMarkerVisible', hasCenterMarker, false);
 
 	const switchMap = (
-		id: string = mapId,
+		id: string = `${mapId}`,
 		subDomains: string[] = ['a', 'b', 'c'],
 		title: string = ''
 	) => () => {
@@ -266,11 +259,11 @@ export default factory(function lMap({
 			viewCss.item,
 			!!viewDesktopCSS && viewDesktopCSS.item,
 			!!viewDesktopCSS && viewDesktopCSS.m1by1
-		].join(' ')
+		].join(' ');
 
 		// if (!Math.max(0,zoom||0)) { zoom = 11 }
-		getOrSet('defaultId', mapId, false);
-		getOrSet('mapId', mapId, false);
+		getOrSet('defaultId', `${mapId}`, false);
+		getOrSet('mapId', `${mapId}`, false);
 
 		return dom({
 			node: container,
@@ -278,6 +271,7 @@ export default factory(function lMap({
 				loadModules([
 					'esri/config',
 					'esri/Graphic',
+					'esri/geometry/Circle',
 					'esri/views/MapView',
 					'esri/Map',
 					'esri/Basemap',
@@ -293,6 +287,7 @@ export default factory(function lMap({
 				]).then(([
 					esriConfig, // TODO
 					Graphic,
+					Circle,
 					MapView,
 					_Map,
 					BaseMap,
@@ -309,7 +304,7 @@ export default factory(function lMap({
 					// esriConfig.request.proxyUrl = proxy;
 
 					// Create layers
-					const tileLayers = (_a: [string, string, string[]?][]) => _a.map((a) => {
+					const toLayers = (_a: [string, string, string[]?][]) => _a.map((a) => {
 						const tileLayer = new WebTileLayer({
 							title: a[0],
 							urlTemplate: `${proxy}${a[1]}`,
@@ -318,159 +313,36 @@ export default factory(function lMap({
 						if (a.length > 2) { tileLayer.subDomains = a[2] }
 						return tileLayer
 					});
-					const orderedLayers = {
-						publicTransport: tileLayers([
-							['Transport Map', 'tile.thunderforest.com/transport/{level}/{col}/{row}@2x.png?apikey=7c352c8ff1244dd8b732e349e0b0fe8d'],
-							['ÖPNV Karte', 'tileserver.memomaps.de/tilegen/{level}/{col}/{row}.png'],
-							['Open Railway Map', 'b.tiles.openrailwaymap.org/standard/{level}/{col}/{row}.png']
-						]),
-						bike: tileLayers([
-							['Cycle Map', 'tile.thunderforest.com/cycle/{level}/{col}/{row}@2x.png?apikey=7c352c8ff1244dd8b732e349e0b0fe8d'],
-							['CYCLOSM', 'dev.a.tile.openstreetmap.fr/cyclosm/{level}/{col}/{row}.png', ['a', 'b']],
-							['HikeBike', 'tiles.wmflabs.org/hikebike/{level}/{col}/{row}.png'],
-							['MTB Map', 'tile.mtbmap.cz/mtbmap_tiles/{level}/{col}/{row}.png'],
-							['Waymarked Cycling Trails', 'tile.waymarkedtrails.org/cycling/{level}/{col}/{row}.png'],
-							['Waymarked MTB Trails', 'tile.waymarkedtrails.org/cycling/{level}/{col}/{row}.png']
-						]),
-						hike: tileLayers([
-							['HikeBike', 'tiles.wmflabs.org/hikebike/{level}/{col}/{row}.png'],
-							['HillShading', 'tiles.wmflabs.org/hillshading/{level}/{col}/{row}.png'],
-							['Waymarked Hiking Trails', 'tile.waymarkedtrails.org/hiking/{level}/{col}/{row}.png']
-						]),
-						humanitarian: tileLayers([
-							['OSM Humanitarian', 'a.tile.openstreetmap.fr/hot/{level}/{col}/{row}.png', ['a', 'b']],
-							['OSM OpenFireMap', 'openfiremap.org/hytiles/{level}/{col}/{row}.png'],
-							['safecast', 's3.amazonaws.com/te512.safecast.org/{level}/{col}/{row}.png']
-						]),
-						hobby: tileLayers([
-							['Waymarked Riding Trails', 'tile.waymarkedtrails.org/riding/{level}/{col}/{row}.png'],
-							['Waymarked Skating', 'tile.waymarkedtrails.org/skating/{level}/{col}/{row}.png'],
-							['Waymarked Slopes', 'tile.waymarkedtrails.org/slopes/{level}/{col}/{row}.png']
-						])
-					}
-					const layers = [
-						['Hobby', orderedLayers.hobby],
-						['Humanitarian', orderedLayers.humanitarian],
-						['Hiking', orderedLayers.hike],
-						['Bike', orderedLayers.bike],
-						['Public Transport', orderedLayers.publicTransport]
-					].map((a) => new GroupLayer({
-						title: a[0],
-						layers: a[1],
-						visible: true,
-						visibilityMode: 'independent',
-						listMode: 'show',
-						opacity: 0.75
-					}));
-					getOrSet('layers', layers, false);
+					const layers = config.tileLayers.map((o) => new GroupLayer({...o, layers: toLayers(o.layers)}));
 
 					console.log(center, zoom);
 
+					/* Default ActivityPub-content layer as geojson */
+					let geojsonLayer: any;
 					if (!!geojson.features.length) {
-						const uniqueValueInfos = [['Object','#51565c'],['Audio','#ffaf00'],['Article','#dc0005'],
-						['Document','#74757a'],['Event','#fadc00'],['Image','#ff7a00'],['Note','#dfdc00'],
-						['Page','#1c191b'],['Place','#00b1cc'],['Video','#ff2800'],['Profile','#c30c70'],
-						['Relationship','#eb2f59'],['Tombstone','#000000'],['Collection','#3e373c'],
-						['OrderedCollection','#3e373c'],['CollectionPage','#3e373c'],['OrderedCollectionPage','#3e373c'],
-						['Link','#0d7ecc'],['Travel','#cbbb9d'],['Arrive','#13b20b'],['','#000000']].map((a) => {
-							const [value, color] = a;
-							const path = Pathes.hasOwnProperty(value) ?
-								Pathes[(value as keyof typeof Pathes)] :
-								Pathes.marker;
-							return {
-								value,
-								label: value,
-								symbol: {type: "simple-marker", size: "16px", color, path},
-								// visualVariables: [{ type: "size", field: "mag", stops: [{value: 2.5, size: "4px"}, {value: 8, size: "32px"}] }]
-							}
-						})
+						// green 13b20b indigo 3b4eb8 lightblue 6da7d1 teal 339985 beige [203, 187, 157, 1]		[195, 12, 112, 1]
 						console.log(JSON.stringify(geojson), uniqueValueInfos);
-
 						const renderer = new UniqueValueRenderer({
 							field: "apType",
 							uniqueValueInfos
 						});
-						/*
-						const marker = new SimpleMarkerSymbol({color, path});
-						marker.setColor(new Color(color));
-						marker.setPath(path);
-						marker.setStyle(SimpleMarkerSymbol.STYLE_PATH);
-
-						const renderer = {
-		          type: "simple",
-		          field: "mag",
-							symbol:	{ type: "simple-marker", color: "#000000", outline: {color: "#d32403"}, path: Pathes.Place },
-		          visualVariables: [{ type: "size", field: "mag", stops: [{value: 2.5, size: "4px"}, {value: 8, size: "40px"}] }]
-		        };*/
 						const blob = new Blob([JSON.stringify(geojson)], {type: "application/geo+json"});
 						const url  = URL.createObjectURL(blob);
-						const geojsonLayer = new GeoJSONLayer({
+						geojsonLayer = new GeoJSONLayer({
 							url,
 							renderer,
-							outFields: "*",
-							featureReduction: {
-								type: "cluster",
-								clusterRadius: "64px",
-								clusterMaxSize: "32px",
-								clusterMinSize: "24px",
-								labelingInfo: [{
-									labelExpressionInfo: {
-										expression: "Text($feature.cluster_count, '#,###')"
-									},
-									symbol: {
-										type: "text",
-										color: "#1988d1"
-									},
-									labelPlacement: "above-center"
-								}],
-								popupTemplate: {
-			            title: "Cluster summary",
-			            content: "This cluster represents {cluster_count} objects.",
-			            fieldInfos: [{
-			              fieldName: "cluster_count",
-			              format: {
-			                places: 0,
-			                digitSeparator: true
-			              }
-			            }]
-			          }
-							},
+							featureReduction,
+							outFields: ["*"],
 							popupTemplate: {
-								title: `{apType}`,
-								content: "{id}"
+								title: `<span class="${css.smallTypo}">{latLng}</span><br />{name}`,
+								content: `<span class="${css.smallTypo}">{geoMeta}<br />{summary}</span>`
 							}
 						});
 
-						layers.push(geojsonLayer);
+						layers.unshift(geojsonLayer);
 					}
-						/*
-						const geojson = { "type": "FeatureCollection",
-					    "features": [
-					      { "type": "Feature",
-					        "geometry": {
-					          "type": "Point",
-					          "coordinates": center
-				          },
-				          "properties": {
-				            "type": "Image"
-				          }
-				        }
-							]
-						};
-						const renderer = {
-		          type: "simple",
-		          field: "mag",
-							symbol:	{ type: "simple-marker", color: "#000000", outline: {color: "#d32403"}, path: Pathes.marker },
-		          visualVariables: [{ type: "size", field: "mag", stops: [{value: 2.5, size: "4px"}, {value: 8, size: "40px"}] }]
-		        };
-						const blob = new Blob([JSON.stringify(geojson)], {type: "application/geo+json"});
-						const url  = URL.createObjectURL(blob);
-						layers.push(new GeoJSONLayer({ url, renderer }));
-						*/
+					getOrSet('layers', layers, false);
 
-					/*
-
-					*/
 					// then we load a * web map * from an id
 					const map = getOrSet(
 						'map',
@@ -481,183 +353,211 @@ export default factory(function lMap({
 							}),
 						false
 					);
+					// Create View
 					// then we load a map from an id
 					// const map = new MMap({ basemap: "osm" });
 					// and we show that map in a container w/ id #viewDiv
 					const view = new MapView({
-						...get('mapOptions'),
 						map,
 						container,
-						navigation: {
-							mouseWheelZoomEnabled: false,
-							browserTouchPanEnabled: false
-						},
-						popup: {
-							collapseEnabled: false,
-							collapsed: false,
-							headingLevel: 4
-						},
-						constraints: {}
+						...mapOptions,
+						...get('mapOptions'),
+	          // set highlightOptions like color and fillOpacity
+	          highlightOptions: {
+	            color: [255, 0, 58],
+	            fillOpacity: 0.8
+	          }
 					});
-					if (hasCenterMarker) {
-						view.graphics.add(new Graphic({
-							geometry: { type: "point", x: center[0], y: center[1] },
-							symbol:	{ type: "simple-marker", size: 16, color: [255, 255, 255, 0], outline: {color: "#d32403"}, style: 'circle' }
-						}));
-					}
+					// view.geojsonLayer = geojsonLayer;
+					map.when(async () => {
+						try {
+							view.geojsonMapping = {
+								dict: (geojson.features as any[]).reduce((o, feature, i) => {
+									o[feature.properties.locationId] = i;
+									return o
+								}, {}),
+								geojson
+							};
 
-					// get('mapId')
-					view.when(function() {
-						onView && onView(view);
+							const scaleBar = new ScaleBar({
+			          view: view,
+			          unit: 'dual' // TODO i18n ? The scale bar displays both metric and non-metric units.
+			        });
+			        view.ui.add(scaleBar, { position: 'bottom-left' });
 
-						const scaleBar = new ScaleBar({
-		          view: view,
-		          unit: "dual" // TODO i18n ? The scale bar displays both metric and non-metric units.
-		        });
-		        view.ui.add(scaleBar, { position: "bottom-left" });
-
-						console.log('view when 1');
-						// Add the basemaps gallery for the more button
-						container = document.createElement('div');
-						container.setAttribute("id", idMiddleware.getId('basemaps'));
-						container.style.display = 'none';
-						const basemapGallery = new BasemapGallery({
-							view,
-							container
-						});
-					  view.ui.add(basemapGallery, { position: "top-right" });
-						basemapGallery.watch('activeBasemap', function(_map: any) {
-							const c = document.getElementById(idMiddleware.getId('basemaps'));
-							if (c) { c.style.display = 'none' }
-							set('mapId', _map.portalItem.id);
-					  });
-						// Create the LayerList widget with the associated actions
-						// and add it to the top-right corner of the view.
-						container = document.createElement('div');
-						container.setAttribute("id", idMiddleware.getId('layer'));
-						container.style.display = 'none';
-						const layerList = new LayerList({
-							view,
-							container,
-							showSubLayers: true,
-							listItemCreatedFunction: defineActions // executes for each ListItem in the LayerList
-						});
-
-						const mapSearchNode = node.get('mapSearch');
-						loadModules([
-							'esri/widgets/Search',
-							// 'esri/widgets/Directions'
-						]).then(([
-							Search,
-							// Directions
-						]) => {
-							const showPopup = (address: string, pt: any) => {
-								view.popup.open({
-									title:  + Math.round(pt.longitude * 100000)/100000 + ", " +
-										Math.round(pt.latitude * 100000)/100000,
-									content: address,
-									location: pt
-								});
-							}
-							// Add Search widget
+							console.log('view when 1');
+							// Add the basemaps gallery for the more button
 							container = document.createElement('div');
-							if (hasSearch && mapSearchNode && !get('searchLoaded')) {
-								mapSearchNode.innerHTML = '';
-								mapSearchNode.appendChild(container);
-							}
-							const search = new Search({
+							container.setAttribute('id', idMiddleware.getId('basemaps'));
+							container.style.display = 'none';
+							const basemapGallery = new BasemapGallery({
 								view,
 								container
 							});
-							// Add to the map (instead container, too much mapspace in column)
-							// view.ui.add(search, "top-right");
-/*
+						  view.ui.add(basemapGallery, { position: 'top-right' });
+							basemapGallery.watch('activeBasemap', function(_map: any) {
+								const c = document.getElementById(idMiddleware.getId('basemaps'));
+								if (c) { c.style.display = 'none' }
+								set('mapId', _map.portalItem.id);
+						  });
+							// Create the LayerList widget with the associated actions
+							// and add it to the top-right corner of the view.
 							container = document.createElement('div');
-							mapSearchNode.appendChild(container);
-							const directions = new Directions({
-				        view,
+							container.setAttribute('id', idMiddleware.getId('layer'));
+							container.style.display = 'none';
+							const layerList = new LayerList({
+								view,
 								container,
-				        routeServiceUrl: "https://utility.arcgis.com/usrsvcs/appservices/7d0Q6PhsVvdlP0nO/rest/services/World/Route/NAServer/Route_World"
-				      });
-*/
-							// Find address
-							view.on("click", function(evt: Event & {mapPoint: any}){
-								view.hitTest(evt).then((response: any) => {
-									/* short circuit, no other info elements */
-									if (response.results.length === 1) {
-										console.log(evt);
-										search.clear();
-										view.popup.clear();
-										if (search.activeSource) {
-											const geocoder = search.activeSource.locator; // World geocode service
-											const location = evt.mapPoint;
-											geocoder.locationToAddress({ location })
-												.then(function({address}: {address?: string}) { // Show the address found
-													address && showPopup(address, evt.mapPoint);
-												}, function(err: Error) { // Show no address found
-													showPopup("No address found.", evt.mapPoint);
-												});
+								showSubLayers: true,
+								// executes for each ListItem in the LayerList:
+								listItemCreatedFunction: defineLayerActions
+							});
+
+							const mapSearchNode = node.get('mapSearch');
+							loadModules([
+								'esri/widgets/Search',
+								// 'esri/widgets/Directions'
+							]).then(([
+								Search,
+								// Directions
+							]) => {
+								const showPopup = (address: string, pt: any) => {
+									console.log('search popup');
+									view.popup.open({
+										title: latLngStr(pt.latitude, pt.longitude),
+										content: address,
+										location: pt
+									});
+								}
+								// Add Search widget
+								container = document.createElement('div');
+								if (hasSearch && mapSearchNode && !get('searchLoaded')) {
+									mapSearchNode.innerHTML = '';
+									mapSearchNode.appendChild(container);
+								}
+								const search = new Search({
+									view,
+									container
+								});
+								// Add to the map (instead container, too much mapspace in column)
+								// view.ui.add(search, 'top-right');
+	/*
+								container = document.createElement('div');
+								mapSearchNode.appendChild(container);
+								const directions = new Directions({
+					        view,
+									container,
+					        routeServiceUrl: 'https://utility.arcgis.com/usrsvcs/appservices/7d0Q6PhsVvdlP0nO/rest/services/World/Route/NAServer/Route_World'
+					      });
+	*/
+								// Find address
+								view.on('click', function(evt: Event & {mapPoint: any}){
+									view.hitTest(evt).then((response: any) => {
+										/* short circuit, no other info elements */
+										if (response.results.length === 1) {
+											console.log(evt);
+											search.clear();
+											view.popup.clear();
+											if (search.activeSource) {
+												const geocoder = search.activeSource.locator; // World geocode service
+												const location = evt.mapPoint;
+												geocoder.locationToAddress({ location })
+													.then(function({address}: {address?: string}) { // Show the address found
+														address && showPopup(address, evt.mapPoint);
+													}, function(err: Error) { // Show no address found
+														showPopup('No address found.', evt.mapPoint);
+													});
+											}
 										}
-									}
+									});
 								});
 							});
-						});
 
 
-						// Event listener that fires each time an action is triggered
-						layerList.on('trigger-action', function(event: any) {
-							// The layer visible in the view at the time of the trigger.
-							const visibleLayer = layers.filter((l) => l.visible)[0];
+							// Event listener that fires each time an action is triggered
+							layerList.on('trigger-action', function(event: any) {
+								// The layer visible in the view at the time of the trigger.
+								const visibleLayer = layers.filter((l) => l.visible)[0];
 
-							// Capture the action id.
-							const id = event.action.id;
+								// Capture the action id.
+								const id = event.action.id;
 
-							if (id === 'full-extent') {
-								// if the full-extent action is triggered then navigate
-								// to the full extent of the visible layer
-								view.goTo(visibleLayer.fullExtent).catch(function(
-									error: Error
-								) {
-									if (error.name !== 'AbortError') {
-										console.error(error);
+								if (id === 'full-extent') {
+									// if the full-extent action is triggered then navigate
+									// to the full extent of the visible layer
+									view.goTo(visibleLayer.fullExtent).catch(function(
+										error: Error
+									) {
+										if (error.name !== 'AbortError') {
+											console.error(error);
+										}
+									});
+								} else if (id === 'information') {
+									// if the information action is triggered, then
+									// open the item details page of the service layer
+									window.open(visibleLayer.url);
+								} else if (id === 'increase-opacity') {
+									// if the increase-opacity action is triggered, then
+									// increase the opacity of the GroupLayer by 0.25
+
+									if (visibleLayer.opacity < 1) {
+										visibleLayer.opacity += 0.25;
 									}
-								});
-							} else if (id === 'information') {
-								// if the information action is triggered, then
-								// open the item details page of the service layer
-								window.open(visibleLayer.url);
-							} else if (id === 'increase-opacity') {
-								// if the increase-opacity action is triggered, then
-								// increase the opacity of the GroupLayer by 0.25
+								} else if (id === 'decrease-opacity') {
+									// if the decrease-opacity action is triggered, then
+									// decrease the opacity of the GroupLayer by 0.25
 
-								if (visibleLayer.opacity < 1) {
-									visibleLayer.opacity += 0.25;
+									if (visibleLayer.opacity > 0) {
+										visibleLayer.opacity -= 0.25;
+									}
 								}
-							} else if (id === 'decrease-opacity') {
-								// if the decrease-opacity action is triggered, then
-								// decrease the opacity of the GroupLayer by 0.25
+							});
 
-								if (visibleLayer.opacity > 0) {
-									visibleLayer.opacity -= 0.25;
-								}
+							// Add widget to the top right corner of the view
+							view.ui.add(layerList, 'top-right');
+
+							if (hasCenterMarker) {
+								const geometry = { type: 'point', x: center[0], y: center[1] };
+								// center square or circle
+								view.graphics.add(new Graphic({
+									geometry,
+									symbol:	isNr(radius) ? centerSymbolRadius : centerSymbol,
+									visible: get('centerMarkerVisible')
+								}));
+								// radius circle
+								const radiusGeometry = isNr(radius) && get('radiusVisible') ? new Circle({
+								  center: geometry,
+									radius,
+								  radiusUnit,
+								  geodesic: true,
+								  numberOfPoints: 100
+								}) : geometry;
+								view.graphics.add(new Graphic({
+								  geometry: radiusGeometry,
+								  symbol: radiusSymbol,
+									visible: isNr(radius) && get('radiusVisible')
+								}));
 							}
-						});
+							view.popup.on('click', function(event: Event){
+							  console.log(event);
+							});
+							view.popup.watch('selectedFeature', function(graphic: any) {
+							  if (graphic) {
+							    // const graphicTemplate = graphic.getEffectivePopupTemplate();
+							    // graphicTemplate.actions.items[0].visible = graphic.attributes.website ? true : false;
+									if (graphic.attributes.hasOwnProperty('apType')) {
+										onActivityPubLocation && onActivityPubLocation(graphic.attributes)
+									}
+							  }
+							});
 
-						// Add widget to the top right corner of the view
-						view.ui.add(layerList, 'top-right');
-						// getOrSet('view', view);
+							onView && onView(view);
+
+						} catch(e) {
+							console.log('error', e);
+						}
 					});
 
-
-					view.popup.watch("selectedFeature", function(graphic: any) {
-					  if (graphic) {
-					    // const graphicTemplate = graphic.getEffectivePopupTemplate();
-					    // graphicTemplate.actions.items[0].visible = graphic.attributes.website ? true : false;
-							if (graphic.attributes.hasOwnProperty('apType')) {
-								onActivityPubLocation && onActivityPubLocation(graphic.attributes)
-							}
-					  }
-					});
 					view.watch('stationary', () => {
 						// console.log(view.center.longitude, view.center.latitude, view.zoom);
 						set(
@@ -672,8 +572,7 @@ export default factory(function lMap({
 						);
 					});
 				}
-			)
-			.catch((err) => {
+			).catch((err) => {
 				// handle any errors
 				console.error(err);
 			});
@@ -686,14 +585,6 @@ export default factory(function lMap({
 		responsive: true,
 		animated: false
 	};
-	const baseIds = [
-		{icon: 'map', id: get('defaultId')}, // 'fae788aa91e54244b161b59725dcbb2a' /* osm daylight */
-		{icon: 'mapSat', id: 'da10cf4ba254469caf8016cd66369157'}, /* world image clarity */
-		{icon: 'mapStreet', id: '9d150cad73e248c29c7149e84915a1c5'}, /* OSM Esri World Street Map style */
-		/*	'd167e0b1e9ed4abf982ab1aecc97e3ce' w relief
-				'55ebf90799fa4a3fa57562700a68c405' World Street Map */
-		{icon: 'mapTopo', id: '67372ff42cd145319639a99152b15bc3'},
-	];
 
 /* https://www.arcgis.com/sharing/rest/content/items/
 	6cf42d6ad9e3480696c5021546e76fab	sat img
@@ -744,9 +635,9 @@ export default factory(function lMap({
 		>
 			<div key="mapSearch"></div>
 			<div key="mapSwitch" classes={[themedCss.mapSwitch]}>
-				{baseIds.map((o, i) =>
+				{basemaps.map((o, i) =>
 					<Button {...btnProps} classes={extraClasses.button} onClick={switchMap(o.id)} disabled={curId === o.id}>
-						<Icon classes={extraClasses.icon} size="xxl" type={(baseIds[i].icon as any)} />
+						<Icon classes={extraClasses.icon} size="xxl" type={(basemaps[i].icon as any)} />
 					</Button>
 				)}
 				{([

@@ -20,14 +20,20 @@ import Table from '@redaktor/widgets/table';
 import * as viewCSS from '@redaktor/widgets/theme/material/_view.m.css';
 import * as columnsDesktop from '@redaktor/widgets/theme/material/_columnsDesktop.m.css';
 const LOC: any = [
-  [7.475748821884049, 51.49455016726148], [7.47267, 51.49518],
-  [7.47756, 51.49446], [7.47709, 51.49633], [7.47934, 51.49374], [7.47867, 51.49518]
-].map((a) => ({location: {id: uuid(), type: "Place", name: "Test", longitude: a[0], latitude: a[1]}}));
+  [7.475748821884049, 51.49455016726148], [7.47267, 51.49518], [7.47756, 51.49446],
+  [7.47709, 51.49633], [7.47934, 51.49374], [7.47867, 51.49518], [7.47309, 51.49373],
+  [7.47554, 51.4936], [7.47455, 51.49574], [7.47562, 51.49293], [7.47408, 51.49657],
+  [7.47709, 51.49723], [7.47382, 51.49291], [7.47867, 51.49418], [7.47936, 51.49764],
+  [7.48056, 51.49443], [7.47399, 51.49601], [7.47682, 51.49528], [7.47760, 51.49550],
+  [7.47709, 51.49733], [7.47934, 51.49384], [7.47867, 51.49618], [7.47860, 51.49610],
+].map((a, i) => {
+  const o = ({location: {id: uuid(), type: "Place", name: "Test", longitude: a[0], latitude: a[1]}});
+  return i > 3 ? o : ({location: {...o.location, altitude: 200, radius: i >1 ? 800 : 400}})
+});
 const _1_1: ActivityPubImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-1-1.D8Qv-iDb.jpg", width: 600, height: 600, mediaType: "image/jpg"}, blurhash: 'UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@', ...LOC[1]};
 const _1_4: ActivityPubImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-1-4.39BgjdJb.jpg", width: 1200, height: 300, mediaType: "image/jpg"}, blurhash: 'MlIhplt7t7WB%M~qj[t7WBt7-;ofayWBWB', ...LOC[2]};
 const _2_3: ActivityPubImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-2-3.2sbeBGHg.jpg", width: 1417, height: 945, mediaType: "image/jpg"}, blurhash: 'UgF~XEDiMxxu_4D$oIozbcM{ozM{M{t7t7RP', ...LOC[3]};
 const _3_2: ActivityPubImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-3-2.1cjXm1gs.jpg", width: 400, height: 600, mediaType: "image/jpg"}, ...LOC[4]}
-
 
 
 const exampleData: ImageProperties = {
@@ -79,11 +85,15 @@ const exampleImage: ImageProperties = {
   url: [ _2_3.url ],
   ...LOC[0]
 };
-exampleImage.attachment = [ _1_1 ];
+exampleImage.attachment = [ _1_1 ].concat([
+  'Object', 'Audio', 'Article', 'Document', 'Event', 'Page', 'Note', 'Place',
+  'Video', 'Profile', 'Relationship', 'Link', 'Travel', 'Arrive', 'Collection', 'OrderedCollection',
+  'CollectionPage', 'OrderedCollectionPage'
+].map((type, i) => ({type, id: `attachTest${i}`, name: 'attachTest ...', summary: 'a summary', content: 'a content', ...LOC[i+5]})));
+
 const factory = create();
 export default factory(function Basic() {
 
-console.log('render');
 /* tableRow is meant to be 100vw */
 	return (
 		<Example spaced={true}>

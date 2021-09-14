@@ -17,7 +17,7 @@ const factory = create({ i18n, icache }).properties<LocalesProperties>();
 
 export const ActivityPubCachingMiddleware = factory(({ properties, middleware: { i18n, icache }}) => {
 
-  const setI18n = (locale?: string) => {
+  function setI18n(locale?: string) {
     const { locale: userLocale = 'en'} = properties();
     if (!locale) { locale = userLocale }
 
@@ -30,17 +30,17 @@ export const ActivityPubCachingMiddleware = factory(({ properties, middleware: {
     return locale;
   }
 
-  const normalized = (locale?: string, _invalidate = false) => {
+  function normalized<P>(locale?: string, _invalidate = false): (P & LocalesProperties & ActivityPubObjectNormalized) {
     locale = setI18n(locale);
     const { id } = properties();
     if (!id) {
-      return {...normalizeActivityPub(properties(), locale), locale}
+      return {...normalizeActivityPub(properties(), locale), locale} as any
     }
     if (!_invalidate) {
       const cachedValue = icache.get(id);
-      if (!!cachedValue) { return cachedValue }
+      if (!!cachedValue) { return cachedValue as any }
     }
-    return icache.set(id, {...normalizeActivityPub(properties(), locale), locale})
+    return icache.set(id, {...normalizeActivityPub(properties(), locale), locale}) as any
     /*
     // Cache miss from server (isStale):
     const promise = fetchExternalValue(value);

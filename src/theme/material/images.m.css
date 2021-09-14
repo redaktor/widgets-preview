@@ -236,6 +236,9 @@ TODO above
 .next.control {
 	order: 3;
 }
+.prev.control, .next.control {
+	position: relative;
+}
 .meta {
 	composes: s sans from './_typo.css';
 	padding-left: var(--touch-target-min);
@@ -394,7 +397,7 @@ TODO above
 		transition: filter var(--ui-dpd-2,240ms) var(--ui-easing);
 		filter: grayscale(1) opacity(0.618);
 	}
-	.root:hover .scrollWrapper.desaturateScroll {
+	.scrollWrapper.desaturateScroll:hover {
 		filter: grayscale(0) opacity(1);
 	}
 
