@@ -142,13 +142,13 @@ export const Images = factory(function Images({
 			set('mapOpen', location)
 		}
 	}
-	const setPage = (i: number, focusPrefix?: 'prev'|'next') => {
+	const setPage = (i: number, setLocation = true, focusPrefix?: 'prev'|'next') => {
 		set('currentPage', i);
 		if (focusPrefix) {
 			set('focusKey', `${focusPrefix}_${i}`);
     	focus.focus();
 		}
-		if (get('mapOpen') && paginated[i][0].location) {
+		if (setLocation && get('mapOpen') && paginated[i][0].location) {
 			setMap(paginated[i][0].location[0]);
 		}
 	}
@@ -157,13 +157,13 @@ export const Images = factory(function Images({
 			const cur = get('currentPage');
 			switch (e.key) {
 				case 'Enter':
-					setPage(i, keyTrigger)
+					setPage(i, true, keyTrigger)
 				break;
 				case 'ArrowLeft':
-					setPage(!cur ? (max ? max-1 : 0) : cur-1, 'prev')
+					setPage(!cur ? (max ? max-1 : 0) : cur-1, true, 'prev')
 				break;
 				case 'ArrowRight':
-					setPage(cur === (max ? max-1 : 0) ? 0 : (cur||0)+1, 'next')
+					setPage(cur === (max ? max-1 : 0) ? 0 : (cur||0)+1, true, 'next')
 				break;
 				case 'ArrowUp':
 					setPage(0)
@@ -218,10 +218,10 @@ export const Images = factory(function Images({
 					setMap(paginated[0][0].location[0]);
 				}}
 				onActivityPubLocation={({pointer}) => {
-					const [slash, property, indexStr = '0'] = pointer.split('/');
+					const [slash, property, indexStr = '0', ...rest] = pointer.split('/');
 					console.log(pointer.split('/'), property, indexStr)
 					const index = parseInt(indexStr, 10);
-					if (property) {
+					if (property && !rest.length) {
 						switch (property) {
 							case 'image':
 								setPage(index)
@@ -229,6 +229,10 @@ export const Images = factory(function Images({
 							/* TODO : attachment */
 						}
 					}
+				}}
+				onActivityPubLocationOpen={({id, pointer}) => {
+					console.log('onActivityPubLocationOpen', {id, pointer});
+					/* TODO : Open as Place */
 				}}
 			/>
 		)}
@@ -303,7 +307,7 @@ export const Images = factory(function Images({
 							tabIndex={0}
 							for={`${idBase}_${!i ? (a.length-1) : (i-1)}`}
 							classes={[themedCss.prev, themedCss.control, !i && themedCss.firstControl, isLight(i)]}
-							onclick={() => { setPage(!i ? a.length-1 : i-1, 'prev') }}
+							onclick={() => { setPage(!i ? a.length-1 : i-1, true, 'prev') }}
 							onkeydown={handleKeydown(!i ? a.length-1 : i-1, 'prev', a.length)}
 						>
 							<Icon size="xl" type="left" />
@@ -314,7 +318,7 @@ export const Images = factory(function Images({
 							tabIndex={0}
 							for={`${idBase}_${i === a.length-1 ? 0 : (i+1)}`}
 							classes={[themedCss.next, themedCss.control, i === a.length-1 && themedCss.lastControl, isLight(i)]}
-							onclick={() => { setPage(i === a.length-1 ? 0 : i+1, 'next') }}
+							onclick={() => { setPage(i === a.length-1 ? 0 : i+1, true, 'next') }}
 							onkeydown={handleKeydown(i === a.length-1 ? 0 : i+1, 'next', a.length)}
 						>
 							<Icon size="xl" type="right" />

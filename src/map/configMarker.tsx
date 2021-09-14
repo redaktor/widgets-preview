@@ -352,7 +352,6 @@ export const uniqueValueInfos= [
 ['Arrive',bl,oc], ['Group',[163, 165, 0, 1],oc], ['Organization',[51, 153, 133, 1]],
 ['Person',[75, 26, 126, 1]], ['Service',[94, 102, 94, 1]], ['',[81,86,92,1]]].map((a: any) => {
 	const [value, color, outlineColor] = a;
-	console.log(value, pathes.hasOwnProperty(value));
 	const path = pathes.hasOwnProperty(value) ?
 		pathes[(value as keyof typeof pathes)] : pathes.marker;
 	return {

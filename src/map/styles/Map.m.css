@@ -75,6 +75,15 @@ label.mapSwitchIcon {
 .input:checked + .mapSwitchIcon {
 	background: red;
 }
+/* match esri icons and redaktor icons in actions */
+.root .actionIcon {
+	font-size: var(--size);
+	padding-top: 1px;
+}
+.root .actionIcon.actionIconOk {
+	color: var(--ui-success) !important;
+}
+
 :global .redaktorMap .esri-input::placeholder {
 	color: var(--text-muted);
 }

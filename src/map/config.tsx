@@ -28,6 +28,11 @@ const config: MapConfig = {
 			headingLevel: 4
 		},
 		constraints: {}
+		/* set highlightOptions like color and fillOpacity
+		highlightOptions: {
+			color: [255, 0, 58],
+			fillOpacity: 0.8
+		} */
 	},
 	basemaps: [
 		{icon: 'map', id: 'fae788aa91e54244b161b59725dcbb2a'}, // 'fae788aa91e54244b161b59725dcbb2a' /* osm daylight */

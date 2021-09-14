@@ -12,3 +12,5 @@ export const smallTypo: string;
 export const largeTypo: string;
 export const mapSwitchIcon: string;
 export const input: string;
+export const actionIcon: string;
+export const actionIconOk: string;

@@ -10,6 +10,7 @@ import i18nActivityPub from '../middleware/i18nActivityPub';
 import Button from '../Button';
 import Icon from '../Icon';
 import config, { MapConfig } from './config';
+const { wellKnownMapIds } = config;
 import { uniqueValueInfos, centerSymbol, centerSymbolRadius, radiusSymbol } from './configMarker';
 import * as viewCss from '../theme/material/_view.m.css';
 import * as iconCss from '../theme/material/icon.m.css';
@@ -33,6 +34,7 @@ https://thenounproject.com/vectormarket01/collection/travelling/
 */
 
 export function setActivityPubMap(view: any, ap: any, setLocation = true) {
+	console.log(ap);
 	if (!ap || typeof ap.latitude !== 'number' || typeof ap.longitude !== 'number') {
 		return
 	}
@@ -63,36 +65,35 @@ export function setActivityPubMap(view: any, ap: any, setLocation = true) {
 
 	if (view.geojsonMapping && isNr(view.geojsonMapping.dict[ap.id])) {
 		const { properties: p } = view.geojsonMapping.geojson.features[view.geojsonMapping.dict[ap.id]];
+		console.log('!!', p);
 		if (!!p) {
-			console.log('properties', p);
 			const { apType, latLng, name, geoMeta, summary } = p;
-			const copyIcon = `<i class="${iconCss.icon} ${iconCss.eyedropper}"></i>`;
 			const apIcon = `<i class="${iconCss.icon} ${(iconCss as any)[apType.toLowerCase()]}"></i>`;
 			view.popup.clear();
+			console.log('set actions');
+			view.popup.actions = [{
+				id: 'copy',
+				visible: true,
+				className: `${css.actionIcon} ${iconCss.icon} ${iconCss.eyedropper}`,
+				title: 'Copy coordinates' // TODO i18n
+			}, {
+				id: 'open',
+				visible: true,
+				className: `${css.actionIcon} ${iconCss.icon} ${iconCss.place}`,
+				title: 'Open current ActivityPub Place' // TODO i18n
+			}]
 			view.popup.open({
-				title: `<span class="${css.smallTypo}">${copyIcon} ${latLng}</span><br />${name}`,
+				title: `<span class="${css.smallTypo}">${latLng}</span><br />${name}`,
 				content: `${apIcon} <span class="${css.smallTypo}">${geoMeta}<br />${summary}</span>`
 			});
-			/*
-			const el = document.createElement('textarea');
-			el.value = 'Lorem Ipsum';
-			document.body.appendChild(el);
-			el.select();
-			document.execCommand('copy');
-			document.body.removeChild(el);
-			*/
 		}
-
 	}
 
 };
 
-
-const { wellKnownMapIds } = config;
-
 /* TODO */
 // Creates actions in the LayerList.
-function defineLayerActions(event: any) {
+function defineLayerActions(event: any) { /*
 	// The event object contains an item property.
 	// is is a ListItem referencing the associated layer
 	// and other properties. You can control the visibility of the
@@ -133,6 +134,7 @@ function defineLayerActions(event: any) {
 			]
 		];
 	}
+	*/
 }
 
 interface MapCache {
@@ -140,7 +142,7 @@ interface MapCache {
 	view: any;
 	defaultId: string;
 	searchLoaded: boolean;
-	isCenterUpdate: boolean;
+	currentPointer: string;
 	centerMarkerVisible: boolean;
 	radiusVisible: boolean;
 	apVisible: boolean;
@@ -163,6 +165,7 @@ export interface MapProperties extends ActivityPubObject {
 	hasSearch?: boolean;
 	onView?: (view: any) => any;
 	onActivityPubLocation?: (attributes: {id: string, pointer: string, [k: string]: any}) => any;
+	onActivityPubLocationOpen?: (attributes: {id: string, pointer: string, [k: string]: any}) => any;
 	/* use geojson, overrides activitypub */
 	geojson?: any;
 }
@@ -190,6 +193,7 @@ export default factory(function lMap({
 		hasSearch = false,
 		onView,
 		onActivityPubLocation,
+		onActivityPubLocationOpen,
 		geojson: g,
 		...ap
 	} = i18nActivityPub.normalized<MapProperties>();
@@ -321,7 +325,6 @@ export default factory(function lMap({
 					let geojsonLayer: any;
 					if (!!geojson.features.length) {
 						// green 13b20b indigo 3b4eb8 lightblue 6da7d1 teal 339985 beige [203, 187, 157, 1]		[195, 12, 112, 1]
-						console.log(JSON.stringify(geojson), uniqueValueInfos);
 						const renderer = new UniqueValueRenderer({
 							field: "apType",
 							uniqueValueInfos
@@ -338,7 +341,6 @@ export default factory(function lMap({
 								content: `<span class="${css.smallTypo}">{geoMeta}<br />{summary}</span>`
 							}
 						});
-
 						layers.unshift(geojsonLayer);
 					}
 					getOrSet('layers', layers, false);
@@ -361,12 +363,7 @@ export default factory(function lMap({
 						map,
 						container,
 						...mapOptions,
-						...get('mapOptions'),
-	          // set highlightOptions like color and fillOpacity
-	          highlightOptions: {
-	            color: [255, 0, 58],
-	            fillOpacity: 0.8
-	          }
+						...get('mapOptions')
 					});
 					// view.geojsonLayer = geojsonLayer;
 					map.when(async () => {
@@ -385,7 +382,6 @@ export default factory(function lMap({
 			        });
 			        view.ui.add(scaleBar, { position: 'bottom-left' });
 
-							console.log('view when 1');
 							// Add the basemaps gallery for the more button
 							container = document.createElement('div');
 							container.setAttribute('id', idMiddleware.getId('basemaps'));
@@ -452,10 +448,11 @@ export default factory(function lMap({
 	*/
 								// Find address
 								view.on('click', function(evt: Event & {mapPoint: any}){
+									console.log(evt);
 									view.hitTest(evt).then((response: any) => {
+										console.log(response.results);
 										/* short circuit, no other info elements */
 										if (response.results.length === 1) {
-											console.log(evt);
 											search.clear();
 											view.popup.clear();
 											if (search.activeSource) {
@@ -538,17 +535,41 @@ export default factory(function lMap({
 									visible: isNr(radius) && get('radiusVisible')
 								}));
 							}
-							view.popup.on('click', function(event: Event){
-							  console.log(event);
-							});
+
+							view.popup.dockEnabled = true;
+							view.popup.dockOptions = { buttonEnabled: false, breakpoint: true };
+
 							view.popup.watch('selectedFeature', function(graphic: any) {
 							  if (graphic) {
-							    // const graphicTemplate = graphic.getEffectivePopupTemplate();
-							    // graphicTemplate.actions.items[0].visible = graphic.attributes.website ? true : false;
-									if (graphic.attributes.hasOwnProperty('apType')) {
+									console.log(graphic.attributes);
+									const hasAP = graphic.attributes.hasOwnProperty('apType');
+									const { apType, latLng, name, geoMeta, summary } = graphic.attributes;
+									const apIcon = `<i class="${iconCss.icon} ${(iconCss as any)[apType.toLowerCase()]}"></i>`;
+									if (hasAP) {
+										view.popup.clear();
+										view.popup.open({
+											title: `<span class="${css.smallTypo}">${latLng}</span><br />${name}`,
+											content: `${apIcon} <span class="${css.smallTypo}">${geoMeta}<br />${summary}</span>`
+										});
 										onActivityPubLocation && onActivityPubLocation(graphic.attributes)
 									}
 							  }
+							});
+							view.popup.on('trigger-action', function(o: any) {
+								if (o.action.id === "copy") {
+									const el = document.createElement('textarea');
+									el.value = `${center[1]}, ${center[0]}`;
+									document.body.appendChild(el);
+									el.select();
+									document.execCommand('copy');
+									document.body.removeChild(el);
+									const currentActionClass = o.action.className;
+									o.action.className = `${css.actionIcon} ${css.actionIconOk} ${iconCss.icon} ${iconCss.check}`;
+									setTimeout(() => { o.action.className = currentActionClass }, 1200);
+							  } else if (o.action.id === "open") {
+									const { id = '', pointer = get('currentPointer') } = ap;
+									onActivityPubLocationOpen && onActivityPubLocationOpen({...ap, id, pointer});
+								}
 							});
 
 							onView && onView(view);
