@@ -3,7 +3,6 @@ import { tsx, create } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import focus from '@dojo/framework/core/middleware/focus';
 import has from '@dojo/framework/core/has';
-import { LngLat } from '../map/interfaces';
 import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
 import id from '../middleware/id';
 import i18nActivityPub from '../middleware/i18nActivityPub';
@@ -11,10 +10,12 @@ import theme, { ViewportProperties } from '../middleware/theme';
 import Icon from '../icon';
 import ImageCaption from '../imageCaption';
 import Img, { getWH } from '../image/image';
-import Map, { setActivityPubMap } from '../map';
+import Map from '../map';
 import bundle from './nls/Image';
 import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/images.m.css';
+
+import { latLngStr } from '../map/util';
 
 export interface ImageChildren {
 	/** Optional Header */
@@ -135,11 +136,10 @@ export const Images = factory(function Images({
 
 
 	const setMap = (location: ActivityPubObjectNormalized) => {
+		set('mapOpen', location);
 		const view = get('mapView');
 		if (view) {
-			setActivityPubMap(view, location);
-		} else {
-			set('mapOpen', location)
+			view.setActivityPub(location);
 		}
 	}
 	const setPage = (i: number, setLocation = true, focusPrefix?: 'prev'|'next') => {
@@ -149,7 +149,7 @@ export const Images = factory(function Images({
     	focus.focus();
 		}
 		if (setLocation && get('mapOpen') && paginated[i][0].location) {
-			setMap(paginated[i][0].location[0]);
+			setMap({...paginated[i][0].location[0], apType: paginated[i][0].type[0], geoMeta: `location of image ${i}`});
 		}
 	}
 	const handleKeydown = (i: number, keyTrigger?: 'prev'|'next', max?: number) => {
@@ -210,7 +210,8 @@ export const Images = factory(function Images({
 		{get('mapOpen') &&
 			getOrSet('map', <Map
 				{...{type: 'Image', id: image[0].id, image}}
-				hasCenterMarker={true}
+				hasCenterMarker
+				hasSearch
 				center={get('mapOpen')||void 0}
 				zoom={15}
 				onView={(view) => {
@@ -388,13 +389,23 @@ export const Images = factory(function Images({
 								}
 								{ itemCount === 1 && imagePage[0] && imagePage[0].location &&
 									<address
+										itemscope itemtype="http://schema.org/Place"
 										classes={themedCss.location}
 										onclick={() => { setMap(imagePage[0].location[0]) }}
 									>
 										<Icon size="xl" type="mapMarker" spaced="right"
 											classes={{'@redaktor/widgets/icon': {icon: [themedCss.locationIcon]}}}
 										/>
-										location
+										{imagePage[0].location[0].name &&
+											<span itemprop="name">{imagePage[0].location[0].name}</span>
+										}
+										{imagePage[0].location[0].latitude && imagePage[0].location[0].longitude &&
+										  <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+												{!imagePage[0].location[0].name && latLngStr(imagePage[0].location[0])||''}
+										    <meta itemprop="latitude" content={imagePage[0].location[0].latitude} />
+										    <meta itemprop="longitude" content={imagePage[0].location[0].longitude} />
+										  </span>
+										}
 									</address>
 								}
 							</div>
@@ -416,5 +427,15 @@ export const Images = factory(function Images({
 		</div>
 	</virtual>
 });
+/*
+<div itemscope itemtype="http://schema.org/Place">
+  <div itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+    Latitude: 40 deg 44 min 54.36 sec N
+    Longitude: 73 deg 59 min 8.5 dec W
+    <meta itemprop="latitude" content="40.75" />
+    <meta itemprop="longitude" content="73.98" />
+  </div>
+</div>
+*/
 
 export default Images;

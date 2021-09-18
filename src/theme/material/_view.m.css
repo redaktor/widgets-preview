@@ -183,6 +183,15 @@ screen and (min-width: 1312px) and (max-width: 1648px) {
   padding: 0px;
 	margin-bottom: 0px;
 }
+.fullscreen .item {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 100vw;
+	height: 100vh;
+	z-index: 9999;
+}
+
 .isRow:not(:checked) + .root .item {
 	justify-content: center;
 }

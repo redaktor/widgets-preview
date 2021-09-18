@@ -122,7 +122,7 @@ export const Summary = factory(function Summary({
 			}}
 			{...formatAriaProperties(aria)}
 			onanimationend="this.blur()"
-			aria-pressed={typeof pressed === 'boolean' ? pressed.toString() : null}
+			aria-pressed={typeof pressed === 'boolean' ? (pressed.toString() as 'false'|'true') : void 0}
 		>
 			{children()}
 		</summary>

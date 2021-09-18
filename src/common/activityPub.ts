@@ -239,3 +239,5 @@ export const ActivityPubActors = actors.reduce(apObj, {});
 export const ActivityPubActivities = activities.reduce(apObj, {});
 export const ActivityPubObjects = objects.reduce(apObj, {});
 export const ActivityPubLinks = links.reduce(apObj, {});
+export const activityPubTypes = [...actors, ...activities, ...objects, ...links].map((o) => o.name);
+export const activityPubTypesRegex = new RegExp(`^${activityPubTypes.join('|')}$`);

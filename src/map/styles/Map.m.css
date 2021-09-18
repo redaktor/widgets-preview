@@ -1,6 +1,10 @@
 .root {
 	min-height: var(--line4);
 }
+.fullscreen .root {
+	min-width: 100vw;
+}
+
 .root.responsive {
 	width: 100%;
 }
@@ -22,9 +26,14 @@
 	overflow: hidden;
 	z-index: 4;
 }
+.fullscreen .map {
+	min-width: 100vw;
+	min-height: 100vh;
+}
 .mapSwitch {
 	display: flex;
 	justify-content: space-around;
+	background-color: var(--bg);
 }
 .button {
 	margin-top: calc(var(--m) * 2) !important;
@@ -32,6 +41,9 @@
 	border-radius: 0 !important;
 	padding: 0;
 	align-items: center;
+}
+.fullscreen .mapSwitch .button {
+	min-height: var(--line2);
 }
 .closeIcon {
 	display: none;
@@ -76,13 +88,22 @@ label.mapSwitchIcon {
 	background: red;
 }
 /* match esri icons and redaktor icons in actions */
-.root .actionIcon {
+.root .actionIcon,
+.root .radiusIcon {
 	font-size: var(--size);
 	padding-top: 1px;
+}
+.root .radiusIcon {
+	border: 2px dotted var(--text-muted);
+	border-radius: 9999px;
+	padding-top: 0px;
+	margin-top: -1px;
 }
 .root .actionIcon.actionIconOk {
 	color: var(--ui-success) !important;
 }
+.summary { }
+.activityPubLegend { }
 
 :global .redaktorMap .esri-input::placeholder {
 	color: var(--text-muted);
@@ -94,6 +115,13 @@ label.mapSwitchIcon {
 :global .redaktorMap .esri-search {
 	min-height: var(--line2);
 	width: 100% !important;
+}
+:global .redaktorMap .esri-search__container .esri-widget--button {
+	z-index: 0;
+	border: none;
+	border-left: 1px dotted var(--border);
+	min-width: var(--line2);
+	min-height: var(--line2);
 }
 :global .redaktorMap .esri-widget {
 	font-family: var(--font-sans);
@@ -158,7 +186,6 @@ label.mapSwitchIcon {
 	margin: 0 0 calc(var(--mb) - 2px) 0;
 	padding: var(--pt) var(--grid-base) 0 calc(var(--grid-base) * 2);
 	font-weight: 500;
-	opacity: var(--mutedAlpha);
 	color: var(--text);
 }
 :global .redaktorMap .esri-popup__content {

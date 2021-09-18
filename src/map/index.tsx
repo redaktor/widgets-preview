@@ -7,11 +7,13 @@ import { apToGeoJSON, latLngStr, lngLatFromO, radiusFromO, isNr } from './util';
 import idMiddleware from '../middleware/id';
 import theme from '../middleware/theme';
 import i18nActivityPub from '../middleware/i18nActivityPub';
-import Button from '../Button';
-import Icon from '../Icon';
 import config, { MapConfig } from './config';
 const { wellKnownMapIds } = config;
 import { uniqueValueInfos, centerSymbol, centerSymbolRadius, radiusSymbol } from './configMarker';
+import Button from '../Button';
+import Icon from '../Icon';
+import apBundle from '../common/nls/ActivityPub';
+import bundle from './nls/Map';
 import * as viewCss from '../theme/material/_view.m.css';
 import * as iconCss from '../theme/material/icon.m.css';
 import * as css from './styles/Map.m.css';
@@ -20,7 +22,6 @@ import * as css from './styles/Map.m.css';
 // import Select from '@redaktor/widgets/select';
 // import * as UriTemplate from 'uritemplate';
 // import Providers from './mapProviders';
-// import bundle from './nls/';
 
 /* // TODO:
 https://docs.graphhopper.com
@@ -32,25 +33,61 @@ https://thenounproject.com/xinhstudio/collection/saigon-attractions-map/
 https://thenounproject.com/YuguDesign/collection/map-location-pointers-glyphs/
 https://thenounproject.com/vectormarket01/collection/travelling/
 */
+interface MapThis {
+	view: any;
+	search: any;
+	messages: {[key: string]: string};
+	geojson: {[key: string]: any};
+	geojsonDict: {[key: string]: number};
+};
+export function setActivityPub(this: MapThis, ap: ActivityPubObjectNormalized, centerMarkerVisible = true) {
+	if (!ap) { return }
+	const { view, search, geojson, geojsonDict } = this;
 
-export function setActivityPubMap(view: any, ap: any, setLocation = true) {
-	console.log(ap);
-	if (!ap || typeof ap.latitude !== 'number' || typeof ap.longitude !== 'number') {
+	if (typeof ap.latitude !== 'number' || typeof ap.longitude !== 'number') {
+		if (!ap.name) { return }
+		view.popup.actions.getItemAt(0).visible = false;
+		view.popup.actions.getItemAt(1).visible = true;
+		view.graphics.getItemAt(0).visible = false;
+		const apIcon = `<i class="${iconCss.icon} ${(iconCss as any)[
+			ap.hasOwnProperty('apType') ? ap.apType.toLowerCase() : ap.type[0].toLowerCase()
+		]}"></i>`;
+		const { geoMeta = '' } = ap;
+		const name = !!ap.name && !!ap.name.length ? ap.name.join(' – ') : '';
+		const summary = !!ap.summary && !!ap.summary.length ? ap.summary.join(' – ') : '';
+		search.searchName = name;
+		search.searchTerm = name;
+
+		view.popup.clear();
+		view.popup.open({
+			includeDefaultActions: false,
+			title: `<span class="${css.smallTypo}">${this.messages.latLngUnknown}</span><br /><span title="${summary}">${name}</span>`,
+			content: `${apIcon} <span class="${css.smallTypo}">${geoMeta}</span>`
+		});
 		return
 	}
-	const hasCenter = isNr(ap.latitude) && isNr(ap.longitude) && view.graphics && !!view.graphics.items.length;
-	if (hasCenter && setLocation) {
-		const hasRadius = isNr(ap.radius) && view.graphics && view.graphics.items && view.graphics.items.length > 1;
+	view.popup.actions.getItemAt(0).visible = true;
+	view.popup.actions.getItemAt(1).visible = false;
+	search.clear();
+
+	const { items = [] } = view.graphics||{};
+	const hasCenter = isNr(ap.latitude) && isNr(ap.longitude) && !!items.length;
+	if (hasCenter) {
+		const hasRadius = isNr(ap.radius) && view.graphics && items && items.length > 1;
 		const [x, y] = lngLatFromO(ap);
 		const geometry = { type: "point", x, y };
-		view.center = [x, y];
-		view.graphics.items[0].set('geometry', geometry);
-		view.graphics.items[0].set('symbol', hasRadius ? centerSymbolRadius : centerSymbol);
+		if (view.hasOwnProperty('goTo')) {
+			view.goTo([x, y])
+		} else {
+			view.center = [x, y];
+		}
+		items[0].set('geometry', geometry);
+		items[0].set('symbol', hasRadius ? centerSymbolRadius : centerSymbol);
 		if (hasRadius) {
-			view.graphics.items[1].set('visible', true);
+			items[1].set('visible', true);
 			loadModules([ 'esri/geometry/Circle' ]).then(([Circle]) => {
 				const {radius, radiusUnit} = radiusFromO(ap);
-				view.graphics.items[1].set('geometry', new Circle({
+				items[1].set('geometry', new Circle({
 					center: geometry,
 					radius,
 					radiusUnit,
@@ -59,89 +96,33 @@ export function setActivityPubMap(view: any, ap: any, setLocation = true) {
 				}));
 			});
 		} else {
-			view.graphics.items[1].set('visible', false);
+			items[1].set('visible', false);
 		}
 	}
 
-	if (view.geojsonMapping && isNr(view.geojsonMapping.dict[ap.id])) {
-		const { properties: p } = view.geojsonMapping.geojson.features[view.geojsonMapping.dict[ap.id]];
-		console.log('!!', p);
+	if (this.geojsonDict && isNr(this.geojsonDict[ap.id||''])) {
+		view.graphics.getItemAt(0).visible = centerMarkerVisible;
+		const { properties: p } = geojson.features[geojsonDict[ap.id||'']];
 		if (!!p) {
 			const { apType, latLng, name, geoMeta, summary } = p;
 			const apIcon = `<i class="${iconCss.icon} ${(iconCss as any)[apType.toLowerCase()]}"></i>`;
 			view.popup.clear();
-			console.log('set actions');
-			view.popup.actions = [{
-				id: 'copy',
-				visible: true,
-				className: `${css.actionIcon} ${iconCss.icon} ${iconCss.eyedropper}`,
-				title: 'Copy coordinates' // TODO i18n
-			}, {
-				id: 'open',
-				visible: true,
-				className: `${css.actionIcon} ${iconCss.icon} ${iconCss.place}`,
-				title: 'Open current ActivityPub Place' // TODO i18n
-			}]
 			view.popup.open({
-				title: `<span class="${css.smallTypo}">${latLng}</span><br />${name}`,
-				content: `${apIcon} <span class="${css.smallTypo}">${geoMeta}<br />${summary}</span>`
+				includeDefaultActions: false,
+				title: `<span class="${css.smallTypo}">${latLng}</span><br /><span title="${summary}">${name}</span>`,
+				content: `${apIcon} <span class="${css.smallTypo}">${geoMeta}</span>`
 			});
 		}
 	}
-
 };
-
-/* TODO */
-// Creates actions in the LayerList.
-function defineLayerActions(event: any) { /*
-	// The event object contains an item property.
-	// is is a ListItem referencing the associated layer
-	// and other properties. You can control the visibility of the
-	// item, its title, and actions using this object.
-
-	const item = event.item;
-	// Opens the layer's item in the LayerList programmatically
-	item.open = true;
-
-	if (item.title === 'US Demographics') {
-		// An array of objects defining actions to place in the LayerList.
-		// By making this array two-dimensional, you can separate similar
-		// actions into separate groups with a breaking line.
-		item.actionsSections = [
-			[
-				{
-					title: 'Go to full extent',
-					className: 'esri-icon-zoom-out-fixed',
-					id: 'full-extent'
-				},
-				{
-					title: 'Layer information',
-					className: 'esri-icon-description',
-					id: 'information'
-				}
-			],
-			[
-				{
-					title: 'Increase opacity',
-					className: 'esri-icon-up',
-					id: 'increase-opacity'
-				},
-				{
-					title: 'Decrease opacity',
-					className: 'esri-icon-down',
-					id: 'decrease-opacity'
-				}
-			]
-		];
-	}
-	*/
-}
 
 interface MapCache {
 	map: any;
 	view: any;
+	layerView: any;
 	defaultId: string;
 	searchLoaded: boolean;
+	locationHasSearch: boolean;
 	currentPointer: string;
 	centerMarkerVisible: boolean;
 	radiusVisible: boolean;
@@ -177,9 +158,7 @@ export default factory(function lMap({
 	middleware: { i18nActivityPub, theme, idMiddleware, icache, node }
 }) {
 	const { getOrSet, get, set } = icache;
-	// const { messages } = i18n.localize(bundle);
-	const themedCss = theme.classes(css);
-	const viewDesktopCSS = theme.viewDesktopCSS();
+
 	const {
 		center: c = [-118.71511, 34.09042],
 		zoom = 11,
@@ -197,17 +176,43 @@ export default factory(function lMap({
 		geojson: g,
 		...ap
 	} = i18nActivityPub.normalized<MapProperties>();
+	const themedCss = theme.classes(css);
+	const desktopCSS = theme.viewDesktopCSS();
+	const { messages } = i18nActivityPub.localize(bundle);
+	const { messages: apMessages } = i18nActivityPub.localize(apBundle);
 
 	const center = Array.isArray(c) ? c : lngLatFromO(c);
 	const {radius, radiusUnit} = radiusFromO(c);
-	const geojson = (!!g && !!g.type) ? g : (!!ap.type && apToGeoJSON(ap));
+	const geojson = (!!g && !!g.type) ? g : (!!ap.type && apToGeoJSON(ap, apMessages));
 
 	getOrSet('searchLoaded', false, false);
+	getOrSet('locationHasSearch', (typeof ap.latitude !== 'number' || typeof ap.longitude !== 'number'), false);
 	getOrSet('mapOptions', { center, zoom: !Math.max(0, zoom || 0) ? 11 : zoom }, false);
 	getOrSet('apVisible', true, false);
 	getOrSet('radiusVisible', true, false);
 	getOrSet('centerMarkerVisible', hasCenterMarker, false);
 
+	const actions = [{
+		id: 'zoom',
+		visible: true,
+		className: `${css.actionIcon} ${iconCss.icon} ${iconCss.zoomIn}`,
+		title: messages.zoomIn
+	}, {
+		id: 'search',
+		visible: true,
+		className: `${css.actionIcon} ${iconCss.icon} ${iconCss.search}`,
+		title: messages.search
+	}, {
+		id: 'copy',
+		visible: true,
+		className: `${css.actionIcon} ${iconCss.icon} ${iconCss.eyedropper}`,
+		title: messages.copyLatLng
+	}, {
+		id: 'open',
+		visible: true,
+		className: `${css.actionIcon} ${iconCss.icon} ${iconCss.place}`,
+		title: messages.open
+	}];
 	const switchMap = (
 		id: string = `${mapId}`,
 		subDomains: string[] = ['a', 'b', 'c'],
@@ -238,12 +243,6 @@ export default factory(function lMap({
 						console.error(e);
 					}
 				}
-				map.layers = get('layers') || [];
-				/* set(
-					'view',
-					{ ...get('view'), map, ...get('mapOptions') },
-					false
-				); */
 				set('mapId', id, false);
 				set('map', map);
 			}
@@ -252,8 +251,6 @@ export default factory(function lMap({
 
 	const createMap = (): any => {
 		let container = document.createElement('div');
-		// container.style.height = '100%';
-		// container.style.width = '100%';
 
 		container.className = [
 			themedCss.map,
@@ -261,11 +258,10 @@ export default factory(function lMap({
 			viewCss.baselined,
 			viewCss.m1by1,
 			viewCss.item,
-			!!viewDesktopCSS && viewDesktopCSS.item,
-			!!viewDesktopCSS && viewDesktopCSS.m1by1
+			!!desktopCSS && desktopCSS.item,
+			!!desktopCSS && desktopCSS.m1by1
 		].join(' ');
 
-		// if (!Math.max(0,zoom||0)) { zoom = 11 }
 		getOrSet('defaultId', `${mapId}`, false);
 		getOrSet('mapId', `${mapId}`, false);
 
@@ -284,10 +280,13 @@ export default factory(function lMap({
 					'esri/layers/MapImageLayer',
 					'esri/layers/WebTileLayer',
 					'esri/layers/GeoJSONLayer',
-        	"esri/renderers/UniqueValueRenderer",
+        	'esri/renderers/UniqueValueRenderer',
+					'esri/widgets/Search',
 					'esri/widgets/LayerList',
 					'esri/widgets/BasemapGallery',
-					"esri/widgets/ScaleBar"
+					'esri/widgets/Fullscreen',
+					'esri/widgets/ScaleBar',
+					"esri/core/promiseUtils"
 				]).then(([
 					esriConfig, // TODO
 					Graphic,
@@ -301,9 +300,12 @@ export default factory(function lMap({
 					WebTileLayer,
 					GeoJSONLayer,
 					UniqueValueRenderer,
+					Search,
 					LayerList,
 					BasemapGallery,
-					ScaleBar
+					Fullscreen,
+					ScaleBar,
+					promiseUtils
 				]) => {
 					// esriConfig.request.proxyUrl = proxy;
 
@@ -319,12 +321,9 @@ export default factory(function lMap({
 					});
 					const layers = config.tileLayers.map((o) => new GroupLayer({...o, layers: toLayers(o.layers)}));
 
-					console.log(center, zoom);
-
 					/* Default ActivityPub-content layer as geojson */
 					let geojsonLayer: any;
 					if (!!geojson.features.length) {
-						// green 13b20b indigo 3b4eb8 lightblue 6da7d1 teal 339985 beige [203, 187, 157, 1]		[195, 12, 112, 1]
 						const renderer = new UniqueValueRenderer({
 							field: "apType",
 							uniqueValueInfos
@@ -335,15 +334,17 @@ export default factory(function lMap({
 							url,
 							renderer,
 							featureReduction,
-							outFields: ["*"],
+							outFields: ['*'],
+							title: 'ActivityPub',
 							popupTemplate: {
-								title: `<span class="${css.smallTypo}">{latLng}</span><br />{name}`,
-								content: `<span class="${css.smallTypo}">{geoMeta}<br />{summary}</span>`
+								title: `<span class="${css.smallTypo}">{latLng}</span><br /><span title="{summary}">{name}</span>`,
+								content: `<span class="${css.smallTypo}">{geoMeta}</span>`,
+								overwriteActions: true,
+								actions
 							}
 						});
 						layers.unshift(geojsonLayer);
 					}
-					getOrSet('layers', layers, false);
 
 					// then we load a * web map * from an id
 					const map = getOrSet(
@@ -365,16 +366,17 @@ export default factory(function lMap({
 						...mapOptions,
 						...get('mapOptions')
 					});
-					// view.geojsonLayer = geojsonLayer;
+
 					map.when(async () => {
 						try {
-							view.geojsonMapping = {
-								dict: (geojson.features as any[]).reduce((o, feature, i) => {
-									o[feature.properties.locationId] = i;
-									return o
-								}, {}),
-								geojson
-							};
+							const geojsonDict = (geojson.features as any[]).reduce((o, feature, i) => {
+								o[feature.properties.locationId] = i;
+								return o
+							}, {});
+
+							const fullscreen = new Fullscreen({ view: view });
+							view.ui.add(fullscreen, "top-right");
+							fullscreen.viewModel._fullscreenStyle = 'min-width: 100vw; min-height: 100vh;';
 
 							const scaleBar = new ScaleBar({
 			          view: view,
@@ -401,6 +403,15 @@ export default factory(function lMap({
 							container = document.createElement('div');
 							container.setAttribute('id', idMiddleware.getId('layer'));
 							container.style.display = 'none';
+
+							// Creates actions in the LayerList.
+							const defineLayerActions = (event: any) => {
+								const { item } = event;
+								if (item.title === 'ActivityPub') {
+									item.panel = { content: 'legend', className: css.activityPubLegend, open: true }
+									item.open = true;
+								}
+							}
 							const layerList = new LayerList({
 								view,
 								container,
@@ -410,63 +421,75 @@ export default factory(function lMap({
 							});
 
 							const mapSearchNode = node.get('mapSearch');
-							loadModules([
-								'esri/widgets/Search',
-								// 'esri/widgets/Directions'
-							]).then(([
-								Search,
-								// Directions
-							]) => {
-								const showPopup = (address: string, pt: any) => {
-									console.log('search popup');
-									view.popup.open({
-										title: latLngStr(pt.latitude, pt.longitude),
-										content: address,
-										location: pt
-									});
-								}
-								// Add Search widget
-								container = document.createElement('div');
-								if (hasSearch && mapSearchNode && !get('searchLoaded')) {
-									mapSearchNode.innerHTML = '';
-									mapSearchNode.appendChild(container);
-								}
-								const search = new Search({
-									view,
-									container
+							const showPopup = (content: string, location: any, features: string[] = []) => {
+								// console.log('search popup', content, location);
+								const address = messages.address;
+								const title = features.length ?
+									`title="${features.join(', ').replace(/_/g,' ').replace(/\/(line|fill)/,'')}"` : '';
+								const icon = `<i class="${iconCss.icon} ${iconCss.mapMarker}"></i>`;
+								const latLng = latLngStr(location);
+								view.popup.open({
+									includeDefaultActions: true,
+									title: `${icon} <span class="${css.smallTypo}" ${title}>${latLng}</span>`,
+									content,
+									location
 								});
-								// Add to the map (instead container, too much mapspace in column)
-								// view.ui.add(search, 'top-right');
-	/*
-								container = document.createElement('div');
+							}
+							// Add Search widget
+							container = document.createElement('div');
+							if (hasSearch && mapSearchNode && !get('searchLoaded')) {
+								mapSearchNode.innerHTML = '';
 								mapSearchNode.appendChild(container);
-								const directions = new Directions({
-					        view,
-									container,
-					        routeServiceUrl: 'https://utility.arcgis.com/usrsvcs/appservices/7d0Q6PhsVvdlP0nO/rest/services/World/Route/NAServer/Route_World'
-					      });
-	*/
-								// Find address
-								view.on('click', function(evt: Event & {mapPoint: any}){
-									console.log(evt);
-									view.hitTest(evt).then((response: any) => {
-										console.log(response.results);
-										/* short circuit, no other info elements */
-										if (response.results.length === 1) {
-											search.clear();
-											view.popup.clear();
-											if (search.activeSource) {
-												const geocoder = search.activeSource.locator; // World geocode service
-												const location = evt.mapPoint;
-												geocoder.locationToAddress({ location })
-													.then(function({address}: {address?: string}) { // Show the address found
-														address && showPopup(address, evt.mapPoint);
-													}, function(err: Error) { // Show no address found
-														showPopup('No address found.', evt.mapPoint);
-													});
-											}
+							}
+							const search = new Search({
+								view,
+								container,
+								visible: get('locationHasSearch')
+							});
+							// Add to the map (instead container, too much mapspace in column)
+							// view.ui.add(search, 'top-right');
+/*
+							container = document.createElement('div');
+							mapSearchNode.appendChild(container);
+							const directions = new Directions({
+				        view,
+								container,
+				        routeServiceUrl: 'https://utility.arcgis.com/usrsvcs/appservices/7d0Q6PhsVvdlP0nO/rest/services/World/Route/NAServer/Route_World'
+				      });
+*/
+							// Find address
+							view.on('click', function(evt: Event & {mapPoint: any}){
+								view.hitTest(evt).then((response: any) => {
+									const features: string[] = [];
+									const filtered = response.results.filter((res:any) => {
+										if (!res.graphic || !res.graphic.attributes) {
+											return false
 										}
+										const { attributes } = res.graphic;
+										const isCluster = attributes.hasOwnProperty('cluster_count');
+										const hasAP = attributes.hasOwnProperty('apType');
+										if (!isCluster && !hasAP && attributes.hasOwnProperty('layerName')) {
+											features.push(attributes.layerName)
+										}
+										return isCluster || hasAP;
 									});
+									/* short circuit, no other info elements */
+									if (filtered.length === 0) {
+										search.clear();
+										view.popup.clear();
+										if (search.activeSource) {
+											const geocoder = search.activeSource.locator; // World geocode service
+											const location = evt.mapPoint;
+											geocoder.locationToAddress({ location })
+												.then(function({address = messages.notFound}: {address?: string}) {
+													// Show the address found
+													showPopup(address, evt.mapPoint, features);
+												}, function(err: Error) {
+													// Show no address found
+													showPopup(messages.notFound, evt.mapPoint, features);
+												});
+										}
+									}
 								});
 							});
 
@@ -512,15 +535,25 @@ export default factory(function lMap({
 
 							// Add widget to the top right corner of the view
 							view.ui.add(layerList, 'top-right');
+							layerList.container.querySelectorAll('.esri-legend__layer-caption').forEach((el: HTMLElement) => {
+								if (el.textContent === 'apType') { el.textContent = messages.type || 'Type' }
+							});
+							// TODO: better solution:
+							/*
+							if (geojsonLayerView) {
+								geojsonLayerView.filter = { where: `apType = '${type}'` };
+							}
+							*/
 
 							if (hasCenterMarker) {
 								const geometry = { type: 'point', x: center[0], y: center[1] };
 								// center square or circle
-								view.graphics.add(new Graphic({
+								const centerGraphic = new Graphic({
 									geometry,
 									symbol:	isNr(radius) ? centerSymbolRadius : centerSymbol,
 									visible: get('centerMarkerVisible')
-								}));
+								});
+								view.graphics.add(centerGraphic);
 								// radius circle
 								const radiusGeometry = isNr(radius) && get('radiusVisible') ? new Circle({
 								  center: geometry,
@@ -529,53 +562,77 @@ export default factory(function lMap({
 								  geodesic: true,
 								  numberOfPoints: 100
 								}) : geometry;
-								view.graphics.add(new Graphic({
+								const radiusGraphic = new Graphic({
 								  geometry: radiusGeometry,
 								  symbol: radiusSymbol,
 									visible: isNr(radius) && get('radiusVisible')
-								}));
+								});
+								view.graphics.add(radiusGraphic);
 							}
-
+							view.popup.maxInlineActions = 5;
+							view.popup.actions = actions;
 							view.popup.dockEnabled = true;
 							view.popup.dockOptions = { buttonEnabled: false, breakpoint: true };
 
+							view.setActivityPub = setActivityPub.bind({view, messages, search, geojson, geojsonDict});
 							view.popup.watch('selectedFeature', function(graphic: any) {
-							  if (graphic) {
-									console.log(graphic.attributes);
-									const hasAP = graphic.attributes.hasOwnProperty('apType');
-									const { apType, latLng, name, geoMeta, summary } = graphic.attributes;
-									const apIcon = `<i class="${iconCss.icon} ${(iconCss as any)[apType.toLowerCase()]}"></i>`;
-									if (hasAP) {
-										view.popup.clear();
-										view.popup.open({
-											title: `<span class="${css.smallTypo}">${latLng}</span><br />${name}`,
-											content: `${apIcon} <span class="${css.smallTypo}">${geoMeta}<br />${summary}</span>`
-										});
-										onActivityPubLocation && onActivityPubLocation(graphic.attributes)
-									}
-							  }
+							  if (!graphic) { return }
+								const hasAP = graphic.attributes.hasOwnProperty('apType');
+								const { location: l } = graphic.attributes;
+								if (Array.isArray(l)) { graphic.attributes.location = l[0] }
+								graphic.attributes.location = ((typeof l === 'string') ?
+									JSON.parse(l) : (typeof l === 'object' ? l : void 0));
+								if (hasAP) {
+									view.setActivityPub(graphic.attributes.location, get('centerMarkerVisible'));
+									onActivityPubLocation && onActivityPubLocation(graphic.attributes)
+								}
 							});
 							view.popup.on('trigger-action', function(o: any) {
-								if (o.action.id === "copy") {
-									const el = document.createElement('textarea');
-									el.value = `${center[1]}, ${center[0]}`;
-									document.body.appendChild(el);
-									el.select();
-									document.execCommand('copy');
-									document.body.removeChild(el);
-									const currentActionClass = o.action.className;
-									o.action.className = `${css.actionIcon} ${css.actionIconOk} ${iconCss.icon} ${iconCss.check}`;
-									setTimeout(() => { o.action.className = currentActionClass }, 1200);
-							  } else if (o.action.id === "open") {
-									const { id = '', pointer = get('currentPointer') } = ap;
-									onActivityPubLocationOpen && onActivityPubLocationOpen({...ap, id, pointer});
+								switch (o.action.id) {
+									case 'search':
+										search.searchTerm = search.searchName||'';
+										search.suggest(search.searchName)||'';
+									break;
+									case 'zoom':
+										if (!o.action.isRadius) {
+											view.popup.actions.getItemAt(0).className = `${css.radiusIcon} ${iconCss.icon} ${iconCss.zoomOut}`;
+											view.popup.actions.getItemAt(0).title = messages.zoomRadius;
+											const maxZoom = (map.hasOwnProperty('getMaxZoom') && map.getMaxZoom() - 1) || 16;
+	    								if (map.hasOwnProperty('centerAndZoom')) {
+												map.centerAndZoom(center, maxZoom)
+											} else {
+												view.zoom = maxZoom;
+											}
+											o.action.isRadius = true
+										} else {
+											view.popup.actions.getItemAt(0).className = `${css.actionIcon} ${iconCss.icon} ${iconCss.zoomIn}`;
+											view.popup.actions.getItemAt(0).title = messages.zoomIn;
+											view.extent = view.graphics.getItemAt(1).geometry.extent;
+											o.action.isRadius = false
+										}
+									break;
+									case 'copy':
+										const el = document.createElement('textarea');
+										el.value = `${center[1]}, ${center[0]}`;
+										document.body.appendChild(el);
+										el.select();
+										document.execCommand('copy');
+										document.body.removeChild(el);
+										const currentActionClass = o.action.className;
+										o.action.className = `${css.actionIcon} ${css.actionIconOk} ${iconCss.icon} ${iconCss.check}`;
+										setTimeout(() => { o.action.className = currentActionClass }, 1200);
+									break;
+									case 'open':
+										const { id = '', pointer = get('currentPointer') } = ap;
+										onActivityPubLocationOpen && onActivityPubLocationOpen({...ap, id, pointer});
+									break;
 								}
 							});
 
 							onView && onView(view);
 
 						} catch(e) {
-							console.log('error', e);
+							console.log('esri map error', e);
 						}
 					});
 
@@ -584,9 +641,7 @@ export default factory(function lMap({
 						set(
 							'mapOptions',
 							{
-								center: view
-									? [view.center.longitude, view.center.latitude]
-									: center,
+								center: view ? [view.center.longitude, view.center.latitude] : center,
 								zoom: view ? view.zoom : zoom
 							},
 							false
@@ -607,32 +662,6 @@ export default factory(function lMap({
 		animated: false
 	};
 
-/* https://www.arcgis.com/sharing/rest/content/items/
-	6cf42d6ad9e3480696c5021546e76fab	sat img
-	34a7f521276a40ddabe5b012c3b1f607	hybrid img
-	bc68233b448b4a39a10e2aca8ea48fdb	street
-	03714c4eac0e4fca8e3b863ec768bcf2	topo
-	7ac83bff30ea49c0a5d1b3a21c8cced4	navigation
-	4aa1788830fd4adeaa2561555189c9bd	streetnight
-	f8cf1a4115b9416680d35f8bf22bb63e	terrain labels webmap
-	d0ee2af09e834c5cad92bed939006571	lightgray
-	e68ff0b5a0f84cfda9acf3686dcce492	darkgray
-	f0c119410f5e4d54be7545657f9768cb	ocean
-	9213bb45776e48edab35ac64a6fa57f1	nat. geo.
-	83fcab56ac6142668f4828984b347cc2	OSM
-	a149cb017b044027bb29a44dfac62063	charted territory worldmap
-	06743c3f4dee46cc8aafd9d9888ec668	community map
-	d27314802fd7456d993679d0239f1b99	navigation dark
-	abc33869ef34485bac55dfd588d8f2db	newspaper
-	fc841e1f61cf4c7c948192a0e40190d1	human geography
-	8de0609893384ba687eae0a6ce2204c0	human geography dark
-	7823927a547b40be8aaf65b0f06af990	modern Antique
-	682bfcfcc0d347019396090ba33ee6bf	mid Century
-	a504e8b3f0c047a19e76d80cc9cc8cd0	nova
-	a4c0ba7feb364a53a4adb804cb6fd182	colored pencil
-	13b3e755300a4a9c86e0ce7583817e48	firefly imagery hybrid
-*/
-
 	const curId = get('mapId');
 	const extraClasses = {
 		button: {'@redaktor/widgets/button': { root: [themedCss.button] }},
@@ -647,12 +676,7 @@ export default factory(function lMap({
 
 	return (
 		<div key="root"
-			classes={[
-				'redaktorMap',
-				themedCss.root,
-				viewCss.item,
-				!!viewDesktopCSS && viewDesktopCSS.item
-			]}
+			classes={[ 'redaktorMap', themedCss.root, viewCss.item, !!desktopCSS && desktopCSS.item ]}
 		>
 			<div key="mapSearch"></div>
 			<div key="mapSwitch" classes={[themedCss.mapSwitch]}>
@@ -721,18 +745,56 @@ visible: false
 /*
 7 {en: "Humanitarian", de: "Humanitär"}
 [[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"]],
-[{"en":"ESRI Human Geo dark","de":"ESRI Human Geo dark"},["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]],
-[{"en":"ESRI Human Geo","de":"ESRI Human Geo"},["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf","https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]],
-[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png"]],
-[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","http://openfiremap.org/hytiles/{z}/{x}/{y}.png"]],
-[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","https://s3.amazonaws.com/te512.safecast.org/{z}/{x}/{y}.png"]]]
+[{"en":"ESRI Human Geo dark","de":"ESRI Human Geo dark"},
+	["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+	"https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+	"https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]],
+[{"en":"ESRI Human Geo","de":"ESRI Human Geo"},
+	["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+	"https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf",
+	"https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]],
+[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},
+	["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","https://{s}.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png"]],
+[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},
+	["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","http://openfiremap.org/hytiles/{z}/{x}/{y}.png"]],
+[{"en":"OSM Humanitarian","de":"OSM Humanitarian"},
+	["https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png","https://s3.amazonaws.com/te512.safecast.org/{z}/{x}/{y}.png"]]]
 
 */
 /*
 6 {en: "Nautical & Aeronautical", de: "Nautisch & Aeronautisch"}
-[[{"en":"OpenSeaMap","de":"OpenSeaMap"},["https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png","https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png"]],
-[{"en":"ESRI Ocean","de":"ESRI Ocean"},["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]]]
+[[{"en":"OpenSeaMap","de":"OpenSeaMap"},
+	["https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png","https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png"]],
+[{"en":"ESRI Ocean","de":"ESRI Ocean"},
+	["https://basemaps.arcgis.com/v1/arcgis/rest/services/World_Basemap/VectorTileServer/tile/{z}/{y}/{x}.pbf"]]]
 
 
 8 ACCESSIBILITY >
+*/
+
+
+/* https://www.arcgis.com/sharing/rest/content/items/
+	6cf42d6ad9e3480696c5021546e76fab	sat img
+	34a7f521276a40ddabe5b012c3b1f607	hybrid img
+	bc68233b448b4a39a10e2aca8ea48fdb	street
+	03714c4eac0e4fca8e3b863ec768bcf2	topo
+	7ac83bff30ea49c0a5d1b3a21c8cced4	navigation
+	4aa1788830fd4adeaa2561555189c9bd	streetnight
+	f8cf1a4115b9416680d35f8bf22bb63e	terrain labels webmap
+	d0ee2af09e834c5cad92bed939006571	lightgray
+	e68ff0b5a0f84cfda9acf3686dcce492	darkgray
+	f0c119410f5e4d54be7545657f9768cb	ocean
+	9213bb45776e48edab35ac64a6fa57f1	nat. geo.
+	83fcab56ac6142668f4828984b347cc2	OSM
+	a149cb017b044027bb29a44dfac62063	charted territory worldmap
+	06743c3f4dee46cc8aafd9d9888ec668	community map
+	d27314802fd7456d993679d0239f1b99	navigation dark
+	abc33869ef34485bac55dfd588d8f2db	newspaper
+	fc841e1f61cf4c7c948192a0e40190d1	human geography
+	8de0609893384ba687eae0a6ce2204c0	human geography dark
+	7823927a547b40be8aaf65b0f06af990	modern Antique
+	682bfcfcc0d347019396090ba33ee6bf	mid Century
+	a504e8b3f0c047a19e76d80cc9cc8cd0	nova
+	a4c0ba7feb364a53a4adb804cb6fd182	colored pencil
+	13b3e755300a4a9c86e0ce7583817e48	firefly imagery hybrid
 */

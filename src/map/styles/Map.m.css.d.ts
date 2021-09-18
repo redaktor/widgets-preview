@@ -1,4 +1,5 @@
 export const root: string;
+export const fullscreen: string;
 export const responsive: string;
 export const map: string;
 export const mapSwitch: string;
@@ -13,4 +14,7 @@ export const largeTypo: string;
 export const mapSwitchIcon: string;
 export const input: string;
 export const actionIcon: string;
+export const radiusIcon: string;
 export const actionIconOk: string;
+export const summary: string;
+export const activityPubLegend: string;

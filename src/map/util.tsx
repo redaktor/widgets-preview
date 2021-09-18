@@ -26,7 +26,7 @@ export function latLngStr(
 	return `${toDMS(lat,'N','S')} ${toDMS(lng,'E','W')}${alt}${rad}`
 }
 
-export function apToGeoJSON(ap: ActivityPubObjectNormalized, oKey = '#') {
+export function apToGeoJSON(ap: ActivityPubObjectNormalized, messages: any = {}) {
 
 	/* TODO
 	Travel -> `target` can be the location …
@@ -53,22 +53,26 @@ export function apToGeoJSON(ap: ActivityPubObjectNormalized, oKey = '#') {
 		/* feature per location */
 		location.forEach(({
 			longitude, latitude, altitude, units, accuracy, radius,
-			id: locationId, type: locationType, name: n = '', summary: s = ''
+			id: locationId, type: locationType = 'Place', name: n = '', summary: s = ''
 		}: any) => {
 			if (longitude && latitude) {
+				if (Array.isArray(locationType)) { locationType = locationType[0] }
+				const location = JSON.stringify({ longitude, latitude, altitude, units, accuracy, radius });
 				const latLng = latLngStr({longitude, latitude, altitude, units, accuracy, radius});
 				const name = !!n.length ? n.join(' – ') : '';
 				const summary = !!s.length ? s.join(' – ') : '';
 
+        const {location: _location = 'location', _of = 'of', _in = 'in'} = messages;
 				const geoMeta = !pointer ? mainTypes.join(',') : pointer.split('/').reverse().reduce((s,p,i,a) => {
 				  const nr = parseInt(p,10);
 				  if (typeof nr === 'number' && !isNaN(nr)) {
-				  	const res = `${s}${a[i+1]} ${nr+1} in `;
+            const type = messages.hasOwnProperty(a[i+1]) ? messages[a[i+1]] : a[i+1];
+				  	const res = `${s}${type} ${nr+1} ${_in} `;
 				  	a[i+1] = '';
 				    return res
 				  }
 				  return s + p
-				}, 'location of ').replace(/in $/g, '');
+				}, `${_location} ${_of} `).replace(/in $/g, '');
 
 				/* and feature per type */
 				mainTypes.forEach((apType: string) => {
@@ -78,7 +82,7 @@ export function apToGeoJSON(ap: ActivityPubObjectNormalized, oKey = '#') {
 							type: "Point",
 							coordinates: [longitude, latitude]
 						},
-						properties: {apType, pointer, id, locationId, locationType, name, summary, latLng, geoMeta}
+						properties: {apType, pointer, id, locationId, locationType, location, name, summary, latLng, geoMeta}
 					})
 				})
 			}

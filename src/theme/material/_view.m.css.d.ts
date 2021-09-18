@@ -9,6 +9,7 @@ export const page: string;
 export const pageCaption: string;
 export const attributions: string;
 export const item: string;
+export const fullscreen: string;
 export const metaTop: string;
 export const controls: string;
 export const mediaRatio: string;
