@@ -66,7 +66,8 @@
 	display: block;
 	margin: 0px;
 	padding: 0px;
-  max-width: 100%;
+  max-width: var(--maxw,100%);
+	max-height: var(--maxh,100%);
 	height: auto;
 }
 .canvas {
@@ -80,6 +81,9 @@
 	object-fit: cover;
 	object-position: 50% 50%;
 	height: calc(var(--line) * var(--l));
+}
+.root > .media.contain:not(.hasFocalPoint) .image {
+	object-fit: contain;
 }
 .root.fit,
 .media.fit,

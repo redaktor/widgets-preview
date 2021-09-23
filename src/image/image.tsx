@@ -15,6 +15,7 @@ import Blurhash, { Brightness } from '../blurhash/';
 import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/image.m.css';
 
+
 export interface ImgProperties extends ActivityPubObject {
 	alt?: string;
 	title?: string;
@@ -33,6 +34,10 @@ export interface ImgProperties extends ActivityPubObject {
 	hasSensitiveSwitch?: boolean;
 	/* load 'lazy' / when intersecting or 'eager' / directly, default 'lazy' */
 	loading?: 'lazy' | 'eager';
+
+	maxWidth?: string | number;
+	maxHeight?: string | number;
+
 	/* animate scale on hover / default false */
 	scaleOnHover?: boolean;
 	/* when entering fullscreen */
@@ -88,9 +93,9 @@ export const Img = factory(function Img({
 	const themedCss = theme.classes(css);
 	const {
 		sensitive, alt, title, aspectRatio: ratio, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		onBrightness, blurhash, focalPoint, mediaType, loading = 'lazy', crossorigin = 'anonymous',
-		baselined = false, fit = false, scaleOnHover = false, hasSensitiveSwitch = true,
-		..._rest
+		onBrightness, blurhash, focalPoint, mediaType, maxWidth, maxHeight,
+		loading = 'lazy', crossorigin = 'anonymous', baselined = false, fit = false,
+		scaleOnHover = false, hasSensitiveSwitch = true, ..._rest
 	} = i18nActivityPub.normalized();
 
 	const APo: ActivityPubObjectNormalized = _rest;
@@ -112,48 +117,53 @@ export const Img = factory(function Img({
 		/* Baselined to typo grid */
 		const lineCount = ((contentRect && contentRect.height)||0) / get('l');
 		mml = `--mml: ${(Math.max(0, Math.ceil(lineCount)) - lineCount)};`;
-}
+	}
 // const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
 // !!baselined && console.log(lineCount, mml, vw, vw / (lineCount * (width / height)) - 50, vw / ((Math.max(0, Math.ceil(lineCount)) - lineCount)) * (width / height))
 	/* Fixed Aspect Ratio */
 	const aspectRatio = Array.isArray(ratio) && ratio.join('/') in AspectRatioNamed ? ratio.join('/') : ratio;
 	const apt = !aspectRatio || typeof aspectRatio === 'string' ? '' : `--apt: ${100 / aspectRatio[0] * aspectRatio[1]}%;`;
 	const ar = !aspectRatio || typeof aspectRatio === 'string' ? '' : `--ar: ${aspectRatio[0]} / ${aspectRatio[1]};`;
-	/* Blurhash and CW */
-	const maxInt = Math.max(width, height);
-	const [blurWidth, blurHeight] = [Math.floor(width / maxInt * 80), Math.floor(height / maxInt * 80)];
-	const cwId = !sensitive ? '' : id.getId('sensitive');
-	/* Focal Point */
 	let styles: Partial<CSSStyleDeclaration> = {};
-	const hasFocalPoint = Array.isArray(focalPoint) && !!cWidth && !!width && !!height &&
-		focalPoint.filter((coord) => typeof coord === 'number' && !isNaN(coord));
-	if (hasFocalPoint) {
-		const calcShift = function(toRatio: number, containerSize: number, imageSize: number, focusSize: number, toMinus?: boolean) {
-			const containerCenter = Math.floor(containerSize / 2); // Container center in px
-			const focusFactor = (focusSize + 1) / 2; // Focus point of resize image in px
-			const scaledImage = Math.floor(imageSize / toRatio); // Can't use width() as images may be display:none
-			let focus =  Math.floor(focusFactor * scaledImage);
-			if (toMinus) { focus = scaledImage - focus }
-			let focusOffset = focus - containerCenter; // Calculate difference between focus point and center
-			const remainder = scaledImage - focus; // Reduce offset if necessary so image remains filled
-			const containerRemainder = containerSize - containerCenter;
-			if (remainder < containerRemainder) { focusOffset -= containerRemainder - remainder }
-			if (focusOffset < 0) { focusOffset = 0 }
-			return `${(focusOffset * -100 / containerSize)}%`;
-		};
-		const [x, y] = focalPoint;
-		const [wR, hR] = [(width/cWidth), (height/cHeight)];
+	let hasFocalPoint: number[] | false = false;
+	let [blurWidth, blurHeight, cwId ] = [0, 0, ''];
+	if (!!maxWidth) { styles = {...styles, maxWidth: `${maxWidth}${typeof maxWidth === 'number' ? 'px' : ''}`} }
+	if (!!maxHeight) { styles = {...styles, maxHeight: `${maxHeight}${typeof maxHeight === 'number' ? 'px' : ''}`} }
+	if (!!width && !!height) {
+		/* Blurhash and CW */
+		const maxInt = Math.max(width, height);
+		[blurWidth, blurHeight] = [Math.floor(width / maxInt * 80), Math.floor(height / maxInt * 80)];
+		cwId = !sensitive ? '' : id.getId('sensitive');
+		/* Focal Point */
+		hasFocalPoint = Array.isArray(focalPoint) && !!cWidth && !!width && !!height &&
+			focalPoint.filter((coord) => typeof coord === 'number' && !isNaN(coord));
+		if (hasFocalPoint) {
+			const calcShift = function(toRatio: number, containerSize: number, imageSize: number, focusSize: number, toMinus?: boolean) {
+				const containerCenter = Math.floor(containerSize / 2); // Container center in px
+				const focusFactor = (focusSize + 1) / 2; // Focus point of resize image in px
+				const scaledImage = Math.floor(imageSize / toRatio); // Can't use width() as images may be display:none
+				let focus =  Math.floor(focusFactor * scaledImage);
+				if (toMinus) { focus = scaledImage - focus }
+				let focusOffset = focus - containerCenter; // Calculate difference between focus point and center
+				const remainder = scaledImage - focus; // Reduce offset if necessary so image remains filled
+				const containerRemainder = containerSize - containerCenter;
+				if (remainder < containerRemainder) { focusOffset -= containerRemainder - remainder }
+				if (focusOffset < 0) { focusOffset = 0 }
+				return `${(focusOffset * -100 / containerSize)}%`;
+			};
+			const [x, y] = focalPoint;
+			const [wR, hR] = [(width/cWidth), (height/cHeight)];
 
-		styles = { position: 'absolute', maxWidth: '', maxHeight: '' };
-		if (wR > hR) {
-			styles.left = calcShift(hR, cWidth, width, x);
-			styles.maxHeight = '100%';
-		} else if (wR < hR) {
-			styles.top = calcShift(wR, cHeight, height, y, true);
-			styles.maxWidth = '100%';
+			styles = { position: 'absolute', maxWidth, maxHeight };
+			if (wR > hR) {
+				styles.left = calcShift(hR, cWidth, width, x);
+				styles.maxHeight = '100%';
+			} else if (wR < hR) {
+				styles.top = calcShift(wR, cHeight, height, y, true);
+				styles.maxWidth = '100%';
+			}
 		}
 	}
-
 	const imgProps: any = {
 		alt: alt || (!!APo.summary && !!APo.summary.length ? APo.summary[0]||'' : ''),
 		title,
@@ -195,9 +205,9 @@ export const Img = factory(function Img({
 			!!sensitive && themedCss.sensitive,
 			!!get('loaded') && themedCss.loaded,
 			!!get('faded') && themedCss.faded,
-			fit === 'cover' && themedCss.cover,
-			fit === 'contain' && themedCss.contain,
-			fit === 'fit' && themedCss.fit,
+			!!fit && fit === 'cover' && themedCss.cover,
+			!!fit && fit === 'contain' && themedCss.contain,
+			!!fit && fit === 'fit' && themedCss.fit,
 			!!aspectRatio && themedCss.ratio,
 			!!hasFocalPoint && themedCss.hasFocalPoint,
 			!!aspectRatio && aspectRatio in AspectRatioNamed && (themedCss as any)[`_${aspectRatio.replace('/','_')}`]

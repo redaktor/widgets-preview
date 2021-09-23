@@ -29,8 +29,9 @@ export const Name = factory(function Name({ properties, children, middleware: { 
 	const isMini = (isRow && (size === 'xs' || size === 's')) || (!isRow && size === 'xs');
 	const headlineClass = isMini ? ui.h5 : ui.h4;
 	const typoClass = isMini ? ui.s : (size === 'l' || size === 'xl' ? ui.l : ui.m);
+	const singleNames = name.length < 4;
 
-	const namesPaginated = (!isRow && name.length < 4) ? '' :
+	const namesPaginated = (!isRow && singleNames) ? '' :
 		<Paginated key="names" property="name">
 			{clampStrings(name, characters).map((_name, i) =>
 				<h5 key={`name${i}`} classes={[themedCss.root, typoClass]}>{_name}</h5>)}
@@ -38,7 +39,7 @@ export const Name = factory(function Name({ properties, children, middleware: { 
 	return <div key="root" classes={[themedCss.root, isRow ? themedCss.row : themedCss.column]}>
 		{isRow ?
 			namesPaginated :
-			(name && name.length < 4 ? <header key="names" classes={ui.hgroup}>
+			(name && singleNames ? <header key="names" classes={ui.hgroup}>
 				{name.length > 1 && <p key={`name1`} classes={[themedCss.kicker, typoClass]}>{name[1]}</p>}
 				<h2 key={`name0`} classes={[themedCss.name, headlineClass]}>{name[0]}</h2>
 				{name.length > 2 && <p key={`name2`} classes={[themedCss.byline, typoClass]}>{name[2]}</p>}

@@ -43,7 +43,6 @@ export const next: string;
 export const meta: string;
 export const time: string;
 export const location: string;
-export const locationIcon: string;
 export const firstControl: string;
 export const lastControl: string;
 export const homeControl: string;

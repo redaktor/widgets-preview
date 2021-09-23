@@ -8,14 +8,13 @@ import id from '../middleware/id';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme, { ViewportProperties } from '../middleware/theme';
 import Icon from '../icon';
+import Location from '../location';
 import ImageCaption from '../imageCaption';
 import Img, { getWH } from '../image/image';
 import Map from '../map';
 import bundle from './nls/Image';
 import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/images.m.css';
-
-import { latLngStr } from '../map/util';
 
 export interface ImageChildren {
 	/** Optional Header */
@@ -85,18 +84,18 @@ export const Images = factory(function Images({
 	const { messages } = i18nActivityPub.localize(bundle); /* TODO click to enlarge ... */
 
 	const {
-		itemsPerPage,	image = [], view = 'column', size = 'm', navPosition = 'top',
+		itemsPerPage, view = 'column', size = 'm', navPosition = 'top',
 		desaturateScroll = 'column', max = 1000, hasContent = true, hasAttachment = true,
-		captionsOpen = false, onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen, ...ap
-		// fit = false, width = 80, height = 80,
-
+		captionsOpen = false, onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen, ...ld
+		// fit = false, width = 80, height = 80
 	} = i18nActivityPub.normalized<ImagesProperties>();
-	// const APo: ActivityPubObjectNormalized = _rest;
+
+	const { image = [] } = ld;
+	console.log(ld);
 
 	if (!image.length) {
 		return ''
 	}
-
 	const handleDownload = () => {
 		/* TODO - all image variants/sizes */
 	}
@@ -135,7 +134,7 @@ export const Images = factory(function Images({
 	}
 
 
-	const setMap = (location: ActivityPubObjectNormalized) => {
+	const setMap = (location: ActivityPubObjectNormalized | false) => {
 		set('mapOpen', location);
 		const view = get('mapView');
 		if (view) {
@@ -209,6 +208,7 @@ export const Images = factory(function Images({
 	return <virtual>
 		{get('mapOpen') &&
 			getOrSet('map', <Map
+				key="map"
 				{...{type: 'Image', id: image[0].id, image}}
 				hasCenterMarker
 				hasSearch
@@ -290,10 +290,12 @@ export const Images = factory(function Images({
 			const count = paginated.length && paginated[i].length || 0;
 			const wasLoaded = count === (get('loaded') as any)[i];
 			const {width, height} = getWH(imagePage[0]);
+			// imagePage[0] && imagePage[0].location &&
+
 			return <virtual>
 				{(maxImages.length > itemCount) &&
 					<virtual>
-						<input
+						<input key={`input_${i}`}
 							type="radio"
 							classes={themedCss.pageRadio}
 							id={`${idBase}_${i}`}
@@ -348,7 +350,7 @@ export const Images = factory(function Images({
 										viewCSS.gridMedia,
 										...(ratioClasses(!width || !height ? 0 : width/height, isRow && itemCount > 1))
 									]}
-									key={`image${j}`}
+									key={`imageWrapper${i}_${j}`}
 									style={itemCount !== 1 ? void 0 :
 										`--maxl: ${Math.max(5, Math.min(
 												(Math.floor(window.screen.height / theme.line()) - 5),
@@ -358,6 +360,7 @@ export const Images = factory(function Images({
 								>
 									<Img
 										{...img}
+										key={`image${i}_${j}`}
 										classes={{ '@redaktor/widgets/image': { sensitiveSummary: [themedCss.sensitiveSummary] } }}
 										fit={itemCount === 1 ? 'cover' : false}
 										focalPoint={void 0}
@@ -372,41 +375,30 @@ export const Images = factory(function Images({
 								</div>
 							})}
 						</div>
-						{
-							itemCount === 1 && hasContent &&
-								<ImageCaption
-									{...(imagePage[0])}
-									isOpen={ get('captionsOpen') }
-									onToggle={(isOpen) => { set('captionsOpen', isOpen) }}
-								/>
+						{ itemCount === 1 && hasContent &&
+							<ImageCaption
+								{...(imagePage[0])}
+								key={`imageCaption${i}`}
+								isOpen={ get('captionsOpen') }
+								onToggle={(isOpen) => { set('captionsOpen', isOpen) }}
+							/>
 						}
 						{ itemCount === 1 && hasContent &&
-							<div classes={[themedCss.meta]}>
+							<div key={`meta${i}`} classes={[themedCss.meta]}>
 								{
-									<time classes={themedCss.time} datetime="2021-05-15 19:00">
+									<time key={`timeWrapper${i}`} classes={themedCss.time} datetime="2021-05-15 19:00">
 										15. 05. 2021
 									</time>
 								}
-								{ itemCount === 1 && imagePage[0] && imagePage[0].location &&
-									<address
-										itemscope itemtype="http://schema.org/Place"
-										classes={themedCss.location}
-										onclick={() => { setMap(imagePage[0].location[0]) }}
-									>
-										<Icon size="xl" type="mapMarker" spaced="right"
-											classes={{'@redaktor/widgets/icon': {icon: [themedCss.locationIcon]}}}
+								{ imagePage[0] && imagePage[0].location &&
+									<span key={`locationWrapper${i}`} classes={themedCss.location}>
+										<Location
+											key={`location${i}`}
+											{...imagePage[0]}
+											hasOpenMap={!!get('mapOpen')}
+											onClick={(location) => setMap(location)}
 										/>
-										{imagePage[0].location[0].name &&
-											<span itemprop="name">{imagePage[0].location[0].name}</span>
-										}
-										{imagePage[0].location[0].latitude && imagePage[0].location[0].longitude &&
-										  <span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-												{!imagePage[0].location[0].name && latLngStr(imagePage[0].location[0])||''}
-										    <meta itemprop="latitude" content={imagePage[0].location[0].latitude} />
-										    <meta itemprop="longitude" content={imagePage[0].location[0].longitude} />
-										  </span>
-										}
-									</address>
+									</span>
 								}
 							</div>
 						}
@@ -428,14 +420,11 @@ export const Images = factory(function Images({
 	</virtual>
 });
 /*
-<div itemscope itemtype="http://schema.org/Place">
-  <div itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-    Latitude: 40 deg 44 min 54.36 sec N
-    Longitude: 73 deg 59 min 8.5 dec W
-    <meta itemprop="latitude" content="40.75" />
-    <meta itemprop="longitude" content="73.98" />
-  </div>
-</div>
+created
+	startTime, endTime
+published
+updated
+deleted
 */
 
 export default Images;

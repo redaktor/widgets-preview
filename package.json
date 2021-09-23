@@ -109,6 +109,7 @@
     "comma-separated-tokens": "^1.0.0",
     "cors-anywhere": "^0.4.4",
     "esri-loader": "^3.2.0",
+    "jsonld": "^5.2.0",
     "prop-types": "^15.7.2",
     "property-information": "^5.0.0",
     "remark-gfm": "^1.0.0",

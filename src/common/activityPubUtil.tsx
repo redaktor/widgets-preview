@@ -1,4 +1,85 @@
 import { tsx } from '@dojo/framework/core/vdom';
+
+const jsonld = require('jsonld/dist/jsonld.esm.min.js');
+const as = 'https://www.w3.org/ns/activitystreams';
+const w3idSecurity = 'https://w3id.org/security/v1';
+const vocab = { '@vocab': as };
+export const wellKnownVocab = {
+	...vocab,
+	as,
+	xml: "http://www.w3.org/XML/1998/namespace",
+	foaf: "http://xmlns.com/foaf/0.1/",
+	eli: "http://data.europa.eu/eli/ontology#",
+	snomed: "http://purl.bioontology.org/ontology/SNOMEDCT/",
+	bibo: "http://purl.org/ontology/bibo/",
+	rdfs: "http://www.w3.org/2000/01/rdf-schema#",
+	skos: "http://www.w3.org/2004/02/skos/core#",
+	void: "http://rdfs.org/ns/void#",
+	dc: "http://purl.org/dc/elements/1.1/",
+	dctype: "http://purl.org/dc/dcmitype/",
+	rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+	dcat: "http://www.w3.org/ns/dcat#",
+	rdfa: "http://www.w3.org/ns/rdfa#",
+	xsd: "http://www.w3.org/2001/XMLSchema#",
+	schema: "http://schema.org/",
+	dct: "http://purl.org/dc/terms/",
+	dcterms: "http://purl.org/dc/terms/",
+	owl: "http://www.w3.org/2002/07/owl#",
+	org: "http://www.w3.org/ns/org#",
+	vcard: "http://www.w3.org/2006/vcard/ns#"
+}
+export const asSupportedExtensions = {
+	manuallyApprovesFollowers: "as:manuallyApprovesFollowers",
+	sensitive: "as:sensitive",
+	movedTo: "as:movedTo",
+	toot: "http://joinmastodon.org/ns#",
+	Emoji: "toot:Emoji",
+	focalPoint: {
+		"@container": "@list",
+		"@id": "toot:focalPoint"
+	},
+	featured: "toot:featured"
+}
+export const defaultContext = [
+	as,
+	w3idSecurity,
+	{
+		"@version": 1.1,
+		...wellKnownVocab,
+		...asSupportedExtensions
+	}
+];
+
+export async function compact(doc: any) {
+	if (typeof doc === 'string') {
+		try {
+			doc = JSON.parse(doc);
+		} catch(e) {
+			return {}
+		}
+	}
+	let context: any;
+	if (typeof doc === 'object' && !Array.isArray(doc)) {
+		let has
+		let { '@context': c = defaultContext } = doc;
+		if (Array.isArray(c)) {
+			c.push(vocab);
+		} else if (!!c && typeof c === 'object') {
+			c = {...c, ...vocab};
+		} else if (!!c && typeof c === 'string') {
+			if (c !== as) {
+				c = [c, ...defaultContext]
+			} else {
+				c = defaultContext
+			}
+		}
+		context = c;
+	}
+	const compacted = await jsonld.compact(doc, context);
+	console.log(compacted);
+	return compacted
+}
+
 import {
 	ActivityPubActors, ActivityPubActivities, ActivityPubObjects, ActivityPubLinks
 } from './activityPub';
@@ -80,7 +161,8 @@ export function clampStrings(s: string | string[], length: number) {
 export function normalizeActivityPub(ap: APall, language?: string, includeBcc: boolean = false): ActivityPubObjectNormalized {
 	/* TODO
 
-  "@context": "https://www.w3.org/ns/activitystreams"
+  default "@context"
+	"https://www.w3.org/ns/activitystreams"
 
 	hreflang Value must be a [BCP47] Language-Tag.
 	*/
@@ -185,7 +267,7 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 	} else if (isLinkOrImage(image)) {
 		o.image = toArray(image).map((_o:any) => normalizeActivityPub(_o, language))
 	}
-	
+
 	if (typeof mediaType === 'string') { o.mediaType = mediaType }
 
 	if (isCaption(name, nameMap)) {

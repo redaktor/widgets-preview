@@ -9,6 +9,7 @@ import Images from '../images';
 // import * as ui from '../theme/material/_ui.m.css';
 import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/image.m.css';
+
 /* TODO ISSUE in /images */
 export interface ImageProperties extends ActivityPubObject {
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
@@ -50,22 +51,20 @@ export const Image = factory(function Image({
 	middleware: { icache, i18nActivityPub, theme, breakpoints /*, resource */ },
 	properties
 }) {
-
 	const themedCss = theme.classes(css);
 	const {
 		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		fit = false, hasContent = true, hasAttachment = true, view = 'column', ..._rest
-	} = i18nActivityPub.normalized();
+		fit = false, hasContent = true, hasAttachment = true, view = 'column', ...ld
+	} = i18nActivityPub.normalized<ImageProperties>();
 
-	const APo: ActivityPubObjectNormalized = _rest;
-	if (APo.type.indexOf('Image') < 0 && (!mediaType || mediaType.toLowerCase().indexOf('image') !== 0)) {
+	if (ld.type.indexOf('Image') < 0 && (!mediaType || mediaType.toLowerCase().indexOf('image') !== 0)) {
 		return ''
 	}
 	if (view === 'tableRow') {
 		return 'TODO'
 	}
-	const allImages = !hasAttachment ? APo.image :
-		[{...(properties() as any), focalPoint: void 0, baselined: false}].concat(APo.image);
+	const allImages = !hasAttachment ? ld.image :
+		[{...(properties() as any), focalPoint: void 0, baselined: false}].concat(ld.image);
 
 	/* TODO - all image variants/sizes
 	const handleDownload = () => {
@@ -95,8 +94,8 @@ console.log('IMAGE render');
 			theme.animated(themedCss),
 			themedCss[(vp as keyof typeof themedCss)],
 			icache.get('brightnessClass'),
-			// hasAttachment && !!APo.image && APo.image.length > 0 && themedCss.hasImages,
-			!!APo.sensitive && themedCss.sensitive,
+			// hasAttachment && !!ld.image && ld.image.length > 0 && themedCss.hasImages,
+			!!ld.sensitive && themedCss.sensitive,
 			!!fit && themedCss.fit
 		]}
 		onMouseEnter={onMouseEnter}
@@ -104,14 +103,15 @@ console.log('IMAGE render');
 		aria-label="Image"
 		role="region"
 	>
-		<div classes={themedCss.measure} key="measure" />
+		<div key="measure" classes={themedCss.measure} />
 
-		{hasAttachment && APo.image &&
+		{hasAttachment && ld.image &&
 			<Images
 				key="images"
 				itemsPerPage={1}
 				view={view}
 				size={(vp as any)}
+				{...ld}
 				image={allImages}
 			/>
 		}

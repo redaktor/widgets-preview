@@ -27,7 +27,22 @@ const LOC: any = [
   [7.48056, 51.49443], [7.47399, 51.49601], [7.47682, 51.49528], [7.47760, 51.49550],
   [7.47709, 51.49733], [7.47934, 51.49384], [7.47867, 51.49618], [7.47860, 51.49610],
 ].map((a, i) => {
-  const o = i === 2 || i === 4 ? {location: {id: uuid(), type: "Place", name: "Dortmund"}} : ({location: {id: uuid(), type: "Place", name: "Test", longitude: a[0], latitude: a[1]}});
+  const o: {location: ActivityPubObject, [key: string]: any} = i === 2 || i === 4 ?
+    {location: {id: uuid(), type: "Place", name: "Dortmund"}} :
+    ({location: {id: uuid(), type: "Place", name: "Test", longitude: a[0], latitude: a[1]}});
+  if (i === 2 || i === 3) {
+    o.location.icon = [{
+      id: uuid(),
+  		"type": "Image",
+  		"summary": "Note (16x16)",
+  		"url": "card-photo-1-1.D8Qv-iDb.jpg",
+  		"width": i === 2 ? 16 : 32,
+  		"height": i === 2 ? 16 : 32
+  	}]
+  }
+  if (!i) {
+    o['schema:contentLocation'] = {name: "Schema Test", longitude: a[0], latitude: a[1]}
+  }
   return i > 3 ? o : ({location: {...o.location, altitude: 200, radius: i >1 ? 800 : 400}})
 });
 const _1_1: ActivityPubImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-1-1.D8Qv-iDb.jpg", width: 600, height: 600, mediaType: "image/jpg"}, blurhash: 'UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@', ...LOC[1]};
@@ -41,7 +56,6 @@ const exampleData: ImageProperties = {
   type: "Audio",
   id: "#0",
   attributedTo: [{
-    "@context": "https://www.w3.org/ns/activitystreams",
     id: "https://alyssa.example.com/",
     handle: "@alyssa@example.com",
     name: "Alyssa",

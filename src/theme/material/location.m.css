@@ -1,0 +1,28 @@
+.root {
+	display: flex;
+	align-items: flex-start;
+	font-style: normal;
+	color: var(--text-muted);
+	width: 100%;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+  overflow: hidden;
+	position: relative;
+	cursor: pointer;
+}
+.icon {
+	padding: 0px;
+	margin-top: -2px;
+	display: inline-block;
+}
+.marker {
+	color: var(--r-blueGrey);
+	position: absolute;
+	top: -0.5em;
+	margin-left: -0.5em;
+	z-index: 2;
+}
+.root:hover .icon,
+.root:hover + .marker .markerIcon {
+	color: var(--ui-filled, #eee) !important;
+}

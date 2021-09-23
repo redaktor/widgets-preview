@@ -2,7 +2,22 @@ import { create } from '@dojo/framework/core/vdom';
 import { ActivityPubObject, ActivityPubObjectNormalized, Labeled } from '../common/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import { normalizeActivityPub } from '../common/activityPubUtil';
+import { normalizeActivityPub, defaultContext } from '../common/activityPubUtil';
+const testdoc = {
+  "@context": [
+    "https://www.w3.org/ns/activitystreams",
+  	{"schema": "http://schema.org/"}
+  ],
+  "summary": "Sally offered the Foo object",
+  "type": "Offer",
+  "actor": {
+    "type": "Person",
+    "id": "http://sally.example.org",
+    "summary": "Sally"
+  },
+  "object": "http://example.org/foo",
+  "schema:name": "bla"
+};
 
 interface LocalesProperties extends ActivityPubObject {
   userLocale?: string;
@@ -12,6 +27,7 @@ interface LocalesProperties extends ActivityPubObject {
 const icache = createICacheMiddleware<{
   [id: string]: ActivityPubObjectNormalized;
   normalized: ActivityPubObjectNormalized;
+  '@context': any;
 }>();
 const factory = create({ i18n, icache }).properties<LocalesProperties>();
 
@@ -31,16 +47,22 @@ export const ActivityPubCachingMiddleware = factory(({ properties, middleware: {
   }
 
   function normalized<P>(locale?: string, _invalidate = false): (P & LocalesProperties & ActivityPubObjectNormalized) {
-    locale = setI18n(locale);
-    const { id } = properties();
+    if (!!locale) { locale = setI18n(locale); }
+    const { id, '@context': c = icache.getOrSet('@context', defaultContext) } = properties();
     if (!id) {
-      return {...normalizeActivityPub(properties(), locale), locale} as any
+      const ap = normalizeActivityPub(properties(), locale);
+      if (!!c) { icache.set('@context', c); }
+      return {...ap, locale} as any
     }
     if (!_invalidate) {
       const cachedValue = icache.get(id);
       if (!!cachedValue) { return cachedValue as any }
     }
-    return icache.set(id, {...normalizeActivityPub(properties(), locale), locale}) as any
+    const ap = normalizeActivityPub(properties(), locale);
+    if (!!c) { icache.set('@context', c); }
+    console.log('context', icache.get('@context'));
+    return icache.set(id, {...ap, '@context': icache.get('@context'), locale}) as (P & LocalesProperties & ActivityPubObjectNormalized)
+
     /*
     // Cache miss from server (isStale):
     const promise = fetchExternalValue(value);

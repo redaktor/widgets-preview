@@ -37,7 +37,8 @@ export const Paginated = factory(function Paginated({ properties, children, midd
 
 	return <div classes={[
 		view === 'column' ? themedCss.column : themedCss.row,
-		themedCss.root
+		themedCss.root,
+		theme.spaced(themedCss, true)
 	]}>
 		{c.map((node: any, i: number, a: RenderResult[]) => {
 			if (!node.properties.id) {

@@ -8,6 +8,18 @@
 	font-display: block;
 }
 
+.slide {
+  overflow: hidden;
+  position: relative;
+  --duration: 5s;
+  /* must be overwritten: */
+  --count: 5;
+  --ani: slide5;
+}
+.img.root {
+	padding: 0;
+	margin: 0;
+}
 .icon {
 	position: relative;
 	/* use !important to prevent issues with browser extensions that change fonts */
@@ -25,6 +37,63 @@
 	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+.slide > .root:nth-child(2) { --i: 1; }
+.slide > .root:nth-child(3) { --i: 2; }
+.slide > .root:nth-child(4) { --i: 3; }
+.slide > .root:nth-child(5) { --i: 4; }
+.slide > .root:nth-child(6) { --i: 5; }
+.slide > .root:nth-child(7) { --i: 6; }
+.slide > .root:nth-child(8) { --i: 7; }
+.slide > .root:nth-child(9) { --i: 8; }
+.slide > .root {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  position: absolute;
+  animation: var(--ani) calc(var(--duration) * var(--count)) infinite;
+  animation-delay: calc(var(--duration) * var(--i));
+  opacity: 0;
+}
+@keyframes slide2 {
+  25% { opacity: 1; }
+  50% { opacity: 1; }
+  75% { opacity: 0; }
+}
+@keyframes slide3 {
+  11.11%   { opacity: 1; }
+  33.33%  { opacity: 1; }
+  44.44%  { opacity: 0; }
+}
+@keyframes slide4 {
+  6.25% { opacity: 1; }
+  25% { opacity: 1; }
+  31.25% { opacity: 0; }
+}
+@keyframes slide5 {
+  5% { opacity: 1; }
+  20% { opacity: 1; }
+  25% { opacity: 0; }
+}
+@keyframes slide6 {
+  2.77777777% { opacity: 1; }
+  16.66666666% { opacity: 1; }
+  19.44444444% { opacity: 0; }
+}
+@keyframes slide7 {
+  2.0408163265% { opacity: 1; }
+  14.285714285% { opacity: 1; }
+  26.530612244% { opacity: 0; }
+}
+@keyframes slide8 {
+  1.5625% { opacity: 1; }
+  12.5% { opacity: 1; }
+  14.0625% { opacity: 0; }
+}
+@keyframes slide9 {
+  1.2345679% { opacity: 1; }
+  11.11111111% { opacity: 1; }
+  12.345679% { opacity: 0; }
 }
 @keyframes bounce {
 	0% {
@@ -206,7 +275,7 @@
 	content: '5';
 }
 /* ActivityPub TentativeAccept icon */
-.tentativeAccept::before {
+.tentativeaccept::before {
 	content: '6';
 }
 /* ActivityPub Reject icon */
@@ -214,7 +283,7 @@
 	content: '0';
 }
 /* ActivityPub TentativeReject icon */
-.tentativeReject::before {
+.tentativereject::before {
 	content: '9';
 }
 

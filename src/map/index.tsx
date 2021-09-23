@@ -375,7 +375,7 @@ export default factory(function lMap({
 							}, {});
 
 							const fullscreen = new Fullscreen({ view: view });
-							view.ui.add(fullscreen, "top-right");
+							view.ui.add(fullscreen, "top-left");
 							fullscreen.viewModel._fullscreenStyle = 'min-width: 100vw; min-height: 100vh;';
 
 							const scaleBar = new ScaleBar({

@@ -2,11 +2,18 @@
   display: grid;
   /* margin-bottom: calc(var(--line) - var(--mb)); */
 }
-.column {
+
+.spaceEqual {
   padding: 0px var(--pl,0px);
 }
-.root.column {
+.spaceEqual.column {
   padding: 0px var(--pr,0px) 0px var(--pl,0px);
+}
+.spaceLeft {
+  padding: 0px 0px 0px var(--pl,0px);
+}
+.spaceRight {
+  padding: 0px var(--pr,0px) 0px 0px;
 }
 .row { }
 

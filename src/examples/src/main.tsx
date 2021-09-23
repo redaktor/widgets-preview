@@ -1,4 +1,4 @@
-import parade from '@dojo/parade';
+import parade from './parade';
 import config from './config';
 
 parade({ config });
