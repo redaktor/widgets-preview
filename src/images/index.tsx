@@ -3,7 +3,7 @@ import { tsx, create } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import focus from '@dojo/framework/core/middleware/focus';
 import has from '@dojo/framework/core/has';
-import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
+import { AsObject, AsObjectNormalized } from '../common/interfaces';
 import id from '../middleware/id';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme, { ViewportProperties } from '../middleware/theme';
@@ -26,7 +26,7 @@ export interface ImageChildren {
 
 */
 export { ImgProperties } from '../image/image';
-export interface ImagesProperties extends ActivityPubObject, ViewportProperties {
+export interface ImagesProperties extends AsObject, ViewportProperties {
 	baselined?: boolean;
 	editable?: boolean;
 	view?: 'responsive' | 'column' | 'row' | 'tableRow' | 'full';
@@ -47,7 +47,7 @@ export interface ImagesProperties extends ActivityPubObject, ViewportProperties 
 	/* when all images have loaded */
 	onLoad?: () => any;
 	/* when clicking an image */
-	onClick?: (img: ActivityPubObjectNormalized) => any;
+	onClick?: (img: AsObjectNormalized) => any;
 }
 
 export interface ImagesIcache {
@@ -60,7 +60,7 @@ export interface ImagesIcache {
 	focusKey: string;
 
 	captionsOpen: boolean;
-	mapOpen: false | ActivityPubObjectNormalized;
+	mapOpen: false | AsObjectNormalized;
 	map: any;
 	mapView: any;
 }
@@ -134,7 +134,7 @@ export const Images = factory(function Images({
 	}
 
 
-	const setMap = (location: ActivityPubObjectNormalized | false) => {
+	const setMap = (location: AsObjectNormalized | false) => {
 		set('mapOpen', location);
 		const view = get('mapView');
 		if (view) {

@@ -1,7 +1,7 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { ActivityPubObject, ActivityPubObjectNormalized, ActivityPubLinkObject } from '../common/interfaces';
+import { AsObject, AsObjectNormalized, AsLinkObject } from '../common/interfaces';
 import { AspectRatioNamed } from '../common/util';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import breakpoints from '../middleware/breakpoint';
@@ -16,7 +16,7 @@ import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/image.m.css';
 
 
-export interface ImgProperties extends ActivityPubObject {
+export interface ImgProperties extends AsObject {
 	alt?: string;
 	title?: string;
 	/* focal point, see https://github.com/jonom/jquery-focuspoint#1-calculate-your-images-focus-point */
@@ -76,12 +76,12 @@ const factory = create({ icache, i18nActivityPub, id, theme, breakpoints })
 
 	TODO [header, footer] children
 */
-export const getWH = (o: ActivityPubObjectNormalized) => {
+export const getWH = (o: AsObjectNormalized) => {
 	const {width, height} = (
 		o.hasOwnProperty('url') && !!o.url && typeof o.url[0] === 'object' &&
-		!!(o.url[0] as ActivityPubLinkObject).width && !!(o.url[0] as ActivityPubLinkObject).height
+		!!(o.url[0] as AsLinkObject).width && !!(o.url[0] as AsLinkObject).height
 	) ?
-		(o.url[0] as ActivityPubLinkObject) : o;
+		(o.url[0] as AsLinkObject) : o;
 	return {width, height};
 }
 
@@ -98,10 +98,10 @@ export const Img = factory(function Img({
 		scaleOnHover = false, hasSensitiveSwitch = true, ..._rest
 	} = i18nActivityPub.normalized();
 
-	const APo: ActivityPubObjectNormalized = _rest;
+	const APo: AsObjectNormalized = _rest;
 	const src = (!APo.url ? (!APo.href ? '' : APo.href) :
-	(typeof APo.url[0] === 'object' && !!(APo.url[0] as ActivityPubLinkObject).href) ?
-		(APo.url[0] as ActivityPubLinkObject).href : (APo.url[0] as string))||'';
+	(typeof APo.url[0] === 'object' && !!(APo.url[0] as AsLinkObject).href) ?
+		(APo.url[0] as AsLinkObject).href : (APo.url[0] as string))||'';
 
 	if (!src) { return '' }
 	getOrSet('loaded', false, false);

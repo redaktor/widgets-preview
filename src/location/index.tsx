@@ -1,17 +1,17 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
-import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
-import { normalizeActivityPub } from '../common/activityPubUtil';
+import { AsObject, AsObjectNormalized } from '../common/interfaces';
+import { normalizeAs } from '../common/activityPubUtil';
 import theme from '../middleware/theme';
 import Paginated from '../paginated';
 import Icon from '../icon';
 import { latLngStr } from '../map/util';
 import * as css from '../theme/material/Location.m.css';
 
-export interface LocationProperties extends ActivityPubObjectNormalized {
+export interface LocationProperties extends AsObjectNormalized {
 	/** If a map is connected, is it open? */
 	hasOpenMap: boolean;
 	/** onClick acts as toggle */
-	onClick: (location: ActivityPubObjectNormalized | false) => any;
+	onClick: (location: AsObjectNormalized | false) => any;
 }
 
 const factory = create({ theme }).properties<LocationProperties>()
@@ -21,13 +21,13 @@ const Location = factory(function Location({ properties, middleware: { theme } }
 		hasOpenMap = false,
 		onClick,
 		...ld
-	} = normalizeActivityPub(properties());
+	} = normalizeAs(properties());
 
 console.log('ld', ld);
 	const { location = [] } = ld;
 
 	return <Paginated key="locations" property="location">
-		{(location as ActivityPubObjectNormalized).map((loc: ActivityPubObjectNormalized) => {
+		{(location as AsObjectNormalized).map((loc: AsObjectNormalized) => {
 			return <virtual>
 				<address
 					itemscope itemtype="http://schema.org/Place"

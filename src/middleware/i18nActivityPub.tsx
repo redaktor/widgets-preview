@@ -1,8 +1,8 @@
 import { create } from '@dojo/framework/core/vdom';
-import { ActivityPubObject, ActivityPubObjectNormalized, Labeled } from '../common/interfaces';
+import { AsObject, AsObjectNormalized, Labeled } from '../common/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import { normalizeActivityPub, defaultContext } from '../common/activityPubUtil';
+import { normalizeAs, defaultContext } from '../common/activityPubUtil';
 const testdoc = {
   "@context": [
     "https://www.w3.org/ns/activitystreams",
@@ -19,19 +19,19 @@ const testdoc = {
   "schema:name": "bla"
 };
 
-interface LocalesProperties extends ActivityPubObject {
+interface LocalesProperties extends AsObject {
   userLocale?: string;
 	locales?: Labeled[];
 }
 
 const icache = createICacheMiddleware<{
-  [id: string]: ActivityPubObjectNormalized;
-  normalized: ActivityPubObjectNormalized;
+  [id: string]: AsObjectNormalized;
+  normalized: AsObjectNormalized;
   '@context': any;
 }>();
 const factory = create({ i18n, icache }).properties<LocalesProperties>();
 
-export const ActivityPubCachingMiddleware = factory(({ properties, middleware: { i18n, icache }}) => {
+export const AsCachingMiddleware = factory(({ properties, middleware: { i18n, icache }}) => {
 
   function setI18n(locale?: string) {
     const { locale: userLocale = 'en'} = properties();
@@ -46,11 +46,11 @@ export const ActivityPubCachingMiddleware = factory(({ properties, middleware: {
     return locale;
   }
 
-  function normalized<P>(locale?: string, _invalidate = false): (P & LocalesProperties & ActivityPubObjectNormalized) {
+  function normalized<P>(locale?: string, _invalidate = false): (P & LocalesProperties & AsObjectNormalized) {
     if (!!locale) { locale = setI18n(locale); }
     const { id, '@context': c = icache.getOrSet('@context', defaultContext) } = properties();
     if (!id) {
-      const ap = normalizeActivityPub(properties(), locale);
+      const ap = normalizeAs(properties(), locale);
       if (!!c) { icache.set('@context', c); }
       return {...ap, locale} as any
     }
@@ -58,10 +58,10 @@ export const ActivityPubCachingMiddleware = factory(({ properties, middleware: {
       const cachedValue = icache.get(id);
       if (!!cachedValue) { return cachedValue as any }
     }
-    const ap = normalizeActivityPub(properties(), locale);
+    const ap = normalizeAs(properties(), locale);
     if (!!c) { icache.set('@context', c); }
     console.log('context', icache.get('@context'));
-    return icache.set(id, {...ap, '@context': icache.get('@context'), locale}) as (P & LocalesProperties & ActivityPubObjectNormalized)
+    return icache.set(id, {...ap, '@context': icache.get('@context'), locale}) as (P & LocalesProperties & AsObjectNormalized)
 
     /*
     // Cache miss from server (isStale):
@@ -70,7 +70,7 @@ export const ActivityPubCachingMiddleware = factory(({ properties, middleware: {
     defer.pause();
     promise.then((result) => {
         // Cache the value for subsequent renderings
-        icache.set('normalized', normalizeActivityPub(result));
+        icache.set('normalized', normalizeAs(result));
         // Resume widget rendering once the value is available
         defer.resume();
     });
@@ -92,4 +92,4 @@ export const ActivityPubCachingMiddleware = factory(({ properties, middleware: {
   }
 });
 
-export default ActivityPubCachingMiddleware;
+export default AsCachingMiddleware;

@@ -1,7 +1,7 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
+import { AsObject } from '../common/interfaces';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
@@ -11,7 +11,7 @@ import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/image.m.css';
 
 /* TODO ISSUE in /images */
-export interface ImageProperties extends ActivityPubObject {
+export interface ImageProperties extends AsObject {
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 	fullscreen?: boolean;
 	fit?: boolean;

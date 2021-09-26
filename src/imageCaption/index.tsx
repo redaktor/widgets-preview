@@ -1,6 +1,6 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
+import { AsObject, AsObjectNormalized } from '../common/interfaces';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme, { ViewportProperties } from '../middleware/theme';
 import { clampStrings } from '../common/activityPubUtil';
@@ -16,7 +16,7 @@ import * as css from '../theme/material/images.m.css';
 import * as ui from '../theme/material/_ui.m.css';
 import * as viewCss from '../theme/material/_view.m.css';
 
-export interface ImageCaptionProperties extends ActivityPubObject, ViewportProperties {
+export interface ImageCaptionProperties extends AsObject, ViewportProperties {
 	baselined?: boolean;
 	editable?: boolean;
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
@@ -39,7 +39,7 @@ export interface ImageCaptionProperties extends ActivityPubObject, ViewportPrope
 	/* when all images have loaded */
 	onLoad?: () => any;
 	/* when clicking an image */
-	onClick?: (img: ActivityPubObjectNormalized) => any;
+	onClick?: (img: AsObjectNormalized) => any;
 }
 
 export interface ImageCaptionIcache {

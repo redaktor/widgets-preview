@@ -1,3 +1,4 @@
+import { AsTypes, AsActorTypes, AsActivityTypes, AsObjectTypes, AsLinkTypes } from './interfaces';
 function apObj(prev: any, cur: any) {
 	prev[cur.name] = {
 		...cur,
@@ -6,7 +7,7 @@ function apObj(prev: any, cur: any) {
 	};
 	return prev
 }
-const actors = [
+const actors: {name: AsActorTypes; summary: string;}[] = [
 	{
 		name: 'Application',
 		summary: `Describes a software application.`
@@ -25,7 +26,7 @@ const actors = [
 	}
 ];
 
-const activities = [
+const activities: {name: AsActivityTypes; summary: string;}[] = [
 	{name: 'Activity', summary: 'Generic Activity'},
 	{
 		name: 'Accept',
@@ -154,7 +155,7 @@ const activities = [
 	}
 ];
 
-const objects = [
+const objects: {name: AsObjectTypes; summary: string;}[] = [
 	{name: 'Object', summary: 'Generic Object'},
 	{
     name: 'Article',
@@ -217,16 +218,9 @@ const objects = [
     name: 'OrderedCollectionPage',
     summary: `Used to represent ordered subsets of items from an OrderedCollection.
 		Refer to the Activity Streams 2.0 Core for a complete description.`
-	},
-
-	/*
-	redaktor: 1,
-	chat: 1,
-	terminal: 1,
-	map: 1
-	*/
+	}
 ];
-const links = [
+const links: {name: AsLinkTypes; summary: string;}[] = [
 	{
     name: 'Link',
     summary: `Represents a link.`
@@ -234,10 +228,16 @@ const links = [
     name: 'Mention',
     summary: `A specialized Link that represents an @mention.`
 	}
-]
-export const ActivityPubActors = actors.reduce(apObj, {});
-export const ActivityPubActivities = activities.reduce(apObj, {});
-export const ActivityPubObjects = objects.reduce(apObj, {});
-export const ActivityPubLinks = links.reduce(apObj, {});
+];
+
+interface AsTypeDescription {id: string; url: string; summary: string; name: AsTypes}
+type _Actors = { [K in AsActorTypes]: AsTypeDescription; }
+type _Activities = { [K in AsActivityTypes]: AsTypeDescription; }
+type _Objects = { [K in AsObjectTypes]: AsTypeDescription; }
+type _Links = { [K in AsLinkTypes]: AsTypeDescription; }
+export const AsActors: _Actors = actors.reduce(apObj, {});
+export const AsActivities: _Activities = activities.reduce(apObj, {});
+export const AsObjects: _Objects = objects.reduce(apObj, {});
+export const AsLinks: _Links = links.reduce(apObj, {});
 export const activityPubTypes = [...actors, ...activities, ...objects, ...links].map((o) => o.name);
 export const activityPubTypesRegex = new RegExp(`^${activityPubTypes.join('|')}$`);

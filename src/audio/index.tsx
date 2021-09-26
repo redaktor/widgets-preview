@@ -4,7 +4,7 @@ import id from '@redaktor/widgets/middleware/id';
 import focus from '@dojo/framework/core/middleware/focus';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { clampStrings } from '../common/activityPubUtil';
-import { ActivityPubObject } from '../common/interfaces';
+import { AsObject } from '../common/interfaces';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import i18nActivityPub from '../middleware/i18nActivityPub';
@@ -56,7 +56,7 @@ aria-valuemin="0"
 aria-valuenow={Math.round(percentage)}
 */
 
-export interface AudioProperties extends ActivityPubObject {
+export interface AudioProperties extends AsObject {
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 
 	editable?: boolean;

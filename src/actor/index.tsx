@@ -1,7 +1,7 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { RedaktorActor, ActivityPubActivity } from '../common/interfaces';
-import { isLinkOrImage, getActorName, normalizeActivityPub } from '../common/activityPubUtil';
+import { RedaktorActor, AsActivity } from '../common/interfaces';
+import { isLinkOrImage, getActorName, normalizeAs } from '../common/activityPubUtil';
 import Button from '../button';
 import Chip from '../chip';
 import Icon from '../icon';
@@ -18,7 +18,7 @@ export interface ActorProperties extends RedaktorActor {
 	activityType?: string;
 
 	onChangePetname?: (v: string) => any;
-	onFollow?: (ap: ActivityPubActivity) => any;
+	onFollow?: (ap: AsActivity) => any;
 	open?: boolean;
 }
 interface ActorICache {
@@ -49,7 +49,7 @@ const Actor = factory(function Actor({ /*children,*/ properties, middleware: { i
 		follow: f,
 		petName: p,
 		open = false
-	} = normalizeActivityPub(properties());
+	} = normalizeAs(properties());
 
 	const preferredUsername = getActorName(properties());
 	icache.getOrSet('preferredUsername', preferredUsername);
@@ -63,7 +63,7 @@ const Actor = factory(function Actor({ /*children,*/ properties, middleware: { i
 		icache.set('petName', icache.get('preferredUsername'), false);
 		icache.set('follow', !icache.get('follow') ? true : 'mutual')
 		/* TODO !
-			onFollow && onFollow(apActivity: ActivityPubActivity)
+			onFollow && onFollow(apActivity: AsActivity)
 		*/
 	}
 

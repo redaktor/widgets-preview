@@ -1,12 +1,12 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import {
-	ActivityPubActivity, RedaktorActor, ActivityPubObject, LangMap
+	AsActivity, RedaktorActor, AsObject, LangMap
 } from '../common/interfaces';
 import {
-	ActivityPubActors, ActivityPubActivities, ActivityPubObjects, ActivityPubLinks
+	AsActors, AsActivities, AsObjects, AsLinks
 } from '../common/activityPub';
-import { normalizeActivityPub } from '../common/activityPubUtil';
+import { normalizeAs } from '../common/activityPubUtil';
 import { lowerCase } from '../framework/String/case';
 import { RGB, bestTextColor } from '../framework/color';
 import Profile from './profile';
@@ -126,10 +126,10 @@ const IconTypes = {
 	group: 1,
 	public: 1
 };
-type IconType = (keyof typeof ActivityPubActivities | keyof typeof IconTypes);
+type IconType = (keyof typeof AsActivities | keyof typeof IconTypes);
 
 
-export interface CardProperties extends ActivityPubActivity {
+export interface CardProperties extends AsActivity {
 	onAction?: () => void;
 	responsiveTypo?: boolean /* default true */;
 	mediaBaselined?: boolean /* default true */;
@@ -176,10 +176,10 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 		'4:1': themedCss.m4by1,
 		'1:1': themedCss.m1by1
 	}
-// console.log(properties(), normalizeActivityPub(properties()));
+// console.log(properties(), normalizeAs(properties()));
 	const {
 		actor = ({} as RedaktorActor),
-		object: o = ({} as ActivityPubObject),
+		object: o = ({} as AsObject),
 		/* ... UI */
 		bookmark: b = false,
 		topic: t = false,
@@ -195,7 +195,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 		byline,
 		/* ActivityPub generic properties */
 		...activity
-	} = normalizeActivityPub(properties());
+	} = normalizeAs(properties());
 
 	// TODO i18n
 	/* Activity */
@@ -215,7 +215,7 @@ export const Card = factory(function Card({ children, properties, middleware: { 
 		summary: s,
 		content: c,
 		...objectRest
-	} = o as ActivityPubObject;
+	} = o as AsObject;
 
 	let { header, content: cContent, actionButtons, actionIcons } =
 		children()[0] || ({} as CardChildren);

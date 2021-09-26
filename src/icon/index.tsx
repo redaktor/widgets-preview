@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import theme, { ThemeProperties } from '../middleware/theme';
 import { formatAriaProperties } from '../common/util';
-import { ActivityPubObject, ActivityPubImage, ActivityPubLink } from '../common/interfaces';
-import { normalizeActivityPub } from '../common/activityPubUtil';
+import { AsObject, AsImage, AsLink } from '../common/interfaces';
+import { normalizeAs } from '../common/activityPubUtil';
 import Img, { ImgProperties } from '../image/image';
 import * as ui from '../theme/material/_ui.m.css';
 import * as colors from '../theme/material/_color.m.css';
@@ -10,7 +10,7 @@ import * as css from '../theme/material/icon.m.css';
 import * as baseCss from '../common/styles/base.m.css';
 
 export type IconType = keyof typeof css;
-export type ApIconType = (ActivityPubImage | ActivityPubLink);
+export type ApIconType = (AsImage | AsLink);
 
 export interface IconProperties extends ThemeProperties {
 	/** An optional, visually hidden label for the icon */
@@ -18,8 +18,8 @@ export interface IconProperties extends ThemeProperties {
 	/** Custom aria attributes */
 	aria?: { [key: string]: string | null };
 	icon?: ApIconType[];
-	/** Icon type if no ActivityPub `icon` property, e.g. Place, downIcon, searchIcon, etc. */
-	type: IconType | ActivityPubObject['type'];
+	/** Icon type if no as:`icon` property, e.g. Place, downIcon, searchIcon, etc. */
+	type: IconType | AsObject['type'];
 
 	maxWidth?: string | number;
 	maxHeight?: string | number;
@@ -35,7 +35,7 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 		maxWidth,
 		maxHeight
 	} = properties();
-	const { icon } = normalizeActivityPub(properties() as any);
+	const { icon } = normalizeAs(properties() as any);
 
 	const themedCss = theme.classes(css);
 	type CssKey = (keyof typeof themedCss);

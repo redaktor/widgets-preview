@@ -1,13 +1,13 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import theme, { ViewportProperties} from '../middleware/theme';
-import { ActivityPubObject } from '../common/interfaces';
+import { AsObject } from '../common/interfaces';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import Icon from '../icon';
 import Table, { Row, Cell } from '../table';
 import bundle from './nls/Attachment';
 import * as css from '../theme/material/attachment.m.css';
 
-export interface AttachmentProperties extends ActivityPubObject, ViewportProperties {
+export interface AttachmentProperties extends AsObject, ViewportProperties {
 	/* max. height of table, count of lines or false, default 6 */
 	lines?: number | false;
 	isRow?: boolean;

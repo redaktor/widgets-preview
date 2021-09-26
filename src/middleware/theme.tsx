@@ -1,5 +1,5 @@
 import { create } from '@dojo/framework/core/vdom';
-import { ActivityPubObject } from '../common/interfaces';
+import { AsObject } from '../common/interfaces';
 import coreTheme, { ThemeProperties as CoreProps } from '@dojo/framework/core/middleware/theme';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { ThemeWithVariant, ClassNames, Theme } from '@dojo/framework/core/interfaces';
@@ -45,7 +45,7 @@ interface ThemeIcache {
 	l: number;
 	viewDesktopCSS: {[k:string]: string;} | false;
 }
-export type ThemedActivityPubObject = ActivityPubObject & ThemeProperties;
+export type ThemedAsObject = AsObject & ThemeProperties;
 const icache = createICacheMiddleware<ThemeIcache>();
 const factory = create({ coreTheme, icache }).properties<ThemeProperties>();
 

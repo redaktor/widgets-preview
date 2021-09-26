@@ -224,23 +224,23 @@ type nonNegativeInteger = number /* xsd:nonNegativeInteger */;
 type float = number /* xsd:float */;
 
 
-/* ACTIVITYPUB EXPORTS */
-
-export type ActivityPubActorTypes = 'Application'|'Group'|'Organization'|'Person'|'Service';
-export type ActivityPubActivityTypes = 'Activity'|'Accept'|'Add'|'Announce'|'Arrive'|
+/* ACTIVITYPUB as:EXPORTS */
+export type AsActorTypes = 'Application'|'Group'|'Organization'|'Person'|'Service';
+export type AsActivityTypes = 'Activity'|'Accept'|'Add'|'Announce'|'Arrive'|
 'Block'|'Create'|'Delete'|'Dislike'|'Flag'|'Follow'|'Ignore'|'Invite'|'Join'|'Leave'|
 'Like'|'Listen'|'Move'|'Offer'|'Question'|'Reject'|'Read'|'Remove'|'TentativeReject'|
 'TentativeAccept'|'Travel'|'Undo'|'Update'|'View';
-export type ActivityPubObjectTypes = 'Article'|'Audio'|'Document'|'Event'|'Image'|
-'Note'|'Page'|'Place'|'Video'|'Profile'|'Relationship'|'Tombstone'|'Link'|'Mention'|
+export type AsObjectTypes = 'Article'|'Audio'|'Document'|'Event'|'Image'|
+'Note'|'Object'|'Page'|'Place'|'Video'|'Profile'|'Relationship'|'Tombstone'|'Link'|'Mention'|
 'Collection'|'OrderedCollection'|'CollectionPage'|'OrderedCollectionPage';
-export type ActivityPubLinkTypes = 'Link'|'Mention';
+export type AsLinkTypes = 'Link'|'Mention';
+export type AsTypes = AsActorTypes|AsActivityTypes|AsObjectTypes|AsLinkTypes;
 
 export interface LangMap {
 	[iso: string]: string;
 }
 
-export interface ActivityPubBase {
+export interface AsBase {
 /*
 OBJECT
 tag 	The key difference between attachment and tag is
@@ -249,13 +249,13 @@ url 	Identifies one or more links to representations of the object
 */
 	type?: anyURI | anyURI[];
 	id?: anyURI;
-	url?: anyURI | ActivityPubLink | (anyURI|ActivityPubLink)[];
+	url?: anyURI | AsLink | (anyURI|AsLink)[];
 
-	icon?: ActivityPubImage | ActivityPubLink | (ActivityPubImage | ActivityPubLink)[];
-	image?: ActivityPubImage | ActivityPubLink | (ActivityPubImage | ActivityPubLink)[];
+	icon?: AsImage | AsLink | (AsImage | AsLink)[];
+	image?: AsImage | AsLink | (AsImage | AsLink)[];
 	mediaType?: string; /* Functional - TODO TS: MIME Media Type */
 
-	attributedTo?: AP | ActivityPubActor | RedaktorActor | (ActivityPubActor | RedaktorActor)[];
+	attributedTo?: AP | AsActor | RedaktorActor | (AsActor | RedaktorActor)[];
 	generator?: AP;
 	published?: dateTime; /* Functional */
 	updated?: dateTime; /* Functional */
@@ -284,21 +284,21 @@ url 	Identifies one or more links to representations of the object
 	attachment?: AP;
 	tag?: AP;
 	preview?: AP;
-	replies?: ActivityPubCollection; /* Functional */
+	replies?: AsCollection; /* Functional */
 
 	height?: nonNegativeInteger; /* Functional */
 	width?: nonNegativeInteger; /* Functional */
 	[key: string]: any;
 }
-export interface ActivityPubBaseNormalized extends ActivityPubBase {
+export interface AsBaseNormalized extends AsBase {
 	type?: anyURI[];
 	id?: anyURI;
-	url?: (anyURI|ActivityPubLink)[];
+	url?: (anyURI|AsLink)[];
 
-	icon?: (ActivityPubImage | ActivityPubLink)[];
-	image?: (ActivityPubImage | ActivityPubLink)[];
+	icon?: (AsImage | AsLink)[];
+	image?: (AsImage | AsLink)[];
 
-	attributedTo?: (ActivityPubActor | RedaktorActor)[];
+	attributedTo?: (AsActor | RedaktorActor)[];
 	generator?: APnormalized;
 
 	name?: string[];
@@ -310,7 +310,7 @@ export interface ActivityPubBaseNormalized extends ActivityPubBase {
 	content?: string[];
 	contentMap?: LangMap[];
 
-	location?: APnormalized & ActivityPubPlace;
+	location?: APnormalized & AsPlace;
 
 	inReplyTo?: APnormalized;
 	audience?: APnormalized;
@@ -342,31 +342,31 @@ export interface ActivityPubBaseNormalized extends ActivityPubBase {
 RELATIONSHIP
 relationship, describes
 */
-export interface ActivityPubEndpoints {
+export interface AsEndpoints {
 	[endpointID: string]: anyURI;
 }
-export interface ActivityPubActor extends ActivityPubBase {
-	type: ActivityPubActorTypes | [ActivityPubActorTypes, ...(ActivityPubActorTypes | ActivityPubObjectTypes | string)[]];
-	inbox?: ActivityPubOrderedCollection; /* Functional */
-	outbox?: ActivityPubOrderedCollection; /* Functional */
+export interface AsActor extends AsBase {
+	type: AsActorTypes | [AsActorTypes, ...(AsActorTypes | AsObjectTypes | string)[]];
+	inbox?: AsOrderedCollection; /* Functional */
+	outbox?: AsOrderedCollection; /* Functional */
 	following?: anyURI;
 	followers?: anyURI;
 	liked?: anyURI;
 
-	streams?: (ActivityPubCollection|ActivityPubOrderedCollection)[];
+	streams?: (AsCollection|AsOrderedCollection)[];
 	preferredUsername?: string;
-	endpoints?: ActivityPubEndpoints;
+	endpoints?: AsEndpoints;
 }
-export interface RedaktorActor extends ActivityPubActor {
+export interface RedaktorActor extends AsActor {
 	petName?: string; /* seeAlso preferredUsername as self-proposed name */
-	edgeNames?: (ActivityPubActor | RedaktorActor)[];
+	edgeNames?: (AsActor | RedaktorActor)[];
 	handle?: string;
 	follow?: boolean | 'follower' | 'mutual' | 'me';
 }
-export interface ActivityPubActivity extends ActivityPubBase {
-	type: ActivityPubActivityTypes | [ActivityPubActivityTypes, ...(ActivityPubActivityTypes | string)[]];
+export interface AsActivity extends AsBase {
+	type: AsActivityTypes | [AsActivityTypes, ...(AsActivityTypes | string)[]];
 	object?: AP;
-	actor?: ActivityPubActor | RedaktorActor | ActivityPubLink | (ActivityPubActor | RedaktorActor | ActivityPubLink)[];
+	actor?: AsActor | RedaktorActor | AsLink | (AsActor | RedaktorActor | AsLink)[];
 	instrument?: AP;
 	origin?: AP;
 	target?: AP;
@@ -376,10 +376,10 @@ export interface ActivityPubActivity extends ActivityPubBase {
 	anyOf?: AP;
 	closed?: AP | dateTime | boolean;
 }
-export interface ActivityPubActivityNormalized extends ActivityPubBaseNormalized {
-	type: [ActivityPubActivityTypes, ...(ActivityPubActivityTypes | string)[]];
+export interface AsActivityNormalized extends AsBaseNormalized {
+	type: [AsActivityTypes, ...(AsActivityTypes | string)[]];
 	object?: APnormalized;
-	actor?: (ActivityPubActor | RedaktorActor | ActivityPubLink)[];
+	actor?: (AsActor | RedaktorActor | AsLink)[];
 	instrument?: APnormalized;
 	origin?: APnormalized;
 	target?: APnormalized;
@@ -390,21 +390,21 @@ export interface ActivityPubActivityNormalized extends ActivityPubBaseNormalized
 	closed?: APnormalized | dateTime | boolean;
 }
 
-interface ActivityPubCore extends ActivityPubBase {
-	type?: ActivityPubObjectTypes | [ActivityPubObjectTypes, ...(ActivityPubObjectTypes | string)[]];
+interface AsCore extends AsBase {
+	type?: AsObjectTypes | [AsObjectTypes, ...(AsObjectTypes | string)[]];
 }
-export interface ActivityPubObject extends ActivityPubBase {
-	type?: ActivityPubObjectTypes | [ActivityPubObjectTypes, ...(ActivityPubObjectTypes | string)[]];
+export interface AsObject extends AsBase {
+	type?: AsObjectTypes | [AsObjectTypes, ...(AsObjectTypes | string)[]];
 	/* Collection */
-	current?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	first?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	last?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	items?: ActivityPubCollection; /* Functional */
+	current?: AsCollectionPage | AsLink; /* Functional */
+	first?: AsCollectionPage | AsLink; /* Functional */
+	last?: AsCollectionPage | AsLink; /* Functional */
+	items?: AsCollection; /* Functional */
 	totalItems?: nonNegativeInteger; /* Functional */
 	/* CollectionPage */
-	next?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	prev?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	partOf?: ActivityPubCollection | ActivityPubLink; /* Functional */
+	next?: AsCollectionPage | AsLink; /* Functional */
+	prev?: AsCollectionPage | AsLink; /* Functional */
+	partOf?: AsCollection | AsLink; /* Functional */
 	/* OrderedCollection */
 	startIndex?: nonNegativeInteger; /* Functional */
 	/* Place */
@@ -419,18 +419,18 @@ export interface ActivityPubObject extends ActivityPubBase {
 	hreflang?: string; /* Functional */
 	rel?: string | string[];
 }
-export interface ActivityPubObjectNormalized extends ActivityPubBaseNormalized {
-	type: [ActivityPubObjectTypes, ...(ActivityPubObjectTypes | string)[]];
+export interface AsObjectNormalized extends AsBaseNormalized {
+	type: [AsObjectTypes, ...(AsObjectTypes | string)[]];
 	/* Collection */
-	current?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	first?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	last?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	items?: ActivityPubCollection; /* Functional */
+	current?: AsCollectionPage | AsLink; /* Functional */
+	first?: AsCollectionPage | AsLink; /* Functional */
+	last?: AsCollectionPage | AsLink; /* Functional */
+	items?: AsCollection; /* Functional */
 	totalItems?: nonNegativeInteger; /* Functional */
 	/* CollectionPage */
-	next?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	prev?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	partOf?: ActivityPubCollection | ActivityPubLink; /* Functional */
+	next?: AsCollectionPage | AsLink; /* Functional */
+	prev?: AsCollectionPage | AsLink; /* Functional */
+	partOf?: AsCollection | AsLink; /* Functional */
 	/* OrderedCollection */
 	startIndex?: nonNegativeInteger; /* Functional */
 	/* Place */
@@ -448,26 +448,26 @@ export interface ActivityPubObjectNormalized extends ActivityPubBaseNormalized {
 	locales?: Labeled[];
 }
 
-export interface ActivityPubCollection extends ActivityPubCore {
-	current?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	first?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	last?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
+export interface AsCollection extends AsCore {
+	current?: AsCollectionPage | AsLink; /* Functional */
+	first?: AsCollectionPage | AsLink; /* Functional */
+	last?: AsCollectionPage | AsLink; /* Functional */
 
-	items?: ActivityPubCollection; /* Functional */
+	items?: AsCollection; /* Functional */
 	totalItems?: nonNegativeInteger; /* Functional */
 }
-export interface ActivityPubCollectionPage extends ActivityPubCollection {
-	next?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	prev?: ActivityPubCollectionPage | ActivityPubLink; /* Functional */
-	partOf?: ActivityPubCollection | ActivityPubLink; /* Functional */
+export interface AsCollectionPage extends AsCollection {
+	next?: AsCollectionPage | AsLink; /* Functional */
+	prev?: AsCollectionPage | AsLink; /* Functional */
+	partOf?: AsCollection | AsLink; /* Functional */
 }
-export interface ActivityPubOrderedCollection extends ActivityPubCollection {
+export interface AsOrderedCollection extends AsCollection {
 	startIndex?: nonNegativeInteger; /* Functional */
 }
-export type ActivityPubOrderedCollectionPage = ActivityPubOrderedCollection & ActivityPubCollectionPage;
+export type AsOrderedCollectionPage = AsOrderedCollection & AsCollectionPage;
 
-export interface ActivityPubPlace extends ActivityPubCore {
-	type: 'Place' | ['Place', ...ActivityPubObjectTypes[]];
+export interface AsPlace extends AsCore {
+	type: 'Place' | ['Place', ...AsObjectTypes[]];
 	accuracy?: float /* percentage [>= 0.0f, <= 100.0f] Functional*/;
 	altitude?: float; /* Functional */
 	latitude?: float; /* Functional */
@@ -475,20 +475,20 @@ export interface ActivityPubPlace extends ActivityPubCore {
 	radius?: float; /* [>= 0.0f] Functional */
 	units?: "cm" | "feet" | "inches" | "km" | "m" | "miles" | anyURI;
 }
-export interface ActivityPubImage extends ActivityPubCore {
-	type: 'Image' | ['Image', ...ActivityPubObjectTypes[]];
+export interface AsImage extends AsCore {
+	type: 'Image' | ['Image', ...AsObjectTypes[]];
 	blurhash?: string;
 	focalPoint?: [number, number];
 }
 
-export interface ActivityPubLinkObject extends ActivityPubCore {
-	type: ActivityPubLinkTypes;
+export interface AsLinkObject extends AsCore {
+	type: AsLinkTypes;
 	href?: string; /* Functional */
 	hreflang?: string; /* Functional */
 	rel?: string | string[];
 }
-export type ActivityPubLink = ActivityPubLinkObject;
+export type AsLink = AsLinkObject;
 
-export type AP = ActivityPubObject | ActivityPubActivity |
-	(ActivityPubObject | ActivityPubActivity)[];
-export type APnormalized = (ActivityPubObjectNormalized | ActivityPubActivityNormalized)[];
+export type AP = AsObject | AsActivity |
+	(AsObject | AsActivity)[];
+export type APnormalized = (AsObjectNormalized | AsActivityNormalized)[];

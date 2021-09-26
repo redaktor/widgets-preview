@@ -1,13 +1,13 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
-import { RedaktorActor, ActivityPubObjectNormalized } from '../common/interfaces';
-import { normalizeActivityPub, isActor } from '../common/activityPubUtil';
+import { RedaktorActor, AsObjectNormalized } from '../common/interfaces';
+import { normalizeAs, isActor } from '../common/activityPubUtil';
 import id from '../middleware/id';
-import theme, { ThemedActivityPubObject } from '../middleware/theme';
+import theme, { ThemedAsObject } from '../middleware/theme';
 import Actor from '../actor';
 import Avatar from '../avatar';
 import * as css from '../theme/material/actors.m.css';
 
-export interface ActorsProperties extends ThemedActivityPubObject {
+export interface ActorsProperties extends ThemedAsObject {
 	openIndex?: number;
 	widgetId?: string;
 	/* Show a maximum Avatars */
@@ -28,10 +28,10 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 		size = 's',
 		color = 'primary',
 		..._rest
-	} = normalizeActivityPub(properties());
+	} = normalizeAs(properties());
 	const idBase = widgetId || id.getId('attributedTo');
 
-	const APo: ActivityPubObjectNormalized = _rest;
+	const APo: AsObjectNormalized = _rest;
 	if (!APo.attributedTo) { return '' }
 
 

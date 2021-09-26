@@ -1,5 +1,5 @@
 import { tsx } from '@dojo/framework/core/vdom';
-
+import { AsTypes } from './interfaces';
 const jsonld = require('jsonld/dist/jsonld.esm.min.js');
 const as = 'https://www.w3.org/ns/activitystreams';
 const w3idSecurity = 'https://w3id.org/security/v1';
@@ -7,48 +7,592 @@ const vocab = { '@vocab': as };
 export const wellKnownVocab = {
 	...vocab,
 	as,
-	xml: "http://www.w3.org/XML/1998/namespace",
-	foaf: "http://xmlns.com/foaf/0.1/",
-	eli: "http://data.europa.eu/eli/ontology#",
-	snomed: "http://purl.bioontology.org/ontology/SNOMEDCT/",
-	bibo: "http://purl.org/ontology/bibo/",
-	rdfs: "http://www.w3.org/2000/01/rdf-schema#",
-	skos: "http://www.w3.org/2004/02/skos/core#",
-	void: "http://rdfs.org/ns/void#",
-	dc: "http://purl.org/dc/elements/1.1/",
-	dctype: "http://purl.org/dc/dcmitype/",
-	rdf: "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-	dcat: "http://www.w3.org/ns/dcat#",
-	rdfa: "http://www.w3.org/ns/rdfa#",
-	xsd: "http://www.w3.org/2001/XMLSchema#",
-	schema: "http://schema.org/",
-	dct: "http://purl.org/dc/terms/",
-	dcterms: "http://purl.org/dc/terms/",
-	owl: "http://www.w3.org/2002/07/owl#",
-	org: "http://www.w3.org/ns/org#",
-	vcard: "http://www.w3.org/2006/vcard/ns#"
+	bibo: 'http://purl.org/ontology/bibo/',
+	dc: 'http://purl.org/dc/elements/1.1/',
+	dcat: 'http://www.w3.org/ns/dcat#',
+	dct: 'http://purl.org/dc/terms/',
+	dcterms: 'http://purl.org/dc/terms/',
+	dctype: 'http://purl.org/dc/dcmitype/',
+	eli: 'http://data.europa.eu/eli/ontology#',
+	foaf: 'http://xmlns.com/foaf/0.1/',
+	ldp: 'http://www.w3.org/ns/ldp#',
+	org: 'http://www.w3.org/ns/org#',
+	owl: 'http://www.w3.org/2002/07/owl#',
+	rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+	rdfa: 'http://www.w3.org/ns/rdfa#',
+	rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+	schema: 'http://schema.org/',
+	skos: 'http://www.w3.org/2004/02/skos/core#',
+	snomed: 'http://purl.bioontology.org/ontology/SNOMEDCT/',
+	vcard: 'http://www.w3.org/2006/vcard/ns#',
+	void: 'http://rdfs.org/ns/void#',
+	xml: 'http://www.w3.org/XML/1998/namespace',
+	xsd: 'http://www.w3.org/2001/XMLSchema#'
 }
-export const asSupportedExtensions = {
-	manuallyApprovesFollowers: "as:manuallyApprovesFollowers",
-	sensitive: "as:sensitive",
-	movedTo: "as:movedTo",
-	toot: "http://joinmastodon.org/ns#",
-	Emoji: "toot:Emoji",
-	focalPoint: {
-		"@container": "@list",
-		"@id": "toot:focalPoint"
+export const asCore = {
+	Accept: 'as:Accept',
+	Activity: 'as:Activity',
+	IntransitiveActivity: 'as:IntransitiveActivity',
+	Add: 'as:Add',
+	Announce: 'as:Announce',
+	Application: 'as:Application',
+	Arrive: 'as:Arrive',
+	Article: 'as:Article',
+	Audio: 'as:Audio',
+	Block: 'as:Block',
+	Collection: 'as:Collection',
+	CollectionPage: 'as:CollectionPage',
+	Relationship: 'as:Relationship',
+	Create: 'as:Create',
+	Delete: 'as:Delete',
+	Dislike: 'as:Dislike',
+	Document: 'as:Document',
+	Event: 'as:Event',
+	Follow: 'as:Follow',
+	Flag: 'as:Flag',
+	Group: 'as:Group',
+	Ignore: 'as:Ignore',
+	Image: 'as:Image',
+	Invite: 'as:Invite',
+	Join: 'as:Join',
+	Leave: 'as:Leave',
+	Like: 'as:Like',
+	Link: 'as:Link',
+	Mention: 'as:Mention',
+	Note: 'as:Note',
+	Object: 'as:Object',
+	Offer: 'as:Offer',
+	OrderedCollection: 'as:OrderedCollection',
+	OrderedCollectionPage: 'as:OrderedCollectionPage',
+	Organization: 'as:Organization',
+	Page: 'as:Page',
+	Person: 'as:Person',
+	Place: 'as:Place',
+	Profile: 'as:Profile',
+	Question: 'as:Question',
+	Reject: 'as:Reject',
+	Remove: 'as:Remove',
+	Service: 'as:Service',
+	TentativeAccept: 'as:TentativeAccept',
+	TentativeReject: 'as:TentativeReject',
+	Tombstone: 'as:Tombstone',
+	Undo: 'as:Undo',
+	Update: 'as:Update',
+	Video: 'as:Video',
+	View: 'as:View',
+	Listen: 'as:Listen',
+	Read: 'as:Read',
+	Move: 'as:Move',
+	Travel: 'as:Travel',
+	IsFollowing: 'as:IsFollowing',
+	IsFollowedBy: 'as:IsFollowedBy',
+	IsContact: 'as:IsContact',
+	IsMember: 'as:IsMember',
+	subject: {
+	  '@id': 'as:subject',
+	  '@type': '@id'
 	},
-	featured: "toot:featured"
+	relationship: {
+	  '@id': 'as:relationship',
+	  '@type': '@id'
+	},
+	actor: {
+	  '@id': 'as:actor',
+	  '@type': '@id'
+	},
+	attributedTo: {
+	  '@id': 'as:attributedTo',
+	  '@type': '@id'
+	},
+	attachment: {
+	  '@id': 'as:attachment',
+	  '@type': '@id'
+	},
+	bcc: {
+	  '@id': 'as:bcc',
+	  '@type': '@id'
+	},
+	bto: {
+	  '@id': 'as:bto',
+	  '@type': '@id'
+	},
+	cc: {
+	  '@id': 'as:cc',
+	  '@type': '@id'
+	},
+	context: {
+	  '@id': 'as:context',
+	  '@type': '@id'
+	},
+	current: {
+	  '@id': 'as:current',
+	  '@type': '@id'
+	},
+	first: {
+	  '@id': 'as:first',
+	  '@type': '@id'
+	},
+	generator: {
+	  '@id': 'as:generator',
+	  '@type': '@id'
+	},
+	icon: {
+	  '@id': 'as:icon',
+	  '@type': '@id'
+	},
+	image: {
+	  '@id': 'as:image',
+	  '@type': '@id'
+	},
+	inReplyTo: {
+	  '@id': 'as:inReplyTo',
+	  '@type': '@id'
+	},
+	items: {
+	  '@id': 'as:items',
+	  '@type': '@id'
+	},
+	instrument: {
+	  '@id': 'as:instrument',
+	  '@type': '@id'
+	},
+	orderedItems: {
+	  '@id': 'as:items',
+	  '@type': '@id',
+	  '@container': '@list'
+	},
+	last: {
+	  '@id': 'as:last',
+	  '@type': '@id'
+	},
+	location: {
+	  '@id': 'as:location',
+	  '@type': '@id'
+	},
+	next: {
+	  '@id': 'as:next',
+	  '@type': '@id'
+	},
+	object: {
+	  '@id': 'as:object',
+	  '@type': '@id'
+	},
+	oneOf: {
+	  '@id': 'as:oneOf',
+	  '@type': '@id'
+	},
+	anyOf: {
+	  '@id': 'as:anyOf',
+	  '@type': '@id'
+	},
+	closed: {
+	  '@id': 'as:closed',
+	  '@type': 'xsd:dateTime'
+	},
+	origin: {
+	  '@id': 'as:origin',
+	  '@type': '@id'
+	},
+	accuracy: {
+	  '@id': 'as:accuracy',
+	  '@type': 'xsd:float'
+	},
+	prev: {
+	  '@id': 'as:prev',
+	  '@type': '@id'
+	},
+	preview: {
+	  '@id': 'as:preview',
+	  '@type': '@id'
+	},
+	replies: {
+	  '@id': 'as:replies',
+	  '@type': '@id'
+	},
+	result: {
+	  '@id': 'as:result',
+	  '@type': '@id'
+	},
+	audience: {
+	  '@id': 'as:audience',
+	  '@type': '@id'
+	},
+	partOf: {
+	  '@id': 'as:partOf',
+	  '@type': '@id'
+	},
+	tag: {
+	  '@id': 'as:tag',
+	  '@type': '@id'
+	},
+	target: {
+	  '@id': 'as:target',
+	  '@type': '@id'
+	},
+	to: {
+	  '@id': 'as:to',
+	  '@type': '@id'
+	},
+	url: {
+	  '@id': 'as:url',
+	  '@type': '@id'
+	},
+	altitude: {
+	  '@id': 'as:altitude',
+	  '@type': 'xsd:float'
+	},
+	content: 'as:content',
+	contentMap: {
+	  '@id': 'as:content',
+	  '@container': '@language'
+	},
+	name: 'as:name',
+	nameMap: {
+	  '@id': 'as:name',
+	  '@container': '@language'
+	},
+	duration: {
+	  '@id': 'as:duration',
+	  '@type': 'xsd:duration'
+	},
+	endTime: {
+	  '@id': 'as:endTime',
+	  '@type': 'xsd:dateTime'
+	},
+	height: {
+	  '@id': 'as:height',
+	  '@type': 'xsd:nonNegativeInteger'
+	},
+	href: {
+	  '@id': 'as:href',
+	  '@type': '@id'
+	},
+	hreflang: 'as:hreflang',
+	latitude: {
+	  '@id': 'as:latitude',
+	  '@type': 'xsd:float'
+	},
+	longitude: {
+	  '@id': 'as:longitude',
+	  '@type': 'xsd:float'
+	},
+	mediaType: 'as:mediaType',
+	published: {
+	  '@id': 'as:published',
+	  '@type': 'xsd:dateTime'
+	},
+	radius: {
+	  '@id': 'as:radius',
+	  '@type': 'xsd:float'
+	},
+	rel: 'as:rel',
+	startIndex: {
+	  '@id': 'as:startIndex',
+	  '@type': 'xsd:nonNegativeInteger'
+	},
+	startTime: {
+	  '@id': 'as:startTime',
+	  '@type': 'xsd:dateTime'
+	},
+	summary: 'as:summary',
+	summaryMap: {
+	  '@id': 'as:summary',
+	  '@container': '@language'
+	},
+	totalItems: {
+	  '@id': 'as:totalItems',
+	  '@type': 'xsd:nonNegativeInteger'
+	},
+	units: 'as:units',
+	updated: {
+	  '@id': 'as:updated',
+	  '@type': 'xsd:dateTime'
+	},
+	width: {
+	  '@id': 'as:width',
+	  '@type': 'xsd:nonNegativeInteger'
+	},
+	describes: {
+	  '@id': 'as:describes',
+	  '@type': '@id'
+	},
+	formerType: {
+	  '@id': 'as:formerType',
+	  '@type': '@id'
+	},
+	deleted: {
+	  '@id': 'as:deleted',
+	  '@type': 'xsd:dateTime'
+	},
+	inbox: {
+	  '@id': 'ldp:inbox',
+	  '@type': '@id'
+	},
+	outbox: {
+	  '@id': 'as:outbox',
+	  '@type': '@id'
+	},
+	following: {
+	  '@id': 'as:following',
+	  '@type': '@id'
+	},
+	followers: {
+	  '@id': 'as:followers',
+	  '@type': '@id'
+	},
+	streams: {
+	  '@id': 'as:streams',
+	  '@type': '@id'
+	},
+	preferredUsername: 'as:preferredUsername',
+	endpoints: {
+	  '@id': 'as:endpoints',
+	  '@type': '@id'
+	},
+	uploadMedia: {
+	  '@id': 'as:uploadMedia',
+	  '@type': '@id'
+	},
+	proxyUrl: {
+	  '@id': 'as:proxyUrl',
+	  '@type': '@id'
+	},
+	liked: {
+	  '@id': 'as:liked',
+	  '@type': '@id'
+	},
+	oauthAuthorizationEndpoint: {
+	  '@id': 'as:oauthAuthorizationEndpoint',
+	  '@type': '@id'
+	},
+	oauthTokenEndpoint: {
+	  '@id': 'as:oauthTokenEndpoint',
+	  '@type': '@id'
+	},
+	provideClientKey: {
+	  '@id': 'as:provideClientKey',
+	  '@type': '@id'
+	},
+	signClientKey: {
+	  '@id': 'as:signClientKey',
+	  '@type': '@id'
+	},
+	sharedInbox: {
+	  '@id': 'as:sharedInbox',
+	  '@type': '@id'
+	},
+	Public: {
+	  '@id': 'as:Public',
+	  '@type': '@id'
+	},
+	source: 'as:source',
+	likes: {
+	  '@id': 'as:likes',
+	  '@type': '@id'
+	},
+	shares: {
+	  '@id': 'as:shares',
+	  '@type': '@id'
+	}
+};
+
+export const asSupportedExtensions = {
+	manuallyApprovesFollowers: 'as:manuallyApprovesFollowers',
+	sensitive: 'as:sensitive',
+	movedTo: 'as:movedTo',
+	focalPoint: {
+		'@container': '@list',
+		'@id': 'toot:focalPoint'
+	},
+	toot: 'http://joinmastodon.org/ns#',
+	Emoji: 'toot:Emoji',
+	featured: 'toot:featured'
 }
+
 export const defaultContext = [
 	as,
 	w3idSecurity,
 	{
-		"@version": 1.1,
+		'@version': 1.1,
+		'id': '@id',
+    'type': '@type',
 		...wellKnownVocab,
+		...asCore,
 		...asSupportedExtensions
 	}
 ];
+/*
+
+---
+
+name	Text
+The name of the item.
+
+disambiguatingDescription Text
+A sub property of description.
+A short description of the item used to disambiguate from other, similar items.
+
+description	Text
+A description of the item.
+
+image
+An image of the item. This can be a URL or a fully described ImageObject.
+
+about / subjectOf
+
+---
+
+DOCUMENT
+
+PLACE
+'Accommodation'|'AdministrativeArea'|'CivicStructure'|'Landform'|
+'LandmarksOrHistoricalBuildings'|'LocalBusiness'|'Residence'|
+'TouristAttraction'|'TouristDestination'
+
+logo ImageObject or URL
+An associated logo.
+
+photo ImageObject or Photograph
+A photograph of this place. Supersedes photos
+
+--- CreativeWork
+
+ARTICLE
+
+
+NOTE --> 'SocialMediaPosting'|'DiscussionForumPosting'
+AUDIO --> AudioObject
+IMAGE --> ImageObject / Barcode
+VIDEO --> VideoObject / MusicVideoObject
+PAGE --> SEE FULL WebPage
+*/
+type LDTypeSuggestions = {
+	[K in AsTypes]?: {
+		equivalent: string;
+		subTypes: (string|{[subType: string]: string[]})[];
+		related: (string|{[subType: string]: string[]})[];
+	};
+};
+export const beSpecific: LDTypeSuggestions = {
+	Object: {
+		equivalent: 'schema:Thing',
+		subTypes: [],
+		related: []
+	},
+	Document: {
+		equivalent: 'schema:Thing',
+		subTypes: [],
+		related: []
+	},
+
+	Article: {
+		equivalent: 'schema:Article',
+		subTypes: [
+			'schema:AdvertiserContentArticle',
+			'schema:NewsArticle',
+			'schema:Report',
+			'schema:SatiricalArticle',
+			{'schema:ScholarlyArticle': ['schema:MedicalScholarlyArticle']},
+			{'schema:TechArticle': ['schema:APIReference']},
+		],
+		related: []
+	},
+	Audio: {
+		equivalent: 'schema:AudioObject',
+		subTypes: [],
+		related: [
+			{'schema:Clip': ['schema:RadioClip']}
+		]
+	},
+	Event: {
+		equivalent: 'schema:Event',
+		subTypes: [
+			'schema:BusinessEvent',
+			'schema:ChildrensEvent',
+			'schema:ComedyEvent',
+			'schema:CourseInstance',
+			'schema:DanceEvent',
+			'schema:DeliveryEvent',
+			'schema:EducationEvent',
+			'schema:EventSeries',
+			'schema:ExhibitionEvent',
+			'schema:Festival',
+			'schema:FoodEvent',
+			'schema:Hackathon',
+			'schema:LiteraryEvent',
+			'schema:MusicEvent',
+			{'schema:PublicationEvent': ['schema:BroadcastEvent', 'schema:OnDemandEvent']},
+			'schema:SaleEvent',
+			'schema:ScreeningEvent',
+			'schema:SocialEvent',
+			'schema:SportsEvent',
+			'schema:TheaterEvent',
+			'schema:VisualArtsEvent'
+			// TODO : schema:UserInteraction
+		],
+		related: []
+	},
+	Image: {
+		equivalent: 'schema:ImageObject',
+		subTypes: ['schema:Barcode'],
+		related: []
+	},
+	Note: {
+		equivalent: 'schema:SocialMediaPosting',
+		subTypes: ['schema:BlogPosting', 'schema:DiscussionForumPosting'],
+		related: []
+	},
+	Page: {
+		equivalent: 'schema:WebPage',
+		subTypes: [
+			'schema:AboutPage','schema:CheckoutPage','schema:CollectionPage',
+			'schema:ContactPage','schema:FAQPage','schema:ItemPage','schema:MedicalWebPage',
+			'schema:ProfilePage','schema:QAPage','schema:RealEstateListing','schema:SearchResultsPage'
+		],
+		related: []
+	},
+	Video: {
+		equivalent: 'schema:VideoObject',
+		subTypes: [],
+		related: [
+			'schema:MusicVideoObject',
+			{'schema:Clip': ['schema:MovieClip', 'schema:TVClip','schema:VideoGameClip']}
+
+		]
+	},
+	Place: {
+		equivalent: 'schema:Place',
+		subTypes: [
+			'schema:Accommodation','schema:AdministrativeArea','schema:CivicStructure',
+			'schema:Landform','schema:LandmarksOrHistoricalBuildings','schema:LocalBusiness',
+			'schema:Residence','schema:TouristAttraction','schema:TouristDestination'
+		],
+		related: []
+	},
+	Profile: {
+		equivalent: 'schema:ProfilePage',
+		subTypes: [],
+		related: []
+	},
+	Relationship: {
+		equivalent: 'schema:',
+		subTypes: [],
+		related: []
+	},
+	Link: {
+		equivalent: 'schema:',
+		subTypes: [],
+		related: []
+	},
+	Mention: {
+		equivalent: 'schema:',
+		subTypes: [],
+		related: []
+	},
+	// 'Collection': {}, 'OrderedCollection': {}, 'CollectionPage': {}, 'OrderedCollectionPage',
+
+
+};
 
 export async function compact(doc: any) {
 	if (typeof doc === 'string') {
@@ -81,11 +625,11 @@ export async function compact(doc: any) {
 }
 
 import {
-	ActivityPubActors, ActivityPubActivities, ActivityPubObjects, ActivityPubLinks
+	AsActors, AsActivities, AsObjects, AsLinks
 } from './activityPub';
 import {
-	RedaktorActor, ActivityPubActor, ActivityPubActivity, ActivityPubObject,
-	ActivityPubObjectNormalized, ActivityPubLinkObject, LangMap
+	RedaktorActor, AsActor, AsActivity, AsObject,
+	AsObjectNormalized, AsLinkObject, LangMap
 } from './interfaces';
 import global from '@dojo/framework/shim/global';
 import is from '../framework/is';
@@ -109,10 +653,10 @@ export const isIn = (o: any, apTypes: any) => {
 		apTypes.hasOwnProperty(o.type));
 }
 
-export const isActivity = (o: any): o is ActivityPubActivity => !!o && isIn(o, ActivityPubActivities);
-export const isObject = (o: any): o is ActivityPubObject => !!o && isIn(o, ActivityPubObjects);
-export const isActor = (o: any): o is RedaktorActor => !!o && isIn(o, ActivityPubActors);
-export const isLink = (o: any): o is ActivityPubLinkObject => typeof o === 'string' || (!!o && isIn(o, ActivityPubLinks));
+export const isActivity = (o: any): o is AsActivity => !!o && isIn(o, AsActivities);
+export const isObject = (o: any): o is AsObject => !!o && isIn(o, AsObjects);
+export const isActor = (o: any): o is RedaktorActor => !!o && isIn(o, AsActors);
+export const isLink = (o: any): o is AsLinkObject => typeof o === 'string' || (!!o && isIn(o, AsLinks));
 export const isLinkOrImage = (o: any) => !!o && (isLink(o) || (isAP(o, 'Image') && o.url));
 export const isCollection = (o: any) => !!o && (isAP(o, 'Collection') || isAP(o, 'OrderedCollection'));
 export const isCollectionPage = (o: any) => !!o && (isAP(o, 'CollectionPage') || isAP(o, 'OrderedCollectionPage'));
@@ -121,7 +665,7 @@ export const isDatetime = (s: any) => (!!s && typeof s === 'string') && dateTime
 export const isDuration = (s: any) => (!!s && typeof s === 'string') && durationR.test(s);
 export const isPosInteger = (n: any) => (typeof n === 'number' && is(n, 'integer') && n >= 0);
 
-type APall = Partial<ActivityPubActivity|ActivityPubActor|ActivityPubObject|ActivityPubLinkObject>;
+type APall = Partial<AsActivity|AsActor|AsObject|AsLinkObject>;
 export function getActorName({ petName: pet, preferredUsername: p, name: n, id }: RedaktorActor): string[] {
 	if (pet && typeof pet === 'string') { return [pet] }
 	if (p && typeof p === 'string') { return [p] }
@@ -158,17 +702,17 @@ export function clampStrings(s: string | string[], length: number) {
   }, [])
 }
 
-export function normalizeActivityPub(ap: APall, language?: string, includeBcc: boolean = false): ActivityPubObjectNormalized {
+export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = false): AsObjectNormalized {
 	/* TODO
 
-  default "@context"
-	"https://www.w3.org/ns/activitystreams"
+  default '@context'
+	'https://www.w3.org/ns/activitystreams'
 
 	hreflang Value must be a [BCP47] Language-Tag.
 	*/
 
 	if (typeof ap === 'string') { return ap }
-	if (typeof ap === 'object' && !ap.type) { (ap as ActivityPubActivity).type = 'Create' }
+	if (typeof ap === 'object' && !ap.type) { (ap as AsActivity).type = 'Create' }
 
 	const locales: string[] = [];
 	const userLang = typeof language === 'string' ? language :
@@ -184,7 +728,7 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 			locales.push(...Object.keys(_o));
 			let uLang = userLang;
 			if (!uLang) {
-				/* The special language tag "und" can be used within the object form to
+				/* The special language tag 'und' can be used within the object form to
 				explicitly identify a value whose language is unknown or undetermined. */
 				uLang = _o.und ? 'und' : 'en';
 			}
@@ -234,11 +778,11 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 	/* TODO
 	id
 	HOW MANY multiple max. ?
-	WHAT IF e.g. [" ", " " (repeat 20 times), "A real text"] ?
+	WHAT IF e.g. [' ', ' ' (repeat 20 times), 'A real text'] ?
 	*/
 	/*
-		inbox?: ActivityPubOrderedCollection;
-		outbox?: ActivityPubOrderedCollection;
+		inbox?: AsOrderedCollection;
+		outbox?: AsOrderedCollection;
 
 		href?: string;
 		hreflang?: string;
@@ -253,19 +797,19 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 	}
 
 	if (Array.isArray(url)) {
-		o.url = url.filter(isLink).map((_o:any) => normalizeActivityPub(_o, language))
+		o.url = url.filter(isLink).map((_o:any) => normalizeAs(_o, language))
 	} else if (isLink(url)) {
-		o.url = toArray(url).map((_o:any) => normalizeActivityPub(_o, language))
+		o.url = toArray(url).map((_o:any) => normalizeAs(_o, language))
 	}
 	if (Array.isArray(icon)) {
-		o.icon = icon.filter(isLinkOrImage).map((_o:any) => normalizeActivityPub(_o, language))
+		o.icon = icon.filter(isLinkOrImage).map((_o:any) => normalizeAs(_o, language))
 	} else if (isLinkOrImage(icon)) {
-		o.icon = toArray(icon).map((_o:any) => normalizeActivityPub(_o, language))
+		o.icon = toArray(icon).map((_o:any) => normalizeAs(_o, language))
 	}
 	if (Array.isArray(image)) {
-		o.image = image.filter(isLinkOrImage).map((_o:any) => normalizeActivityPub(_o, language))
+		o.image = image.filter(isLinkOrImage).map((_o:any) => normalizeAs(_o, language))
 	} else if (isLinkOrImage(image)) {
-		o.image = toArray(image).map((_o:any) => normalizeActivityPub(_o, language))
+		o.image = toArray(image).map((_o:any) => normalizeAs(_o, language))
 	}
 
 	if (typeof mediaType === 'string') { o.mediaType = mediaType }
@@ -293,61 +837,61 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 	if (isPosInteger(width)) { o.width = width }
 
 	if (isCollection(replies)) {
-		(o as ActivityPubObject).replies = replies
+		(o as AsObject).replies = replies
 	}
 
 	if (isObject(ap)) {
 		if (isAP(ap, 'Place')) {
 			if (typeof accuracy === 'number' && accuracy >= 0 && accuracy <= 100) {
-				(o as ActivityPubObject).accuracy = accuracy
+				(o as AsObject).accuracy = accuracy
 			}
 			if (typeof radius === 'number' && radius >= 0) {
-				(o as ActivityPubObject).radius = radius
+				(o as AsObject).radius = radius
 			}
-			if (typeof altitude === 'number') { (o as ActivityPubObject).altitude = altitude }
-			if (typeof latitude === 'number') { (o as ActivityPubObject).latitude = latitude }
-			if (typeof longitude === 'number') { (o as ActivityPubObject).longitude = longitude }
+			if (typeof altitude === 'number') { (o as AsObject).altitude = altitude }
+			if (typeof latitude === 'number') { (o as AsObject).latitude = latitude }
+			if (typeof longitude === 'number') { (o as AsObject).longitude = longitude }
 			if (isLink(units) /* string too */ ) { (o as any).units = units }
 		}
 
 		if (isCollection(ap) || isCollectionPage(ap)) {
 			if (isCollectionPage(current) || isLink(current)) {
-				(o as ActivityPubObject).current = current
+				(o as AsObject).current = current
 			}
 			if (isCollectionPage(first) || isLink(first)) {
-				(o as ActivityPubObject).first = first
+				(o as AsObject).first = first
 			}
 			if (isCollectionPage(last) || isLink(last)) {
-				(o as ActivityPubObject).last = last
+				(o as AsObject).last = last
 			}
-			if (isCollection(items)) { (o as ActivityPubObject).items = items }
-			if (isPosInteger(totalItems)) { (o as ActivityPubObject).totalItems = totalItems }
+			if (isCollection(items)) { (o as AsObject).items = items }
+			if (isPosInteger(totalItems)) { (o as AsObject).totalItems = totalItems }
 			if (isAP(ap, 'OrderedCollection') && isPosInteger(startIndex)) {
-				(o as ActivityPubObject).startIndex = startIndex
+				(o as AsObject).startIndex = startIndex
 			}
 		}
 
 		if (isCollectionPage(ap)) {
 			if (isCollectionPage(next) || isLink(next)) {
-				(o as ActivityPubObject).next = next
+				(o as AsObject).next = next
 			}
 			if (isCollectionPage(prev) || isLink(prev)) {
-				(o as ActivityPubObject).prev = prev
+				(o as AsObject).prev = prev
 			}
 			if (isCollection(partOf) || isLink(partOf)) {
-				(o as ActivityPubObject).partOf = partOf
+				(o as AsObject).partOf = partOf
 			}
 		}
 	}
 	if (isLink(ap)) {
 		if (!!href && typeof href === 'string') {
-			(o as ActivityPubLinkObject).href = href
+			(o as AsLinkObject).href = href
 		}
 		if (!!hreflang && typeof hreflang === 'string') {
-			(o as ActivityPubLinkObject).hreflang = hreflang
+			(o as AsLinkObject).hreflang = hreflang
 		}
 		if (!!rel && typeof rel === 'string') {
-			(o as ActivityPubLinkObject).rel = toArray(rel);
+			(o as AsLinkObject).rel = toArray(rel);
 		}
 	}
 	if (isActor(ap)) {
@@ -394,12 +938,12 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 			}
 			if (typeof _Aap[key] === 'object' || typeof _Aap[key] === 'string') {
 				o[key] = Array.isArray(_Aap[key]) ?
-					_Aap[key].map((_o:any) => normalizeActivityPub(_o, language)) :
-					toArray(normalizeActivityPub(_Aap[key], language));
+					_Aap[key].map((_o:any) => normalizeAs(_o, language)) :
+					toArray(normalizeAs(_Aap[key], language));
 			} else if (key === 'actor' && isLink(_Aap[key])) {
-				(o as ActivityPubActivity).actor = toArray(_Aap[key]);
+				(o as AsActivity).actor = toArray(_Aap[key]);
 			} else if (key === 'closed' && (typeof _Aap[key] === 'boolean' || isDatetime(_Aap[key]))) {
-				(o as ActivityPubActivity).closed = _Aap[key]
+				(o as AsActivity).closed = _Aap[key]
 			}
 		}
 		// console.log('ACTIVITY o', o);
@@ -418,8 +962,8 @@ export function normalizeActivityPub(ap: APall, language?: string, includeBcc: b
 	for (let key in _ap) {
 		if (typeof _ap[key] === 'object' || typeof _ap[key] === 'string') {
 			o[key] = Array.isArray(_ap[key]) ?
-				_ap[key].map((o:any) => normalizeActivityPub(o, language)) :
-				toArray(normalizeActivityPub(_ap[key], language));
+				_ap[key].map((o:any) => normalizeAs(o, language)) :
+				toArray(normalizeAs(_ap[key], language));
 		}
 	}
 	o.locales = locales.filter((l,i) => (i === locales.indexOf(l))).map((value) => {
