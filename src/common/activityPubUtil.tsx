@@ -422,11 +422,14 @@ export const defaultContext = [
 	}
 ];
 /*
-
----
-
 name	Text
 The name of the item.
+about	Thing
+The subject matter of the content.
+abstract	Text
+An abstract is a short description that summarizes a CreativeWork.
+
+---
 
 disambiguatingDescription Text
 A sub property of description.
