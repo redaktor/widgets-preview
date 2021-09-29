@@ -1107,5 +1107,5 @@ function expand(children: any[], subClassOf = 'Thing'): SchemaDescription[] {
   })
 }
 
-const schemaJsonLD = { ...baseSchema, children: expand(compactedChildren) };
-export default schemaJsonLD;
+const schemaOntology = { ...baseSchema, children: expand(compactedChildren) };
+export default schemaOntology;

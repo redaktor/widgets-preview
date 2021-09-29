@@ -4,7 +4,6 @@
 	font-style: normal;
 	color: var(--text-muted);
 	width: 100%;
-	text-overflow: ellipsis;
 	white-space: nowrap;
   overflow: hidden;
 	position: relative;
@@ -14,6 +13,11 @@
 	padding: 0px;
 	margin-top: -2px;
 	display: inline-block;
+}
+.name {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 .marker {
 	color: var(--r-blueGrey);

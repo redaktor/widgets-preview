@@ -1,5 +1,5 @@
 import { JSONpointer } from '../framework/JSON/Pointer';
-import { ActivityPubObjectNormalized } from '../common/interfaces';
+import { AsObjectNormalized } from '../common/interfaces';
 
 export function isNr(n: any) { return typeof n === 'number' && !isNaN(n); }
 export type EsriUnits = ("feet"|"kilometers"|"meters"|"miles"|"nautical-miles"|"yards");
@@ -15,7 +15,7 @@ export function toDMS(coordinate: number, posCardinal: string, negCardinal: stri
   return `${degrees}°${minutes}'${seconds}"${cardinal}`
 }
 export function latLngStr(
-	{latitude, longitude, altitude, units, accuracy, radius}: Partial<ActivityPubObjectNormalized>,
+	{latitude, longitude, altitude, units, accuracy, radius}: Partial<AsObjectNormalized>,
 	onlyCoordinates = false
 ) {
 	if (!latitude || !longitude) { return '' }
@@ -26,7 +26,7 @@ export function latLngStr(
 	return `${toDMS(lat,'N','S')} ${toDMS(lng,'E','W')}${alt}${rad}`
 }
 
-export function apToGeoJSON(ap: ActivityPubObjectNormalized, messages: any = {}) {
+export function apToGeoJSON(ap: AsObjectNormalized, messages: any = {}) {
 
 	/* TODO
 	Travel -> `target` can be the location …
@@ -50,6 +50,7 @@ export function apToGeoJSON(ap: ActivityPubObjectNormalized, messages: any = {})
 	/* TODO i18n */
 	results.forEach((pointer) => {
 		const {id = '', type: mainTypes = ['Object'], location} = jp.get(pointer);
+    if (!location) { return }
 		/* feature per location */
 		location.forEach(({
 			longitude, latitude, altitude, units, accuracy, radius,

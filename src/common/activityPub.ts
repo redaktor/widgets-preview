@@ -1,3 +1,7 @@
+/* Not used yet, for reference – but for debugging it might be useful to have such a generic 'stub' definition
+NOTE this can now be created via ../_ld/as 
+*/
+
 import { AsTypes, AsActorTypes, AsActivityTypes, AsObjectTypes, AsLinkTypes } from './interfaces';
 function apObj(prev: any, cur: any) {
 	prev[cur.name] = {

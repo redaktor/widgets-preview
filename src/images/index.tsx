@@ -387,7 +387,7 @@ export const Images = factory(function Images({
 							<div key={`meta${i}`} classes={[themedCss.meta]}>
 								{
 									<time key={`timeWrapper${i}`} classes={themedCss.time} datetime="2021-05-15 19:00">
-										15. 05. 2021
+										15.05.'21
 									</time>
 								}
 								{ imagePage[0] && imagePage[0].location &&

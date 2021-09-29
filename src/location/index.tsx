@@ -13,6 +13,52 @@ export interface LocationProperties extends AsObjectNormalized {
 	/** onClick acts as toggle */
 	onClick: (location: AsObjectNormalized | false) => any;
 }
+/* visual location for schema.org
+CreativeWork
+  Audio, Image, Video, Article, Page
+  contentLocation -> Place
+  locationCreated -> Place | [inoffical]VirtualLocation
+  spatialCoverage -> Place
+
+	recordedAt -> Event
+	The Event where the CreativeWork was recorded. The CreativeWork may capture all or part of the event.
+	Inverse property: recordedIn
+
+	releasedEvent -> PublicationEvent
+	The place and time the release was issued, expressed as a PublicationEvent.
+
+...
+
+  Person
+  homeLocation -> Place | ContactPoint
+
+  Action, Organization, Event  - [read also for] Group, Person
+  location -> Place | PostalAddress | Text | VirtualLocation
+
+  Organization, Person, Place - [read also for] Group
+  address -> PostalAddress | Text
+
+  Application
+  [inoffical]VirtualLocation
+
+  Place
+  geo -> GeoCoordinates|GeoShape
+
+  TravelAction, MoveAction
+  fromLocation,
+  toLocation,
+*/
+
+
+/* Dates, Time, Duration
+respect
+	timeRequired -> Duration
+	Approximate or typical time it takes to work with or through this resource
+
+https://schema.org/DateTime
+https://schema.org/Time
+https://schema.org/Duration
+*/
 
 const factory = create({ theme }).properties<LocationProperties>()
 const Location = factory(function Location({ properties, middleware: { theme } }) {
@@ -46,7 +92,7 @@ console.log('ld', ld);
 						classes={{'@redaktor/widgets/icon': {icon: [themedCss.icon]}}}
 					/>
 					{loc.name &&
-						<span itemprop="name">{loc.name}</span>
+						<span classes={themedCss.name} itemprop="name">{loc.name}</span>
 					}
 					{loc.latitude && loc.longitude &&
 						<span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">

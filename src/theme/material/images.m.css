@@ -246,7 +246,7 @@ TODO above
 .firstPage + .meta,
 .firstPage + .pageCaption + .meta {
 	--homebtn: 0;
-	padding-left: 0;
+	padding-left: 0px;
 }
 .time {
 	color: var(--text-muted);
@@ -255,15 +255,16 @@ TODO above
 	min-height: var(--line);
 }
 .location {
+	--homew: calc(var(--touch-target-min) * (2 + var(--homebtn,1)));
 	display: inline-block;
 	grid-area: navigation;
 	width: 75%;
-	width: calc(var(--w) - var(--touch-target-min) * (3 + var(--homebtn,1)) - (var(--grid-base) * 4));
+	width: calc(var(--w) - var(--homew) - (var(--grid-base) * 4));
 }
 .time + .location {
 	padding-left: 1rem;
 	width: 65%;
-	width: calc(var(--w) - var(--touch-target-min) * (3 + var(--homebtn,1)) - 80px);
+	width: calc(var(--w) - var(--homew) - 88px);
 }
 .firstControl { }
 .lastControl { }
@@ -286,10 +287,14 @@ TODO above
 	align-items: flex-start;
 	padding-top: var(--pt);
 }
-.singleItem .control.homeControl,
 .singleItem .meta {
 	place-self: start left;
 }
+.singleItem .control.homeControl {
+	place-self: start left;
+	margin-left: -12px;
+}
+
 .singleItem .pageRadio:first-of-type:checked ~ .control.homeControl {
 	display: none;
 }

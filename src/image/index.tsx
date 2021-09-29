@@ -60,6 +60,8 @@ export const Image = factory(function Image({
 	if (ld.type.indexOf('Image') < 0 && (!mediaType || mediaType.toLowerCase().indexOf('image') !== 0)) {
 		return ''
 	}
+
+console.log('Image LD', ld);	
 	if (view === 'tableRow') {
 		return 'TODO'
 	}
