@@ -2,7 +2,8 @@ import { create } from '@dojo/framework/core/vdom';
 import { AsObject, AsObjectNormalized, Labeled } from '../common/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
-import { normalizeAs, defaultContext } from '../common/activityPubUtil';
+import { defaultContext } from '../_ld/as';
+import { normalizeAs } from '../common/activityPubUtil';
 const testdoc = {
   "@context": [
     "https://www.w3.org/ns/activitystreams",

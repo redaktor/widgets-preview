@@ -29,8 +29,8 @@ const locations: [number,number][] = [
 ]
 const LOC: any = locations.map((a, i) => {
   const o: {location: AsObject, [key: string]: any} = i === 2 || i === 4 ?
-    {location: {id: uuid(), type: "Place", name: "Dortmund"}} :
-    ({location: {id: uuid(), type: "Place", name: "Museum of Modern Art, NY - Lorem Ipsum", longitude: a[0], latitude: a[1]}});
+    {location: {id: uuid(), type: "Place", name: i+"Dortmund"}} :
+    ({location: {id: uuid(), type: "Place", name: i+"Museum of Modern Art, NY - Lorem Ipsum", longitude: a[0], latitude: a[1]}});
   if (i === 2 || i === 3) {
     o.location.icon = [{
       id: uuid(),
@@ -44,7 +44,7 @@ const LOC: any = locations.map((a, i) => {
   if (!i) {
     o.location['schema:PostalAddress'] = {name: "Schema Test"};
   }
-  return i > 3 ? o : ({location: {...o.location, altitude: 200, radius: i >1 ? 800 : 400}})
+  return i > 3 ? o : ({location: [{...o.location, altitude: 200, radius: i >1 ? 800 : 400},{...o.location, altitude: 200, radius: i >1 ? 800 : 400},{...o.location, altitude: 200, radius: i >1 ? 800 : 400},{...o.location, altitude: 200, radius: i >1 ? 800 : 400}]})
 });
 const _1_1: AsImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-1-1.D8Qv-iDb.jpg", width: 600, height: 600, mediaType: "image/jpg"}, blurhash: 'UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@', ...LOC[1]};
 const _1_4: AsImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-1-4.39BgjdJb.jpg", width: 1200, height: 300, mediaType: "image/jpg"}, blurhash: 'MlIhplt7t7WB%M~qj[t7WBt7-;ofayWBWB', ...LOC[2]};
@@ -106,7 +106,7 @@ exampleImage.attachment = [ _1_1 ].concat([
   'CollectionPage', 'OrderedCollectionPage'
 ].map((type, i) => ({type, id: `attachTest${i}`, name: 'attachTest ...', summary: 'a summary', content: 'a content', ...LOC[i+5]})));
 
-exampleImage['schema:contentLocation'] = {name: "Schema Test", longitude: locations[0][0], latitude: locations[0][1]}
+exampleImage['schema:contentLocation'] = {'@type': 'schema:Place', 'schema:name': "Schema Test", 'schema:longitude': locations[0][0], 'schema:latitude': locations[0][1]}
 
 const factory = create();
 export default factory(function Basic() {

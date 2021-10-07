@@ -248,11 +248,13 @@ TODO above
 	--homebtn: 0;
 	padding-left: 0px;
 }
-.time {
+.firstPage + .meta .time {
 	color: var(--text-muted);
-	margin-left: var(--grid-base);
 	min-width: var(--line2);
 	min-height: var(--line);
+}
+.time {
+	margin-left: var(--grid-base);
 }
 .location {
 	--homew: calc(var(--touch-target-min) * (2 + var(--homebtn,1)));

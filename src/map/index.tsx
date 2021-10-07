@@ -1,4 +1,4 @@
-import { ActivityPubObject, ActivityPubObjectNormalized } from '../common/interfaces';
+import { AsObject, AsObjectNormalized } from '../common/interfaces';
 import { LngLat } from './interfaces';
 import { tsx, create, node, dom } from '@dojo/framework/core/vdom';
 import { loadModules } from 'esri-loader';
@@ -40,7 +40,7 @@ interface MapThis {
 	geojson: {[key: string]: any};
 	geojsonDict: {[key: string]: number};
 };
-export function setActivityPub(this: MapThis, ap: ActivityPubObjectNormalized, centerMarkerVisible = true) {
+export function setActivityPub(this: MapThis, ap: AsObjectNormalized, centerMarkerVisible = true) {
 	if (!ap) { return }
 	const { view, search, geojson, geojsonDict } = this;
 
@@ -133,11 +133,11 @@ export interface BaseMapProperties {
 	id?: (keyof typeof wellKnownMapIds) | string;
 }
 
-export interface MapProperties extends ActivityPubObject {
+export interface MapProperties extends AsObject {
 	proxy?: string;
 	mapId?: (keyof typeof wellKnownMapIds) | string;
 	mapOptions?: MapConfig['map'];
-	center?: ActivityPubObjectNormalized | LngLat;
+	center?: AsObjectNormalized | LngLat;
 	zoom?: number;
 	featureReduction?: MapConfig['featureReduction'];
 	basemaps?: MapConfig['basemaps'];

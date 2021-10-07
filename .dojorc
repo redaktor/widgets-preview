@@ -1,6 +1,7 @@
 {
   "externals": {
     "dependencies": [
+      "esri-loader",
       "_polyfill/pep.min.js",
       "_polyfill/modernizr-custom.js",
       "_polyfill/intersection-observer.js"

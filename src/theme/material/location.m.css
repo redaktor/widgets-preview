@@ -1,4 +1,26 @@
 .root {
+	position: relative;
+	cursor: pointer;
+}
+.root::after {
+	content: '';
+	position: absolute;
+	width: 100%;
+	min-height: var(--line3);
+}
+.fold {
+  position: absolute;
+	top: calc(var(--line2) + 4px);
+	transition: top 0.3s linear;
+	z-index: 999999;
+}
+.root:hover .fold {
+	top: calc(var(--line) + 4px);
+}
+.foldInput {
+	display: none;
+}
+.item {
 	display: flex;
 	align-items: flex-start;
 	font-style: normal;
@@ -9,6 +31,37 @@
 	position: relative;
 	cursor: pointer;
 }
+.foldItem {
+	--h: calc(var(--line) * 1.5);
+	position: relative;
+	padding: var(--pt) var(--grid-base) 0 var(--grid-base);
+	width: calc(100% - var(--touch-target-min));
+	height: calc(var(--line) * 1.5);
+	background: linear-gradient(var(--ui-bg-muted) 0%, var(--ui-bg-muted) var(--h), var(--surface) 100%);
+	background-position-y: -8px;
+	background-size: 1px calc(var(--h) * 2);
+	transition: transform var(--ui-dpd-1) linear, margin-top var(--ui-dpd-1) linear, background-position-y var(--ui-dpd-2) linear;
+}
+.root:not(:hover) .foldInput:not(:checked) ~ .foldItem:nth-child(odd) {
+	opacity: 0.4;
+	background-position-y: var(--h);
+	margin-top: calc(var(--line) * -1);
+	transform: perspective(800px) rotateX(-70deg);
+}
+.root:not(:hover) .foldInput:not(:checked) ~ .foldItem:nth-child(even) {
+	opacity: 0.4;
+	background-position-y: var(--h);
+	margin-top: calc(var(--line2) * -1);
+	transform: perspective(800px) rotateX(70deg);
+}
+
+.foldInput:checked + .foldItem {
+	margin-top: calc(var(--line) * -1) !important;
+}
+.root:hover .foldInput:checked + .foldItem {
+	margin-top: 0px !important;
+}
+
 .icon {
 	padding: 0px;
 	margin-top: -2px;

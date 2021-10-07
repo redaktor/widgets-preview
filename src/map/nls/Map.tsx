@@ -11,12 +11,16 @@ const messages = {
 	zoomRadius: 'Zoom to radius / extent',
 	search: 'Search',
 	copyLatLng: 'Copy coordinates',
-	latLngUnknown: 'Coordinates are unknown.',
 	open: 'Open current ActivityPub Place',
 	info: 'Info',
 	type: 'Type',
 	address: 'address',
-	notFound: 'No address found.'
+	notFound: 'No address found.',
+	latLngUnknown: 'Coordinates are unknown.',
+	spatialCoverage: 'Spatial Coverage of the content',
+	contentLocation: 'Location depicted or described in the content',
+	locationCreated: 'Location where it was created',
+	location: 'Location'
 };
 
 export default { locales, messages };

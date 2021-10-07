@@ -377,7 +377,7 @@ export interface AsActivity extends AsBase {
 	closed?: AP | dateTime | boolean;
 }
 export interface AsActivityNormalized extends AsBaseNormalized {
-	type: [AsActivityTypes, ...(AsActivityTypes | string)[]];
+	type: (AsActivityTypes | string)[];
 	object?: APnormalized;
 	actor?: (AsActor | RedaktorActor | AsLink)[];
 	instrument?: APnormalized;
@@ -391,10 +391,10 @@ export interface AsActivityNormalized extends AsBaseNormalized {
 }
 
 interface AsCore extends AsBase {
-	type?: AsObjectTypes | [AsObjectTypes, ...(AsObjectTypes | string)[]];
+	type?: AsObjectTypes | (AsObjectTypes | string)[];
 }
 export interface AsObject extends AsBase {
-	type?: AsObjectTypes | [AsObjectTypes, ...(AsObjectTypes | string)[]];
+	type?: AsObjectTypes | (AsObjectTypes | string)[];
 	/* Collection */
 	current?: AsCollectionPage | AsLink; /* Functional */
 	first?: AsCollectionPage | AsLink; /* Functional */
@@ -420,7 +420,7 @@ export interface AsObject extends AsBase {
 	rel?: string | string[];
 }
 export interface AsObjectNormalized extends AsBaseNormalized {
-	type: [AsObjectTypes, ...(AsObjectTypes | string)[]];
+	type: (AsObjectTypes | string)[];
 	/* Collection */
 	current?: AsCollectionPage | AsLink; /* Functional */
 	first?: AsCollectionPage | AsLink; /* Functional */

@@ -1,0 +1,86 @@
+{
+  "@context":[
+    "https://www.w3.org/ns/activitystreams",
+    {
+      "@version":1.1,
+      "as":"https://www.w3.org/ns/activitystreams",
+      "bibo":"http://purl.org/ontology/bibo/",
+      "dc":"http://purl.org/dc/elements/1.1/",
+      "dcat":"http://www.w3.org/ns/dcat#",
+      "dct":"http://purl.org/dc/terms/",
+      "dcterms":"http://purl.org/dc/terms/",
+      "dctype":"http://purl.org/dc/dcmitype/",
+      "eli":"http://data.europa.eu/eli/ontology#",
+      "foaf":"http://xmlns.com/foaf/0.1/",
+      "ldp":"http://www.w3.org/ns/ldp#",
+      "org":"http://www.w3.org/ns/org#",
+      "owl":"http://www.w3.org/2002/07/owl#",
+      "rdf":"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+      "rdfa":"http://www.w3.org/ns/rdfa#",
+      "rdfs":"http://www.w3.org/2000/01/rdf-schema#",
+      "redaktor":"https://purl.org/redaktor/namespace",
+      "schema":"http://schema.org/",
+      "skos":"http://www.w3.org/2004/02/skos/core#",
+      "snomed":"http://purl.bioontology.org/ontology/SNOMEDCT/",
+      "vcard":"http://www.w3.org/2006/vcard/ns#",
+      "void":"http://rdfs.org/ns/void#",
+      "xml":"http://www.w3.org/XML/1998/namespace",
+      "xsd":"http://www.w3.org/2001/XMLSchema#"
+    }
+  ],
+  "id":"https://purl.org/redaktor/namespace/ontology",
+  "type":"owl:Ontology",
+  "owl:imports":[
+    {
+      "@index":"coreTypes",
+      "type":"owl:Ontology",
+      "owl:members": [
+        {
+          "id":"redaktor:ContentLocation",
+          "type":"owl:Class",
+          "name":"Object",
+          "schema:workExample":[
+
+          ],
+          "rdfs:comment":"Location depicted or described in the content. Can be used to map an as:location to schema:contentLocation one level higher.",
+          "rdfs:subClassOf": {
+            "type":"Object",
+            "href":"https://www.w3.org/TR/activitystreams-vocabulary/#dfn-object",
+            "name":"Link"
+          },
+          "url":"https://purl.org/redaktor/namespace/type/ContentLocation"
+        },
+        {
+          "id":"redaktor:SpatialCoverage",
+          "type":"owl:Class",
+          "name":"Object",
+          "schema:workExample":[
+
+          ],
+          "rdfs:comment":"Spatial Coverage of the content. Can be used to map an as:location to schema:spatialCoverage one level higher.",
+          "rdfs:subClassOf":{
+            "type":"Object",
+            "href":"https://www.w3.org/TR/activitystreams-vocabulary/#dfn-object",
+            "name":"Link"
+          },
+          "url":"https://purl.org/redaktor/namespace/type/SpatialCoverage"
+        },
+        {
+          "id":"redaktor:LocationCreated",
+          "type":"owl:Class",
+          "name":"Object",
+          "schema:workExample":[
+
+          ],
+          "rdfs:comment":"Location where it was created. Can be used to map an as:location to schema:locationCreated one level higher.",
+          "rdfs:subClassOf":{
+            "type":"Object",
+            "href":"https://www.w3.org/TR/activitystreams-vocabulary/#dfn-object",
+            "name":"Link"
+          },
+          "url":"https://purl.org/redaktor/namespace/type/LocationCreated"
+        }
+      ]
+    }
+  ]
+}

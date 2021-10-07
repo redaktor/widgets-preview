@@ -50,6 +50,7 @@
 	--border-focus: var(--m-100);
 
 	--ui-bg: #2f3338;
+	--ui-bg-muted: #373a3e;
 	--ui-bg-hover: var(--off-black);
 	--ui-bg-inverse: var(--full-white);
 	--ui-bg-inverse-muted: #ccc;

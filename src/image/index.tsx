@@ -61,13 +61,13 @@ export const Image = factory(function Image({
 		return ''
 	}
 
-console.log('Image LD', ld);	
+console.log('Image LD', ld);
 	if (view === 'tableRow') {
 		return 'TODO'
 	}
 	const allImages = !hasAttachment ? ld.image :
 		[{...(properties() as any), focalPoint: void 0, baselined: false}].concat(ld.image);
-
+console.log('Image all', allImages);
 	/* TODO - all image variants/sizes
 	const handleDownload = () => {
 

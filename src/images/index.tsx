@@ -391,14 +391,14 @@ export const Images = factory(function Images({
 									</time>
 								}
 								{ imagePage[0] && imagePage[0].location &&
-									<span key={`locationWrapper${i}`} classes={themedCss.location}>
+									<div key={`locationWrapper${i}`} classes={themedCss.location}>
 										<Location
 											key={`location${i}`}
 											{...imagePage[0]}
 											hasOpenMap={!!get('mapOpen')}
 											onClick={(location) => setMap(location)}
 										/>
-									</span>
+									</div>
 								}
 							</div>
 						}

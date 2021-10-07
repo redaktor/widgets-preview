@@ -17,6 +17,7 @@ export const wellKnownVocab = {
 	rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
 	rdfa: 'http://www.w3.org/ns/rdfa#',
 	rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+	redaktor: 'https://purl.org/redaktor/namespace',
 	schema: 'http://schema.org/',
 	skos: 'http://www.w3.org/2004/02/skos/core#',
 	snomed: 'http://purl.bioontology.org/ontology/SNOMEDCT/',
@@ -25,6 +26,9 @@ export const wellKnownVocab = {
 	xml: 'http://www.w3.org/XML/1998/namespace',
 	xsd: 'http://www.w3.org/2001/XMLSchema#'
 };
+export const wellKnownUnits = {
+  cm: 1e-2, feet: 1, inches: (1 / 12), km: 1e3, m: 1, miles: 5280
+}
 export const asSupportedExtensions = {
 	manuallyApprovesFollowers: 'as:manuallyApprovesFollowers',
 	sensitive: 'as:sensitive',
@@ -37,3 +41,13 @@ export const asSupportedExtensions = {
 	Emoji: 'toot:Emoji',
 	featured: 'toot:featured'
 };
+export function ldPartial<P = any>(o: {[key: string]: P}, vocabulary: string, toArrays = false) {
+  const res: {[key: string]: (P|P[])} = {};
+  for (let k in o) {
+    const [prefix, key] = k.split(':');
+    if (prefix === vocabulary) {
+      res[key] = (!!toArrays && !Array.isArray(o[k])) ? [o[k]] : o[k];
+    }
+  }
+  return res
+}
