@@ -221,7 +221,7 @@ function hasAdjective(noun, gender = 'm') {
   ) {
     return false
   }
-  noun = noun.toLowerCase().replace(/re$/,'er').replace(/le$/,'el').replace(/e$/,'');
+  noun = noun.toLowerCase().replace(/(a|i|o|u|ü|o)re$/,'$1er').replace(/le$/,'el').replace(/e$/,'');
   if (endsWith(noun, 'hoh')) { return true }
   return mightBeAdjective(noun)
 }
@@ -259,7 +259,7 @@ function declineAdjective(adjective, gender = 'm') {
     }
   }
   const o = {SUB: adjective};
-  const s = adjective.replace(/er$/,'r').replace(/el$/,'l').replace(/e$/,'').replace(/(.*)(h|H)och$/i,'$1$2oh');
+  const s = adjective.replace(/(a|i|o|u|ü|o)er$/,'$1r').replace(/el$/,'l').replace(/e$/,'').replace(/(.*)(h|H)och$/i,'$1$2oh');
 
   const cases = {SUB:0,GEN:1,DAT:2,AKK:3};
   ['S','P'].forEach((numerusKey) => {
@@ -375,9 +375,10 @@ function dativP(s) {
   return (/(e?n|s)$/).test(s) ? s : `${s}n`;
 }
 function declineNoun(noun, gender = 'm') {
-
   const isPersonLike = /[*]([\^])?$/.test(noun.trim());
   const isAnglicism = /[\^]([*])?$/.test(noun.trim());
+  //
+  const testAdjective = noun.replace(/re$/,'er').replace(/le$/,'el').replace(/e$/,'').replace(/(.*)(h|H)oh$/i,'$1$2och');
   const isAdjectiveLike = !isAnglicism && !isPersonLike && hasAdjective(noun);
   if (isPersonLike) {
   	gender = 'f';
@@ -391,11 +392,11 @@ function declineNoun(noun, gender = 'm') {
   const [prefix, w, prefixArray] = prefixWordParts(noun);
   console.log(isAdjectiveLike, prefixArray);
   if (isAdjectiveLike) {
-    console.log(declineAdjective(noun.replace(/re$/,'er').replace(/le$/,'el').replace(/e$/,'').replace(/(.*)(h|H)oh$/i,'$1$2och'), 'a'));
+    console.log(declineAdjective(noun.replace(/(a|i|o|u|ü|o)re$/,'$1er').replace(/le$/,'el').replace(/e$/,'').replace(/(.*)(h|H)oh$/i,'$1$2och'), 'a'));
   }
   const declinedPrefixes = prefixArray.map((p) => {
     if (p!==noun && hasAdjective(p)) {
-      console.log('!',declineAdjective(p.replace(/re$/,'er').replace(/le$/,'el').replace(/e$/,'').replace(/(.*)(h|H)oh$/i,'$1$2och'), 'a'))
+      console.log('!',declineAdjective(p.replace(/(a|i|o|u|ü|o)re$/,'$1er').replace(/le$/,'el').replace(/e$/,'').replace(/(.*)(h|H)oh$/i,'$1$2och'), 'a'))
     }
   })
 
@@ -469,8 +470,8 @@ const def = [
   'Ho,Hohe,m',
   'D,Dunkle,m',
   'Te,Teure,n',
-  'Be,Benutzer,m',
 	'B,Bekannte,m',
+  'Be,Benutzer*,m',
 	'C,Kunde*',
   'P,Pilot*',
 
