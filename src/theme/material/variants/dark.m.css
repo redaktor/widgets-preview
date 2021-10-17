@@ -1,5 +1,6 @@
 @import 'https://js.arcgis.com/4.16/esri/themes/dark/main.css';
 .root {
+	--base: #000;
 	/* stronger shadow depth */
 	--sd1: rgba(0, 0, 0, 0.6);
 	--sd2: rgba(0, 0, 0, 0.42);

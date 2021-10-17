@@ -50,6 +50,91 @@ AUDIO --> AudioObject
 IMAGE --> ImageObject / Barcode
 VIDEO --> VideoObject / MusicVideoObject
 PAGE --> SEE FULL WebPage
+
+
+Object: `{gender, select,
+	female {{host} invites {guest} to her party},
+  male {{host} invites {guest} to his party},
+	neutral {{host} invites {guest} to his party},
+  gendered {{host} invites {guest} to their party}
+}
+
+
+{
+	Object: [''],
+	Link: [],
+	Activity: [],
+	IntransitiveActivity: [],
+	Collection: [],
+	OrderedCollection',
+	'CollectionPage: [],
+	OrderedCollectionPage: [],
+	Relationship: [],
+	Article: [],
+	Document: [],
+	Audio: [],
+	Image: [],
+	Video: [],
+	Note: [],
+	Page: [],
+	Event: [],
+	Place: [],
+	Mention: [],
+	Profile: [],
+	Tombstone: [],
+	Accept: [],
+	TentativeAccept: [],
+	Add: [],
+	Arrive: [],
+	Create: [],
+	Delete: [],
+	Follow: [],
+	Ignore: [],
+	Join: [],
+	Leave: [],
+	Like: [],
+	Offer: [],
+	Invite: [],
+	Reject: [],
+	TentativeReject: [],
+	Remove: [],
+	Undo: [],
+	Update: [],
+	View: [],
+	Listen: [],
+	Read: [],
+	Move: [],
+	Travel: [],
+	Announce: [],
+	Block: [],
+	Flag: [],
+	Dislike: [],
+	Question: [],
+	Application: [],
+	Group: [],
+	Organization: [],
+	Person: [],
+	Service: []
+}
+
+Person
+die Person
+
+
+Bild
+NOM
+das Bild
+ein Bild
+GEN
+des Bilds
+eines Bilds
+DAT
+dem Bild
+einem Bild
+AKK
+das Bild
+ein Bild
+
 */
 type LDTypeSuggestions = {
 	[K in AsTypes]?: {

@@ -1,6 +1,5 @@
 .root {
 	position: relative;
-	cursor: pointer;
 }
 .root::after {
 	content: '';
@@ -8,16 +7,22 @@
 	width: 100%;
 	min-height: var(--line3);
 }
+.mapOpen { }
+.label {
+	margin:0;
+	padding:0;
+}
 .fold {
   position: absolute;
 	top: calc(var(--line2) + 4px);
 	transition: top 0.3s linear;
 	z-index: 999999;
+	cursor: pointer;
 }
 .root:hover .fold {
 	top: calc(var(--line) + 4px);
 }
-.foldInput {
+.expanded {
 	display: none;
 }
 .item {
@@ -30,6 +35,7 @@
   overflow: hidden;
 	position: relative;
 	cursor: pointer;
+	z-index: 2;
 }
 .foldItem {
 	--h: calc(var(--line) * 1.5);
@@ -42,23 +48,22 @@
 	background-size: 1px calc(var(--h) * 2);
 	transition: transform var(--ui-dpd-1) linear, margin-top var(--ui-dpd-1) linear, background-position-y var(--ui-dpd-2) linear;
 }
-.root:not(:hover) .foldInput:not(:checked) ~ .foldItem:nth-child(odd) {
-	opacity: 0.4;
+.root:not(:hover) .expanded:not(:checked) ~ .foldItem:nth-child(odd) {
+	opacity: 0;
 	background-position-y: var(--h);
 	margin-top: calc(var(--line) * -1);
 	transform: perspective(800px) rotateX(-70deg);
 }
-.root:not(:hover) .foldInput:not(:checked) ~ .foldItem:nth-child(even) {
-	opacity: 0.4;
+.root:not(:hover) .expanded:not(:checked) ~ .foldItem:nth-child(even) {
+	opacity: 0;
 	background-position-y: var(--h);
 	margin-top: calc(var(--line2) * -1);
 	transform: perspective(800px) rotateX(70deg);
 }
-
-.foldInput:checked + .foldItem {
+.expanded:checked + .foldItem {
 	margin-top: calc(var(--line) * -1) !important;
 }
-.root:hover .foldInput:checked + .foldItem {
+.root:hover .expanded:checked + .foldItem {
 	margin-top: 0px !important;
 }
 
@@ -71,6 +76,21 @@
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
+	cursor: pointer;
+}
+.moreCount {
+	position: absolute;
+	top: calc(var(--lineHalf) * -1);
+	color: var(--text-muted);
+	background: var(--paper, #333);
+	border-radius: 9999px;
+	min-width: var(--line);
+	text-align: center;
+	cursor: pointer;
+	z-index: 1;
+}
+.mapOpen .moreCount {
+	display: none;
 }
 .marker {
 	color: var(--r-blueGrey);

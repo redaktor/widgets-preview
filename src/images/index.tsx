@@ -136,6 +136,7 @@ export const Images = factory(function Images({
 
 	const setMap = (location: AsObjectNormalized | false) => {
 		set('mapOpen', location);
+console.log(get('mapOpen'), location);
 		const view = get('mapView');
 		if (view) {
 			view.setActivityPub(location);
@@ -395,7 +396,7 @@ export const Images = factory(function Images({
 										<Location
 											key={`location${i}`}
 											{...imagePage[0]}
-											hasOpenMap={!!get('mapOpen')}
+											hasMap={true}
 											onClick={(location) => setMap(location)}
 										/>
 									</div>
