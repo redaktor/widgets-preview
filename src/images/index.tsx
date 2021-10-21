@@ -61,6 +61,7 @@ export interface ImagesIcache {
 
 	captionsOpen: boolean;
 	mapOpen: false | AsObjectNormalized;
+	mapWasOpen: boolean;
 	map: any;
 	mapView: any;
 }
@@ -121,7 +122,7 @@ export const Images = factory(function Images({
 		getOrSet('loaded', paginatedImages.map(() => 0), false);
 	}
 	getOrSet('currentPage', 0, false);
-	getOrSet('mapOpen', false, false);
+	getOrSet('mapWasOpen', false, false);
 	getOrSet('captionsOpen', captionsOpen, false);
 
 	const loadedImg = () => {
@@ -135,8 +136,9 @@ export const Images = factory(function Images({
 
 
 	const setMap = (location: AsObjectNormalized | false) => {
+		set('mapWasOpen', true, false);
 		set('mapOpen', location);
-console.log(get('mapOpen'), location);
+console.log(get('mapOpen'));
 		const view = get('mapView');
 		if (view) {
 			view.setActivityPub(location);
@@ -207,8 +209,9 @@ console.log(get('mapOpen'), location);
 
 /*.row .hasPagination.singleItem */
 	return <virtual>
-		{get('mapOpen') &&
-			getOrSet('map', <Map
+
+		<div style={get('mapWasOpen') && !get('mapOpen') ? 'display: none;' : ''}>
+			{(get('mapWasOpen') || get('mapOpen')) && getOrSet('map', <Map
 				key="map"
 				{...{type: 'Image', id: image[0].id, image}}
 				hasCenterMarker
@@ -236,8 +239,9 @@ console.log(get('mapOpen'), location);
 					console.log('onActivityPubLocationOpen', {id, pointer});
 					/* TODO : Open as Place */
 				}}
-			/>
-		)}
+			/>)}
+		</div>
+
 		<noscript><i classes={themedCss.noscript} /></noscript>
 		<div
 			key="root"

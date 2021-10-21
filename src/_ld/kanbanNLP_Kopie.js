@@ -179,7 +179,7 @@ ungen,weise,gemäss,welche,bezogen,grössere`),
   prefixRegExp: new RegExp(`^(ab|achter|aller|ambi|an|astro|auf|aus|aus|auseinander|
 aussen|außen|be|bei|binnen|bio|dar|durch|ein|einzel|ent|er|fort|gegen|haupt|her|herab|
 heran|herauf|heraus|herein|herum|herunter|hervor|hin|hinaus|hinein|hinter|hinzu|kontra|
-miss|miß|mit|myko|nach|neben|neo|nicht|nieder|ober|olko|onko|pan|phyto|post|pra|quer|rück|
+miss|miß|mit|myko|nach|neben|neo|nicht|nieder|ober|olko|onko|pan|phyto|post|pra|quer|
 riesen|runter|sonder|symptom|theo|thio|uber|über|um|un|unter|ur|ver|voll|vor|voran|voraus|
 vorbei|vorder|vorher|weg|wider|wieder|zer|zu|zurück|zusammen)`.replace(/\n/g,''),'i')
 };
@@ -198,7 +198,7 @@ function prefixWordParts(w) {
   const prefixA = w.trim().split(/(\s|[-]|[–]|[|])/g);
   const prefixMatch = w.match(de.prefixRegExp);
   const hasP = !!prefixMatch && !!prefixMatch.length &&
-  	w.length-prefixMatch[0].length > 2 && /[äüöaeiou]/i.test(w.slice(prefixMatch[0].length));
+  	w.length-prefixMatch[0].length > 2 && /[aeiou]/i.test(w.slice(prefixMatch[0].length));
 
   const prefix = !!hasP ? prefixMatch[0] : '';
   return [prefix, !!hasP ? (!!hasP ? w.replace(new RegExp(`^${prefix}`),'') : w) : w, prefixA];
@@ -221,7 +221,7 @@ function hasAdjective(noun, gender = 'm') {
   ) {
     return false
   }
-  noun = noun.toLowerCase().replace(/(a|i|o|u|ü|o)re$/,'$1er').replace(/le$/,'el').replace(/e$/,'').replace(/(.*)(h|H)oh$/i,'$1$2och');
+  noun = noun.toLowerCase().replace(/(a|i|o|u|ü|o)re$/,'$1er').replace(/le$/,'el').replace(/e$/,'');
   if (endsWith(noun, 'hoh')) { return true }
   return mightBeAdjective(noun)
 }
@@ -252,10 +252,10 @@ function declineAdjective(adjective, gender = 'm') {
       f:['e','en','en','e'],m:['e','en','en','en'],n:['e','en','en','e'],pl:['en','en','en','en']
     },
     UND: {
-      f:['e','en','en','e'],m:['er','en','en','en'],n:['es','en','en','es'],pl:['e','er','en','en']
+      f:['e','en','en','e'],m:['er','en','en','en'],n:['es','en','en','es'],pl:['e','er','en','e']
     },
     _: {
-      f:['e','er','er','e'],m:['er','en','em','en'],n:['es','en','em','es'],pl:['e','er','en','en']
+      f:['e','er','er','e'],m:['er','en','em','en'],n:['es','en','em','es'],pl:['en','en','en','en']
     }
   }
   const o = {ADJ: adjective};
@@ -264,7 +264,7 @@ function declineAdjective(adjective, gender = 'm') {
   const cases = {SUB:0,GEN:1,DAT:2,AKK:3};
   ['S','P'].forEach((numerusKey) => {
     const gKey = numerusKey !== 'P' ? gender : 'pl';
-    const gEndKey = gender === 'a' ? 'f' : gKey;
+    const gEndKey = gender === 'a' ? 'f' : gender;
     o[`${numerusKey}`] = `${s}${ends._[gEndKey][0]}`;
 
     ['_','DET','UND'].forEach((determinationKey,i) => {
@@ -383,8 +383,8 @@ function declineNounPart(noun, gender = 'a') {
     const o = {SUB: noun};
     const isPersonLike = /[*]([\^])?$/.test(noun.trim());
     const isAnglicism = /[\^]([*])?$/.test(noun.trim());
-    // const testAdjective = noun.replace(/re$/,'er').replace(/le$/,'el').replace(/e$/,'').replace(/(.*)(h|H)oh$/i,'$1$2och');
-    const isAdjectiveLike = !isAnglicism && !isPersonLike && (hasAdjective(noun));
+    const testAdjective = noun.replace(/re$/,'er').replace(/le$/,'el').replace(/e$/,'').replace(/(.*)(h|H)oh$/i,'$1$2och');
+    const isAdjectiveLike = !isAnglicism && !isPersonLike && hasAdjective(noun);
     if (isPersonLike) {
     	gender = 'f';
     	noun = noun.replace(/[aeiou][*]([\^])?$/,'*in').replace(/[*]([\^])?$/,'*in');
@@ -425,7 +425,6 @@ function declineNounPart(noun, gender = 'a') {
     return o
 }
 function declineNoun(noun) {
-	noun = noun.trim();
   const [prefix, w, prefixArray] = prefixWordParts(noun);
   const [possibleArticle, possibleSpace] = prefixArray;
   let articleParts = [];
@@ -443,12 +442,8 @@ function declineNoun(noun) {
       }
     }
   });
-	
-	if (endsWith(noun, 'tun', 'sein', 'en', 'ern', 'eln')) {
-		return declineNounPart(!!possibleArticle ? noun.split(' ').slice(1).join(' ') : noun, gender);
-	}
-
   const wordArray = prefixArray.map((word) => declineNounPart(word, gender));
+	if (noun === 'Geordnete') { console.log('!!!', wordArray) }
 	if (wordArray.length === 1) {
 		return wordArray[0]
 	}
@@ -456,16 +451,7 @@ function declineNoun(noun) {
 	let [nounIndex,mainArticle] = [1,''];
 	for (let i = 0, l = wordArray.length; i < l; i++) {
 		const wordObject = wordArray[i];
-
-		// Probably Noun derives from Verb
-		if (i === wordArray.length-1 && endsWith(noun, 'tun', 'sein', 'en', 'ern', 'eln')) {
-
-		}
-		// mightBeAdjective(noun.toLowerCase())
-		//-tun -sein -en -ern und -eln
-
-
-		if (typeof wordObject === 'object' && !wordObject.hasOwnProperty('ADJ')) {
+		if (typeof wordObject === 'object' && !def.hasOwnProperty('ADJ')) {
 			nounIndex = i;
 			mainArticle = {};
 			for (let key in wordObject) {
@@ -474,7 +460,7 @@ function declineNoun(noun) {
 			}
 		}
 	}
-	console.log(noun, '::', mainArticle, wordArray[nounIndex]);
+	console.log(mainArticle, noun);
 
   let hasArticle = false;
   return wordArray.reduce((o, def, i, a) => {
@@ -486,15 +472,16 @@ function declineNoun(noun) {
     }
     for (let key in def) {
 			let target = def[key];
-			if (!!def && !def.hasOwnProperty('ADJ') && i !== nounIndex) {
+			if (!def.hasOwnProperty('ADJ') && i !== nounIndex) {
 				// compound nouns - Komposita like 'Lotto-Annahmestelle' just get the last pluralized
 				const S = def[key.replace('P_', 'S_')];
-				const w = S.indexOf(' ') > -1 ? S.split(' ')[1] : S;
-				def.P = def.S;
-				target = mainArticle.hasOwnProperty(key) ? `${mainArticle[key]} ${w}` : w;
+				for (let key in S) {
+					const w = S[key].indexOf(' ') > -1 ? S[key].split(' ') : S[key];
+					S[key] = mainArticle.hasOwnProperty(key) ? `${mainArticle[key]}${w}` : w;
+				}
 			}
-			o[key] = ((!o.hasOwnProperty(key) || !o[key]) ? target :
-        `${o[key]}${(hasArticle && target.indexOf(' ') > -1 ? target.split(' ')[1] : target)}`).trim();
+			o[key] = (!o.hasOwnProperty(key) || !o[key]) ? target :
+        `${o[key]}${(hasArticle && target.indexOf(' ') > -1 ? target.split(' ')[1] : target)}`;
     }
     hasArticle = true;
     return o
@@ -531,8 +518,8 @@ const nls = {
   Object: 'das Objekt',
   Collection: 'Sammlung',
   OrderedCollection: 'Geordnete Sammlung',
-  CollectionPage: 'Sammlungs-Seite',
-  OrderedCollectionPage: 'Geordnete-Sammlungs-Seite',
+  CollectionPage: 'Sammlung-Seite',
+  OrderedCollectionPage: 'Geordnete-Sammlung-Seite',
 
   Application: 'Anwendung',
   Group: 'Gruppe',
@@ -608,16 +595,19 @@ Object.keys(def).filter((_k) => _k.indexOf('_') < 0).forEach((k) => {
 })
 */
 Object.keys(def).filter((_k) => _k.indexOf('_') < 0).forEach((k) => {
-  console.log('-',def[k]);
+  console.log(hasAdjective(def[k]));
 	console.log(`${def[k+'_S_UND_SUB']} verknüpft ${def[k+'_S_DET_AKK']} mit ${def[k+'_S_UND_DAT']} ${def[k+'_S_DET_GEN']}`);
 
   console.log(`${def[k+'_P_UND_SUB']} verknüpfen ${def[k+'_P_DET_AKK']} mit ${def[k+'_P_UND_DAT']} ${def[k+'_P_DET_GEN']}`);
 
   console.log(`2 ${def[k+'_P_SUB']} verknüpfen 3 ${def[k+'_P_AKK']} mit 6 ${def[k+'_P_DAT']} ${def[k+'_P_DET_GEN']}`);
-});
+})
 
 
-console.log(mightBeAdjective('rückgängig'))
+
+
+
+
 
 
 /*
