@@ -197,6 +197,12 @@
 .create::before {
 	content: 'c';
 }
+/* ActivityPub icon for published date */
+.published::before {
+	content: 'u';
+	transform: rotate(90deg);
+	display: inline-block;
+}
 /* ActivityPub Update icon */
 .update::before {
 	content: 'u';

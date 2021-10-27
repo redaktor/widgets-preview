@@ -241,32 +241,50 @@ TODO above
 }
 .meta {
 	composes: s sans from './_typo.css';
-	padding-left: var(--touch-target-min);
+	padding-left: var(--grid-base);
+	/* padding-left: var(--touch-target-min); */
 }
+/*
 .firstPage + .meta,
 .firstPage + .pageCaption + .meta {
 	--homebtn: 0;
-	padding-left: 0px;
+	padding-left: var(--grid-base);
 }
 .firstPage + .meta .time {
-	color: var(--text-muted);
 	min-width: var(--line2);
 	min-height: var(--line);
 }
+*/
+
+.calendarWrapper {
+	display: flex;
+	justify-content: space-between;
+	composes: s sans from './_typo.css';
+	padding-left: var(--grid-base);
+}
+.calendar {
+	margin-top: calc(var(--pt) * -1);
+	margin-bottom: var(--pt);
+}
+.dates {
+	z-index: 1;
+}
+.dates + .location {
+	margin-left: 1rem;
+	width: 65%;
+	width: calc(var(--w) - var(--homew) - 88px);
+}
 .time {
-	margin-left: var(--grid-base);
+	color: var(--text-muted);
 }
 .location {
-	--homew: calc(var(--touch-target-min) * (2 + var(--homebtn,1)));
+	--homew: calc(var(--touch-target-min) * 2);
+	/* --homew: calc(var(--touch-target-min) * (2 + var(--homebtn,1))); */
 	display: inline-block;
 	grid-area: navigation;
 	width: 75%;
 	width: calc(var(--w) - var(--homew) - (var(--grid-base) * 4));
-}
-.time + .location {
-	padding-left: 1rem;
-	width: 65%;
-	width: calc(var(--w) - var(--homew) - 88px);
+	z-index: 2;
 }
 .firstControl { }
 .lastControl { }
@@ -292,15 +310,15 @@ TODO above
 .singleItem .meta {
 	place-self: start left;
 }
+/*
 .singleItem .control.homeControl {
 	place-self: start left;
 	margin-left: -12px;
 }
-
 .singleItem .pageRadio:first-of-type:checked ~ .control.homeControl {
 	display: none;
 }
-
+*/
 .isRow:checked + * .singleItem .control:not(.meta) {
 	grid-area: media;
 	place-self: start left;

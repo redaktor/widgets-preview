@@ -8,10 +8,12 @@ import id from '../middleware/id';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme, { ViewportProperties } from '../middleware/theme';
 import Icon from '../icon';
+import Dates from '../date';
+import Calendar from '../calendar';
 import Location from '../location';
+import Map from '../map';
 import ImageCaption from '../imageCaption';
 import Img, { getWH } from '../image/image';
-import Map from '../map';
 import bundle from './nls/Image';
 import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/images.m.css';
@@ -60,6 +62,7 @@ export interface ImagesIcache {
 	focusKey: string;
 
 	captionsOpen: boolean;
+	calendarOpen: false | Date;
 	mapOpen: false | AsObjectNormalized;
 	mapWasOpen: boolean;
 	map: any;
@@ -123,6 +126,7 @@ export const Images = factory(function Images({
 	}
 	getOrSet('currentPage', 0, false);
 	getOrSet('mapWasOpen', false, false);
+	getOrSet('calendarOpen', false, false);
 	getOrSet('captionsOpen', captionsOpen, false);
 
 	const loadedImg = () => {
@@ -134,8 +138,13 @@ export const Images = factory(function Images({
 		set('loaded', loaded, (loaded[current] >= count))
 	}
 
-
+	const setCalendar = (date: Date | false) => {
+		console.log(date);
+		!!date && set('mapOpen', false, false);
+		set('calendarOpen', date);
+	}
 	const setMap = (location: AsObjectNormalized | false) => {
+		!!location && set('calendarOpen', false, false);
 		set('mapWasOpen', true, false);
 		set('mapOpen', location);
 console.log(get('mapOpen'));
@@ -209,7 +218,25 @@ console.log(get('mapOpen'));
 
 /*.row .hasPagination.singleItem */
 	return <virtual>
-
+		<div classes={themedCss.calendarWrapper} style={!get('calendarOpen') ? 'display: none;' : ''}>
+			<div>
+				<Icon size="xl" type="create" /><br />
+				<time classes={themedCss.time} datetime="2021-05-15 19:00">15.05.'21</time>
+				<br />
+				<Icon size="xl" type="update" /><br />
+				<time classes={themedCss.time} datetime="2021-05-15 19:00">15.05.'21</time>
+			</div>
+			<Calendar
+				classes={{ '@redaktor/widgets/calendar': { root: [themedCss.calendar] } }}
+				weekendDivider={true}
+				start={get('calendarOpen') || new Date()}
+				onValue={(start, end) => {
+					console.log(start, end);
+					// icache.set('start', start);
+					// icache.set('end', end);
+				}}
+			/>
+		</div>
 		<div style={get('mapWasOpen') && !get('mapOpen') ? 'display: none;' : ''}>
 			{(get('mapWasOpen') || get('mapOpen')) && getOrSet('map', <Map
 				key="map"
@@ -390,11 +417,14 @@ console.log(get('mapOpen'));
 						}
 						{ itemCount === 1 && hasContent &&
 							<div key={`meta${i}`} classes={[themedCss.meta]}>
-								{
-									<time key={`timeWrapper${i}`} classes={themedCss.time} datetime="2021-05-15 19:00">
-										15.05.'21
-									</time>
-								}
+								<div key={`dateWrapper${i}`} classes={themedCss.dates}>
+									<Dates
+										key={`date${i}`}
+										{...(imagePage[0])}
+										hasCalendar={true}
+										onClick={(date) => setCalendar(date)}
+									/>
+								</div>
 								{ imagePage[0] && imagePage[0].location &&
 									<div key={`locationWrapper${i}`} classes={themedCss.location}>
 										<Location
@@ -411,20 +441,21 @@ console.log(get('mapOpen'));
 				}
 			</virtual> })}
 
-			<label key="homelabel"
-				aria-label={messages.home}
-				tabIndex={0}
-				for={`${idBase}_0`}
-				classes={[themedCss.control, themedCss.homeControl]}
-				onclick={() => { setPage(0) }}
-				onkeydown={handleKeydown(0)}
-			>
-				<Icon size="xl" type="up" />
-			</label>
 		</div>
 	</virtual>
 });
 /*
+<label key="homelabel"
+	aria-label={messages.home}
+	tabIndex={0}
+	for={`${idBase}_0`}
+	classes={[themedCss.control, themedCss.homeControl]}
+	onclick={() => { setPage(0) }}
+	onkeydown={handleKeydown(0)}
+>
+	<Icon size="xl" type="up" />
+</label>
+
 created
 	startTime, endTime
 published

@@ -55,7 +55,7 @@ interface DatePickerProperties {
 	/** Handles when a year should change */
 	onRequestYearChange?(year: number): void;
 	/** Formats the displayed current month and year */
-	renderMonthLabel?(month: number, year: number): RenderResult;
+	renderMonthLabel?(month: number, year: number): any;
 	/** Currently displayed year */
 	year: number;
 	/** Number of years to display in a single page of the year popup */
@@ -245,7 +245,11 @@ const DatePicker = create({ theme, focus, icache, i18n }).properties<DatePickerP
 		}
 
 		function renderMonthLabel(month: number, year: number) {
-			const { monthNames, renderMonthLabel } = properties();
+			let { monthNames, renderMonthLabel } = properties();
+			if (!monthNames && !renderMonthLabel) {
+				const d = new Date(Date.UTC(year, month, 1, 3, 0, 0));
+				return new Intl.DateTimeFormat('en-US', {month: 'long'}).format(d)
+			}
 			return renderMonthLabel
 				? renderMonthLabel(month, year)
 				: `${monthNames[month].long} ${year}`;

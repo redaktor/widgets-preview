@@ -495,7 +495,6 @@ export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = 
 		o.summary = toArray(summaryMap ? langMap(summaryMap) : summary) }
 	if (isCaption(content, contentMap)) { o.content = toArray(contentMap ? langMap(contentMap) : content) }
 	if (isCaption(source, sourceMap)) { o.source = toArray(sourceMap ? langMap(sourceMap) : source) }
-
 	if (isDatetime(published)) { o.published = published }
 	if (isDatetime(updated)) { o.updated = updated }
 

@@ -21,6 +21,7 @@ export const likeAlt: string;
 export const dislike: string;
 export const dislikeAlt: string;
 export const create: string;
+export const published: string;
 export const update: string;
 export const _delete: string;
 export const close: string;

@@ -34,6 +34,12 @@ const factory = create({ i18n, icache }).properties<LocalesProperties>();
 
 export const AsCachingMiddleware = factory(({ properties, middleware: { i18n, icache }}) => {
 
+  if (!i18n.get() || !i18n.get().locale) {
+    i18n.set({
+			locale: new Intl.NumberFormat().resolvedOptions().locale || navigator.language || 'en-us', rtl: false
+		});
+  }
+
   function setI18n(locale?: string) {
     const { locale: userLocale = 'en'} = properties();
     if (!locale) { locale = userLocale }

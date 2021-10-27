@@ -69,7 +69,7 @@ console.log(hasMap);
 				schemaLocation.push(schemaToAsLocation(schemaLoc, type))
 			}
 		});
-	}, []);
+	});
 
 	const getAddressNode = (loc: AsObjectNormalized, i: number) => {
 		const rType = loc.type[0].split('redaktor:');
@@ -139,7 +139,7 @@ console.log(hasMap);
 	]}>
 		{!!firstLocation && getAddressNode(firstLocation, 0)}
 		{!!location.length && <span classes={themedCss.moreCount}>+{location.length}</span>}
-		<div classes={themedCss.fold}>
+		{!!location.length && <div classes={themedCss.fold}>
 			<input id={id.getId()} type="checkbox" classes={themedCss.expanded} />
 			{location.map((loc, i) => <div
 				key={`location_${i+1}`}
@@ -147,7 +147,7 @@ console.log(hasMap);
 			>
 					{getAddressNode(loc, i+1)}
 			</div>)}
-		</div>
+		</div>}
 	</div>
 });
 

@@ -1,6 +1,7 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import theme from '@redaktor/widgets/middleware/theme';
 import icache from '@dojo/framework/core/middleware/icache';
+import i18n from '@dojo/framework/core/middleware/i18n';
 import myTheme from '../../theme/material';
 import * as css from './Example.m.css';
 
@@ -10,9 +11,9 @@ interface ExampleProperties {
 	hasFullscreen?: boolean;
 	spaced?: boolean;
 }
-const factory = create({ theme, icache }).properties<ExampleProperties>();
+const factory = create({ theme, i18n, icache }).properties<ExampleProperties>();
 
-export default factory(function({ children, properties, middleware: { theme, icache } }) {
+export default factory(function({ children, properties, middleware: { theme, i18n, icache } }) {
 	icache.getOrSet('variant', 'dark', false);
 	icache.getOrSet('bg', 'var(--bg)', false);
 	icache.getOrSet('viewSize', 'minimize', false);
