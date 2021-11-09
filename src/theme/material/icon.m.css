@@ -24,7 +24,7 @@
 	position: relative;
 	/* use !important to prevent issues with browser extensions that change fonts */
 	font-family: 'redaktor' !important;
-	color: inherit !important;
+	color: inherit;
 	speak: never;
 	font-style: normal;
 	font-weight: normal;

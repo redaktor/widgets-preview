@@ -13,6 +13,7 @@ export const medium: string;
 export const large: string;
 export const darkImage: string;
 export const lightImage: string;
+export const breaked: string;
 export const media: string;
 export const cover: string;
 export const contain: string;

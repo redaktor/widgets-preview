@@ -35,7 +35,7 @@
 	height: var(--ui-border-width-emphasized);
 	width: 0;
 	background: var(--ui-focus-alpha);
-	margin: 0 auto;
+	margin: 0 0 calc(var(--ui-border-width-emphasized) * -1 - 1px) auto;
 	position: relative;
 	top: 1px;
 }

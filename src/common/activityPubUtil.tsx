@@ -371,7 +371,7 @@ export function clampStrings(s: string | string[], length: number) {
   }, [])
 }
 
-export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = false): AsObjectNormalized {
+export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = false): AsObjectNormalized | '' {
 	/* TODO
 
   default '@context'
@@ -382,7 +382,7 @@ export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = 
 
 	if (typeof ap === 'string') { return ap }
 	if (typeof ap === 'object' && !ap.type) { (ap as AsActivity).type = 'Create' }
-
+	if (typeof ap !== 'object') { return '' }
 	const locales: string[] = [];
 	const userLang = typeof language === 'string' ? language :
 		(new Intl.DateTimeFormat().resolvedOptions().locale ||

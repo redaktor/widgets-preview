@@ -239,7 +239,7 @@ Typography
 
 }
 /* 13px */
-.s, .s > p, .responsive {
+small, .s, .s > p, .responsive {
   --size: 1.1304347826086956rem;
   --lh: 1.6153846153846154;
   --pt: 0.46153846153846156em;

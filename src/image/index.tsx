@@ -52,7 +52,7 @@ export const Image = factory(function Image({
 	properties
 }) {
 	const themedCss = theme.classes(css);
-console.log('Image props', properties());	
+
 	const {
 		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
 		fit = false, hasContent = true, hasAttachment = true, view = 'column', ...ld
@@ -61,14 +61,15 @@ console.log('Image props', properties());
 	if (ld.type.indexOf('Image') < 0 && (!mediaType || mediaType.toLowerCase().indexOf('image') !== 0)) {
 		return ''
 	}
+	const { image = [] } = ld;
 
-console.log('Image LD', ld);
 	if (view === 'tableRow') {
 		return 'TODO'
 	}
-	const allImages = !hasAttachment ? ld.image :
-		[{...(ld as any), focalPoint: void 0, baselined: false}].concat(ld.image);
-console.log('Image all', allImages);
+	const allImages = !hasAttachment ? image :
+		[{...(ld as any), focalPoint: void 0, baselined: false}].concat(image);
+
+	// console.log('Image all', allImages);
 	/* TODO - all image variants/sizes
 	const handleDownload = () => {
 
@@ -97,7 +98,7 @@ console.log('IMAGE render');
 			theme.animated(themedCss),
 			themedCss[(vp as keyof typeof themedCss)],
 			icache.get('brightnessClass'),
-			// hasAttachment && !!ld.image && ld.image.length > 0 && themedCss.hasImages,
+			// hasAttachment && !!image && image.length > 0 && themedCss.hasImages,
 			!!ld.sensitive && themedCss.sensitive,
 			!!fit && themedCss.fit
 		]}
@@ -108,7 +109,7 @@ console.log('IMAGE render');
 	>
 		<div key="measure" classes={themedCss.measure} />
 
-		{hasAttachment && ld.image &&
+		{hasAttachment && image &&
 			<Images
 				key="images"
 				itemsPerPage={1}

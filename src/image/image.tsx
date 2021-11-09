@@ -87,7 +87,7 @@ export const getWH = (o: AsObjectNormalized) => {
 
 
 export const Img = factory(function Img({
-	middleware: { icache, i18nActivityPub, id, theme, breakpoints} /*, children */
+	middleware: { icache, i18nActivityPub, id, theme, breakpoints}, children
 }) {
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
@@ -182,9 +182,7 @@ export const Img = factory(function Img({
 		crossOrigin: 'anonymous'
 	};
 
-	/* TODO
-	const { footer = '', header = '' } = children();
-	*/
+	const [{ footer = '', header = '', ...imgChildren } = {} as ImgChildren] = children();
 	const extraClasses = {
 		paginated: { '@redaktor/widgets/paginated': { root: [themedCss.summaryPaginated] } }
 	}

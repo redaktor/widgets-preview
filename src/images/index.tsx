@@ -8,14 +8,13 @@ import id from '../middleware/id';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme, { ViewportProperties } from '../middleware/theme';
 import Icon from '../icon';
-import Dates from '../date';
 import Calendar from '../calendar';
-import Location from '../location';
 import Map from '../map';
 import ImageCaption from '../imageCaption';
 import Img, { getWH } from '../image/image';
 import bundle from './nls/Image';
 import * as viewCSS from '../theme/material/_view.m.css';
+// import * as uiCSS from '../theme/material/_ui.m.css';
 import * as css from '../theme/material/images.m.css';
 
 export interface ImageChildren {
@@ -24,9 +23,7 @@ export interface ImageChildren {
 	/** Optional Footer */
 	footer?: RenderResult;
 }
-/* TODO ISSUE
 
-*/
 export { ImgProperties } from '../image/image';
 export interface ImagesProperties extends AsObject, ViewportProperties {
 	baselined?: boolean;
@@ -67,6 +64,8 @@ export interface ImagesIcache {
 	mapWasOpen: boolean;
 	map: any;
 	mapView: any;
+	dateOpenIndex?: number | false;
+	locationOpenIndex?: number | false;
 }
 
 const icache = createICacheMiddleware<ImagesIcache>();
@@ -80,7 +79,8 @@ const factory = create({ icache, id, theme, focus, i18nActivityPub }).properties
 */
 
 export const Images = factory(function Images({
-	middleware: { icache, id, theme, focus, i18nActivityPub }
+	middleware: { icache, id, theme, focus, i18nActivityPub },
+	properties
 }) {
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
@@ -90,12 +90,11 @@ export const Images = factory(function Images({
 	const {
 		itemsPerPage, view = 'column', size = 'm', navPosition = 'top',
 		desaturateScroll = 'column', max = 1000, hasContent = true, hasAttachment = true,
-		captionsOpen = false, onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen, ...ld
+		captionsOpen = false, onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen
 		// fit = false, width = 80, height = 80
-	} = i18nActivityPub.normalized<ImagesProperties>();
+	} = properties();
+	const { image = [], ...ld } = i18nActivityPub.normalized<ImagesProperties>();
 
-	const { image = [] } = ld;
-	console.log(ld);
 
 	if (!image.length) {
 		return ''
@@ -128,7 +127,10 @@ export const Images = factory(function Images({
 	getOrSet('mapWasOpen', false, false);
 	getOrSet('calendarOpen', false, false);
 	getOrSet('captionsOpen', captionsOpen, false);
+	getOrSet('dateOpenIndex', false, false);
+	getOrSet('locationOpenIndex', false, false);
 
+	const scrollWrapperId = id.getId('scrollWrapper');
 	const loadedImg = () => {
 		const current = get('currentPage') || 0;
 		const paginated = get('paginated') || [];
@@ -138,16 +140,19 @@ export const Images = factory(function Images({
 		set('loaded', loaded, (loaded[current] >= count))
 	}
 
-	const setCalendar = (date: Date | false) => {
-		console.log(date);
-		!!date && set('mapOpen', false, false);
+	const setCalendar = (date: Date|false, dateOpenIndex: number|false) => {
+		date !== false && set('mapOpen', false, false);
+		date !== false && set('locationOpenIndex', false);
+		set('dateOpenIndex', dateOpenIndex, false);
 		set('calendarOpen', date);
+		console.log(date, dateOpenIndex, get('dateOpenIndex'));
 	}
-	const setMap = (location: AsObjectNormalized | false) => {
-		!!location && set('calendarOpen', false, false);
+	const setMap = (location: AsObjectNormalized|false,	locationOpenIndex: number|false) => {
+		location !== false && set('calendarOpen', false, false);
+		location !== false && set('dateOpenIndex', false);
+		set('locationOpenIndex', locationOpenIndex, false);
 		set('mapWasOpen', true, false);
 		set('mapOpen', location);
-console.log(get('mapOpen'));
 		const view = get('mapView');
 		if (view) {
 			view.setActivityPub(location);
@@ -160,15 +165,20 @@ console.log(get('mapOpen'));
     	focus.focus();
 		}
 		if (setLocation && get('mapOpen') && paginated[i][0].location) {
-			setMap({...paginated[i][0].location[0], apType: paginated[i][0].type[0], geoMeta: `location of image ${i}`});
+			setMap({...paginated[i][0].location[0], apType: paginated[i][0].type[0], geoMeta: `location of image ${i}`}, 0);
 		}
 	}
-	const handleKeydown = (i: number, keyTrigger?: 'prev'|'next', max?: number) => {
+	const handleKeydown = (i: number, keyTrigger?: 'prev'|'next'|'stack', max?: number) => {
 		return (e: KeyboardEvent) => {
 			const cur = get('currentPage');
 			switch (e.key) {
 				case 'Enter':
-					setPage(i, true, keyTrigger)
+					if (keyTrigger === 'stack') {
+						!!document.activeElement && document.activeElement.getAttribute('for') === scrollWrapperId &&
+							(document.activeElement as any).click()
+					} else {
+						setPage(i, true, keyTrigger)
+					}
 				break;
 				case 'ArrowLeft':
 					setPage(!cur ? (max ? max-1 : 0) : cur-1, true, 'prev')
@@ -216,9 +226,14 @@ console.log(get('mapOpen'));
 		return !!lights && !!lights[i] ? themedCss.lightImage : themedCss.darkImage;
 	}
 
-/*.row .hasPagination.singleItem */
+	console.log( get('dateOpenIndex'), get('locationOpenIndex') )
+
 	return <virtual>
-		<div classes={themedCss.calendarWrapper} style={!get('calendarOpen') ? 'display: none;' : ''}>
+		<div
+			role="region"
+			aria-label={messages.calendar}
+			classes={[themedCss.calendarWrapper, !get('calendarOpen') && themedCss.closed]}
+		>
 			<div>
 				<Icon size="xl" type="create" /><br />
 				<time classes={themedCss.time} datetime="2021-05-15 19:00">15.05.'21</time>
@@ -237,7 +252,11 @@ console.log(get('mapOpen'));
 				}}
 			/>
 		</div>
-		<div style={get('mapWasOpen') && !get('mapOpen') ? 'display: none;' : ''}>
+		<div
+			role="region"
+			aria-label={messages.locationmap}
+			classes={[themedCss.mapWrapper, get('mapWasOpen') && !get('mapOpen') && themedCss.closed]}
+		>
 			{(get('mapWasOpen') || get('mapOpen')) && getOrSet('map', <Map
 				key="map"
 				{...{type: 'Image', id: image[0].id, image}}
@@ -247,7 +266,7 @@ console.log(get('mapOpen'));
 				zoom={15}
 				onView={(view) => {
 					set('mapView', view, false);
-					setMap(paginated[0][0].location[0]);
+					setMap(paginated[0][0].location[0], 0);
 				}}
 				onActivityPubLocation={({pointer}) => {
 					const [slash, property, indexStr = '0', ...rest] = pointer.split('/');
@@ -274,9 +293,9 @@ console.log(get('mapOpen'));
 			key="root"
 			classes={[
 				themedCss.root,
-				theme.uiSize(),
 				theme.uiColor(),
 				theme.uiElevation(),
+				theme.uiSize(),
 				// isColumn ? themedCss.column : themedCss.row,
 				navPosition === 'bottom' && themedCss.navBottom,
 				(itemCount === 1 || !paginationInputsVisible) && themedCss.hasCounter,
@@ -284,16 +303,29 @@ console.log(get('mapOpen'));
 				(maxImages.length > itemCount) && themedCss.hasPagination,
 				itemCount === 1 ? themedCss.singleItem : themedCss.multiItem,
 				(itemCount === 2 || itemCount === 3) && view !== 'full' && themedCss.singleRow,
-				themedCss[(size as keyof typeof themedCss)],
-
-				itemCount === 1 && viewCSS.gridItem
+				themedCss[(size as keyof typeof themedCss)]
 			]}
 			style={`--count: ${itemCount};`}
 			aria-label="Images"
 			aria-live="polite"
 			role="region"
 		>
-		{hasAttachment && itemsPerPage === 1 &&
+		{hasAttachment && itemsPerPage === 1 && paginated.length > 1 && <virtual>
+			<input key={`input_${scrollWrapperId}`}
+				type="checkbox"
+				classes={themedCss.pageRadio}
+				id={scrollWrapperId}
+
+			/>
+			<label
+				tabIndex={0}
+				for={scrollWrapperId}
+				classes={[themedCss.scrollWrapperLabel]}
+				onkeydown={handleKeydown(get('currentPage')||0, 'stack', paginated.length)}
+
+			>
+				<Icon type="stack" />
+			</label>
 			<div key="scrollWrapper" classes={[
 				themedCss.scrollWrapper,
 				themedCss.snap,
@@ -317,14 +349,17 @@ console.log(get('mapOpen'));
 					</label>
 				})}
 			</div>
-		}
+		</virtual>}
+
 		{paginated.map((imagePage: any, i: number, a: any[]) => {
 			const count = paginated.length && paginated[i].length || 0;
 			const wasLoaded = count === (get('loaded') as any)[i];
 			const {width, height} = getWH(imagePage[0]);
-			// imagePage[0] && imagePage[0].location &&
 
-			return <virtual>
+			return <figure classes={[
+				themedCss.figure,
+				itemCount === 1 && viewCSS.gridItem
+			]}>
 				{(maxImages.length > itemCount) &&
 					<virtual>
 						<input key={`input_${i}`}
@@ -358,89 +393,64 @@ console.log(get('mapOpen'));
 						>
 							<Icon size="xl" type="right" />
 						</label>}
-					</virtual>
-				}
-				{/* (!has('host-node') && i !== get('currentPage') && !wasLoaded) ? '' : */
-					<virtual>
-						<div
-							key={`page${i}`}
-							data-count={`${i+1} / ${paginated.length}`}
-							aria-hidden={i !== get('currentPage') ? 'true' : 'false'}
-							classes={[
-								themedCss.page,
-								viewCSS.page,
-								!i && themedCss.firstPage,
-								isLight(i),
-								...(itemCount !== 1 ? [] : ratioClasses(!width || !height ? 0 : width/height, false))
-							]}
-						>
-							{imagePage.map((img: any, j: number) => {
-								if (typeof img === 'string') { img = {type: ['Image'], url: img} }
-								const {width, height} = getWH(img);
-								return <div classes={[
-										themedCss.media,
-										viewCSS.gridMedia,
-										...(ratioClasses(!width || !height ? 0 : width/height, isRow && itemCount > 1))
-									]}
-									key={`imageWrapper${i}_${j}`}
-									style={itemCount !== 1 ? void 0 :
-										`--maxl: ${Math.max(5, Math.min(
-												(Math.floor(window.screen.height / theme.line()) - 5),
-												Math.floor((height||4800) / theme.line())
-										))}`
-									}
-								>
-									<Img
-										{...img}
-										key={`image${i}_${j}`}
-										classes={{ '@redaktor/widgets/image': { sensitiveSummary: [themedCss.sensitiveSummary] } }}
-										fit={itemCount === 1 ? 'cover' : false}
-										focalPoint={void 0}
-										onLoad={loadedImg}
-										onClick={onClick && onClick(img)}
-										onBrightness={(o) => {
-											const lightImages = icache.get('lightImages') || paginated.map(() => false);
-											lightImages[i] = o.brightness > 120;
-											set('lightImages', lightImages);
-										}}
-									/>
-								</div>
-							})}
-						</div>
-						{ itemCount === 1 && hasContent &&
-							<ImageCaption
-								{...(imagePage[0])}
-								key={`imageCaption${i}`}
-								isOpen={ get('captionsOpen') }
-								onToggle={(isOpen) => { set('captionsOpen', isOpen) }}
-							/>
-						}
-						{ itemCount === 1 && hasContent &&
-							<div key={`meta${i}`} classes={[themedCss.meta]}>
-								<div key={`dateWrapper${i}`} classes={themedCss.dates}>
-									<Dates
-										key={`date${i}`}
-										{...(imagePage[0])}
-										hasCalendar={true}
-										onClick={(date) => setCalendar(date)}
-									/>
-								</div>
-								{ imagePage[0] && imagePage[0].location &&
-									<div key={`locationWrapper${i}`} classes={themedCss.location}>
-										<Location
-											key={`location${i}`}
-											{...imagePage[0]}
-											hasMap={true}
-											onClick={(location) => setMap(location)}
-										/>
-									</div>
+					</virtual>}
+					<div
+						key={`page${i}`}
+						data-count={paginated.length > 1 ? `${i+1} / ${paginated.length}` : ''}
+						aria-hidden={i !== get('currentPage') ? 'true' : 'false'}
+						classes={[
+							themedCss.page,
+							viewCSS.page,
+							!i && themedCss.firstPage,
+							isLight(i),
+							...(itemCount !== 1 ? [] : ratioClasses(!width || !height ? 0 : width/height, false))
+						]}
+					>
+						{imagePage.map((img: any, j: number) => {
+							if (typeof img === 'string') { img = {type: ['Image'], url: img} }
+							const {width, height} = getWH(img);
+							return <div classes={[
+									themedCss.media,
+									viewCSS.gridMedia,
+									...(ratioClasses(!width || !height ? 0 : width/height, isRow && itemCount > 1))
+								]}
+								key={`imageWrapper${i}_${j}`}
+								style={itemCount !== 1 ? void 0 :
+									`--maxl: ${Math.max(5, Math.min(
+											(Math.floor(window.screen.height / theme.line()) - 5),
+											Math.floor((height||4800) / theme.line())
+									))}`
 								}
+							>
+								<Img
+									{...img}
+									key={`image${i}_${j}`}
+									classes={{ '@redaktor/widgets/image': { sensitiveSummary: [themedCss.sensitiveSummary] } }}
+									fit={itemCount === 1 ? 'cover' : false}
+									focalPoint={void 0}
+									onLoad={loadedImg}
+									onClick={onClick && onClick(img)}
+									onBrightness={(o) => {
+										const lightImages = icache.get('lightImages') || paginated.map(() => false);
+										lightImages[i] = o.brightness > 120;
+										set('lightImages', lightImages);
+									}}
+								/>
 							</div>
-						}
-					</virtual>
-				}
-			</virtual> })}
+						})}
+					</div>
 
+					{ itemCount === 1 && hasContent && <ImageCaption {...(imagePage[0])}
+						compact
+						key={`imageCaption${i}`}
+						isOpen={ get('captionsOpen') }
+						onToggle={(isOpen) => { set('captionsOpen', isOpen) }}
+						onDate={setCalendar}
+						onLocation={setMap}
+						dateOpenIndex={get('dateOpenIndex')}
+						locationOpenIndex={get('locationOpenIndex')}
+					/>}
+			</figure> })}
 		</div>
 	</virtual>
 });

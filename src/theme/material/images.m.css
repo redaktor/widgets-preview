@@ -1,12 +1,20 @@
 .root {
+	display: grid;
+	place-content: start;
+	place-items: start;
+	grid-template: "top" "media";
 	width: 100%;
+	padding: 0;
+	position: relative;
 }
 
 .isRow { }
 .loaded { }
 .lightImage, .darkImage { }
 .noscript { }
-
+.figure {
+	position: relative;
+}
 /* A "page" with images */
 .page {
 	--minWidth: 240px;
@@ -24,7 +32,7 @@
 }
 .firstPage { }
 
-.hasCounter > .page::before {
+.hasCounter .page::before {
 	content: attr(data-count);
 	color: var(--text-muted);
 	margin: 0 -32px 0 0;
@@ -34,11 +42,12 @@
 	top: calc(var(--line) * -1.5);
 	right: 50%;
 	width: var(--line5);
+	justify-content: center;
 	text-align: center;
 	z-index: -1;
 	pointer-events: none;
 }
-.singleItem.hasCounter > .page::before {
+.singleItem.hasCounter .page::before {
 	margin: 0;
 	top: calc(var(--line) * -2 + var(--pt));
 	right: 0px;
@@ -60,11 +69,11 @@
 .pageCaption {
 	grid-area: captions;
 	max-width: var(--w, 100%);
-	z-index: 3;
 	display: flex;
 	flex-direction: column;
 	flex-basis: 100%;
 	flex-wrap: nowrap;
+	z-index: 9;
 }
 .subCaption {
 	display: flex;
@@ -80,16 +89,34 @@
 }
 
 /* The snap-scrolling selection of images */
+.scrollWrapperLabel {
+	position: absolute;
+	top: calc((var(--lineHalf) - var(--pt)) * -1);
+	display: inline-block;
+	text-align: center;
+	padding-top: var(--lineHalf);
+	margin: 0;
+	width: var(--touch-target-min);
+	height: var(--touch-target-min);
+	cursor: pointer;
+	z-index: 99;
+}
+.pageRadio:checked + .scrollWrapperLabel {
+	top: calc(var(--line) * 7 - var(--pt));
+}
 .scrollWrapper {
-	grid-area: images;
+	grid-area: top;
 	overflow-x: auto;
   white-space: nowrap;
-  display: flex;
   width: 100%;
 	height: calc(var(--line) * 6);
 	z-index: 1;
+	margin-bottom: var(--line);
+	display: none;
 }
-
+.pageRadio:checked + .scrollWrapperLabel + .scrollWrapper {
+  display: flex;
+}
 /* 2018 spec - For Safari 11, Chrome 69+ */
 .snap {
   scroll-snap-type: x mandatory;
@@ -242,19 +269,7 @@ TODO above
 .meta {
 	composes: s sans from './_typo.css';
 	padding-left: var(--grid-base);
-	/* padding-left: var(--touch-target-min); */
 }
-/*
-.firstPage + .meta,
-.firstPage + .pageCaption + .meta {
-	--homebtn: 0;
-	padding-left: var(--grid-base);
-}
-.firstPage + .meta .time {
-	min-width: var(--line2);
-	min-height: var(--line);
-}
-*/
 
 .calendarWrapper {
 	display: flex;
@@ -269,22 +284,22 @@ TODO above
 .dates {
 	z-index: 1;
 }
-.dates + .location {
-	margin-left: 1rem;
-	width: 65%;
-	width: calc(var(--w) - var(--homew) - 88px);
-}
 .time {
 	color: var(--text-muted);
 }
+.mapWrapper {
+
+}
 .location {
-	--homew: calc(var(--touch-target-min) * 2);
-	/* --homew: calc(var(--touch-target-min) * (2 + var(--homebtn,1))); */
-	display: inline-block;
-	grid-area: navigation;
+	--navw: calc(var(--touch-target-min) * 2);
 	width: 75%;
-	width: calc(var(--w) - var(--homew) - (var(--grid-base) * 4));
+	width: calc(var(--w) - var(--navw) - var(--touch-target-min) - var(--grid-base) * 4);
 	z-index: 2;
+}
+.dates + .location {
+	margin-left: var(--grid-base);
+	width: 65%;
+	width: calc(var(--w) - var(--navw) - 10ch - var(--touch-target-min) - var(--grid-base) * 2);
 }
 .firstControl { }
 .lastControl { }
@@ -297,19 +312,27 @@ TODO above
 	top: -4000px;
 	height: 0px;
 }
+
 .singleItem .meta,
 .singleItem .control {
 	display: flex;
-	grid-area: navigation;
-	place-self: start right;
 	z-index: 8;
-	margin: 0px;
 	align-items: flex-start;
 	padding-top: var(--pt);
 }
-.singleItem .meta {
-	place-self: start left;
+.singleItem .control {
+	grid-area: navigation;
+	place-self: start right;
+	margin: 0px;
 }
+.singleItem .meta {
+	margin: 0px 0px 0px var(--touch-target-min);
+	position: absolute;
+	top: 0px;
+}
+
+
+
 /*
 .singleItem .control.homeControl {
 	place-self: start left;
@@ -361,8 +384,7 @@ TODO above
 	display: flex;
 }
 .pageRadio:not(:checked) + .prev.control + .next.control + .page,
-.pageRadio:not(:checked) + .prev.control + .next.control + .page + .pageCaption,
-.pageRadio:not(:checked) + .prev.control + .next.control + .page + .pageCaption + .meta {
+.pageRadio:not(:checked) + .prev.control + .next.control + .page + .pageCaption {
 	display: none;
 }
 
@@ -424,14 +446,17 @@ TODO above
 	.root:not(.hasCounter) .pageRadio:not(:checked):hover {
 		border-color: var(--border, #666);
 	}
+	.scrollWrapperLabel,
 	.control {
 		color: var(--text-muted);
 	}
+	.scrollWrapperLabel:hover,
 	.control:hover {
 		color: var(--ui-filled, #eee);
 	}
-	.root .pageRadio:checked + .prev.control:focus,
-	.root .pageRadio:checked + .prev.control + .next.control:focus {
+	.root .scrollWrapperLabel:focus,
+	.root .prev.control:focus,
+	.root .next.control:focus {
 		outline: none;
 		color: var(--ui-focus, #fff);
 	}
@@ -443,20 +468,18 @@ TODO above
 	  background-color: var(--ui-flat-on);
 	}
 
-	.singleItem .control:not(.homeControl) {
-		opacity: 0;
-		pointer-events: none;
-	}
 	.singleItem .control,
 	.singleItem .page {
 		transition: color var(--ui-dpd-0,80ms) var(--ui-easing);
 	}
-	.singleItem.hasCounter > .page::before,
+	.singleItem .control:not(.homeControl) {
+		display: none;
+	}
+	.singleItem.hasCounter .page::before,
 	.singleItem .pageRadio:checked + .prev.control,
 	.singleItem .pageRadio:checked + .prev.control + .next.control,
-	.singleItem .pageRadio:checked + .prev.control + .next.control + .page + .pageCaption + .meta {
-		opacity: 1;
-		pointer-events: auto;
+	.singleItem .pageRadio:checked + .prev.control + .next.control + .page + .pageCaption {
+		display: flex;
 	}
 }
 
@@ -487,6 +510,9 @@ TODO above
 .summary {
 	padding: 0;
 	margin-bottom: 0;
+}
+.captionWrapper {
+	order: 3;
 }
 .contentDetails {
 	order: 3;
@@ -566,6 +592,8 @@ TODO above
 	min-height: calc(var(--line) * 6);
 }
 
+.calendarWrapper.closed,
+.mapWrapper.closed,
 .isRow:checked + * .columnName,
 .rowName,
 .sensitiveCheckbox:checked ~ .rowName,

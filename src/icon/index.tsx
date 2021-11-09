@@ -17,10 +17,12 @@ export interface IconProperties extends ThemeProperties {
 	altText?: string;
 	/** Custom aria attributes */
 	aria?: { [key: string]: string | null };
-	icon?: ApIconType[];
-	/** Icon type if no as:`icon` property, e.g. Place, downIcon, searchIcon, etc. */
+	/** Icon type if no custom as:`icon` property, e.g. Place, downIcon, searchIcon, etc. */
 	type: IconType | AsObject['type'];
-
+	/** Custom as:icon property */
+	icon?: ApIconType[];
+	/** html title attribute */
+	title?: string;
 	maxWidth?: string | number;
 	maxHeight?: string | number;
 }
@@ -31,6 +33,7 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 	const {
 		aria = { hidden: 'true' },
 		type: t,
+		title,
 		altText,
 		maxWidth,
 		maxHeight
@@ -58,10 +61,12 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 		});
 	}
 
-	const getIconByType = (_type: CssKey) => (<span classes={themedCss.root}>
+	const titleO = !title ? {} : {title};
+
+	const getIconByType = (_type: CssKey) => (<span {...titleO} classes={themedCss.root}>
 			<i
 				classes={[
-					theme.variant(),
+					// theme.variant(),
 					theme.sized(ui, 'l'),
 					theme.spaced(ui),
 					theme.colored(colors),
@@ -77,7 +82,7 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 	</span>);
 
 	const getIcon = (_icon: ApIconType) => (
-		<span classes={[themedCss.root, themedCss.img, theme.sized(ui, 'l')]}>
+		<span {...titleO} classes={[themedCss.root, themedCss.img, theme.sized(ui, 'l')]}>
 			<Img
 				aspectRatio="square"
 				fit="contain"
@@ -85,6 +90,8 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 				{..._img}
 			/>
 		</span>);
+
+
 
 	/* 1 icon||type OR up to 9 icon||type (animated = crossfading) OR more w. indicator */
 	return <virtual>

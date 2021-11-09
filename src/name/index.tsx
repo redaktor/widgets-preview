@@ -12,6 +12,8 @@ export interface NameProperties extends ViewportProperties {
 	characters?: number;
 	/** If row, names will be paginated, default false */
 	isRow?: boolean;
+	/* small typo, media captions */
+	compact?: boolean;
 }
 
 const factory = create({ theme })
@@ -22,12 +24,13 @@ export const Name = factory(function Name({ properties, children, middleware: { 
 		name = [],
 		characters = 200,
 		isRow = false,
+		compact = false,
 		size = 's'
 	} = properties();
 
 	const themedCss = theme.classes(css);
-	const isMini = (isRow && (size === 'xs' || size === 's')) || (!isRow && size === 'xs');
-	const headlineClass = isMini ? ui.h5 : ui.h4;
+	const isMini = compact || (isRow && (size === 'xs' || size === 's')) || (!isRow && size === 'xs');
+	const headlineClass = compact ? ui.m : (isMini ? ui.h5 : ui.h4);
 	const typoClass = isMini ? ui.s : (size === 'l' || size === 'xl' ? ui.l : ui.m);
 	const singleNames = name.length < 4;
 
@@ -36,7 +39,7 @@ export const Name = factory(function Name({ properties, children, middleware: { 
 			{clampStrings(name, characters).map((_name, i) =>
 				<h5 key={`name${i}`} classes={[themedCss.root, typoClass]}>{_name}</h5>)}
 		</Paginated>;
-	return <div key="root" classes={[themedCss.root, isRow ? themedCss.row : themedCss.column]}>
+	return <div key="root" classes={[themedCss.root, isRow ? themedCss.row : themedCss.column, compact && themedCss.compact]}>
 		{isRow ?
 			namesPaginated :
 			(name && singleNames ? <header key="names" classes={ui.hgroup}>

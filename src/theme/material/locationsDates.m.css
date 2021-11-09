@@ -1,0 +1,144 @@
+.root {
+	position: relative;
+	cursor: pointer;
+	color: var(--text-muted);
+}
+.root:focus,
+.root:focus-within {
+	outline: none;
+}
+.root::after {
+	content: '';
+	position: absolute;
+	top: calc(var(--line) * -0.25);
+	left: 0px;
+	width: 100%;
+	min-height: calc(var(--line) * 1.5);
+}
+.hasFold { }
+.fold {
+  position: absolute;
+	top: 0px;
+	left: calc(var(--touch-target-min) * -1);
+	transition: top 0.3s linear;
+	z-index: 999999;
+	pointer-events: none;
+	cursor: pointer;
+}
+.root + .root .fold {
+	left: calc(var(--touch-target-min) * -2);
+}
+.root:focus .fold,
+.root:focus-within .fold {
+	pointer-events: all;
+}
+.foldItem {
+	display: block;
+	position: relative;
+	padding: var(--pt) var(--grid-base) 0 var(--grid-base);
+	width: 100%;
+	max-width: calc(var(--w) - var(--touch-target-min));
+	height: calc(var(--line) * 1.5);
+	background: var(--ui-bg-muted);
+	color: var(--text-muted);
+	transition: transform var(--ui-dpd-8) var(--ui-easing), margin-top var(--ui-dpd-8) var(--ui-easing);
+	margin-top: 0px;
+	transform: perspective(0px) rotateX(0deg);
+	transform-origin: top;
+	filter: brightness(1);
+}
+.foldItem.full {
+	min-width: 100%;
+	width: calc(var(--w) - var(--grid-base) * 2);
+}
+
+.item:hover .icon,
+.root:hover + .marker .markerIcon {
+	color: var(--ui-filled, #eee) !important;
+}
+.item:hover,
+.foldItem:focus,
+.foldItem:hover {
+	color: var(--text);
+	outline: none;
+}
+.item:focus,
+.foldItem:focus .icon {
+	color: var(--ui-focus, #fff);
+}
+
+.root:not(:focus):not(:focus-within) .fold > .foldItem {
+	margin-top: calc(var(--line) * -1 - var(--pt));
+}
+.root:not(:focus):not(:focus-within) .fold > .foldItem:nth-child(odd) {
+	transform: perspective(600px) rotateX(-90deg);
+}
+.root:not(:focus):not(:focus-within) .fold > .foldItem:nth-child(even) {
+	transform: perspective(2400px) rotateX(90deg);
+	filter: brightness(1.32);
+}
+
+.item {
+	display: flex;
+	align-items: flex-start;
+	font-style: normal;
+	color: inherit;
+	width: 100%;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+  overflow: hidden;
+	position: relative;
+	cursor: pointer;
+	z-index: 2;
+}
+.iconWrapper {
+	min-width: 128px;
+	display: inline-block;
+	margin-right: var(--grid-base);
+}
+.icon {
+	padding: 0px;
+	margin-top: -2px;
+	display: inline-block;
+}
+.name {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	cursor: pointer;
+}
+.muted {
+	color: var(--text-muted);
+}
+
+.moreCount {
+	position: absolute;
+	left: 0px;
+	top: calc(var(--lineHalf) * -1 - var(--pt));
+	color: var(--text-muted);
+	background: var(--paper, #333);
+	border-radius: 9999px;
+	min-width: var(--line);
+	text-align: center;
+	cursor: pointer;
+	z-index: -1;
+}
+.mapOpen .moreCount {
+	display: none;
+}
+.marker {
+	color: var(--r-blueGrey);
+	position: absolute;
+	top: -0.5em;
+	margin-left: -0.5em;
+	z-index: 2;
+}
+
+
+.root:focus .moreCount,
+.root:focus-within .moreCount,
+.root:focus + .root,
+.root:focus-within + .root {
+	opacity: 0;
+	z-index: 0;
+}

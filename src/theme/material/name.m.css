@@ -1,8 +1,15 @@
 .root {
 	z-index: 6;
 }
+.compact {
+	--m: calc(var(--line) * -1);
+	margin: var(--m) 0 var(--m) 0;
+}
 .column {
 	padding: 0 var(--pl);
+}
+.column.compact {
+	padding: 0 var(--p);
 }
 .row .root {
 	/* margin-bottom: calc(var(--mb) - var(--line)); */

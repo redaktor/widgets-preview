@@ -441,6 +441,8 @@ a[rel~=contact]:active {
 .input {
 	/* composes: input from './_typo.css'; */
 	appearance: none;
+	-moz-appearance: none;
+	-webkit-appearance: none;
 	position: absolute;
 	left: 0;
 	top: 0;

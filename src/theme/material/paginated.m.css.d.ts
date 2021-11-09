@@ -1,4 +1,5 @@
 export const root: string;
+export const compact: string;
 export const spaceEqual: string;
 export const column: string;
 export const spaceLeft: string;

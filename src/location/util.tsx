@@ -92,7 +92,7 @@ export function toFloat(latlng: number|string) {
 	return typeof latlng === 'string' ? parseFloat(latlng) : latlng
 }
 export function schemaToAsLocation(schemaLocation: any/*WithContext<Place>*/, type: string|string[], label?: string) {
-	console.log(schemaLocation, type);
+	// console.log(schemaLocation, type);
 	if (!Array.isArray(type)) { type = [type] }
 	if (typeof schemaLocation === 'string') {
 		const _as = ({

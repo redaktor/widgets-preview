@@ -39,6 +39,7 @@ interface MapThis {
 	messages: {[key: string]: string};
 	geojson: {[key: string]: any};
 	geojsonDict: {[key: string]: number};
+	Circle: any;
 };
 export function setActivityPub(this: MapThis, ap: AsObjectNormalized, centerMarkerVisible = true) {
 	if (!ap) { return }
@@ -85,16 +86,14 @@ export function setActivityPub(this: MapThis, ap: AsObjectNormalized, centerMark
 		items[0].set('symbol', hasRadius ? centerSymbolRadius : centerSymbol);
 		if (hasRadius) {
 			items[1].set('visible', true);
-			loadModules([ 'esri/geometry/Circle' ]).then(([Circle]) => {
-				const {radius, radiusUnit} = radiusFromO(ap);
-				items[1].set('geometry', new Circle({
-					center: geometry,
-					radius,
-					radiusUnit,
-					geodesic: true,
-					numberOfPoints: 100
-				}));
-			});
+			const {radius, radiusUnit} = radiusFromO(ap);
+			items[1].set('geometry', new (this.Circle)({
+				center: geometry,
+				radius,
+				radiusUnit,
+				geodesic: true,
+				numberOfPoints: 100
+			}));
 		} else {
 			items[1].set('visible', false);
 		}
@@ -213,6 +212,7 @@ export default factory(function lMap({
 		className: `${css.actionIcon} ${iconCss.icon} ${iconCss.place}`,
 		title: messages.open
 	}];
+
 	const switchMap = (
 		id: string = `${mapId}`,
 		subDomains: string[] = ['a', 'b', 'c'],
@@ -574,7 +574,7 @@ export default factory(function lMap({
 							view.popup.dockEnabled = true;
 							view.popup.dockOptions = { buttonEnabled: false, breakpoint: true };
 
-							view.setActivityPub = setActivityPub.bind({view, messages, search, geojson, geojsonDict});
+							view.setActivityPub = setActivityPub.bind({view, messages, search, geojson, geojsonDict, Circle});
 							view.popup.watch('selectedFeature', function(graphic: any) {
 							  if (!graphic) { return }
 								const hasAP = graphic.attributes.hasOwnProperty('apType');

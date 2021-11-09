@@ -11,7 +11,12 @@ const messages = {
 	info: 'Info',
 	next: 'Next image',
 	prev: 'Previous image',
-	home: 'First Image'
+	home: 'First Image',
+	open: 'Open',
+	close: 'Close',
+	overview: 'overview',
+	calendar: 'calendar',
+	locationmap: 'locations on a map'
 };
 
 export default { locales, messages };
