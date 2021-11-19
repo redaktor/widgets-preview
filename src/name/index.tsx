@@ -36,7 +36,8 @@ export const Name = factory(function Name({ properties, children, middleware: { 
 
 	const namesPaginated = (!isRow && singleNames) ? '' :
 		<Paginated key="names" property="name">
-			{clampStrings(name, characters).map((_name, i) =>
+
+			{clampStrings(name, characters).map((_name, i) => typeof _name !== 'string' ? name :
 				<h5 key={`name${i}`} classes={[themedCss.root, typoClass]}>{_name}</h5>)}
 		</Paginated>;
 	return <div key="root" classes={[themedCss.root, isRow ? themedCss.row : themedCss.column, compact && themedCss.compact]}>

@@ -18,6 +18,8 @@ export interface DateProperties extends AsObjectNormalized {
 	dateOpenIndex?: number|false;
 	/** onDate acts as toggle */
 	onDate?: (date: Date|false, index: number|false) => any;
+
+	onFocusPrevious?: () => any;
 }
 export interface DateIcache {
 	expanded: boolean;
@@ -32,7 +34,8 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 	const {
 		hasCalendar = false,
 		dateOpenIndex = false,
-		onDate
+		onDate,
+		onFocusPrevious
 	} = properties();
 	const {
 		startTime, endTime, published, updated, duration,
@@ -109,23 +112,27 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 		};
 		const handleKeydown = (event: KeyboardEvent) => {
 			event.stopPropagation();
-			const focusIndex = get('focusIndex')||0;
+			const fi = get('focusIndex')||0;
 			const l = dates.length;
+			const [prev, next] = [(!fi ? (l ? l-1 : 0) : fi-1), (fi === (l ? l-1 : 0) ? 0 : fi+1)];
 			switch (event.which) {
 				case Keys.Enter:
 				case Keys.Space:
 					event.preventDefault();
 					handleClick();
-				break;
+					break;
 				case Keys.Up:
-					set('focusIndex', !focusIndex ? (l ? l-1 : 0) : focusIndex-1);
+					set('focusIndex', prev);
 					focus.focus();
 					event.preventDefault();
 					break;
 				case Keys.Down:
-					set('focusIndex', focusIndex === (l ? l-1 : 0) ? 0 : focusIndex+1);
+					set('focusIndex', next);
 					focus.focus();
 					event.preventDefault();
+					break;
+				case Keys.Tab:
+					set('focusIndex', !!event.shiftKey ? prev : next);
 					break;
 			}
 		}
@@ -161,7 +168,6 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 	}
 
 	const menuId = id.getId('menu');
-
 	return <span key="dates"
 		role="button"
 		tabIndex={0}
@@ -172,10 +178,16 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 			get('dateOpenIndex') !== false && themedCss.mapOpen,
 			dates.length > 1 && themedCss.hasFold
 		]}
-		onfocus={() => {
-			set('expanded', true);
-			set('focusIndex', 0);
-			focus.focus()
+		onfocus={(evt) => {
+			if (get('focusIndex') !== 1) {
+				set('expanded', true, false);
+				set('focusIndex', 0);
+				focus.focus()
+			} else {
+				set('expanded', false, false);
+				set('focusIndex', -1);
+				onFocusPrevious && onFocusPrevious();
+			}
 		}}
 		onblur={() => {
 			set('expanded', false);

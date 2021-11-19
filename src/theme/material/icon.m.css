@@ -372,6 +372,10 @@
 	color: var(--ui-public);
 	content: '1';
 }
+.people::before {
+	color: var(--text-muted);
+	content: '2';
+}
 /* Group icon */
 .group::before {
 	color: var(--ui-group);

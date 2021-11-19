@@ -1,4 +1,5 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import * as unified from 'unified';
 import * as parse from 'remark-parse';
 import * as remarkRehype from 'remark-rehype';
@@ -20,7 +21,7 @@ TODO:
 
 
 export interface MDProperties {
-	content: string;
+	content: string | RenderResult;
 	classes?: string | false | (string | false)[];
 	rehypePlugins?: unified.PluggableList;
 	remarkPlugins?: unified.PluggableList;
@@ -59,6 +60,9 @@ export const MD = factory(function MD({ properties, id, children }) {
 		remarkPlugins = [remarkHashtags, remarkGFM],
 		rehypePlugins = [],
 	} = properties();
+
+	if (!content) { return '' }
+	if (typeof content !== 'string') { return content }
 
   const processor = unified().use(parse)
     .use(remarkPlugins)

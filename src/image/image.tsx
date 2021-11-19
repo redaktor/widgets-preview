@@ -189,9 +189,9 @@ export const Img = factory(function Img({
 	const summaryNode = !sensitive || !hasSensitiveSwitch ? '' :
 		(APo.summary && <figcaption classes={themedCss.sensitiveSummary}>
 			<Paginated key="summary" property="summary" classes={extraClasses.paginated}>
-				{clampStrings(APo.summary, 500).map((_summary, i) =>
-					<MD classes={[themedCss.summary, viewCSS.typo]} key={`summary${i}`} content={_summary} />
-				)}
+				{clampStrings(APo.summary, 500).map((_summaries, i) => <span>
+					{_summaries.map((s: any) => <MD classes={[themedCss.summary, viewCSS.typo]} key={`summary${i}`} content={s} />)}
+				</span>)}
 			</Paginated>
 		</figcaption>);
 

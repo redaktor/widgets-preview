@@ -4,16 +4,19 @@
 	place-items: start;
 	grid-template: "top" "media";
 	width: 100%;
-	padding: 0;
+	padding: 0px;
 	position: relative;
 }
-
 .isRow { }
 .loaded { }
 .lightImage, .darkImage { }
 .noscript { }
 .figure {
 	position: relative;
+	width: var(--w);
+}
+.multiItem .figure {
+	padding-top: var(--line2);
 }
 /* A "page" with images */
 .page {
@@ -35,8 +38,8 @@
 .hasCounter .page::before {
 	content: attr(data-count);
 	color: var(--text-muted);
-	margin: 0 -32px 0 0;
-	padding: 0;
+	margin: 0px calc(var(--line2) * -1) 0px 0px;
+	padding: 0px;
 	order: 2;
 	position: absolute;
 	top: calc(var(--line) * -1.5);
@@ -48,7 +51,7 @@
 	pointer-events: none;
 }
 .singleItem.hasCounter .page::before {
-	margin: 0;
+	margin: 0px;
 	top: calc(var(--line) * -2 + var(--pt));
 	right: 0px;
 }
@@ -81,7 +84,7 @@
 	color: var(--text-muted);
 }
 .pageCaption > .subCaption {
-	padding: 0;
+	padding: 0px;
 }
 .sensitiveSummary { }
 .isRow:checked + * .root .sensitiveSummary {
@@ -95,7 +98,7 @@
 	display: inline-block;
 	text-align: center;
 	padding-top: var(--lineHalf);
-	margin: 0;
+	margin: 0px;
 	width: var(--touch-target-min);
 	height: var(--touch-target-min);
 	cursor: pointer;
@@ -129,8 +132,8 @@
 	display: flex;
 	align-self: flex-end;
 	align-items: flex-end;
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
 }
 /* 2015 spec - For Firefox, Edge, IE */
 .snap {
@@ -243,8 +246,8 @@ TODO above
 	justify-content: center;
 	min-width: var(--line2);
 	min-height: var(--line2);
-	padding: 0;
-	margin: 0;
+	padding: 0px;
+	margin: 0px;
 	cursor: pointer;
 	color: var(--text);
 	transition: color var(--ui-dpd-0,80ms) var(--ui-easing);
@@ -269,6 +272,7 @@ TODO above
 .meta {
 	composes: s sans from './_typo.css';
 	padding-left: var(--grid-base);
+	place-self: start;
 }
 
 .calendarWrapper {
@@ -382,6 +386,15 @@ TODO above
 .multiItem .pageRadio:checked + .prev.control + .next.control,
 .multiItem .pageRadio {
 	display: flex;
+	position: absolute;
+	top: var(--ui-border-width-emphasized);
+	margin: 0px;
+}
+.multiItem .pageRadio:checked + .prev.control {
+	left: calc(50% - var(--line3))
+}
+.multiItem .pageRadio:checked + .prev.control + .next.control {
+	right: calc(50% - 42px);
 }
 .pageRadio:not(:checked) + .prev.control + .next.control + .page,
 .pageRadio:not(:checked) + .prev.control + .next.control + .page + .pageCaption {
@@ -400,8 +413,8 @@ TODO above
 	border: var(--ui-border-width-emphasized) solid var(--paper, #999);
 	background-color: var(--paper, #999);
 	transition: var(--ui-dpd-0,80ms) all var(--ui-easing);
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
 	z-index: 2;
 	cursor: pointer;
 }
@@ -506,25 +519,33 @@ TODO above
 /* imageCaption ... */
 .content {
 	/* composes: serif from './_typo.css'; */
+	padding: 0px;
 }
 .summary {
-	padding: 0;
-	margin-bottom: 0;
+	padding: 0px;
+	margin-bottom: 0px;
 }
 .captionWrapper {
+	margin-top: var(--line);
 	order: 3;
+}
+.attributions + .captionWrapper {
+	margin-top: 0px;
 }
 .contentDetails {
 	order: 3;
 	padding-top: var(--pt);
-	margin-bottom: 0;
+	margin-bottom: 0px;
 	max-width: 504px;
 	background: var(--bg);
 }
 .attributions {
 	order: 2;
-	margin-top: var(--line);
+	margin-top: 0px;
 	transition: margin-left var(--ui-dpd-4,320ms) var(--ui-easing);
+}
+.singleAttributions {
+	margin-top: var(--line);
 }
 .contentDetails:not([open]) {
 	height: var(--line2);
@@ -568,7 +589,7 @@ TODO above
 	-webkit-box-orient: vertical;
 	-webkit-box-direction: normal;
 	max-width: 64ch;
-	padding: 0;
+	padding: 0px;
 	order: 5;
 }
 .contentCollapsed {

@@ -1,4 +1,5 @@
 export const root: string;
+export const rootSummary: string;
 export const hasFold: string;
 export const fold: string;
 export const foldItem: string;

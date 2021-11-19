@@ -253,6 +253,7 @@ export const TextInput = factory(function TextInput({
 		responsive = true,
 		autocomplete = false,
 		selection = false,
+		focus: focused = false,
 		customValidator,
 		disabled,
 		helperText,
@@ -340,7 +341,7 @@ export const TextInput = factory(function TextInput({
 		typeof validValue === 'boolean' ? { valid: validValue, message: '' } : validValue;
 
 	const computedHelperText = (valid === false && message) || helperText;
-	const inputFocused = focus.isFocused('input');
+	const inputFocused = focused || focus.isFocused('input');
 	const inputNode = node.get('input');
 
 	if (inputNode && inputFocused && icache.get('value') === initialValue) {
@@ -391,7 +392,7 @@ export const TextInput = factory(function TextInput({
 						classes={themedCss.input}
 						disabled={disabled}
 						id={widgetId}
-						focus={focus.shouldFocus}
+						focus={inputFocused && focus.shouldFocus}
 						list={list}
 						max={max}
 						maxlength={maxLength ? `${maxLength}` : null}
@@ -444,7 +445,6 @@ export const TextInput = factory(function TextInput({
 							theme={themeProp}
 							disabled={disabled}
 							valid={valid}
-							focused={inputFocused}
 							readOnly={readOnly}
 							required={required}
 							hidden={labelHidden}

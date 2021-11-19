@@ -20,6 +20,12 @@
 	--ah: calc(var(--h,80px) + var(--line2,16px));
 	overflow: visible;
 }
+.hasImage {
+	transition: filter var(--ui-dpd-1) var(--ui-easing);
+}
+.hasImage:hover {
+	filter: brightness(84%);
+}
 .root::after {
   content: "";
   display: block;

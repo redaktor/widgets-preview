@@ -289,7 +289,7 @@ export async function compact(doc: any) {
 		context = c;
 	}
 	const compacted = await jsonld.compact(doc, context);
-	console.log(compacted);
+	// console.log(compacted);
 	return compacted
 }
 
@@ -345,33 +345,39 @@ function toArray(v: any) {
 	return Array.isArray(v) ? JSON.parse(JSON.stringify(v)) : [v];
 }
 
-export function clampStrings(s: string | string[], length: number) {
+export function clampStrings(s: string | string[], length: number, isWordLike = true) {
   if (typeof s === 'string') { s = [s] }
   const splitEvery = (n: number, xs: any[], y: any[] = []): any[] =>
     xs.length===0 ? y : splitEvery(n, xs.slice(n), y.concat([xs.slice(0, n)]));
+
   return s.reduce((a: any[], _s) => {
+		_s = _s.trim();
     const _a = realCharacters(_s);
-    if (_a.length <= length) { return a.concat([_s]) }
-    return a.concat(splitEvery(length, _a).map((r, i) => {
+		if (!_a.length) { return a }
+    if (_a.length <= length) { return a.concat([[_s]]) }
+
+		let splitted = splitEvery(length, _a);
+		if (isWordLike) {
+			splitted = splitted.reduce((a, splits, i) => {
+				if (splits[splits.length-1] !== ' ' && i < splitted.length-1) {
+			  	const j = splitted[i+1].indexOf(' ');
+			    splits = splits.concat(splitted[i+1].splice(j < 0 ? splitted[i+1].length-1 : j));
+			  }
+			  return a.concat([splits])
+			}, []).filter((a: any[]) => !!a.length)
+		}
+
+    return a.concat(splitted.map((r, i) => {
 			const ellipsis = [
 				!!i ? <pre classes={asCSS.ellipsis}>[…] </pre> : '',
-				!!i ? '' : <pre classes={asCSS.ellipsis}> […]</pre>
+				!!i || splitted.length === 1 ? '' : <pre classes={asCSS.ellipsis}> […]</pre>
 			];
-			return <virtual>
-				{ellipsis[0]}
-				{r.join('')}
-				{ellipsis[1]}
-			</virtual>
+			return [ellipsis[0], r.join(''), ellipsis[1]]
 		}));
-/*
-		<virtual>
-			{`${!!i ? {<pre classes={asCSS.ellipsis}>[…] </pre>} : ''}${r.join('')}${!!i ? '' : <pre classes={asCSS.ellipsis}> […]</pre>}`}
-		</virtual>))
-		*/
   }, [])
 }
 
-export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = false): AsObjectNormalized | '' {
+export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = false): AsObjectNormalized {
 	/* TODO
 
   default '@context'
@@ -382,7 +388,7 @@ export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = 
 
 	if (typeof ap === 'string') { return ap }
 	if (typeof ap === 'object' && !ap.type) { (ap as AsActivity).type = 'Create' }
-	if (typeof ap !== 'object') { return '' }
+	if (typeof ap !== 'object') { return {type: []} }
 	const locales: string[] = [];
 	const userLang = typeof language === 'string' ? language :
 		(new Intl.DateTimeFormat().resolvedOptions().locale ||

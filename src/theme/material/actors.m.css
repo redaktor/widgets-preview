@@ -1,21 +1,22 @@
-.root {
-	max-width: 540px;
-}
-.spaced {}
-.dense {}
+.root { }
+.hasFocus { }
+.active { }
+.spaced { }
+.dense { }
 .actors {
 	display: flex;
 	flex-wrap: wrap;
+	justify-content: space-around;
+	margin-top: var(--line);
 }
-
-.actors > .actor {
-	order: 2;
-	height: var(--line2);
-	margin: 0;
+.actors.active {
+	justify-content: flex-end;
 }
+/*
 .dense .actors > .actor {
 	margin: 0 -2px 0 0;
 }
+*/
 .moreWrapper {
 	order: 9999;
 	padding-top: var(--pt);
@@ -26,44 +27,30 @@
 .moreContentDense {
 	letter-spacing: -1px;
 }
-.closeActors {
-	position: absolute;
-	opacity: 0;
-	display: none;
-	height: 0px;
-	width: 0px;
-	z-index: -1;
-	pointer-events: none;
-}
-.actors > input:checked + label {
-	order: 1;
-}
-.actors > input,
-.actors > details {
+
+.attributions {
+	composes: h3 from './_typo.css';
+	--toColor: var(--ui-border, gray);
+	--btnColor: var(--ui-bg, black);
+	display: flex;
+	position: relative;
+	align-items: baseline;
+	box-sizing: border-box;
+	max-width: 100%;
 	order: 3;
-	display: none;
+	z-index: 3;
 }
-.actors > input:checked + label + details {
-	order: 4;
-	display: block;
-	width: 100%;
+
+.hasFocus > * {
+	background: none !important;
 }
-/* Close button for multiple actors in attributedTo */
-.actors > input:checked + label .avatarsContent {
+.hasFocus .avatarsContent {
 	position: relative;
 	visibility: hidden;
 }
-.actors > input:not(.closeActors):checked ~ .closeActors {
-	display: inline-block;
-	height: var(--h, 32px);
-	width: var(--h, 32px);
-	z-index: 99;
-	pointer-events: all;
-	cursor: pointer;
-}
-.actors > input:checked + label .avatarsContent::before {
+.hasFocus .avatarsContent::before {
 	visibility: visible;
-  content: 'd';
+  content: 'f';
 	position: absolute;
 	display: flex !important;
 	font-family: 'redaktor' !important;
@@ -84,26 +71,99 @@
 	-moz-osx-font-smoothing: grayscale;
 }
 
-.attributions {
-	composes: h3 from './_typo.css';
-	--toColor: var(--ui-border, gray);
-	--btnColor: var(--ui-bg, black);
-	display: flex;
-	position: relative;
-	align-items: baseline;
-	box-sizing: border-box;
-	order: 3;
-	z-index: 3;
+.meAvatar,
+.avatar {
+	z-index: 0;
+	margin-right: var(--grid-base,8px);
+	width: var(--line2);
+	margin-left: calc(var(--line) * -1);
 }
+
+.profileImage {
+	display: none;
+	height: calc(var(--l) * var(--line));
+	margin: calc(var(--line) * -1) calc(var(--grid-base,8px) * -1) calc(var(--lineHalf) * -1) calc(var(--grid-base,8px) * -1);
+	position: relative;
+	z-index: 0;
+}
+.attributions[open] .profileImage {
+	display: block;
+}
+.actors .profileImage {
+	margin-bottom: calc(var(--lineHalf) * -1);
+}
+.attributions .summary {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	cursor: pointer;
+	z-index: 2;
+}
+.attributions[open] .summary {
+	margin: 0 0 calc(var(--line) * -1) 0;
+}
+.attributions[open] .summary.hasProfileImage {
+	margin: var(--lineHalf) 0 calc(var(--line) * -1) 0;
+}
+.attributions .summary::-webkit-details-marker {
+  display: none;
+}
+.attributions .summary:focus {
+	outline: none;
+}
+
+.summaryContent {
+	display: flex;
+	height: var(--line2);
+	margin-right: var(--line);
+	z-index: 9;
+}
+
+.detailsContent {
+	max-width: 540px;
+}
+
+.handle {
+	composes: serif xs from './_typo.css';
+}
+.closed, 
+.noPetName {
+	composes: sans m from './_typo.css';
+	font-weight: var(--weight-semibold, 500);
+}
+.metaWrapper {
+	position: relative;
+	flex-grow: 1;
+	min-width: 0;
+}
+
 .root .attributions {
 	margin-bottom: 0px;
 	padding: 0px var(--p) 0px var(--p);
 }
-.attributions.hasAvatar {
-	padding: 0px var(--lineHalf) 0px var(--lineHalf) !important;
+.root .attributions[open] {
+	margin-bottom: var(--line);
 }
+.attributions.wellKnown { }
+.attributions.wellKnown::after {
+	opacity: 0.8;
+}
+.actors > .attributions {
+	display: flex;
+}
+/*
 .attributions[open] {
 	margin-bottom: var(--pt) !important;
+}
+*/
+.actors > .attributions[open] {
+	order: 4;
+}
+.root .attributions.hasAvatar {
+	padding: 0px var(--lineHalf) 0px var(--lineHalf);
+}
+.root .actors > .attributions.hasAvatar:not([open]) {
+	padding: 0px;
 }
 .attributions[open] .avatar {
 	width: calc(var(--line3) - var(--pt));
@@ -112,103 +172,125 @@
 .attributions[open] .avatar > * {
 	--h: calc(var(--line3) - var(--pt)) !important;
 }
-.meAvatar,
-.avatar {
-	z-index: 0;
-	margin-right: var(--grid-base,8px);
-	width: var(--line2);
-	margin-left: calc(var(--line) * -1);
-}
-.attributions.wellKnown {
-
-}
-.attributions.wellKnown::after {
-	opacity: 0.8;
-}
-.attributions summary {
-	list-style: none;
-	cursor: pointer;
-}
-.attributions summary::-webkit-details-marker {
-  display: none;
-}
-.attributions summary:focus {
-	outline: none;
-}
-.summary {
-	display: flex;
-	height: var(--line2);
-	margin-right: var(--line);
+.actors > .attributions:first-child:not([open]) {
+	margin-left: calc(var(--grid-base,8px) * 2)
 }
 
-.handle {
-	composes: sans s from './_typo.css';
+.actors > .attributions:not([open]) {
+	transform: scale(0.8333333);
+	min-width: var(--touch-target-min);
+	margin: 0px;
 }
-.metaWrapper,
-.actorName {
-	composes: sans m from './_typo.css';
+
+.actors > .attributions .summaryContent {
+	margin-right: 0px;
 }
-.metaWrapper {
-	position: relative;
-	flex-grow: 1;
-	min-width: 0;
-	max-width: calc(100% - 56px);
-}
+
 .actorName,
-.petname,
 .handle {
 	margin: 0 !important;
-}
-.actorName,
-.handle {
-	color: var(--text-muted);
-}
-.actorName,
-.petname {
-	font-weight: var(--weight-semibold, 500);
-}
-.handle {
-	padding-left: var(--line2);
-}
-.petname + .handle {
-	opacity: 0.4;
-}
-
-.actorName,
-.petname,
-.handle {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	z-index: 1;
 }
-.root .actorName,
-.petname,
-.actorName + .handle {
-	padding: 0;
+.actorName,
+.handle {
+	color: var(--text-muted);
 }
-
-
-.summary:hover .actorName,
-.attributions[open] .actorName {
+.detailsContent .handle {
+	display: inline-block;
+	padding-top: var(--pt);
+	padding-left: var(--line2);
+	z-index: 1;
+}
+.petName + .detailsContent .handle {
+	opacity: 0.4;
+}
+.root .actorName {
+	padding-bottom: calc(var(--ui-border-width-emphasized) * 2);
+}
+.actorName + .detailsContent .handle {
+	padding: 0px;
+}
+.summaryContent:hover .actorName,
+.attributions[open] .actorName,
+.attributions:not([open]) .closed.petName {
 	color: var(--text);
 }
 
-p.actorDetails {
-	padding-left: 44px;
+.actorName {
+	max-width: calc(var(--w) - 64px);
+}
+.attributions:not([open]) .actorName {
+	max-width: calc(var(--w) - 48px);
+}
+.attributions[open] .closed,
+.attributions:not([open]) .closed + .actorName {
+	display: none;
+}
+/* 2 items */
+.actors > .attributions:not([open]) .actorName {
+	max-width: 152px;
+	max-width: calc(var(--w) / 2 - 39px);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.actors.active > .attributions:not([open]) .actorName {
+	max-width: 320px;
+	max-width: calc(var(--w) - 56px);
+}
+.actors.active.hasProfileImage > .attributions:not([open]) .actorName {
+	max-width: 370px;
+	max-width: var(--w);
+}
+/* 3 items */
+.actors > .has3:not([open]) .actorName {
+	max-width: 97px;
+	max-width: calc((var(--w) - 105px) / 3);
+}
+.actors.active > .has3:not([open]) .actorName {
+	max-width: 142px;
+	max-width: calc((var(--w) - 101px) / 2);
+}
+.actors.active.hasProfileImage > .has3:not([open]) .actorName {
+	max-width: 160px;
+	max-width: calc((var(--w) - 64px) / 2);
+}
+/* more items */
+.actors > .more3 .summaryContent {
+	margin-right: calc(var(--grid-base,8px) * -1);
+}
+.actors > .more3 .metaWrapper {
+	display: none;
+}
+
+/* replace for the banana yellow Safari autocomplete */
+.root .petNameIcon {
+	position: absolute;
+	display: inline-block;
+	z-index: 11;
+	top: calc(var(--line) + var(--pt) + var(--ui-border-width-emphasized));
+	right: var(--grid-base);
+}
+.root input:not(:focus) ~ .petNameIcon {
+	top: calc(var(--line) + var(--pt));
+}
+.root input:not(:-webkit-autofill) ~ .petNameIcon {
+	display: none;
+}
+
+.followWrapper {
+	display: flex;
+}
+.actorDetails {
+	padding: 0px 0px 0px var(--grid-base);
 	margin-bottom: calc(var(--mb) - var(--line));
 }
-details.followAction {
-	padding-left: 44px;
-	min-height: var(--line3);
-}
-details.followAction > * {
-	display:inline-block !important;
-}
-summary.followBtn {
-	float: right;
-	min-width: 100%;
-	margin-top: var(--line);
+.followBtn {
+	display: flex;
+	padding-top: calc(var(--line) + 1px);
 }
 .followAction input {
 	padding-right: var(--lineHalf);
@@ -219,23 +301,6 @@ summary.followBtn {
 	margin-bottom: 0 !important;
 	border-bottom-left-radius: 0px !important;
 }
-/* ACTS AS DETAILS / SUMMARY FOR unlock */
-.followBtn button {
-	pointer-events: none;
-}
-.followAction[open] .followBtn button {
-	pointer-events: all;
-}
-
-.followAction[open] .followBtn {
-	min-width: 38.2%;
-}
-/*
-.followAction label {
-	margin-top: calc(var(--line) * -1);
-	background-color: var(--ui-header) !important;
-}
-*/
 .unfollowAction {
 	margin-top: var(--line);
 }

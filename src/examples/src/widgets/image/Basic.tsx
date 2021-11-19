@@ -53,6 +53,10 @@ const _3_2: AsImage = {id: uuid(), type: "Image", url: {type: "Link", href: "car
 
 _1_1.location = LOC[2].location[0];
 
+const exampleText = `20 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For.
+10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For 10 Easy Ways To Make
+Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For 10 Easy Ways To Make Tin Foil #Hats Stronger.
+Proof That #Cats Are Exactly What You Are Looking For. 10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For`;
 const exampleData: ImageProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
   type: "Audio",
@@ -60,7 +64,21 @@ const exampleData: ImageProperties = {
   attributedTo: [{
     id: "https://alyssa.example.com/",
     handle: "@alyssa@example.com",
-    name: "Alyssa",
+    name: "Alyssa Lorem Ipsum dolor sunt Alyssa Lorem Ipsum dolor sunt Lorem Ipsum dolor sunt",
+    summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+    type: "Person",
+    icon: _1_1,
+    image: _1_4
+  },{
+    id: "https://bob.example.com/",
+    handle: "@bob@example.com",
+    name: "Bob Lorem Ipsum dolor sunt Bob Lorem Ipsum dolor sunt Lorem Ipsum dolor sunt",
+    summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+    type: "Person"
+  }, {
+    id: "https://alyssa.example.com/",
+    handle: "@alyssa@example.com",
+    name: "Alyssa Lorem Ipsum dolor sunt",
     summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
     type: "Person"
   }],
@@ -77,7 +95,11 @@ const exampleData: ImageProperties = {
 
   Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`,
   `2 Jetzt herrscht Goldgräberstimmung an der New Yorker Technologiebörse NASDAQ. Dort will Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Börsenparkett. Gemessen am Referenzpreis der Aktien ist Coinbase rund 68 Milliarden Dollar wert. Analysten trauen Coinbase sogar eine Bewertung von 100 Milliarden Dollar zu – ein aberwitziger Preis für ein Unternehmen mit 56 Millionen Kunden und gut 1700 Mitarbeitern. Die schwindelerregende Bewertung erklären Analysten mit dem Hype um Kryptowährung LOREM IPSUM dolor sit amet, consectetur adipiscing elit. Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`],
-  image: [ {..._1_1, name:'test', updated: "2018-09-12T12:12:12Z"}, _2_3, _3_2, _1_4 ],
+  image: [
+    {..._1_1, summary: exampleText, updated: "2018-09-12T12:12:12Z"},
+    {..._2_3, name: "test", updated: "2018-10-11T12:12:12Z"},
+    _3_2, _1_4, _3_2, _2_3, _1_1, _1_4, _2_3
+  ],
   privacy: "public",
   published: "2014-09-12T12:12:12Z",
   bookmark: false,

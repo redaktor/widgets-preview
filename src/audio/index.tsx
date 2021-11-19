@@ -652,9 +652,9 @@ export const Audio = factory(function Audio({
 			<Name name={APo.name} isRow={true} size={(vp as any)} classes={extraClasses.rowName} />
 			{
 				APo.summary && <Paginated key="summary" property="summary" classes={extraClasses.summary}>
-					{clampStrings(APo.summary, 500).map((_summary, i) =>
-						<MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={_summary} />
-					)}
+					{clampStrings(APo.summary, 500).map((_summaries, i) => <span>
+						{_summaries.map((s: any) => <MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={s} />)}
+					</span>)}
 				</Paginated>
 			}
 			{

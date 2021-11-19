@@ -1,4 +1,6 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
+import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
+import focus from '@dojo/framework/core/middleware/focus';
 import { RedaktorActor, AsObjectNormalized } from '../common/interfaces';
 import { normalizeAs, isActor } from '../common/activityPubUtil';
 import id from '../middleware/id';
@@ -8,75 +10,80 @@ import Avatar from '../avatar';
 import * as css from '../theme/material/actors.m.css';
 
 export interface ActorsProperties extends ThemedAsObject {
-	openIndex?: number;
 	widgetId?: string;
 	/* Show a maximum Avatars */
 	max?: number;
 	/* If more than max, show a count, default true */
 	moreCount?: boolean;
 }
-
-const factory = create({ theme, id }).properties<ActorsProperties>()
-const AttributedTo = factory(function AttributedTo({ properties, middleware: { theme, id } }) {
+export interface ActorsIcache {
+	hasProfileImage?: boolean;
+	openIndex?: number;
+	focusIndex?: number;
+}
+const icache = createICacheMiddleware<ActorsIcache>();
+const factory = create({ theme, focus, icache, id }).properties<ActorsProperties>()
+const AttributedTo = factory(function AttributedTo({ properties, middleware: { theme, focus, icache, id } }) {
 	const themedCss = theme.classes(css);
 	const {
 		widgetId,
-		openIndex,
-		max,
+		max = 99,
 		more = true,
 		spaced: _spaced = true,
 		size = 's',
-		color = 'primary',
-		..._rest
+		color = 'primary'
+	} = properties();
+	const {
+		...APo
 	} = normalizeAs(properties());
+
+	const { get, set, getOrSet } = icache;
 	const idBase = widgetId || id.getId('attributedTo');
 
-	const APo: AsObjectNormalized = _rest;
 	if (!APo.attributedTo) { return '' }
+	const attributedTo = APo.attributedTo.filter((actor) => isActor(actor))
 
-
+	getOrSet('openIndex', -1);
 	const closeID = `${idBase}_closeProfiles`;
-	const spaced = APo.attributedTo.length > max ? false : _spaced;
-	const spaceClass = APo.attributedTo.length > max ?
+	const spaced = attributedTo.length > max ? false : _spaced;
+	const spaceClass = attributedTo.length > max ?
 		themedCss.dense : spaced && themedCss.spaced;
-	const remainingCount = !!max &&APo.attributedTo.length > max &&
-		APo.attributedTo.length - max;
+	const remainingCount = !!max &&attributedTo.length > max &&
+		attributedTo.length - max;
 
 	return <div classes={[themedCss.root, spaceClass]}>
 	{
-		(APo.attributedTo.length === 1) && isActor(APo.attributedTo[0]) &&
-			<Actor {...{...APo.attributedTo[0]}}
-				classes={{
-					'@redaktor/widgets/actor': { avatar: [themedCss.avatar] }
-				}}
-			/>
+		(attributedTo.length === 1) &&
+			<Actor {...{...attributedTo[0]}} focus={focus.shouldFocus} />
 	}
 	{
-		(APo.attributedTo.length > 1) &&
-		<div classes={themedCss.actors}>
-			{APo.attributedTo.map((attrO: RedaktorActor, i) => {
-
+		(attributedTo.length > 1) &&
+		<div classes={[
+			themedCss.actors,
+			get('openIndex') !== -1 && themedCss.active,
+			!!get('hasProfileImage') && themedCss.hasProfileImage
+		]}>
+			{attributedTo.map((attrO: RedaktorActor, i) => {
 				// TODO src for label -> image Avatar
 				const name = attrO.name ? attrO.name[0] : '';
-				return isActor(attrO) &&
-					<virtual>
-						<input type="radio" id={`${idBase}_attr${i}`} name={idBase} />
-						<label for={`${idBase}_attr${i}`} classes={themedCss.actor}>
-							<Avatar {...{size, spaced, color, name }}
-								classes={{
-									'@redaktor/widgets/avatar': { content: [themedCss.avatarsContent] }
-								}}
-							/>
-						</label>
-						<Actor {...{...attrO}}
-							open={true}
-							classes={{
-								'@redaktor/widgets/actor': { avatar: [themedCss.avatar] }
-							}}
-						/>
-					</virtual>
+				return <Actor
+					{...{...attrO}}
+					open={get('openIndex') === i}
+					classes={attributedTo.length > 2 ? {
+						'@redaktor/widgets/actors': {
+							attributions: [
+								attributedTo.length === 3 ? themedCss.has3 : themedCss.more3
+							]
+						}
+					} : {}}
+					onOpen={(hasImage) => {
+						set('hasProfileImage', hasImage)
+						set('openIndex', i)
+					}}
+					onClose={() => { setTimeout(() => i === get('openIndex') && set('openIndex', -1), 1) }}
+					focus={focus.shouldFocus}
+				/>
 			})}
-			<input type="radio" id={closeID} classes={themedCss.closeActors} name={idBase} />
 			{
 				!!remainingCount && <div classes={themedCss.moreWrapper}>
 					<Avatar {...{size, spaced, color, name }}

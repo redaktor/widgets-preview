@@ -32,10 +32,11 @@ export const Avatar = factory(function Avatar({ middleware: { theme }, propertie
 	const content = !src && !!name ? avatarStr(name) :
 		(c.length === 1 ? c.map((c0) => typeof c0 === 'string' ? avatarStr(c0) : c0) : c);
 
+	const roleObj = src ? {role: 'image'} : {};
 	return (
 		<div
 			key="root"
-			role={src && 'image'}
+			{...roleObj}
 			aria-label={alt}
 			classes={[
 				theme.variant(),
@@ -47,7 +48,8 @@ export const Avatar = factory(function Avatar({ middleware: { theme }, propertie
 				buttonCss.root,
 				themedCss.root,
 				buttonCss[design],
-				themedCss[shape]
+				themedCss[shape],
+				src && themedCss.hasImage
 				// theme.animated(themedCss)
 			]}
 			styles={ src ? { backgroundImage: `url(${src})` } : {} }

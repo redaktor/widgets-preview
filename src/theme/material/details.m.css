@@ -35,15 +35,16 @@
 	height: var(--ui-border-width-emphasized);
 	width: 0;
 	background: var(--ui-focus-alpha);
-	margin: 0 0 calc(var(--ui-border-width-emphasized) * -1 - 1px) auto;
+	margin: 0 auto calc(var(--ui-border-width-emphasized) * -1 - 1px) auto;
 	position: relative;
 	top: 1px;
 }
-.root[open] .summaryContent::after {
-	background: var(--ui-focus);
-}
 .animated .summaryContent::after {
 	transition: width var(--ui-dpd-24) ease;
+}
+.summary:focus .summaryContent::after,
+.root[open] .summaryContent::after {
+	background: var(--ui-focus);
 }
 .summary:focus .summaryContent::after {
 	width: 100%;

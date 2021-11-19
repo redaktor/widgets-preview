@@ -38,14 +38,43 @@
 	flex-grow: 1;
 }
 /* Added to the input */
+/* solution for the banana yellow Safari autocomplete … */
+@keyframes bg {
+  from {
+    background-color: #dfdc00;
+  }
+  to {
+    background-color: transparent;
+  }
+}
+/*
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus
+*/
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus {
+	-webkit-text-fill-color: var(--text, #000);
+	-webkit-animation: bg 0.24s forwards !important;
+}
+.flat .input:-webkit-autofill,
+.flat .input:-webkit-autofill:hover,
+.flat .input:-webkit-autofill:focus {
+	/* If your input has background-color set, uncomment next line */
+	-webkit-background-clip: text;
+}
 .input,
 .autofill {
 	width: 100%;
 	min-width: 64px;
 	border: none;
 	padding-top: calc(var(--line, 16px) + var(--pt, 8px));
-	padding-left: var(--p, 8px);
-	padding-right: var(--plr, 4px);
+	padding-left: var(--grid-base, 8px);
+	padding-right: var(--grid-base, 4px);
 	padding-bottom: var(--p, 8px);
 	margin-bottom: var(--p, 8px);
   transition: width 0.25s;
@@ -111,10 +140,15 @@
 	margin-bottom: 0;
 	background-color: var(--ui-bg);
 	border-radius: var(--input-radius);
-	border-bottom: var(--ui-border-width-emphasized, 2px) solid var(--ui-bg-inverse-muted);
+	border-bottom: var(--ui-border-width-emphasized, 2px) solid var(--text-muted);
 	box-shadow: var(--ui-dp-2);
 	transition: border-color var(--ui-dpd-8) var(--ui-easing);
 	z-index: -1;
+}
+.wrapper:hover .box,
+.wrapper:focus-within .box,
+.wrapper.focused .box {
+	border-color: var(--ui-bg-muted);
 }
 .xxl, .xl, .l {
 
@@ -160,7 +194,12 @@
 .flat .box::after {
 	box-shadow: var(--ui-dp-2);
 }
-.wrapper:focus-within .box::after {
+.wrapper:focus-within:not(:hover) .box::after,
+.wrapper.focused:not(:hover) .box::after {
+	--border-fill: var(--ui-focus);
+}
+.wrapper:focus-within .box::after,
+.wrapper.focused .box::after {
 	transform: scaleX(1);
 }
 .invalid .box::after {
@@ -189,7 +228,7 @@
 
 .label {
 	font-weight: var(--weight-semibold);
-	left: var(--p, 8px);
+	left: var(--grid-base, 8px);
 	bottom: 0px;
 	transition-property: transform, color, background-color;
 	transition-duration: var(--ui-dpd-0);
@@ -208,7 +247,7 @@
 	left: calc(var(--p, 8px) + var(--ui-border-width-emphasized, 2px));
 }
 .m .label {
-	transform: translateY(calc(var(--line,16px) * -0.84)) scale(0.84);
+	transform: translateY(calc(var(--line,16px) * -0.75)) scale(0.84);
 }
 .s .label {
 	transform: translateY(calc(var(--line,16px) * -0.96)) scale(0.96);

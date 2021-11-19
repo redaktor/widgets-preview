@@ -1,5 +1,6 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { focus } from '@dojo/framework/core/middleware/focus';
+import { formatAriaProperties } from '../common/util';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { schemaToAsLocation } from './util';
 import { AsObjectNormalized } from '../common/interfaces';
@@ -10,6 +11,7 @@ import theme, { Keys } from '../middleware/theme';
 import Icon from '../icon';
 import { latLngStr } from '../map/util';
 import bundle from '../_ld/redaktor/nls/redaktor';
+import * as detailsCss from '../theme/material/details.m.css';
 import * as css from '../theme/material/locationsDates.m.css';
 /*
 TODO
@@ -23,6 +25,8 @@ export interface LocationProperties extends AsObjectNormalized {
 	locationOpenIndex?: number|false;
 	/** onLocation acts as toggle */
 	onLocation?: (location: AsObjectNormalized|false, i: number|false) => any;
+
+	onFocusPrevious?: () => any;
 }
 export interface LocationIcache {
 	expanded: boolean;
@@ -37,6 +41,7 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 		hasMap = false,
 		locationOpenIndex = false,
 		onLocation,
+		onFocusPrevious
 	} = properties();
 	const {
 		type = ['Place'],
@@ -75,6 +80,32 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 		});
 	});
 
+	const handleFocus = () => {
+		if (get('focusIndex') !== 1) {
+			set('expanded', true, false);
+			set('focusIndex', 0);
+			focus.focus()
+		} else {
+			set('expanded', false, false);
+			set('focusIndex', -1);
+			onFocusPrevious && onFocusPrevious();
+		}
+	}
+	const handleBlur = () => {
+		set('expanded', false)
+	}
+	const handleClick = (i: number) => () => {
+		if (!!hasMap) {
+			if (get('locationOpenIndex') === i) {
+				set('locationOpenIndex', false);
+				onLocation && onLocation(false, false);
+			} else {
+				set('locationOpenIndex', i);
+				onLocation && onLocation(location[i], i);
+			}
+		}
+	}
+
 	/* TODO @type icon */
 	const location: AsObjectNormalized[] = [...schemaLocation||[], ...(asLocation as AsObjectNormalized[])||[]];
 	if (!location.length) { return '' }
@@ -89,36 +120,29 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 		const title = (rType[0] === '' && rType.length > 1 && messages.hasOwnProperty(rType[1]) && (messages as any)[rType[1]]) ||
 			messages.location;
 
-		const handleClick = () => {
-			if (!!hasMap) {
-				if (locOpenIndex === i) {
-					set('locationOpenIndex', false);
-					onLocation && onLocation(false, false);
-				} else {
-					set('locationOpenIndex', i);
-					onLocation && onLocation(loc, i);
-				}
-			}
-		}
 		const handleKeydown = (event: KeyboardEvent) => {
 			event.stopPropagation();
-			const focusIndex = get('focusIndex')||0;
+			const fi = get('focusIndex')||0;
 			const l = location.length;
+			const [prev, next] = [(!fi ? (l ? l-1 : 0) : fi-1), (fi === (l ? l-1 : 0) ? 0 : fi+1)];
 			switch (event.which) {
 				case Keys.Enter:
 				case Keys.Space:
 					event.preventDefault();
-					handleClick();
-				break;
+					handleClick(i)();
+					break;
 				case Keys.Up:
-					set('focusIndex', !focusIndex ? (l ? l-1 : 0) : focusIndex-1);
+					set('focusIndex', prev);
 					focus.focus();
 					event.preventDefault();
 					break;
 				case Keys.Down:
-					set('focusIndex', focusIndex === (l ? l-1 : 0) ? 0 : focusIndex+1);
+					set('focusIndex', next);
 					focus.focus();
 					event.preventDefault();
+					break;
+				case Keys.Tab:
+					set('focusIndex', !!event.shiftKey ? prev : next);
 					break;
 			}
 		}
@@ -140,7 +164,13 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 					classes={{'@redaktor/widgets/icon': {icon: [themedCss.icon]}}}
 				/>
 				{loc.name &&
-					<span classes={themedCss.name} itemprop="name">{loc.name}</span>
+					<span classes={[
+						themedCss.name,
+						location.length === 1 && themedCss.rootSummary,
+						location.length === 1 && detailsCss.summaryContent
+					]} itemprop="name">
+						{loc.name}
+					</span>
 				}
 				{loc.latitude && loc.longitude &&
 					<span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
@@ -156,11 +186,12 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 				classes={{'@redaktor/widgets/icon': {root: [themedCss.marker], icon: [themedCss.markerIcon]}}}
 			/>}
 		</virtual>;
-		return !isFold ? locNode : <li
-			key={`location_${i+1}`}
+
+		return !isFold ? locNode : <li key={`location_${i+1}`}
+			role="button"
 			tabIndex={0}
 			focus={get('focusIndex') === i && focus.shouldFocus}
-			onclick={handleClick}
+			onclick={handleClick(i)}
 			onkeydown={handleKeydown}
 			classes={[themedCss.foldItem]}
 		>
@@ -169,24 +200,35 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 	}
 
 	const menuId = id.getId('menu');
-
+	const ariaProperties: { [key: string]: string | null } = location.length === 1 ? {} : {
+		expanded: (getOrSet('expanded', false) ? 'true' : 'false'),
+		controls: menuId
+	}
+	const onProperties = location.length === 1 ? {
+		onclick: handleClick(0),
+		onkeydown: (event: KeyboardEvent) => {
+			event.stopPropagation();
+			if (event.which === Keys.Enter || event.which === Keys.Space) {
+				event.preventDefault();
+				handleClick(0)();
+			}
+		}
+	} : {};
+	
 	return <span key="locations" itemprop="location"
 		role="button"
-		aria-expanded={getOrSet('expanded', false) ? 'true' : 'false'}
-		aria-controls={menuId}
+		tabIndex={0}
 		classes={[
 			themedCss.root,
 			get('locationOpenIndex') !== false && themedCss.mapOpen,
+			location.length === 1 && detailsCss.summary,
+			location.length === 1 && detailsCss.animated,
 			location.length > 1 && themedCss.hasFold
 		]}
-		onfocus={() => {
-			set('expanded', true);
-			set('focusIndex', 0);
-			focus.focus()
-		}}
-		onblur={() => {
-			set('expanded', false)
-		}}
+		{...formatAriaProperties(ariaProperties)}
+		{...onProperties}
+		onfocus={handleFocus}
+		onblur={handleBlur}
 	>
 		{getAddressNode(0, false)}
 		{location.length > 1 && <output classes={themedCss.moreCount}>+{location.length-1}</output>}

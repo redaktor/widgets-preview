@@ -226,8 +226,6 @@ export const Images = factory(function Images({
 		return !!lights && !!lights[i] ? themedCss.lightImage : themedCss.darkImage;
 	}
 
-	console.log( get('dateOpenIndex'), get('locationOpenIndex') )
-
 	return <virtual>
 		<div
 			role="region"
@@ -312,6 +310,7 @@ export const Images = factory(function Images({
 		>
 		{hasAttachment && itemsPerPage === 1 && paginated.length > 1 && <virtual>
 			<input key={`input_${scrollWrapperId}`}
+				tabIndex={-1}
 				type="checkbox"
 				classes={themedCss.pageRadio}
 				id={scrollWrapperId}
@@ -322,7 +321,6 @@ export const Images = factory(function Images({
 				for={scrollWrapperId}
 				classes={[themedCss.scrollWrapperLabel]}
 				onkeydown={handleKeydown(get('currentPage')||0, 'stack', paginated.length)}
-
 			>
 				<Icon type="stack" />
 			</label>
@@ -363,6 +361,7 @@ export const Images = factory(function Images({
 				{(maxImages.length > itemCount) &&
 					<virtual>
 						<input key={`input_${i}`}
+							tabIndex={-1}
 							type="radio"
 							classes={themedCss.pageRadio}
 							id={`${idBase}_${i}`}
@@ -373,7 +372,7 @@ export const Images = factory(function Images({
 						/>
 						{<label key={`prev_${i}`}
 							aria-label={messages.prev}
-							focus={get('focusKey') === `prev_${i}` ? focus.shouldFocus : undefined}
+							focus={get('focusKey') === `prev_${i}` ? focus.shouldFocus : void 0}
 							tabIndex={0}
 							for={`${idBase}_${!i ? (a.length-1) : (i-1)}`}
 							classes={[themedCss.prev, themedCss.control, !i && themedCss.firstControl, isLight(i)]}
@@ -384,7 +383,7 @@ export const Images = factory(function Images({
 						</label>}
 						{<label key={`next_${i}`}
 							aria-label={messages.next}
-							focus={get('focusKey') === `next_${i}` ? focus.shouldFocus : undefined}
+							focus={get('focusKey') === `next_${i}` && focus.shouldFocus}
 							tabIndex={0}
 							for={`${idBase}_${i === a.length-1 ? 0 : (i+1)}`}
 							classes={[themedCss.next, themedCss.control, i === a.length-1 && themedCss.lastControl, isLight(i)]}
@@ -444,6 +443,7 @@ export const Images = factory(function Images({
 						compact
 						key={`imageCaption${i}`}
 						isOpen={ get('captionsOpen') }
+						onFocusPrevious={() => { set('focusKey', `next_${current}`); focus.focus(); }}
 						onToggle={(isOpen) => { set('captionsOpen', isOpen) }}
 						onDate={setCalendar}
 						onLocation={setMap}

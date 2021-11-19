@@ -64,6 +64,7 @@ export const link: string;
 export const mention: string;
 export const linkExt: string;
 export const globe: string;
+export const people: string;
 export const group: string;
 export const closed: string;
 export const bookmark: string;

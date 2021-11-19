@@ -2,6 +2,10 @@
 	position: relative;
 	cursor: pointer;
 	color: var(--text-muted);
+	padding: 0px;
+}
+.rootSummary {
+	padding-bottom: 4px;
 }
 .root:focus,
 .root:focus-within {
@@ -22,14 +26,16 @@
 	left: calc(var(--touch-target-min) * -1);
 	transition: top 0.3s linear;
 	z-index: 999999;
-	pointer-events: none;
 	cursor: pointer;
 }
-.root + .root .fold {
+.hasFold + .hasFold .fold {
 	left: calc(var(--touch-target-min) * -2);
 }
-.root:focus .fold,
-.root:focus-within .fold {
+.hasFold .fold {
+	pointer-events: none;
+}
+.hasFold:focus .fold,
+.hasFold:focus-within .fold {
 	pointer-events: all;
 }
 .foldItem {
@@ -106,6 +112,7 @@
 	white-space: nowrap;
 	overflow: hidden;
 	cursor: pointer;
+	font-weight: var(--weight, 400);
 }
 .muted {
 	color: var(--text-muted);
@@ -123,7 +130,7 @@
 	cursor: pointer;
 	z-index: -1;
 }
-.mapOpen .moreCount {
+.mapOpen.hasFold .moreCount {
 	display: none;
 }
 .marker {
@@ -135,10 +142,10 @@
 }
 
 
-.root:focus .moreCount,
-.root:focus-within .moreCount,
-.root:focus + .root,
-.root:focus-within + .root {
+.hasFold:focus .moreCount,
+.hasFold:focus-within .moreCount,
+.hasFold:focus + .root,
+.hasFold:focus-within + .root {
 	opacity: 0;
 	z-index: 0;
 }
