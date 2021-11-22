@@ -1,0 +1,3 @@
+# @redaktor/widgets/collapsed
+
+...

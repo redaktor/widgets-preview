@@ -1,9 +1,10 @@
 export default {
+	follow: 'Folgen',
+	unfollow: 'Entfolgen',
 	SpatialCoverage: 'Räumliche Abdeckung des Inhalts',
 	ContentLocation: 'Im Inhalt dargestellter oder beschriebener Ort',
 	LocationCreated: 'Örtlichkeit, wo der Inhalt geschaffen wurde',
 	location: 'Örtlichkeit',
-
 	contentCreated: 'erstellt',
 	contentCreatedTitle: 'Date when the content was created',
 	dateCreated: 'erstellt/veröffentlicht',

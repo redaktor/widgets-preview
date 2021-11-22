@@ -335,10 +335,24 @@ export const isDuration = (s: any) => (!!s && typeof s === 'string') && duration
 export const isPosInteger = (n: any) => (typeof n === 'number' && is(n, 'integer') && n >= 0);
 
 type APall = Partial<AsActivity|AsActor|AsObject|AsLinkObject>;
-export function getActorName({ petName: pet, preferredUsername: p, name: n, id }: RedaktorActor): string[] {
-	if (pet && typeof pet === 'string') { return [pet] }
-	if (p && typeof p === 'string') { return [p] }
-	return Array.isArray(n) ? n : (typeof n === 'string' ? [n] : (id ? [id] : ['']));
+export function getActorName({ petName: pet, preferredUsername: p, name: n, id }: RedaktorActor): string {
+	if (!!pet) {
+		if (Array.isArray(pet) && !!pet.length && typeof pet[0] === 'string') { return pet[0] }
+		if (typeof pet === 'string') { return pet }
+	}
+	if (!!p) {
+		if (Array.isArray(p) && !!p.length && typeof p[0] === 'string') { return p[0] }
+		if (typeof p === 'string') { return p }
+	}
+	if (!!n) {
+		if (Array.isArray(n) && !!n.length && typeof n[0] === 'string') { return n[0] }
+		if (typeof n === 'string') { return n }
+	}
+	if (!!id) {
+		if (Array.isArray(id) && !!id.length && typeof id[0] === 'string') { return id[0] }
+		if (typeof id === 'string') { return id }
+	}
+	return ''
 }
 
 function toArray(v: any) {
@@ -445,10 +459,11 @@ export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = 
 		href, hreflang, rel,
 		// Actor
 		inbox, outbox, following, followers, liked, streams, preferredUsername, endpoints,
+		omitProperties: _omits,
 		// ... other properties
 		...notAP
 	} = ap;
- 	let o: any = { id, type, ...notAP };
+ 	let o: any = { id, type, omitProperties: new Set(Array.isArray(_omits) ? _omits : []), ...notAP };
 
 	/* TODO
 	id
@@ -463,6 +478,7 @@ export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = 
 		hreflang?: string;
 	}
 	*/
+
 	if (Array.isArray(type)) {
 		o.type = type.filter((s: any) => typeof s === 'string' && !!s)
 	} else if (typeof type === 'string' && !!type) {

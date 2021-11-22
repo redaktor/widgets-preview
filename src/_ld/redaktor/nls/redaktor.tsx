@@ -7,6 +7,8 @@ const locales = {
 	de: () => import('./de/redaktor')
 };
 const messages = {
+	follow: 'Follow',
+	unfollow: 'Unfollow',
 	SpatialCoverage: 'Spatial Coverage of the content',
 	ContentLocation: 'Location depicted or described in the content',
 	LocationCreated: 'Location where it was created',

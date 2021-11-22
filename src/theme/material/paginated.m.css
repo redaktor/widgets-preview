@@ -1,6 +1,18 @@
 .root {
   display: grid;
+  position: relative;
   /* margin-bottom: calc(var(--line) - var(--mb)); */
+}
+.colored::after {
+  content: "";
+  position: absolute;
+  left: var(--grid-base,8px);
+  height: 100%;
+  width: 1px;
+  border-left: var(--ui-border-width-emphasized) dotted var(--m-500);
+}
+.compact.colored::after {
+  left: 0px;
 }
 .compact {
   --pl: var(--p);
@@ -37,7 +49,7 @@
   justify-content: center;
   text-align: center;
   margin: 0;
-  padding-top: calc(var(--pt) + var(--ui-border-width-emphasized,2px));
+  padding-top: var(--ui-border-width-emphasized,2px);
   cursor: pointer;
 }
 .prev {

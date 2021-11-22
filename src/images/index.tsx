@@ -10,7 +10,7 @@ import theme, { ViewportProperties } from '../middleware/theme';
 import Icon from '../icon';
 import Calendar from '../calendar';
 import Map from '../map';
-import ImageCaption from '../imageCaption';
+import Caption from '../caption';
 import Img, { getWH } from '../image/image';
 import bundle from './nls/Image';
 import * as viewCSS from '../theme/material/_view.m.css';
@@ -439,7 +439,7 @@ export const Images = factory(function Images({
 						})}
 					</div>
 
-					{ itemCount === 1 && hasContent && <ImageCaption {...(imagePage[0])}
+					{ itemCount === 1 && hasContent && <Caption isImageCaption {...(imagePage[0])}
 						compact
 						key={`imageCaption${i}`}
 						isOpen={ get('captionsOpen') }

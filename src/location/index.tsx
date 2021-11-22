@@ -3,13 +3,12 @@ import { focus } from '@dojo/framework/core/middleware/focus';
 import { formatAriaProperties } from '../common/util';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { schemaToAsLocation } from './util';
+import { latLngStr } from '../map/util';
 import { AsObjectNormalized } from '../common/interfaces';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
 import theme, { Keys } from '../middleware/theme';
-// import Paginated from '../paginated';
 import Icon from '../icon';
-import { latLngStr } from '../map/util';
 import bundle from '../_ld/redaktor/nls/redaktor';
 import * as detailsCss from '../theme/material/details.m.css';
 import * as css from '../theme/material/locationsDates.m.css';
@@ -214,7 +213,7 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 			}
 		}
 	} : {};
-	
+
 	return <span key="locations" itemprop="location"
 		role="button"
 		tabIndex={0}

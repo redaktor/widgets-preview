@@ -1,0 +1,92 @@
+.root {
+	padding-bottom: var(--line);
+}
+.header {
+	display: flex;
+	align-items: flex-end;
+	position: relative;
+	width:100%;
+	padding: 0px var(--grid-base,8px) 0px var(--grid-base,8px);
+	border-radius: 0px 0px 0px var(--ui-border-radius-emphasized);
+}
+.timeWrapper {
+	position:relative;
+	margin-right: calc(var(--grid-base,8px) * 2);
+	min-width: 80px;
+	text-align: right;
+	background: linear-gradient(var(--m-600), var(--m-800) var(--size), var(--paper) var(--size));
+	border-radius: var(--ui-border-radius-emphasized) var(--ui-border-radius-emphasized) 0px 0px;
+	box-shadow: var(--ui-dp-2);
+}
+.wideDate .timeWrapper {
+	min-width: 106px;
+}
+.time {
+	display: flex;
+	justify-content: flex-end;
+	padding: 0px var(--grid-base,8px) 0px var(--grid-base,8px);
+}
+.until + .time {
+	margin-top: calc(var(--line) * -1);
+}
+.pastDate,
+.sameMonthYear {
+	color: var(--text-muted);
+}
+.sameDate {
+	color: var(--ui-success);
+}
+
+.root .until {
+	position:absolute;
+	margin: calc(var(--size) * -0.618) 0px 0px 0px;
+	padding:0;
+	background:var(--m-500);
+	width:38.2%;
+	height:calc(var(--size) * 0.618);
+	left:0px;
+	color:var(--m-500);
+	border:none;
+}
+.root .pastDate.until {
+	background: var(--m-900);
+	color: var(--m-800);
+}
+.day {
+	composes: hero from './_typo.css';
+}
+.root .day {
+	font-weight: var(--weight-bold);
+	margin-bottom: calc(var(--mb) - var(--line2));
+}
+.month {
+	min-width: 36px;
+}
+.year {
+	composes: s from './_typo.css';
+}
+.root .year {
+	margin-top: calc(var(--line) * -2);
+}
+.timeRelative {
+	composes: s italic serif from './_typo.css';
+	display: inline-block;
+}
+.nameWrapper {
+	/* max-height: calc(var(--line) * 6); */
+}
+.imageWrapper {
+	width: 100%;
+}
+.imageWrapper.max {
+	height: calc(var(--line) * var(--l,19));
+	padding-right: var(--grid-base,8px);
+}
+.imageWrapper.left {
+	padding-left: calc(80px + var(--grid-base,8px) * 3);
+	padding-right: 0px;
+}
+.wideDate .imageWrapper.left {
+	padding-left: calc(106px + var(--grid-base,8px) * 3);
+	padding-right: 0px;
+}

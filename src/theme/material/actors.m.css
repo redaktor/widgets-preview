@@ -126,7 +126,7 @@
 .handle {
 	composes: serif xs from './_typo.css';
 }
-.closed, 
+.closed,
 .noPetName {
 	composes: sans m from './_typo.css';
 	font-weight: var(--weight-semibold, 500);
@@ -288,7 +288,7 @@
 	padding: 0px 0px 0px var(--grid-base);
 	margin-bottom: calc(var(--mb) - var(--line));
 }
-.followBtn {
+.actionButtons {
 	display: flex;
 	padding-top: calc(var(--line) + 1px);
 }
@@ -296,8 +296,8 @@
 	padding-right: var(--lineHalf);
 	font-weight: 500;
 }
-.followBtn button,
-.followBtn button::before {
+.actionButtons button,
+.actionButtons button::before {
 	margin-bottom: 0 !important;
 	border-bottom-left-radius: 0px !important;
 }

@@ -128,13 +128,6 @@
 .snap > * {
   scroll-snap-align: start;
 }
-.snap .media {
-	display: flex;
-	align-self: flex-end;
-	align-items: flex-end;
-	margin: 0px;
-	padding: 0px;
-}
 /* 2015 spec - For Firefox, Edge, IE */
 .snap {
 	--step: calc(var(--line) * 15);
@@ -166,6 +159,13 @@
 	position: relative;
 	overflow: hidden;
 	grid-row-end: span var(--l, auto);
+}
+.snap .media {
+	display: flex;
+	align-self: flex-end;
+	align-items: flex-end;
+	margin: 0px;
+	padding: 0px;
 }
 .singleItem .page > .media {
 	grid-row-end: span min(var(--maxl, 9999), var(--l, auto));
@@ -274,6 +274,9 @@ TODO above
 	padding-left: var(--grid-base);
 	place-self: start;
 }
+.meta:empty {
+	display: none;
+}
 
 .calendarWrapper {
 	display: flex;
@@ -303,7 +306,7 @@ TODO above
 .dates + .location {
 	margin-left: var(--grid-base);
 	width: 65%;
-	width: calc(var(--w) - var(--navw) - 10ch - var(--touch-target-min) - var(--grid-base) * 2);
+	width: calc(var(--w) - var(--navw) - 10ch - var(--touch-target-min) - var(--grid-base) * 2.5);
 }
 .firstControl { }
 .lastControl { }
@@ -516,7 +519,7 @@ TODO above
 }
 
 
-/* imageCaption ... */
+/* caption ... */
 .content {
 	/* composes: serif from './_typo.css'; */
 	padding: 0px;
@@ -529,6 +532,7 @@ TODO above
 	margin-top: var(--line);
 	order: 3;
 }
+.meta:empty + .captionWrapper,
 .attributions + .captionWrapper {
 	margin-top: 0px;
 }

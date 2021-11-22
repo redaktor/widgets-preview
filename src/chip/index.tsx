@@ -2,9 +2,9 @@ import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import theme, { ThemeProperties, Keys } from '@redaktor/widgets/middleware/theme';
 import Icon from '@redaktor/widgets/icon';
-import * as ui from '@redaktor/widgets/theme/material/_ui.m.css';
-import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
-import * as css from '@redaktor/widgets/theme/material/chip.m.css';
+import * as ui from '../theme/material/_ui.m.css';
+import * as colors from '../theme/material/_color.m.css';
+import * as css from '../theme/material/chip.m.css';
 
 export interface ChipProperties extends ThemeProperties {
 	/** A callback when the close icon is clicked, if `closeRenderer` is not provided a default X icon will be used */

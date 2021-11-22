@@ -418,6 +418,8 @@ export interface AsObject extends AsBase {
 	href?: string; /* Functional */
 	hreflang?: string; /* Functional */
 	rel?: string | string[];
+
+	omitProperties?: (keyof AsBase | 'date')[];
 }
 export interface AsObjectNormalized extends AsBaseNormalized {
 	type: (AsObjectTypes | string)[];
@@ -446,6 +448,8 @@ export interface AsObjectNormalized extends AsBaseNormalized {
 	rel?: string[];
 	/* available locales */
 	locales?: Labeled[];
+
+	omitProperties?: Set<(keyof AsBase)>;
 }
 
 export interface AsCollection extends AsCore {

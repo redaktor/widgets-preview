@@ -1,10 +1,11 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { uuid } from '@dojo/framework/core/util';
-import { AsObject, AsImage, AsLink } from '../../../../common/interfaces';
+import { AsObject, AsImage } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Image, { ImageProperties } from '@redaktor/widgets/image';
-import Images from '@redaktor/widgets/images';
+import Event from '@redaktor/widgets/event';
 /*
+import Images from '@redaktor/widgets/images';
 import Table from '@redaktor/widgets/table';
 
 <br /><br /><br />
@@ -53,10 +54,24 @@ const _3_2: AsImage = {id: uuid(), type: "Image", url: {type: "Link", href: "car
 
 _1_1.location = LOC[2].location[0];
 
+const summary = ["10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For","summary2"];
+const content = [`Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs #Parkett. \nParsed handle @sl@sl.de – handle @sl@sl.de – link-handle @https://localhost:9999 – link https://localhost:9999 \n Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Parkett. Dies sind Sätze mit Zeichen bis zu 500 LOREM IPSUM dolor sit amet, consectetur adipiscing elit.
+
+---
+
+Lorem Ipsum
+
+- a list
+- with another item
+
+Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`,
+`2 Jetzt herrscht Goldgräberstimmung an der New Yorker Technologiebörse NASDAQ. Dort will Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Börsenparkett. Gemessen am Referenzpreis der Aktien ist Coinbase rund 68 Milliarden Dollar wert. Analysten trauen Coinbase sogar eine Bewertung von 100 Milliarden Dollar zu – ein aberwitziger Preis für ein Unternehmen mit 56 Millionen Kunden und gut 1700 Mitarbeitern. Die schwindelerregende Bewertung erklären Analysten mit dem Hype um Kryptowährung LOREM IPSUM dolor sit amet, consectetur adipiscing elit. Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`];
+
 const exampleText = `20 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For.
 10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For 10 Easy Ways To Make
 Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For 10 Easy Ways To Make Tin Foil #Hats Stronger.
 Proof That #Cats Are Exactly What You Are Looking For. 10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For`;
+
 const exampleData: ImageProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
   type: "Audio",
@@ -83,18 +98,8 @@ const exampleData: ImageProperties = {
     type: "Person"
   }],
   nameMap: [{en: "The Government's Secret Campaign Against Cats", de: "Das ist alles nur Blindtext Das ist alles nur Blindtext Das ist alles nur Blindtext Das ist alles nur Blindtext"},{en: "Special Episode", de: "Spezielle Episode"}, {en: "Super", de: "Super"}],
-  summary: ["10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For","summary2"],
-  content: [`Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs #Parkett. \nParsed handle @sl@sl.de – handle @sl@sl.de – link-handle @https://localhost:9999 – link https://localhost:9999 \n Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Parkett. Dies sind Sätze mit Zeichen bis zu 500 LOREM IPSUM dolor sit amet, consectetur adipiscing elit.
-
-  ---
-
-  Lorem Ipsum
-
-  - a list
-  - with another item
-
-  Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`,
-  `2 Jetzt herrscht Goldgräberstimmung an der New Yorker Technologiebörse NASDAQ. Dort will Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Börsenparkett. Gemessen am Referenzpreis der Aktien ist Coinbase rund 68 Milliarden Dollar wert. Analysten trauen Coinbase sogar eine Bewertung von 100 Milliarden Dollar zu – ein aberwitziger Preis für ein Unternehmen mit 56 Millionen Kunden und gut 1700 Mitarbeitern. Die schwindelerregende Bewertung erklären Analysten mit dem Hype um Kryptowährung LOREM IPSUM dolor sit amet, consectetur adipiscing elit. Mauris convallis, neque non iaculis volutpat, ipsum mi dapibus odio, sed efficitur ipsum lacus eu ipsum. Nunc quam elit, rutrum sit amet enim eget, tincidunt tristique leo. Nulla lorem nulla, luctus et mauris ac, feugiat convallis orci. Cras placerat urna orci, eu efficitur augue congue vel. Mauris nec semper dolor, quis vestibulum urna. Etiam et tortor vitae erat bibendum tristique non at metus. Curabitur dapibus pharetra eros, et rutrum libero tempus id. Suspendisse at nibh turpis. Integer id blandit velit. Nulla et mollis felis. Suspendisse potenti.`],
+  summary,
+  content,
   image: [
     {..._1_1, summary: exampleText, updated: "2018-09-12T12:12:12Z"},
     {..._2_3, name: "test", updated: "2018-10-11T12:12:12Z"},
@@ -145,6 +150,13 @@ console.log(exampleImage)
 
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
+            <Event id="event1" type="Event"
+              {...{summary: summary, content, image: {..._1_1, summary: exampleText, updated: "2018-09-12T12:12:12Z"}}}
+              startTime="2021-12-31T20:00:00-08:00"
+              endTime="2022-01-01T23:00:00-08:00"
+              name={"PRESSURE DROP-Boss Reggae (late-)Allnighter ft. Selekta Bebek"}
+              hasAttachment={false}
+            />
             <Image {...exampleImage} />
           </ul>
         </div>

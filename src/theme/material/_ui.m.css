@@ -73,6 +73,7 @@ while CSS vars should be "-" style
 .h3 {composes: h3 from './_typo.css';}
 .h4 {composes: h4 from './_typo.css';}
 .h5 {composes: h5 from './_typo.css';}
+.hero {composes: hero from './_typo.css';}
 .hgroup {
 	margin: 0;
 	padding: 0;

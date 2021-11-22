@@ -1,5 +1,6 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { focus } from '@dojo/framework/core/middleware/focus';
+import { formatAriaProperties } from '../common/util';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 // import { schemaToAsDate } from './util';
 import { AsObjectNormalized } from '../common/interfaces';
@@ -8,6 +9,7 @@ import id from '../middleware/id';
 import theme, { Keys } from '../middleware/theme';
 import Icon from '../icon';
 import bundle from '../_ld/redaktor/nls/redaktor';
+import * as detailsCss from '../theme/material/details.m.css';
 import * as css from '../theme/material/locationsDates.m.css';
 
 // type DateDescription = [string, string, string, any];
@@ -93,23 +95,27 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 	*/
 	hasCalendar && set('dateOpenIndex', dateOpenIndex, false);
 
+
+	const handleClick = (i: number) => () => {
+		const dOpenIndex = get('dateOpenIndex');
+		const [d] = dates[i];
+		const date = global.Date.parse(d);
+		const jsDate = new global.Date(d);
+		if (!!hasCalendar) {
+			if (dOpenIndex !== false && dOpenIndex === i) {
+				set('dateOpenIndex', false);
+				onDate && onDate(false, false);
+			} else {
+				set('dateOpenIndex', i);
+				onDate && onDate(jsDate, i);
+			}
+		}
+	};
 	const getNode = (i: number, isFold = true) => {
 		const [d, label = '', title = '', iconType] = dates[i];
-		const dOpenIndex = get('dateOpenIndex');
 		const date = global.Date.parse(d);
 		const formattedDate = !isFold ? locDateTimeShort.format(date) : locDateTime.format(date);
 		const jsDate = new global.Date(d);
-		const handleClick = () => {
-			if (!!hasCalendar) {
-				if (dOpenIndex !== false && dOpenIndex === i) {
-					set('dateOpenIndex', false);
-					onDate && onDate(false, false);
-				} else {
-					set('dateOpenIndex', i);
-					onDate && onDate(jsDate, i);
-				}
-			}
-		};
 		const handleKeydown = (event: KeyboardEvent) => {
 			event.stopPropagation();
 			const fi = get('focusIndex')||0;
@@ -119,7 +125,7 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 				case Keys.Enter:
 				case Keys.Space:
 					event.preventDefault();
-					handleClick();
+					handleClick(i)();
 					break;
 				case Keys.Up:
 					set('focusIndex', prev);
@@ -152,14 +158,20 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 					classes={{'@redaktor/widgets/icon': {icon: [themedCss.icon]}}}
 				 /> {label}
 			</span>}
-			{formattedDate}
+			{!!formattedDate && <span classes={[
+				themedCss.name,
+				dates.length === 1 && themedCss.rootSummary,
+				dates.length === 1 && detailsCss.summaryContent
+			]} itemprop="name">
+				{formattedDate}
+			</span>}
 		</time>;
 
 		return !isFold ? mainNode : <li
 			key={`date${i+1}`}
 			tabIndex={0}
 			focus={get('focusIndex') === i && focus.shouldFocus}
-			onclick={handleClick}
+			onclick={handleClick(i)}
 			onkeydown={handleKeydown}
 			classes={[themedCss.full, themedCss.foldItem]}
 		>
@@ -168,6 +180,21 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 	}
 
 	const menuId = id.getId('menu');
+	const ariaProperties: { [key: string]: string | null } = dates.length === 1 ? {} : {
+		expanded: (getOrSet('expanded', false) ? 'true' : 'false'),
+		controls: menuId
+	}
+	const onProperties = dates.length === 1 ? {
+		onclick: handleClick(0),
+		onkeydown: (event: KeyboardEvent) => {
+			event.stopPropagation();
+			if (event.which === Keys.Enter || event.which === Keys.Space) {
+				event.preventDefault();
+				handleClick(0)();
+			}
+		}
+	} : {};
+
 	return <span key="dates"
 		role="button"
 		tabIndex={0}
@@ -176,8 +203,12 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 		classes={[
 			themedCss.root,
 			get('dateOpenIndex') !== false && themedCss.mapOpen,
+			dates.length === 1 && detailsCss.summary,
+			dates.length === 1 && detailsCss.animated,
 			dates.length > 1 && themedCss.hasFold
 		]}
+		{...formatAriaProperties(ariaProperties)}
+		{...onProperties}
 		onfocus={(evt) => {
 			if (get('focusIndex') !== 1) {
 				set('expanded', true, false);

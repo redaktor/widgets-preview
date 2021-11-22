@@ -25,6 +25,8 @@ export interface ImgProperties extends AsObject {
 	aspectRatio?: AspectRatioNamed | keyof typeof AspectRatioNamed | [number, number];
 	/* object-fit logic */
 	fit?: 'contain' | 'cover' | 'fit' | false;
+	/* centered by default */
+	align?: 'left' | 'right';
 	/* crossorigin parameter, default 'anonymous' */
 	crossorigin?: 'anonymous' | 'use-credentials';
 	/* snap to baseline, default false */
@@ -87,18 +89,18 @@ export const getWH = (o: AsObjectNormalized) => {
 
 
 export const Img = factory(function Img({
-	middleware: { icache, i18nActivityPub, id, theme, breakpoints}, children
+	middleware: { icache, i18nActivityPub, id, theme, breakpoints}, properties, children
 }) {
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
 	const {
-		sensitive, alt, title, aspectRatio: ratio, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		onBrightness, blurhash, focalPoint, mediaType, maxWidth, maxHeight,
+		sensitive, alt, title, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
+		onBrightness, blurhash, focalPoint, mediaType, align,
 		loading = 'lazy', crossorigin = 'anonymous', baselined = false, fit = false,
-		scaleOnHover = false, hasSensitiveSwitch = true, ..._rest
-	} = i18nActivityPub.normalized();
+		scaleOnHover = false, hasSensitiveSwitch = true
+	} = properties();
+	const {aspectRatio: ratio, maxWidth, maxHeight, ...APo} = i18nActivityPub.normalized();
 
-	const APo: AsObjectNormalized = _rest;
 	const src = (!APo.url ? (!APo.href ? '' : APo.href) :
 	(typeof APo.url[0] === 'object' && !!(APo.url[0] as AsLinkObject).href) ?
 		(APo.url[0] as AsLinkObject).href : (APo.url[0] as string))||'';
@@ -206,6 +208,8 @@ export const Img = factory(function Img({
 			!!fit && fit === 'cover' && themedCss.cover,
 			!!fit && fit === 'contain' && themedCss.contain,
 			!!fit && fit === 'fit' && themedCss.fit,
+			align === 'left' && themedCss.left,
+			align === 'right' && themedCss.right,
 			!!aspectRatio && themedCss.ratio,
 			!!hasFocalPoint && themedCss.hasFocalPoint,
 			!!aspectRatio && aspectRatio in AspectRatioNamed && (themedCss as any)[`_${aspectRatio.replace('/','_')}`]

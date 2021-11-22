@@ -38,21 +38,6 @@
 	cursor: pointer;
 }
 
-.media.cover,
-.media.contain {
-	display: flex;
-	height: 100%;
-	object-fit: cover;
-	align-items: center;
-	justify-content: center;
-}
-.media.cover {
-	object-fit: cover;
-}
-.media.contain {
-	object-fit: contain;
-}
-
 /* not used here, when the blurhash faded to the main image */
 .faded { }
 .measure {
@@ -73,20 +58,12 @@
 	max-height: var(--maxh,100%);
 	height: auto;
 }
+
 .canvas {
 	position: absolute;
 	left: 0px;
 	width: 100%;
 	transition: opacity var(--ui-dpd-2,240ms) var(--ui-easing);
-}
-
-.root > .media:not(.hasFocalPoint) .image {
-	object-fit: cover;
-	object-position: 50% 50%;
-	height: calc(var(--line) * var(--l));
-}
-.root > .media.contain:not(.hasFocalPoint) .image {
-	object-fit: contain;
 }
 .root.fit,
 .media.fit,
@@ -98,7 +75,69 @@
 	position: absolute;
 }
 
+/* cover / contain fallback */
+.media.cover,
+.media.contain {
+	display: flex;
+	height: 100%;
+	align-items: center;
+	justify-content: center;
+}
+.media.cover.left,
+.media.contain.left {
+	justify-content: flex-end;
+}
+.media.cover.right,
+.media.contain.right {
+	justify-content: flex-end;
+}
+/* img.image overwrites browser defaults … */
+.media.cover .canvas,
+.media.cover .image,
+.media.cover img.image,
+.media.contain .canvas,
+.media.contain .image,
+.media.contain img.image {
+	width: auto;
+	height: 100%;
+}
+.media.left .canvas,
+.media.left .image {
+	margin-right: auto;
+}
+.media.right .canvas,
+.media.right .image {
+	margin-left: auto;
+}
 @supports(object-fit: cover) {
+	.root > .media:not(.hasFocalPoint) .canvas,
+	.root > .media:not(.hasFocalPoint) .image {
+		object-fit: cover;
+		object-position: 50% 50%;
+		height: calc(var(--line) * var(--l));
+	}
+	.root > .media.contain:not(.hasFocalPoint) .canvas,
+	.root > .media.contain:not(.hasFocalPoint) .image {
+		object-fit: contain;
+	}
+	.media.cover {
+		display: block;
+		object-fit: cover;
+	}
+	.media.contain {
+		display: block;
+		object-fit: contain;
+	}
+	/* img.image overwrites browser defaults … */
+	.media.cover .canvas,
+	.media.cover .image,
+	.media.cover img.image,
+	.media.contain .canvas,
+	.media.contain .image,
+	.media.contain img.image {
+		width: auto;
+		height: auto;
+	}
 	.root.fit,
 	.media.fit,
 	.media.ratio,

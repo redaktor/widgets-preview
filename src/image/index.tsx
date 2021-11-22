@@ -55,14 +55,13 @@ export const Image = factory(function Image({
 
 	const {
 		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		fit = false, hasContent = true, hasAttachment = true, view = 'column', ...ld
-	} = i18nActivityPub.normalized<ImageProperties>();
-
-	if (ld.type.indexOf('Image') < 0 && (!mediaType || mediaType.toLowerCase().indexOf('image') !== 0)) {
+		fit = false, hasContent = true, hasAttachment = true, view = 'column'
+	} = properties();
+	const ld = i18nActivityPub.normalized<ImageProperties>();
+	const { type, image = [] } = ld;
+	if (type.indexOf('Image') < 0 && (!mediaType || mediaType.toLowerCase().indexOf('image') !== 0)) {
 		return ''
 	}
-	const { image = [] } = ld;
-
 	if (view === 'tableRow') {
 		return 'TODO'
 	}
@@ -108,7 +107,6 @@ console.log('IMAGE render');
 		role="region"
 	>
 		<div key="measure" classes={themedCss.measure} />
-
 		{hasAttachment && image &&
 			<Images
 				key="images"
@@ -119,7 +117,6 @@ console.log('IMAGE render');
 				image={allImages}
 			/>
 		}
-
 	</div>
 
 });

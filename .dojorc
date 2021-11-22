@@ -43,6 +43,7 @@
       "src/details",
       "src/dialog",
       "src/duration",
+      "src/event",
       "src/form",
       "src/grid",
       "src/gridMaker",

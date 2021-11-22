@@ -2,13 +2,15 @@ import { tsx, create } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import focus from '@dojo/framework/core/middleware/focus';
 import { RedaktorActor, AsActivity } from '../common/interfaces';
-import { isLinkOrImage, getActorName, normalizeAs } from '../common/activityPubUtil';
+import i18nActivityPub from '../middleware/i18nActivityPub';
+import { getActorName } from '../common/activityPubUtil';
 import Img from '../image/image';
 import Button from '../button';
 import Chip from '../chip';
 import Icon from '../icon';
 import Avatar from '../avatar';
 import Input from '../inputText';
+import bundle from '../_ld/redaktor/nls/redaktor';
 import * as viewCSS from '../theme/material/_view.m.css';
 import * as detailsCss from '../theme/material/details.m.css';
 import * as iconCss from '../theme/material/icon.m.css';
@@ -34,8 +36,8 @@ interface ActorICache {
 	focused: boolean;
 	edgeNamesVisible?: boolean;
 	follow: boolean | 'follower' | 'mutual' | 'me';
-	preferredUsername: string[];
-	petName?: string[];
+	preferredUsername: string;
+	petName?: string;
 }
 
 /*
@@ -68,13 +70,13 @@ before edgeList: summary like
 </Chip>}
 */
 const icache = createICacheMiddleware<ActorICache>();
-const factory = create({ icache, focus, theme })
+const factory = create({ icache, focus, i18nActivityPub, theme })
 	.properties<ActorProperties>()
 
-const Actor = factory(function Actor({ /*children,*/ properties, middleware: { icache, focus, theme } }) {
+const Actor = factory(function Actor({ /*children,*/ properties, middleware: { icache, focus, i18nActivityPub, theme } }) {
 	const themedCss = theme.classes(css);
 	const viewDesktopCSS = theme.viewDesktopCSS();
-	const normalized = normalizeAs(properties());
+	const normalized = i18nActivityPub.normalized<ActorProperties>();
 	const {
 		onFocus, onBlur, onOpen, onClose,
 		focus: focused = false,
@@ -89,10 +91,11 @@ const Actor = factory(function Actor({ /*children,*/ properties, middleware: { i
 		summary,
 		follow: f,
 		petName: p
-	} = normalized
-
+	} = normalized;
+	const { messages } = i18nActivityPub.localize(bundle);
 	const { get, set, getOrSet } = icache;
-	const preferredUsername = getActorName((normalized as any));
+	const preferredUsername = getActorName(normalized);
+	console.log(normalized, preferredUsername);
 	getOrSet('preferredUsername', preferredUsername);
 	getOrSet('open', open);
 	// getOrSet('focused', open);
@@ -130,8 +133,8 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 	const profileImage = (!!icon && !!icon.length && !!image && !!image.length) ? image : void 0;
 	/* TODO profileImage focalPoint */
 	const avatarSrc = getSrc(avatarImg);
-	const prefName = get('preferredUsername') || ['?'];
-	const avatar = !avatarSrc ? <Avatar spaced={false} name={prefName[0]} /> :
+	const prefName = get('preferredUsername') || preferredUsername || '?';
+	const avatar = !avatarSrc ? <Avatar spaced={false} name={prefName} /> :
 		<Avatar spaced={false} src={avatarSrc} />;
 	const followVerb = !follow ? '' :
 		(follow === true ? 'followed' : (follow === 'follower' ? 'follows you' : 'mutual')) ||
@@ -158,7 +161,7 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 			<div classes={themedCss.metaWrapper}>
 				{petName ?
 					<virtual>
-						<h5 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.closed, themedCss.petName]}>{petName}</h5> 
+						<h5 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.closed, themedCss.petName]}>{petName}</h5>
 						<h3 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.petName]}>{petName}</h3>
 					</virtual> :
 					(get('preferredUsername') ?
@@ -182,11 +185,11 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 				<Input
 					design="flat"
 					color="primary" spaced={false} required={true} selection={true}
-					initialValue={preferredUsername[0]}
+					initialValue={prefName}
 					autocomplete="name"
 					focus={!!focused && !!get('focused') ? focus.shouldFocus : void 0}
 					onBlur={() => set('focused', false)}
-					onValue={(v = '') => set('preferredUsername', [v])}
+					onValue={(v = '') => set('preferredUsername', v)}
 					onKeyDown={(keyNr) => keyNr === 13 && _onFollow()}
 					classes={{
 						'@redaktor/widgets/inputText': {
@@ -199,24 +202,14 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 						focusContent: <i classes={[iconCss.icon, iconCss.people]}></i>
 					}}
 				</Input>
-				<span classes={themedCss.followBtn}>
-					<Button
-						design={preferredUsername !== get('preferredUsername') ? 'filled' : 'outlined'}
-						color="lime" responsive={true} spaced={false}
-						onClick={() => _onFollow()}
-					>
-						Follow
+				<span classes={themedCss.actionButtons}>
+					<Button design="filled" color="lime" responsive={true} spaced={false} onClick={_onFollow}>
+						{messages.follow}
 					</Button>
-					<Button
-						design="filled" color="primary" responsive={false} spaced="left"
-						onClick={() => {}}
-					>
+					<Button design="filled" color="primary" responsive={false} spaced="left" onClick={() => {}}>
 						<Icon type="bullhorn" />
 					</Button>
-					<Button
-						design="filled" color="primary" responsive={false} spaced="left"
-						onClick={() => {}}
-					>
+					<Button design="filled" color="primary" responsive={false} spaced="left" onClick={() => {}}>
 						<Icon type="profile" />
 					</Button>
 				</span>

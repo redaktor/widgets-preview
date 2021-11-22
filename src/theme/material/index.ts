@@ -13,6 +13,7 @@ import * as combobox from './combobox.m.css';
 import * as dateInput from './inputDate.m.css';
 import * as details from './details.m.css';
 import * as dialog from './dialog.m.css';
+import * as event from './event.m.css';
 import * as gridBody from './grid-body.m.css';
 import * as gridCell from './grid-cell.m.css';
 import * as gridFooter from './grid-footer.m.css';
@@ -71,8 +72,10 @@ export default {
 		'@redaktor/widgets/card': card,
 		'@redaktor/widgets/chip': chip,
 		'@redaktor/widgets/combobox': combobox,
+		'@redaktor/widgets/date': location,
 		'@redaktor/widgets/inputDate': dateInput,
 		'@redaktor/widgets/dialog': dialog,
+		'@redaktor/widgets/event': event,
 		'@redaktor/widgets/grid-body': gridBody,
 		'@redaktor/widgets/grid-cell': gridCell,
 		'@redaktor/widgets/grid-footer': gridFooter,
@@ -90,6 +93,7 @@ export default {
 		'@redaktor/widgets/list-item': listItem,
 		'@redaktor/widgets/loadingIndicator': loadingIndicator,
 		'@redaktor/widgets/locales': details,
+		'@redaktor/widgets/location': location,
 		'@redaktor/widgets/menu-item': menuItem,
 		'@redaktor/widgets/typeaheadMulti': multiSelectTypeahead,
 		'@redaktor/widgets/selectNative': nativeSelect,
