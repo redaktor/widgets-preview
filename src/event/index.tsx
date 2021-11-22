@@ -98,6 +98,23 @@ export const Event = factory(function Event({
 		aspectRatio = (!width || !height ? 0 : width/height)
 		fitContain = aspectRatio < 1.16;
 	}
+	const addLines = [
+		1.25, 1.3333, 1.5, 1.6, 1.7777, 2.2857, 2.6666, 3, 4.5
+	].reduce((n, ar, i) => aspectRatio > ar ? i+1 : n, 0);
+	/*
+	m9by2 10
+	.m16by5 8
+	.m3by1 8
+	.m8by3 7
+	.m21by9 6
+	.m16by7 6
+	.m37by20 5
+	.m16by9 5
+	.m16by10 4
+	.m3by2 3
+	.m4by3 2
+	.m5by4 1
+	*/
 
 	const getTimeNode = (xsdDate: string, isEndTime = false) => {
 		const key = isEndTime ? 'endTime' : 'startTime';
@@ -113,7 +130,6 @@ export const Event = factory(function Event({
 		const isSameMonth = !!isSameYear && curMonth === month;
 		const isSameDate = !!isSameYear && !!isSameMonth && curDate === date;
 		const isPast = Date.parse(xsdDate) < jsNow.getTime();
-		console.log(jsDate, endTime, isSameYear, isSameMonth, isSameDate, Date.parse(xsdDate) < jsNow.getTime());
 		const timeNode = <time key={key} classes={themedCss.time} datetime={xsdDate}>
 			<h1 classes={[themedCss.day, isSameDate && themedCss.sameDate, isPast && themedCss.pastDate]}>
 				{date}
@@ -138,7 +154,7 @@ export const Event = factory(function Event({
 	const isEndSameDateThanStart = !!startTime && !!endTime && startTime.split('T')[0] === endTime.split('T')[0];
 	const isWideDate = !!startTime && !!endTime && !![startTime.split('-'),endTime.split('-')]
 		.filter((splits) => splits.length > 2 && splits[2].length === 2).length;
-
+console.log('Event render', addLines);
 	return <div
 		key="root"
 		classes={[
@@ -185,7 +201,7 @@ export const Event = factory(function Event({
 				align={aspectRatio < 0.75 ? 'left' : 'right'}
 			/>
 		</div>}
-		<Caption {...(ld)} colored contentLines={3} omitProperties={['name']} />
+		<Caption {...(ld)} colored contentLines={3+addLines} omitProperties={['name']} />
 		{hasAttachment && image &&
 			<Images
 				key="images"
