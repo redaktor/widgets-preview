@@ -7,11 +7,13 @@ import { AsObject, AsObjectNormalized } from '../common/interfaces';
 import id from '../middleware/id';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import theme, { ViewportProperties } from '../middleware/theme';
+import { getLdDates } from '../date/util';
 import Icon from '../icon';
 import Calendar from '../calendar';
 import Map from '../map';
 import Caption from '../caption';
 import Img, { getWH } from '../image/image';
+import ldBundle from '../_ld/redaktor/nls/redaktor';
 import bundle from './nls/Image';
 import * as viewCSS from '../theme/material/_view.m.css';
 // import * as uiCSS from '../theme/material/_ui.m.css';
@@ -88,13 +90,13 @@ export const Images = factory(function Images({
 	const { messages } = i18nActivityPub.localize(bundle); /* TODO click to enlarge ... */
 
 	const {
-		itemsPerPage, view = 'column', size = 'm', navPosition = 'top',
+		itemsPerPage: ipp, view = 'column', size = 'm', navPosition = 'top',
 		desaturateScroll = 'column', max = 1000, hasContent = true, hasAttachment = true,
 		captionsOpen = false, onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen
 		// fit = false, width = 80, height = 80
 	} = properties();
-	const { image = [], ...ld } = i18nActivityPub.normalized<ImagesProperties>();
-
+	const { image = [], omitProperties = new Set(), ...ld } = i18nActivityPub.normalized<ImagesProperties>();
+	const itemsPerPage = image.length === 1 ? 1 : ipp;
 
 	if (!image.length) {
 		return ''
@@ -219,13 +221,15 @@ export const Images = factory(function Images({
 	const allLoaded = count === (get('loaded') as any)[current];
 	if (!!allLoaded) { onLoad && onLoad() }
 	const paginationInputsVisible = !(paginated.length > 9 || size === 's' && paginated.length > 8 ||
-		size === 'xs' && paginated.length > 7 || size === 'micro' && paginated.length > 6);
+		size === 'xs' && paginated.length > 7 || (size as any) === 'micro' && paginated.length > 6);
 
 	const isLight = (i: number) => {
 		const lights = get('lightImages');
 		return !!lights && !!lights[i] ? themedCss.lightImage : themedCss.darkImage;
 	}
-
+// {!omitProperties.has('date') &&
+	const dates = getLdDates(ld, i18nActivityPub.localize(ldBundle).messages);
+	const localizedDateShort = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en']);
 	return <virtual>
 		<div
 			role="region"
@@ -233,13 +237,19 @@ export const Images = factory(function Images({
 			classes={[themedCss.calendarWrapper, !get('calendarOpen') && themedCss.closed]}
 		>
 			<div>
-				<Icon size="xl" type="create" /><br />
-				<time classes={themedCss.time} datetime="2021-05-15 19:00">15.05.'21</time>
-				<br />
-				<Icon size="xl" type="update" /><br />
-				<time classes={themedCss.time} datetime="2021-05-15 19:00">15.05.'21</time>
+				{dates.map((dArray) => {
+					const [d, title, x, type] = dArray;
+					const date = global.Date.parse(d);
+					if (isNaN(date)) { return '' }
+					return <virtual>
+						<Icon size="xl" title={title} type={type} />
+						<br />
+						<time classes={themedCss.time} datetime={date}>{localizedDateShort.format(date)}</time>
+						<br />
+					</virtual>
+				})}
 			</div>
-			<Calendar
+			{!omitProperties.has('date') && <Calendar
 				classes={{ '@redaktor/widgets/calendar': { root: [themedCss.calendar] } }}
 				weekendDivider={true}
 				start={get('calendarOpen') || new Date()}
@@ -248,7 +258,7 @@ export const Images = factory(function Images({
 					// icache.set('start', start);
 					// icache.set('end', end);
 				}}
-			/>
+			/>}
 		</div>
 		<div
 			role="region"
@@ -300,6 +310,7 @@ export const Images = factory(function Images({
 				(!!has('host-node') || allLoaded) && themedCss.loaded,
 				(maxImages.length > itemCount) && themedCss.hasPagination,
 				itemCount === 1 ? themedCss.singleItem : themedCss.multiItem,
+				image.length === 1 && themedCss.singleImage,
 				(itemCount === 2 || itemCount === 3) && view !== 'full' && themedCss.singleRow,
 				themedCss[(size as keyof typeof themedCss)]
 			]}
@@ -314,7 +325,6 @@ export const Images = factory(function Images({
 				type="checkbox"
 				classes={themedCss.pageRadio}
 				id={scrollWrapperId}
-
 			/>
 			<label
 				tabIndex={0}
@@ -353,7 +363,6 @@ export const Images = factory(function Images({
 			const count = paginated.length && paginated[i].length || 0;
 			const wasLoaded = count === (get('loaded') as any)[i];
 			const {width, height} = getWH(imagePage[0]);
-
 			return <figure classes={[
 				themedCss.figure,
 				itemCount === 1 && viewCSS.gridItem
@@ -393,6 +402,7 @@ export const Images = factory(function Images({
 							<Icon size="xl" type="right" />
 						</label>}
 					</virtual>}
+
 					<div
 						key={`page${i}`}
 						data-count={paginated.length > 1 ? `${i+1} / ${paginated.length}` : ''}
@@ -401,6 +411,7 @@ export const Images = factory(function Images({
 							themedCss.page,
 							viewCSS.page,
 							!i && themedCss.firstPage,
+							imagePage.length === 2 && themedCss.twoItems,
 							isLight(i),
 							...(itemCount !== 1 ? [] : ratioClasses(!width || !height ? 0 : width/height, false))
 						]}
@@ -424,6 +435,7 @@ export const Images = factory(function Images({
 								<Img
 									{...img}
 									key={`image${i}_${j}`}
+									baselined={imagePage.length === 2}
 									classes={{ '@redaktor/widgets/image': { sensitiveSummary: [themedCss.sensitiveSummary] } }}
 									fit={itemCount === 1 ? 'cover' : false}
 									focalPoint={void 0}

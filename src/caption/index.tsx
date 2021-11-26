@@ -40,10 +40,6 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	itemsPerPage?: number;
 	/* hover animation for scroller, grayscale -> colors, default true */
 	desaturateScroll?: boolean;
-	/* show summary and content for itemsPerPage=1, default true */
-	hasContent?: boolean;
-	/* show attachments, default true */
-	hasAttachment?: boolean;
 	/* when details are opened */
 	onToggle?: (isOpen: boolean) => any;
 	/* when all images have loaded */
@@ -55,11 +51,12 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	/** onClick for locations */
 	onLocation?: (location: AsObjectNormalized | false, index: number|false) => any;
 	onFocusPrevious?: () => any;
-	dateOpenIndex?: number | false;
-	locationOpenIndex?: number | false;
+	onLocale?: (locale: string) => any;
 
 	isImageCaption?: boolean;
 	colored?: boolean;
+	dateOpenIndex?: number | false;
+	locationOpenIndex?: number | false;
 }
 
 export interface CaptionIcache {
@@ -84,12 +81,11 @@ export const Caption = factory(function Caption({
 	const {
 		locale: currentLocale, compact = false, hasDetails = false, isOpen = false,
 		dateOpenIndex = false, locationOpenIndex = false, size = 'm', view = 'column', colored = false,
-		isImageCaption = false, contentLines: cl, onToggle, onFocusPrevious, onDate, onLocation
+		isImageCaption = false, contentLines: cl, onToggle, onFocusPrevious, onDate, onLocation, onLocale
 	} = properties();
 	const {
 		href = '', name: n, summary, content, sensitive, attachment, omitProperties, ...APo
 	} = i18nActivityPub.normalized();
-
 	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
 	getOrSet('currentLocale', currentLocale ? {locale: currentLocale} : locale);
 	const name = n || [href];
@@ -97,14 +93,14 @@ export const Caption = factory(function Caption({
 	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
 	let [vp, isMini, typoClass] = [size, false, viewCss.typo];
 	if (isResponsive) {
-		isMini = (isRow && (vp === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && (vp === 'micro' || vp === 'xs'));
+		isMini = (isRow && ((vp as any) === 'micro' || vp === 'xs' || vp === 's')) || (!isRow && ((vp as any) === 'micro' || vp === 'xs'));
 		typoClass = isMini ? ui.s : (vp === 'l' || vp === 'xl' ? ui.l : ui.m);
 	} else if (!!compact) {
 		typoClass = ui.s
 	}
 
 	const contentLines = compact || isRow ? cl||2 : cl||12;
-	const nameNode = <Name compact={compact} name={name} isRow={isRow} size={!vp || vp === 'micro' ? 'xs' : (vp as any)} />;
+	const nameNode = <Name compact={compact} name={name} isRow={isRow} size={!vp || (vp as any) === 'micro' ? 'xs' : (vp as any)} />;
 	const hasContent = (summary && summary.length) || (content && content.length);
 	const summaryLength = (!!n && !!n.length && !!n[0].length && !!content && !!content.length && !!content[0].length) ? 500 :
 		((!!n && !!n.length && !!n[0].length) || (!!content && !!content.length && !!content[0].length) ? 750 : 1000);
@@ -114,9 +110,10 @@ export const Caption = factory(function Caption({
 		!!APo.attributedTo && APo.attributedTo.length === 1 ? themedCss.singleAttributions : void 0
 	];
 	const nodes = <div classes={themedCss.captionWrapper}>
-		{!!locales && locales.length > 1 &&
+		{!!locales && locales.length > 1 && !omitProperties.has('locales') &&
 			<Locales locale={get('currentLocale')||{locale:'en'}} locales={locales} onValue={(l) => {
-				i18nActivityPub.setLocale(l)
+				i18nActivityPub.setLocale(l);
+				onLocale && onLocale(l)
 			}} />
 		}
 		{!omitProperties.has('name') && <div classes={themedCss.columnName}>{nameNode}</div>}
@@ -152,7 +149,10 @@ export const Caption = factory(function Caption({
 				onDate={(date, i) => { onDate && onDate(date, i) }}
 			/>}
 			{!omitProperties.has('location') && <Location key="location" {...APo}
-				classes={{ '@redaktor/widgets/locationsDates': { root: [themedCss.location] } }}
+				classes={{ '@redaktor/widgets/locationsDates': {
+					root: [themedCss.location],
+					moreCount: [themedCss.moreCount]
+				} }}
 				hasMap={true}
 				locationOpenIndex={locationOpenIndex}
 				onFocusPrevious={onFocusPrevious}
@@ -185,9 +185,10 @@ export const Caption = factory(function Caption({
 		</virtual>}
 	</virtual>
 
-return isImageCaption ? <figcaption key="root" classes={[themedCss.pageCaption, viewCss.pageCaption]}>
+const rootClasses = [themedCss.pageCaption, viewCss.pageCaption];
+return isImageCaption ? <figcaption key="root" classes={rootClasses}>
 	{allNodes}
-</figcaption> : <div key="root" classes={[themedCss.pageCaption, viewCss.pageCaption]}>
+</figcaption> : <div key="root" classes={rootClasses}>
 	{allNodes}
 </div>
 });

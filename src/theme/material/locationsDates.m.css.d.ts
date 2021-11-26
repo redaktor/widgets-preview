@@ -1,6 +1,7 @@
 export const root: string;
-export const rootSummary: string;
 export const hasFold: string;
+export const singleItem: string;
+export const rootSummary: string;
 export const fold: string;
 export const foldItem: string;
 export const full: string;
@@ -12,4 +13,5 @@ export const iconWrapper: string;
 export const name: string;
 export const muted: string;
 export const moreCount: string;
+export const expanded: string;
 export const mapOpen: string;

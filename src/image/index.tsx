@@ -55,9 +55,9 @@ export const Image = factory(function Image({
 
 	const {
 		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		fit = false, hasContent = true, hasAttachment = true, view = 'column'
+		fit = false, hasAttachment = true, view = 'column'
 	} = properties();
-	const ld = i18nActivityPub.normalized<ImageProperties>();
+	const {omitProperties = new Set(), ...ld} = i18nActivityPub.normalized<ImageProperties>();
 	const { type, image = [] } = ld;
 	if (type.indexOf('Image') < 0 && (!mediaType || mediaType.toLowerCase().indexOf('image') !== 0)) {
 		return ''
@@ -65,7 +65,7 @@ export const Image = factory(function Image({
 	if (view === 'tableRow') {
 		return 'TODO'
 	}
-	const allImages = !hasAttachment ? image :
+	const allImages = !hasAttachment && !omitProperties.has('attachment') ? image :
 		[{...(ld as any), focalPoint: void 0, baselined: false}].concat(image);
 
 	// console.log('Image all', allImages);
@@ -107,7 +107,7 @@ console.log('IMAGE render');
 		role="region"
 	>
 		<div key="measure" classes={themedCss.measure} />
-		{hasAttachment && image &&
+		{hasAttachment && !!allImages.length &&
 			<Images
 				key="images"
 				itemsPerPage={1}

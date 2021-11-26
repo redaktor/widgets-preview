@@ -71,32 +71,32 @@ const exampleText = `20 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #C
 10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For 10 Easy Ways To Make
 Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For 10 Easy Ways To Make Tin Foil #Hats Stronger.
 Proof That #Cats Are Exactly What You Are Looking For. 10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For`;
-
+const attributedTo = [{
+  id: "https://alyssa.example.com/",
+  handle: "@alyssa@example.com",
+  name: "Alyssa Lorem Ipsum dolor sunt Alyssa Lorem Ipsum dolor sunt Lorem Ipsum dolor sunt",
+  summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+  type: "Person",
+  icon: _1_1,
+  image: _4_1
+},{
+  id: "https://bob.example.com/",
+  handle: "@bob@example.com",
+  name: "Bob Lorem Ipsum dolor sunt Bob Lorem Ipsum dolor sunt Lorem Ipsum dolor sunt",
+  summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+  type: "Person"
+}, {
+  id: "https://alyssa.example.com/",
+  handle: "@alyssa@example.com",
+  name: "Alyssa Lorem Ipsum dolor sunt",
+  summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
+  type: "Person"
+}];
 const exampleData: ImageProperties = {
   "@context": "https://www.w3.org/ns/activitystreams",
   type: "Audio",
   id: "#0",
-  attributedTo: [{
-    id: "https://alyssa.example.com/",
-    handle: "@alyssa@example.com",
-    name: "Alyssa Lorem Ipsum dolor sunt Alyssa Lorem Ipsum dolor sunt Lorem Ipsum dolor sunt",
-    summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
-    type: "Person",
-    icon: _1_1,
-    image: _4_1
-  },{
-    id: "https://bob.example.com/",
-    handle: "@bob@example.com",
-    name: "Bob Lorem Ipsum dolor sunt Bob Lorem Ipsum dolor sunt Lorem Ipsum dolor sunt",
-    summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
-    type: "Person"
-  }, {
-    id: "https://alyssa.example.com/",
-    handle: "@alyssa@example.com",
-    name: "Alyssa Lorem Ipsum dolor sunt",
-    summary: "Proof That Bitdiddle Industries Are Exactly What You Are Looking For",
-    type: "Person"
-  }],
+  attributedTo,
   nameMap: [{en: "The Government's Secret Campaign Against Cats", de: "Das ist alles nur Blindtext Das ist alles nur Blindtext Das ist alles nur Blindtext Das ist alles nur Blindtext"},{en: "Special Episode", de: "Spezielle Episode"}, {en: "Super", de: "Super"}],
   summary,
   content,
@@ -151,12 +151,15 @@ console.log(exampleImage)
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
             <Event id="event1" type="Event"
-              {...{summary: summary, content, image: {..._4_1, summary: exampleText, updated: "2018-09-12T12:12:12Z"}}}
+              {...{summary: summary, content, attributedTo, ...LOC[0], image: [{..._3_2, summary: exampleText, updated: "2018-09-12T12:12:12Z"}]}}
               startTime="2021-12-31T20:00:00-08:00"
-              endTime="2022-01-01T23:00:00-08:00"
-              name={"PRESSURE DROP-Boss Reggae (late-)Allnighter ft. Selekta Bebek"}
+              nameMap={[{
+                en: "PRESSURE DROP-Boss Reggae (late-)Allnighter ft. Selekta Bebek",
+                de: "PRESSURE DROP-Boss Reggae (spät-)Allnighter ft. Selekta Bebek"
+              }]}
               hasAttachment={false}
             />
+            <br /><br />
             <Image {...exampleImage} />
           </ul>
         </div>

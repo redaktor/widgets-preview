@@ -25,6 +25,7 @@ export interface LocationProperties extends AsObjectNormalized {
 	/** onLocation acts as toggle */
 	onLocation?: (location: AsObjectNormalized|false, i: number|false) => any;
 
+	onToggle?: (opened: boolean) => any;
 	onFocusPrevious?: () => any;
 }
 export interface LocationIcache {
@@ -40,6 +41,7 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 		hasMap = false,
 		locationOpenIndex = false,
 		onLocation,
+		onToggle,
 		onFocusPrevious
 	} = properties();
 	const {
@@ -83,15 +85,18 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 		if (get('focusIndex') !== 1) {
 			set('expanded', true, false);
 			set('focusIndex', 0);
-			focus.focus()
+			focus.focus();
+			onToggle && onToggle(true);
 		} else {
 			set('expanded', false, false);
 			set('focusIndex', -1);
 			onFocusPrevious && onFocusPrevious();
+			onToggle && onToggle(false);
 		}
 	}
 	const handleBlur = () => {
-		set('expanded', false)
+		set('expanded', false);
+		onToggle && onToggle(false);
 	}
 	const handleClick = (i: number) => () => {
 		if (!!hasMap) {
@@ -145,7 +150,7 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 					break;
 			}
 		}
-
+		const maxWH = isFold ? 'var(--line)' : 'calc(var(--line2) - var(--pt) - var(--ui-border-width-emphasized))';
 		const locNode = <virtual>
 			<address
 				key={`adr_${i}`}
@@ -154,11 +159,12 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 			>
 				<Icon
 					{...(!!hasMap ? {} : loc)}
-					type={locOpenIndex !== false && locOpenIndex === i ? 'close' : iconType}
+					icon={loc.icon}
+					type={iconType}
 					title={title}
 					size={!!hasMap ? 's' : 'xl'}
-					maxWidth="var(--line2)"
-					maxHeight="var(--line2)"
+					maxWidth={maxWH}
+					maxHeight={maxWH}
 					spaced="right"
 					classes={{'@redaktor/widgets/icon': {icon: [themedCss.icon]}}}
 				/>
@@ -214,7 +220,7 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 		}
 	} : {};
 
-	return <span key="locations" itemprop="location"
+	return <div key="locations" itemprop="location"
 		role="button"
 		tabIndex={0}
 		classes={[
@@ -222,7 +228,7 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 			get('locationOpenIndex') !== false && themedCss.mapOpen,
 			location.length === 1 && detailsCss.summary,
 			location.length === 1 && detailsCss.animated,
-			location.length > 1 && themedCss.hasFold
+			location.length === 1 ? themedCss.singleItem : themedCss.hasFold
 		]}
 		{...formatAriaProperties(ariaProperties)}
 		{...onProperties}
@@ -235,7 +241,7 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 				{location.map((loc, i) => getAddressNode(i))}
 			</ul>
 		}
-	</span>
+	</div>
 });
 
 export default Location;

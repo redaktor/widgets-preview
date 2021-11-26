@@ -532,6 +532,9 @@ TODO above
 	}
 }
 
+/* attributions singleAttributions captionWrapper contentWrapper columnName rowName
+summary contentCollapsed content meta dates location contentDetailsSummary contentDetails pageCaption */
+
 /* caption ... */
 .content {
 	/* composes: serif from './_typo.css'; */
@@ -612,7 +615,6 @@ TODO above
 .contentCollapsed {
 	padding: 0 var(--p);
 }
-.moreCount { }
 /*
 .isRow:checked + * .contentWrapper {
 	min-width: 38ch;

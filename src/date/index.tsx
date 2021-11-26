@@ -2,13 +2,13 @@ import { tsx, create } from '@dojo/framework/core/vdom';
 import { focus } from '@dojo/framework/core/middleware/focus';
 import { formatAriaProperties } from '../common/util';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-// import { schemaToAsDate } from './util';
+import { getLdDates } from './util';
 import { AsObjectNormalized } from '../common/interfaces';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
 import theme, { Keys } from '../middleware/theme';
 import Icon from '../icon';
-import bundle from '../_ld/redaktor/nls/redaktor';
+import ldBundle from '../_ld/redaktor/nls/redaktor';
 import * as detailsCss from '../theme/material/details.m.css';
 import * as css from '../theme/material/locationsDates.m.css';
 
@@ -20,7 +20,7 @@ export interface DateProperties extends AsObjectNormalized {
 	dateOpenIndex?: number|false;
 	/** onDate acts as toggle */
 	onDate?: (date: Date|false, index: number|false) => any;
-
+	onToggle?: (opened: boolean) => any;
 	onFocusPrevious?: () => any;
 }
 export interface DateIcache {
@@ -37,21 +37,13 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 		hasCalendar = false,
 		dateOpenIndex = false,
 		onDate,
+		onToggle,
 		onFocusPrevious
 	} = properties();
-	const {
-		startTime, endTime, published, updated, duration,
-		'dc:created': contentCreated = [],
-		'schema:dateCreated': dateCreated = [],
-		'schema:contentReferenceTime': contentReferenceTime = [],
-		'schema:expires': expires = [],
-		...ld
-	} = i18nActivityPub.normalized<DateProperties>();
-
-	const { messages } = i18nActivityPub.localize(bundle);
+	const ld = i18nActivityPub.normalized<DateProperties>();
 	const {get, getOrSet, set} = icache;
-	const locDateTimeShort = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en']);
-	const locDateTime = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en'], {
+	const localizedDateShort = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en']);
+	const localizedDate = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en'], {
 		weekday: 'short',
 		year: 'numeric',
 		month: 'long',
@@ -59,24 +51,7 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 		hour: 'numeric',
 		minute: 'numeric'
 	});
-
-	const dates = [
-		[contentCreated, 'contentCreated', 'create'],
-		[dateCreated, 'created', 'create'],
-		[contentReferenceTime, 'contentReferenceTime', 'calendar'],
-		[published, 'published', 'published'],
-		[updated, 'updated', 'update'],
-		[expires, 'expires', 'timing']
-	].reduce((date, a) => {
-		let [d, type, icon] = a;
-		if (!!d && !Array.isArray(d)) { d = [d] }
-		if (!d || !d.length) { return date }
-		return date.concat(d.map((date: string) => {
-			const label = (messages.hasOwnProperty(type) && (messages as any)[type]) || messages.date;
-			const title = (messages.hasOwnProperty(`${type}Title`) && (messages as any)[`${type}Title`]) || '';
-			return [date, label, title, icon]
-		}));
-	}, []).filter((dA) => !!dA.length && !!dA[0]);
+	const dates = getLdDates(ld, i18nActivityPub.localize(ldBundle).messages);
 	/* TODO @type icon */
 	if (!dates.length || !dates[0]) {
 		return ''
@@ -95,7 +70,23 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 	*/
 	hasCalendar && set('dateOpenIndex', dateOpenIndex, false);
 
-
+	const handleFocus = () => {
+		if (get('focusIndex') !== 1) {
+			set('expanded', true);
+			set('focusIndex', 0);
+			focus.focus();
+			onToggle && onToggle(true);
+		} else {
+			set('expanded', false);
+			set('focusIndex', -1);
+			onFocusPrevious && onFocusPrevious();
+			onToggle && onToggle(false);
+		}
+	}
+	const handleBlur = () => {
+		set('expanded', false);
+		onToggle && onToggle(false);
+	}
 	const handleClick = (i: number) => () => {
 		const dOpenIndex = get('dateOpenIndex');
 		const [d] = dates[i];
@@ -114,7 +105,8 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 	const getNode = (i: number, isFold = true) => {
 		const [d, label = '', title = '', iconType] = dates[i];
 		const date = global.Date.parse(d);
-		const formattedDate = !isFold ? locDateTimeShort.format(date) : locDateTime.format(date);
+		if (isNaN(date)) { return '' }
+		const formattedDate = !isFold ? localizedDateShort.format(date) : localizedDate.format(date);
 		const jsDate = new global.Date(d);
 		const handleKeydown = (event: KeyboardEvent) => {
 			event.stopPropagation();
@@ -173,6 +165,7 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 			focus={get('focusIndex') === i && focus.shouldFocus}
 			onclick={handleClick(i)}
 			onkeydown={handleKeydown}
+			onblur={handleBlur}
 			classes={[themedCss.full, themedCss.foldItem]}
 		>
 			{mainNode}
@@ -195,41 +188,29 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 		}
 	} : {};
 
-	return <span key="dates"
+	return <div key="dates"
 		role="button"
 		tabIndex={0}
 		aria-expanded={getOrSet('expanded', false) ? 'true' : 'false'}
 		aria-controls={menuId}
 		classes={[
 			themedCss.root,
+			get('expanded') && themedCss.expanded,
 			get('dateOpenIndex') !== false && themedCss.mapOpen,
 			dates.length === 1 && detailsCss.summary,
 			dates.length === 1 && detailsCss.animated,
-			dates.length > 1 && themedCss.hasFold
+			dates.length === 1 ? themedCss.singleItem : themedCss.hasFold
 		]}
 		{...formatAriaProperties(ariaProperties)}
 		{...onProperties}
-		onfocus={(evt) => {
-			if (get('focusIndex') !== 1) {
-				set('expanded', true, false);
-				set('focusIndex', 0);
-				focus.focus()
-			} else {
-				set('expanded', false, false);
-				set('focusIndex', -1);
-				onFocusPrevious && onFocusPrevious();
-			}
-		}}
-		onblur={() => {
-			set('expanded', false);
-		}}
+		onfocus={handleFocus}
 	>
 		{getNode(0, false)}
 		{dates.length > 1 && <output classes={themedCss.moreCount}>+{dates.length-1}</output>}
 		{dates.length > 1 && <ul id={menuId} role="menu" aria-modal="true" classes={themedCss.fold}>
 			{...dates.map((d, i) => getNode(i))}
 		</ul>}
-	</span>
+	</div>
 });
 
 export default Dates;

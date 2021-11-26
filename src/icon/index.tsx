@@ -12,20 +12,27 @@ import * as baseCss from '../common/styles/base.m.css';
 export type IconType = keyof typeof css;
 export type ApIconType = (AsImage | AsLink);
 
-export interface IconProperties extends ThemeProperties {
+interface BaseIconProperties extends ThemeProperties {
 	/** An optional, visually hidden label for the icon */
 	altText?: string;
 	/** Custom aria attributes */
 	aria?: { [key: string]: string | null };
-	/** Icon type if no custom as:`icon` property, e.g. Place, downIcon, searchIcon, etc. */
-	type: IconType | AsObject['type'];
-	/** Custom as:icon property */
-	icon?: ApIconType[];
 	/** html title attribute */
 	title?: string;
 	maxWidth?: string | number;
 	maxHeight?: string | number;
 }
+interface TypeIconProperties extends BaseIconProperties {
+	/** Icon type if no custom as:`icon` property, e.g. Place, downIcon, searchIcon, etc. */
+	type: IconType | AsObject['type'];
+	icon?: ApIconType[];
+}
+interface ApIconProperties extends BaseIconProperties {
+	/** Custom as:icon property */
+	icon: ApIconType[];
+	type?: IconType | AsObject['type'];
+}
+export type IconProperties = TypeIconProperties | ApIconProperties;
 
 const factory = create({ theme }).properties<IconProperties>();
 
@@ -39,7 +46,6 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 		maxHeight
 	} = properties();
 	const { icon } = normalizeAs(properties() as any);
-
 	const themedCss = theme.classes(css);
 	type CssKey = (keyof typeof themedCss);
 

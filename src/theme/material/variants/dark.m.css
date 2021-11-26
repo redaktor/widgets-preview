@@ -65,6 +65,7 @@
 	--ui-empty: rgba(255, 255, 255, 16%);
 	--ui-accent: var(--m-a400);
 	--ui-text: var(--m-400);
+	--ui-text-muted: var(--m-600);
 	--ui-focus: #dfdc00;
 	--ui-focus-alpha: rgba(223, 220, 0, 0.618);
 

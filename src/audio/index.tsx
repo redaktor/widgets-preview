@@ -547,7 +547,7 @@ export const Audio = factory(function Audio({
 				<video controls={true} {...playerProps}>{sources}{children()}</video>
 			</noscript>
 			{ hasPoster && !!APo.image && !!APo.image[0] &&
-					<div classes={themedCss.poster}><Img {...APo.image[0]} fit /></div> }
+					<div classes={themedCss.poster}><Img {...APo.image[0]} fit="cover" /></div> }
 
 			{!get('hasTracks') && !get('isPicInPic') ?
 				<audio key="audio" {...playerProps}>{sources}{children()}</audio> :

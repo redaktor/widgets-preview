@@ -419,7 +419,7 @@ export interface AsObject extends AsBase {
 	hreflang?: string; /* Functional */
 	rel?: string | string[];
 
-	omitProperties?: (keyof AsBase | 'date')[];
+	omitProperties?: (keyof AsBase | 'date' | 'locales')[];
 }
 export interface AsObjectNormalized extends AsBaseNormalized {
 	type: (AsObjectTypes | string)[];

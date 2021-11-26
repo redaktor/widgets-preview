@@ -2,6 +2,9 @@
 	position: relative;
 	cursor: pointer;
 	color: var(--text-muted);
+}
+.root.hasFold,
+.root.singleItem {
 	padding: 0px;
 }
 .rootSummary {
@@ -23,7 +26,7 @@
 .fold {
   position: absolute;
 	top: 0px;
-	left: calc(var(--touch-target-min) * -1);
+	left: calc(var(--grid-base) * -1);
 	transition: top 0.3s linear;
 	z-index: 999999;
 	cursor: pointer;
@@ -102,7 +105,7 @@
 	display: inline-block;
 	margin-right: var(--grid-base);
 }
-.icon {
+.root .icon {
 	padding: 0px;
 	margin-top: -2px;
 	display: inline-block;
@@ -130,6 +133,7 @@
 	cursor: pointer;
 	z-index: -1;
 }
+.expanded .moreCount,
 .mapOpen.hasFold .moreCount {
 	display: none;
 }
