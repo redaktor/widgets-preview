@@ -151,8 +151,9 @@ console.log(exampleImage)
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
             <Event id="event1" type="Event"
-              {...{summary: summary, content, attributedTo, ...LOC[0], image: [{..._3_2, summary: exampleText, updated: "2018-09-12T12:12:12Z"}]}}
-              startTime="2021-12-31T20:00:00-08:00"
+              {...{summary: summary, content, attributedTo, ...LOC[0], image: [{..._3_2, summary: exampleText, updated: "2018-09-12T12:12:12Z"},{..._2_3, summary: exampleText, updated: "2018-09-12T12:12:12Z"}]}}
+              startTime="2021-12-24T20:00:00-08:00"
+              endTime="2021-12-25T20:00:00-08:00"
               nameMap={[{
                 en: "PRESSURE DROP-Boss Reggae (late-)Allnighter ft. Selekta Bebek",
                 de: "PRESSURE DROP-Boss Reggae (spät-)Allnighter ft. Selekta Bebek"

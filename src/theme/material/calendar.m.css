@@ -2,7 +2,7 @@
 	position: relative;
 	width: 100%;
 	max-width: calc(var(--line) * 14 + (var(--grid-base) * 2) + var(--ui-border-width-emphasized, 2px));
-	padding: 0 var(--grid-base) var(--line) var(--grid-base);
+	padding: 0 var(--plr, var(--grid-base,8px)) var(--line) var(--plr, var(--grid-base,8px));
 	user-select: none;
 	background: var(--ui-bg);
 	color: var(--text, #000);
@@ -12,7 +12,8 @@
 .root.weekendDivider {
 	max-width: calc(var(--line) * 14 + (var(--grid-base) * 2) + (var(--ui-border-width-emphasized, 2px) * 2));
 }
-.root.responsive {
+.root.responsive,
+.root.weekendDivider.responsive {
 	max-width: 100%;
 }
 .header {
@@ -61,7 +62,7 @@
 }
 
 .timeInput {
-	
+
 }
 .timezoneInput {
 	grid-column: auto / span 2;
@@ -170,9 +171,9 @@
 	color: var(--text-muted);
 }
 
-.selectedDate {
+.selectedDate .dateNumber {
 	font-weight: var(--weight-bold, bold);
-	color: var(--text-inverse);
+	color: var(--text-filled);
 }
 
 .selectedDate::before,
@@ -194,12 +195,10 @@
 .todayDate::after {
 	content: '';
 	position: absolute;
+	top: calc(var(--line) * 0.125);
 	width: calc(var(--line) * 1.25);
 	height: calc(var(--line) * 1.25);
 	border-radius: 50%;
-}
-.todayDate::after {
-	top: calc(var(--pt) - (var(--ui-border-width-emphasized) / 2));
 	border: var(--ui-border-width-emphasized) solid var(--ui-success, lime);
 	box-shadow: var(--ui-dp-2);
 	z-index: -1;
@@ -298,4 +297,13 @@
 .yearRadioInput,
 .monthRadioInput {
 	display: none;
+}
+
+.disabled.root {
+	pointer-events: none;
+	filter: grayscale(100%);
+}
+.readOnly .header,
+.readOnly .dateGrid {
+	pointer-events: none;
 }

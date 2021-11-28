@@ -72,6 +72,7 @@
 	--ui-text: var(--m-600);
 	--ui-text-muted: var(--m-400);
 	--ui-focus: #c30c70;
+	--ui-focus-muted: #870040;
 	--ui-focus-alpha: rgba(195, 12, 112, 0.8);
 
 	--ui-flat-empty: hsla(var(--m-h), var(--m-s), 100%, 24%);

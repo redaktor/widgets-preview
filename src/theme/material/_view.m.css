@@ -173,12 +173,12 @@ screen and (min-width: 1312px) and (max-width: 1648px) {
   --pl: calc(var(--line) * 1.5 + var(--grid-base,8px));
   --pr: var(--lineHalf);
   --w: calc((100vw - (var(--gap) * (var(--cols) + 1))) / var(--cols));
+	/* position: relative; */
 	display: flex;
 	flex-direction: column;
 	content-visibility: auto;
   width: var(--w);
 	min-height: var(--line);
-  position: relative;
 	background-size: cover;
   padding: 0px;
 	margin-bottom: 0px;

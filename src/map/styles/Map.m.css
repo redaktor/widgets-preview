@@ -65,8 +65,8 @@
 	font-weight: 400;
 }
 .largeTypo {
-	composes: xl sans from '../../theme/material/_typo.css';
-	color: var(--text-muted);
+	composes: l sans from '../../theme/material/_typo.css';
+	color: var(--text);
 	font-weight: 400;
 }
 .mapSwitchIcon {

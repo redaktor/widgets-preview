@@ -118,9 +118,10 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 		const loc = location[i];
 		const locOpenIndex = get('locationOpenIndex');
 		const rType = loc.type[0].split('redaktor:');
-		const iconType: any = (rType.length > 1 && rType[1] === 'ContentLocation' || rType[1] === 'SpatialCoverage') ?
-			(type && type.filter((t) => t.split(':').length === 1)[0] || 'Place') :
-			(loc.type.filter((t) => t.split(':').length === 1)[0] || 'Place');
+		const iconType: any = locOpenIndex === i ? 'close' :
+			((rType.length > 1 && rType[1] === 'ContentLocation' || rType[1] === 'SpatialCoverage') ?
+				(type && type.filter((t) => t.split(':').length === 1)[0] || 'Place') :
+				(loc.type.filter((t) => t.split(':').length === 1)[0] || 'Place'));
 		const title = (rType[0] === '' && rType.length > 1 && messages.hasOwnProperty(rType[1]) && (messages as any)[rType[1]]) ||
 			messages.location;
 

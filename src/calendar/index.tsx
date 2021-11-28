@@ -76,6 +76,10 @@ export interface CalendarProperties {
 	onYear?(year: number): void;
 	/** Default locales for the user */
 	locales?: string[];
+
+	responsive?: boolean;
+	readonly?: boolean;
+	disabled?: boolean;
 }
 
 export interface CalendarIcache {
@@ -133,14 +137,8 @@ export const Calendar = factory(function Calendar({
 	const { messages: commonMessages } = i18n.localize(bundle);
 
 	const {
-		aria = {},
-		minDate,
-		maxDate,
-		start,
-		end,
-		locales,
-		allowRange = true,
-		forceRange = false,
+		minDate, maxDate, start, end, locales, aria = {}, responsive = false,
+		readonly = false, disabled = false, allowRange = true, forceRange = false,
 		firstDayOfWeek = 1
 	} = properties();
 	const weekdayNames = getWeekdays(locales);
@@ -159,11 +157,11 @@ export const Calendar = factory(function Calendar({
 	const existingInitialMonth = icache.get('initialMonth');
 	const existingInitialYear = icache.get('initialYear');
 	const callDateFocus = icache.getOrSet('callDateFocus', false);
-	const focusedDay = icache.getOrSet('focusedDay', 1);
+	const focusedDay = icache.getOrSet('focusedDay', !readonly && !disabled ? 1 : -1);
 	const monthLabelId = icache.getOrSet('monthLabelId', id);
 	const popupOpen = icache.getOrSet('popupOpen', false);
 
-	const shouldFocus = focus.shouldFocus();
+	const shouldFocus = !readonly && !disabled && focus.shouldFocus();
 	if (!startValue) {
 		startValue = icache.get('startValue') || new Date();
 
@@ -294,6 +292,7 @@ export const Calendar = factory(function Calendar({
 		icache.set('hoveredRangeDate', date)
 	}
 	function onDateClick(date: Date, shiftKey: boolean, disabled: boolean) {
+		if (readonly || disabled) { return }
 		const day = date.getDate();
 		if (disabled) {
 			({ month, year } = day < 15 ? onMonthIncrement() : onMonthDecrement());
@@ -314,6 +313,7 @@ export const Calendar = factory(function Calendar({
 		}
 	}
 	function onDateKeyDown(key: number, preventDefault: () => void) {
+		if (readonly || disabled) { return }
 		const { month, year } = getMonthYear();
 		switch (key) {
 			case Keys.Shift:
@@ -402,7 +402,7 @@ export const Calendar = factory(function Calendar({
 		const { firstDayOfWeek = 1, allowRange = true } = properties();
 
 		ensureDayIsInMinMax(new Date(year, month, focusedDay), (newDay) =>
-			icache.set('focusedDay', newDay)
+			!readonly && !disabled && icache.set('focusedDay', newDay)
 		);
 		const currentMonthLength = getMonthLength(month, year);
 		const previousMonthLength = getMonthLength(month - 1, year);
@@ -498,7 +498,7 @@ export const Calendar = factory(function Calendar({
 
 		const day = dateObj.getDate();
 		const outOfRange = isOutOfDateRange(dateObj, minDate, maxDate);
-		const focusable = currentMonth && day === icache.get('focusedDay');
+		const focusable = !readonly && !disabled && currentMonth && day === icache.get('focusedDay');
 
 		return (
 			<CalendarCell
@@ -561,7 +561,7 @@ export const Calendar = factory(function Calendar({
 				<div classes={[themedCss.controls, popupOpen ? baseCss.visuallyHidden : null]}>
 					<button
 						classes={themedCss.previous}
-						tabIndex={popupOpen ? -1 : 0}
+						tabIndex={readonly || disabled || popupOpen ? -1 : 0}
 						type="button"
 						disabled={!monthInMin(year, month - 1, minDate)}
 						onclick={onMonthPageDown}
@@ -570,7 +570,7 @@ export const Calendar = factory(function Calendar({
 					</button>
 					<button
 						classes={themedCss.next}
-						tabIndex={popupOpen ? -1 : 0}
+						tabIndex={readonly || disabled || popupOpen ? -1 : 0}
 						type="button"
 						disabled={!monthInMax(year, month + 1, maxDate)}
 						onclick={onMonthPageUp}
@@ -617,9 +617,12 @@ export const Calendar = factory(function Calendar({
 			theme.variant(),
 			theme.colored(colors),
 			themedCss.root,
-			weekendDivider ? themedCss.weekendDivider : null,
-			icache.get('isRange') ? themedCss.isRange : null,
-			hasRange ? themedCss.hasRange : null
+			responsive && themedCss.responsive,
+			readonly && themedCss.readOnly,
+			disabled && themedCss.disabled,
+			weekendDivider && themedCss.weekendDivider,
+			icache.get('isRange') && themedCss.isRange,
+			hasRange && themedCss.hasRange
 		]}
 		{...formatAriaProperties(aria)}
 		>

@@ -60,12 +60,17 @@
 	min-width: 100%;
 	width: calc(var(--w) - var(--grid-base) * 2);
 }
-
-.item:hover .icon,
+.item,
+.icon,
+.markerIcon {
+	transition: var(--ui-dpd-0,80ms) color var(--ui-easing);
+}
+.root.singleItem:hover .item .icon,
+.foldItem:hover .icon,
 .root:hover + .marker .markerIcon {
 	color: var(--ui-filled, #eee) !important;
 }
-.item:hover,
+.root:hover .item,
 .foldItem:focus,
 .foldItem:hover {
 	color: var(--text);
@@ -132,6 +137,10 @@
 	text-align: center;
 	cursor: pointer;
 	z-index: -1;
+	transition: var(--ui-dpd-0,80ms) background-color var(--ui-easing);
+}
+.root:hover .moreCount {
+	background: var(--ui-border-hover, #333);
 }
 .expanded .moreCount,
 .mapOpen.hasFold .moreCount {

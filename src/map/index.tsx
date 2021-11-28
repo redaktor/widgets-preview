@@ -62,7 +62,8 @@ export function setActivityPub(this: MapThis, ap: AsObjectNormalized, centerMark
 		view.popup.clear();
 		view.popup.open({
 			includeDefaultActions: false,
-			title: `<span class="${css.smallTypo}">${this.messages.latLngUnknown}</span><br /><span title="${summary}">${name}</span>`,
+			title: `<span class="${css.smallTypo}">${this.messages.latLngUnknown}</span><br />
+<span class="${css.largeTypo}" title="${summary}">${name}</span>`,
 			content: `${apIcon} <span class="${css.smallTypo}">${geoMeta}</span>`
 		});
 		return
@@ -108,7 +109,7 @@ export function setActivityPub(this: MapThis, ap: AsObjectNormalized, centerMark
 			view.popup.clear();
 			view.popup.open({
 				includeDefaultActions: false,
-				title: `<span class="${css.smallTypo}">${latLng}</span><br /><span title="${summary}">${name}</span>`,
+				title: `<span class="${css.smallTypo}">${latLng}</span><br /><span class="${css.largeTypo}" title="${summary}">${name}</span>`,
 				content: `${apIcon} <span class="${css.smallTypo}">${geoMeta}</span>`
 			});
 		}
@@ -337,7 +338,8 @@ export default factory(function lMap({
 							outFields: ['*'],
 							title: 'ActivityPub',
 							popupTemplate: {
-								title: `<span class="${css.smallTypo}">{latLng}</span><br /><span title="{summary}">{name}</span>`,
+								title: `<span class="${css.smallTypo}">{latLng}</span><br />
+<span class="${css.largeTypo}" title="{summary}">{name}</span>`,
 								content: `<span class="${css.smallTypo}">{geoMeta}</span>`,
 								overwriteActions: true,
 								actions
@@ -375,7 +377,7 @@ export default factory(function lMap({
 							}, {});
 
 							const fullscreen = new Fullscreen({ view: view });
-							view.ui.add(fullscreen, "top-left");
+							view.ui.add(fullscreen, "top-right");
 							fullscreen.viewModel._fullscreenStyle = 'min-width: 100vw; min-height: 100vh;';
 
 							const scaleBar = new ScaleBar({

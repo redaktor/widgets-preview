@@ -35,7 +35,7 @@ export interface CalendarCellProperties {
 }
 const CalendarCell = create({ theme }).properties<CalendarCellProperties>()(
 	function CalendarCell({ middleware: { theme }, properties }) {
-		const themeCss = theme.classes(css);
+		const themedCss = theme.classes(css);
 		const {
 			callFocus,
 			date,
@@ -88,15 +88,15 @@ const CalendarCell = create({ theme }).properties<CalendarCellProperties>()(
 				aria-selected={!!selected ? 'true' : 'false'}
 				tabIndex={focusable ? 0 : -1}
 				classes={[
-					themeCss.date,
-					disabled || outOfRange ? themeCss.inactiveDate : null,
-					outOfRange ? themeCss.outOfRange : null,
-					hoverRange ? themeCss.hoverRange : null,
-					!!selected ? themeCss.selectedDate : null,
-					selected === 'start' ? themeCss.start : null,
-					selected === 'range' ? themeCss.range : null,
-					selected === 'end' ? themeCss.end : null,
-					today ? themeCss.todayDate : null
+					themedCss.date,
+					disabled || outOfRange ? themedCss.inactiveDate : null,
+					outOfRange ? themedCss.outOfRange : null,
+					hoverRange ? themedCss.hoverRange : null,
+					!!selected ? themedCss.selectedDate : null,
+					selected === 'start' ? themedCss.start : null,
+					selected === 'range' ? themedCss.range : null,
+					selected === 'end' ? themedCss.end : null,
+					today ? themedCss.todayDate : null
 				]}
 				onclick={onClick}
 				onmouseenter={onMouseenter}
@@ -104,7 +104,7 @@ const CalendarCell = create({ theme }).properties<CalendarCellProperties>()(
 				onkeydown={onKeyDown}
 				onkeyup={onKeyUp}
 			>
-				<p>{`${date.getDate()}`}</p>
+				<p classes={themedCss.dateNumber}>{`${date.getDate()}`}</p>
 			</td>
 		);
 	}

@@ -147,7 +147,6 @@ export const Images = factory(function Images({
 		date !== false && set('locationOpenIndex', false);
 		set('dateOpenIndex', dateOpenIndex, false);
 		set('calendarOpen', date);
-		console.log(date, dateOpenIndex, get('dateOpenIndex'));
 	}
 	const setMap = (location: AsObjectNormalized|false,	locationOpenIndex: number|false) => {
 		location !== false && set('calendarOpen', false, false);
@@ -231,7 +230,7 @@ export const Images = factory(function Images({
 	const dates = getLdDates(ld, i18nActivityPub.localize(ldBundle).messages);
 	const localizedDateShort = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en']);
 	return <virtual>
-		<div
+		{itemsPerPage === 1 && !omitProperties.has('date') && <div
 			role="region"
 			aria-label={messages.calendar}
 			classes={[themedCss.calendarWrapper, !get('calendarOpen') && themedCss.closed]}
@@ -249,7 +248,7 @@ export const Images = factory(function Images({
 					</virtual>
 				})}
 			</div>
-			{!omitProperties.has('date') && <Calendar
+			<Calendar
 				classes={{ '@redaktor/widgets/calendar': { root: [themedCss.calendar] } }}
 				weekendDivider={true}
 				start={get('calendarOpen') || new Date()}
@@ -258,9 +257,9 @@ export const Images = factory(function Images({
 					// icache.set('start', start);
 					// icache.set('end', end);
 				}}
-			/>}
-		</div>
-		<div
+			/>
+		</div>}
+		{itemsPerPage === 1 && !omitProperties.has('location') && ld.location && ld.location.length && <div
 			role="region"
 			aria-label={messages.locationmap}
 			classes={[themedCss.mapWrapper, get('mapWasOpen') && !get('mapOpen') && themedCss.closed]}
@@ -294,7 +293,7 @@ export const Images = factory(function Images({
 					/* TODO : Open as Place */
 				}}
 			/>)}
-		</div>
+		</div>}
 
 		<noscript><i classes={themedCss.noscript} /></noscript>
 		<div

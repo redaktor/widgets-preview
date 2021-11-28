@@ -9,10 +9,13 @@ import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import Paginated from '../paginated';
 import Caption from '../caption';
+import Calendar from '../calendar';
+import Map from '../map';
 import Icon from '../icon';
 import Images from '../images';
 import Img, { getWH } from '../image/image';
 // import * as ui from '../theme/material/_ui.m.css';
+import bundle from './nls/Event';
 import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/event.m.css';
 /* TODO ISSUE in /images */
@@ -36,6 +39,12 @@ export interface EventIcache {
 	currentLocale: {locale: string, rtl?: boolean};
 	brightnessClass: string;
 	loadedImages: boolean;
+	mapOpen: false | AsObjectNormalized;
+	mapWasOpen: boolean;
+	map: any;
+	mapView: any;
+	calendarOpen: boolean;
+	locationOpenIndex?: number | false;
 }
 export interface EventChildren {
 	/** Optional Header */
@@ -53,11 +62,12 @@ export const Event = factory(function Event({
 	middleware: { icache, id, i18nActivityPub, theme, breakpoints /*, resource */ },
 	properties
 }) {
+	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
-
+	const { messages } = i18nActivityPub.localize(bundle);
 	const {
 		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		fit = false, hasContent = true, hasAttachment = true, view = 'column'
+		color = 'red', fit = false, hasContent = true, hasAttachment = true, view = 'column'
 	} = properties();
 
 	const {
@@ -66,6 +76,7 @@ export const Event = factory(function Event({
 		'schema:dateCreated': dateCreated = [],
 		'schema:contentReferenceTime': contentReferenceTime = [],
 		'schema:expires': expires = [],
+		omitProperties = new Set(),
 		...ld
 	} = i18nActivityPub.normalized<EventProperties>();
 /*
@@ -116,14 +127,27 @@ export const Event = factory(function Event({
 	.m4by3 2
 	.m5by4 1
 	*/
+	let jsDates: any = {};
+	try {
+		jsDates = !startTime ? {} : (!endTime ? {
+			start: new Date(startTime)
+		} : {
+			start: new Date(startTime),
+			end: new Date(endTime)
+		})
+	} catch(e) { }
 	let isPast = false;
-	const getTimeNode = (xsdDate: string, isEndTime = false) => {
-		const key = isEndTime ? 'endTime' : 'startTime';
+	const getTimeNode = (xsdDate: string, key = 'startTime') => {
 		const jsNow = new Date();
 		const jsDate = xsdDate ? new Date(xsdDate) : void 0;
 		if (!jsDate) { return '' }
 		const locShortMonth = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en'], {
 			month: 'short'
+		}).format(jsDate);
+		const timeOfDay = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en'], {
+			hour: '2-digit',
+			minute: '2-digit',
+			timeZoneName: 'short'
 		}).format(jsDate);
 		const [curYear, curMonth, curDate] = [jsNow.getFullYear(), jsNow.getMonth(), jsNow.getDate()];
 		const [year = 0, month = 0, date = 0] = [jsDate.getFullYear(), jsDate.getMonth(), jsDate.getDate()];
@@ -148,16 +172,20 @@ export const Event = factory(function Event({
 					{year}
 				</p>
 			</span>
+			<small classes={[themedCss.timeOfDay]}>
+				{timeOfDay}
+			</small>
 		</time>;
-		return !isEndTime ? timeNode : <virtual>
+		return key === 'endTime' ? <virtual>
 			<hr classes={[themedCss.until]} />
 			{timeNode}
-		</virtual>
+		</virtual> : timeNode
 	}
 
 	const isEndSameDateThanStart = !!startTime && !!endTime && startTime.split('T')[0] === endTime.split('T')[0];
-	const isWideDate = !!startTime && !!endTime && !![startTime.split('-'),endTime.split('-')]
-		.filter((splits) => splits.length > 2 && splits[2].length === 2).length;
+	const isWideDate = (!!jsDates.hasOwnProperty('start') && jsDates.start.getDate() > 9) ||
+		(!!jsDates.hasOwnProperty('end') && jsDates.end.getDate() > 9);
+	console.log(startTime,endTime,isWideDate)
 	const images = <div classes={themedCss.imagesWrapper}>
 		<Images {...ld}
 			key="images"
@@ -166,21 +194,38 @@ export const Event = factory(function Event({
 			image={image}
 		/>
 	</div>
-console.log('Event render', addLines);
+
+	const setCalendar = () => {
+		set('mapOpen', false, false);
+		set('locationOpenIndex', false);
+		set('calendarOpen', true);
+	}
+	const setMap = (location: AsObjectNormalized|false,	locationOpenIndex: number|false) => {
+		location !== false && set('calendarOpen', false, false);
+		set('locationOpenIndex', locationOpenIndex, false);
+		set('mapWasOpen', true, false);
+		set('mapOpen', location);
+		const view = get('mapView');
+		if (view) {
+			view.setActivityPub(location);
+		}
+	}
+
 	return <div
 		key="root"
 		classes={[
 			themedCss.root,
+			!omitProperties.has('location') && ld.location && ld.location.length && themedCss.hasLocation,
 			isWideDate && themedCss.wideDate,
 			isPast && themedCss.pastDate,
-			!!icache.get('loadedImages') && themedCss.imagesOpen,
+			!!get('loadedImages') && themedCss.imagesOpen,
 			theme.variant(),
 			// isColumn ? themedCss.column : themedCss.row,
 			viewCSS.item,
 			!!viewDesktopCSS && viewDesktopCSS.item,
 			theme.shaped(themedCss),
 			theme.uiSize(),
-			theme.uiColor("red"),
+			theme.uiColor(color),
 			theme.uiElevation(),
 			theme.animated(themedCss)
 		]}
@@ -189,11 +234,52 @@ console.log('Event render', addLines);
 		aria-label="Image"
 		role="region"
 	>
+
+		{!omitProperties.has('location') && ld.location && ld.location.length && <div
+			role="region"
+			aria-label={messages.locationmap}
+			classes={[themedCss.mapWrapper, get('mapWasOpen') && !get('mapOpen') && themedCss.closed]}
+		>
+			{(get('mapWasOpen') || get('mapOpen')) && getOrSet('map', <Map
+				key="map"
+				{...ld}
+				hasCenterMarker
+				hasSearch
+				center={get('mapOpen')||void 0}
+				zoom={15}
+				onView={(view) => {
+					set('mapView', view, false);
+					ld.location && setMap(ld.location[0], 0);
+				}}
+				onActivityPubLocation={({pointer}) => {
+
+				}}
+				onActivityPubLocationOpen={({id, pointer}) => {
+
+				}}
+			/>)}
+		</div>}
 		<div classes={themedCss.header}>
-			<div classes={themedCss.timeWrapper}>
-				{!!startTime && getTimeNode(startTime)}
-				{!!endTime && !isEndSameDateThanStart && getTimeNode(endTime, true)}
-			</div>
+			<details classes={themedCss.details}>
+				<summary onclick={setCalendar} classes={themedCss.timeWrapper}>
+					{!!startTime && getTimeNode(startTime)}
+					{!!endTime && !isEndSameDateThanStart && getTimeNode(endTime, 'endTime')}
+				</summary>
+				{!omitProperties.has('date') && <div classes={themedCss.calendarWrapper}>
+					<Calendar
+						{...jsDates}
+						color={color}
+						readonly
+						responsive
+						weekendDivider
+						onValue={(start, end) => {
+							console.log(start, end);
+							// icache.set('start', start);
+							// icache.set('end', end);
+						}}
+					/>
+				</div>}
+			</details>
 
 			<div classes={themedCss.nameWrapper}>
 				<div classes={themedCss.timeRelativeWrapper}>
@@ -210,14 +296,12 @@ console.log('Event render', addLines);
 				<div classes={themedCss.locationWrapper}>
 					<Caption {...(ld)}
 						colored
-						classes={
-							{
-								'@redaktor/widgets/images': { meta: [themedCss.location], moreCount: [themedCss.locationMoreCount] },
-								'@redaktor/widgets/locationsDates': { moreCount: [themedCss.locationMoreCount] }
-							}
-						}
-						omitProperties={['name','locales','attributedTo','summary','content']}
-						onLocale={(l) => i18nActivityPub.setLocale(l)}
+						classes={{
+							'@redaktor/widgets/images': { meta: [themedCss.location], moreCount: [themedCss.locationMoreCount] }
+						}}
+						omitProperties={['name','date','locales','attributedTo','summary','content']}
+						onLocation={setMap}
+						locationOpenIndex={get('locationOpenIndex')}
 					/>
 				</div>
 				{name && <Paginated key="name" property="name" spaced={false}>
@@ -225,41 +309,41 @@ console.log('Event render', addLines);
 				</Paginated>}
 			</div>
 		</div>
-		{img && <virtual>
-			<input tabIndex={-1} classes={themedCss.imagesLoaded} type="checkbox" id={imgId} checked={!!icache.get('loadedImages')} />
-			<div
-				classes={[
-					themedCss.imageWrapper,
-					aspectRatio < 0.75 && themedCss.left,
-					!!fitContain && themedCss.max,
-					!!fitContain ? viewCSS.m7by6 : viewCSS.m3by2,
-					!!fitContain && !!viewDesktopCSS && viewDesktopCSS.item,
-					!!viewDesktopCSS && (!!fitContain ? viewDesktopCSS.m7by6 : viewDesktopCSS.m3by2)
-				]}
-				onclick={() => { icache.getOrSet('loadedImages', true) }}
-			>
-				<label classes={themedCss.imageLabel} for={imgId}>
-					<Img {...img}
-						baselined={!fitContain}
-						fit={fitContain ? 'contain' : false}
-						align={aspectRatio < 0.75 ? 'left' : 'right'}
-					/>
-				</label>
-				{image.length > 1 && <div classes={themedCss.moreCount}>
-					<span>
-						<Icon type="image" spaced={image.length < 11 ? 'right' : false} />+{image.length-1}
-					</span>
-				</div>}
+		<div classes={themedCss.content}>
+			{img && <virtual>
+				<input tabIndex={-1} classes={themedCss.imagesLoaded} type="checkbox" id={imgId} checked={!!get('loadedImages')} />
+				<div
+					classes={[
+						themedCss.imageWrapper,
+						aspectRatio < 0.75 && themedCss.left,
+						!!fitContain && themedCss.max,
+						!!fitContain ? viewCSS.m7by6 : viewCSS.m3by2,
+						!!fitContain && !!viewDesktopCSS && viewDesktopCSS.item,
+						!!viewDesktopCSS && (!!fitContain ? viewDesktopCSS.m7by6 : viewDesktopCSS.m3by2)
+					]}
+					onclick={() => { getOrSet('loadedImages', true) }}
+				>
+						<Img {...img}
+							baselined={!fitContain}
+							fit={fitContain ? 'contain' : false}
+							align={aspectRatio < 0.75 ? 'left' : 'right'}
+						/>
+					{image.length > 1 && <div classes={themedCss.moreCount}>
+						<span>
+							<Icon type="image" spaced={image.length < 11 ? 'right' : false} />+{image.length-1}
+						</span>
+					</div>}
+				</div>
+				{!!icache.get('loadedImages') || image.length === 1 ? images : <noscript>{images}</noscript>}
+			</virtual>}
+			<div classes={themedCss.actors}>
+				<Caption {...(ld)}
+					colored
+					contentLines={3+addLines}
+					omitProperties={['name','date','location']}
+					onLocale={(l) => i18nActivityPub.setLocale(l)}
+				/>
 			</div>
-			{!!icache.get('loadedImages') || image.length === 1 ? images : <noscript>{images}</noscript>}
-		</virtual>}
-		<div classes={themedCss.actors}>
-			<Caption {...(ld)}
-				colored
-				contentLines={3+addLines}
-				omitProperties={['name','date','location']}
-				onLocale={(l) => i18nActivityPub.setLocale(l)}
-			/>
 		</div>
 	</div>
 });
