@@ -645,6 +645,13 @@ export const Calendar = factory(function Calendar({
 				</thead>
 				<tbody>{renderDateGrid()}</tbody>
 			</table>
+			<div classes={themedCss.daysGrid}>
+				<div classes={themedCss.dayCell}><p>1</p></div>
+				<div classes={themedCss.dayCell}><p>2</p></div>
+				<div classes={themedCss.dayCell}><p>3</p></div>
+				<div classes={themedCss.dayCell}><p>4</p></div>
+				<div classes={themedCss.dayCell}><p>5</p></div>
+			</div>
 			<div classes={themedCss.footer}>
 				{footer}
 			</div>

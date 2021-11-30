@@ -24,6 +24,10 @@
 	left: 0px;
 	--plr: var(--line);
 }
+.root .calendarWrapper {
+	padding: 0px;
+}
+
 .mapWrapper.closed {
 	display: none;
 }

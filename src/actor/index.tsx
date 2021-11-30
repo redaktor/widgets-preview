@@ -95,7 +95,7 @@ const Actor = factory(function Actor({ /*children,*/ properties, middleware: { i
 	const { messages } = i18nActivityPub.localize(bundle);
 	const { get, set, getOrSet } = icache;
 	const preferredUsername = getActorName(normalized);
-	console.log(normalized, preferredUsername);
+	// console.log(normalized, preferredUsername);
 	getOrSet('preferredUsername', preferredUsername);
 	getOrSet('open', open);
 	// getOrSet('focused', open);
@@ -237,7 +237,7 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 		!!profileImage && !!profileImage.length && themedCss.hasProfileImage
 	];
 
-console.log('Actor',open)
+// console.log('Actor',open)
 	return <details
 		key="details"
 		classes={detailsClasses}

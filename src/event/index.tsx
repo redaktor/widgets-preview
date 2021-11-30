@@ -8,6 +8,7 @@ import id from '../middleware/id';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import Paginated from '../paginated';
+import TimeRelative from '../timeRelative';
 import Caption from '../caption';
 import Calendar from '../calendar';
 import Map from '../map';
@@ -185,7 +186,6 @@ export const Event = factory(function Event({
 	const isEndSameDateThanStart = !!startTime && !!endTime && startTime.split('T')[0] === endTime.split('T')[0];
 	const isWideDate = (!!jsDates.hasOwnProperty('start') && jsDates.start.getDate() > 9) ||
 		(!!jsDates.hasOwnProperty('end') && jsDates.end.getDate() > 9);
-	console.log(startTime,endTime,isWideDate)
 	const images = <div classes={themedCss.imagesWrapper}>
 		<Images {...ld}
 			key="images"
@@ -283,7 +283,9 @@ export const Event = factory(function Event({
 
 			<div classes={themedCss.nameWrapper}>
 				<div classes={themedCss.timeRelativeWrapper}>
-					<small classes={themedCss.timeRelative}>in 3 Tagen</small>
+					<small classes={themedCss.timeRelative}>
+						<TimeRelative date={startTime||endTime||''} />
+					</small>
 					<Icon
 						icon={ld.icon}
 						type="event"

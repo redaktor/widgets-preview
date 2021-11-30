@@ -307,3 +307,22 @@
 .readOnly .dateGrid {
 	pointer-events: none;
 }
+
+.daysGrid {
+	display: flex;
+	flex-wrap: wrap;
+	max-height: calc(var(--line) * 11);
+	border-left: var(--ui-border-width) solid var(--border);
+  border-top: var(--ui-border-width) solid var(--border);
+	overflow: auto;
+}
+.dayCell {
+  flex: 1 0 50%;
+  min-height: var(--line5);
+  border-right: var(--ui-border-width) solid var(--border);
+  border-bottom: var(--ui-border-width) solid var(--border);
+}
+.dayCell:empty {
+	height: 0;
+	border: none;
+};
