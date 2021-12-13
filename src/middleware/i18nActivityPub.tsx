@@ -4,21 +4,6 @@ import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import { defaultContext } from '../_ld/as';
 import { normalizeAs } from '../common/activityPubUtil';
-const testdoc = {
-  "@context": [
-    "https://www.w3.org/ns/activitystreams",
-  	{"schema": "http://schema.org/"}
-  ],
-  "summary": "Sally offered the Foo object",
-  "type": "Offer",
-  "actor": {
-    "type": "Person",
-    "id": "http://sally.example.org",
-    "summary": "Sally"
-  },
-  "object": "http://example.org/foo",
-  "schema:name": "bla"
-};
 
 interface LocalesProperties extends AsObject {
   userLocale?: string;

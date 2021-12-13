@@ -5,6 +5,10 @@ export default {
 	ContentLocation: 'Im Inhalt dargestellter oder beschriebener Ort',
 	LocationCreated: 'Örtlichkeit, wo der Inhalt geschaffen wurde',
 	location: 'Örtlichkeit',
+	locationCount: `{count, plural, offset:0
+		=0 {keine Örtlichkeit}
+		=1 {eine Örtlichkeit}
+		other {# Örtlichkeiten}}`,
 	contentCreated: 'erstellt',
 	contentCreatedTitle: 'Date when the content was created',
 	dateCreated: 'erstellt/veröffentlicht',

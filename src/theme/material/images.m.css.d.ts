@@ -67,6 +67,8 @@ export const xxl: string;
 export const content: string;
 export const summary: string;
 export const captionWrapper: string;
+export const hasChildren: string;
+export const locales: string;
 export const attributions: string;
 export const contentDetails: string;
 export const singleAttributions: string;

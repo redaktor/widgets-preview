@@ -14,13 +14,11 @@
 	z-index: 1;
 }
 .calendarWrapper {
-	display: flex;
-	justify-content: space-between;
 	composes: s sans from './_typo.css';
-	position:absolute;
-	z-index:99;
-	margin-top: calc(var(--line) * -1);
-	width:var(--w,100%);
+	background: var(--bg);
+	position: absolute;
+	z-index: 99;
+	width: var(--w,100%);
 	left: 0px;
 	--plr: var(--line);
 }
@@ -33,18 +31,28 @@
 }
 
 .details {
-	flex: 0;
+	flex: 0 1 auto;
 	margin-right: calc(var(--grid-base,8px) * 2);
+	max-width: 88px;
+	overflow: hidden;
+}
+.wideDate .details {
+	max-width: 112px;
 }
 .timeWrapper {
 	position:relative;
-	padding: 0px var(--grid-base,8px) 0px 0px;
-	min-width: 80px;
+	padding: 0px;
 	text-align: right;
 	background: linear-gradient(var(--m-600), var(--m-800) var(--size), var(--paper) var(--size));
 	border-radius: var(--ui-border-radius-emphasized) var(--ui-border-radius-emphasized) 0px 0px;
 	box-shadow: var(--ui-dp-2);
 	list-style: none;
+}
+.noContent {
+	pointer-events: none;
+}
+.noContent .timeWrapper::-webkit-details-marker {
+	display: none;
 }
 .timeWrapper,
 .timeWrapper:focus {
@@ -56,6 +64,9 @@
 	left: var(--ui-border-radius-emphasized);
 	color: var(--ui-bg);
 	z-index: 99;
+}
+.timeWrapper:hover::-webkit-details-marker {
+	color: var(--text);
 }
 .timeWrapper::after {
 	content: "";
@@ -73,11 +84,13 @@
 	transform: scaleX(1);
 	transition: transform var(--ui-dpd-11) var(--ui-easing) 16ms;
 }
+/*
+linear-gradient(var(--ui-hover), var(--m-800) var(--size), var(--paper) var(--size));
+background: linear-gradient(var(--ui-hover), var(--ui-focus-muted));
+*/
+
 .imagesOpen .timeWrapper {
 	border-radius: var(--ui-border-radius-emphasized);
-}
-.wideDate .timeWrapper {
-	min-width: 106px;
 }
 .time {
 	display: flex;
@@ -89,67 +102,92 @@
 	margin-top: calc(var(--line) * -1);
 }
 .pastDate .day,
-.pastDate .month,
+.pastDate .monthYear,
 .pastDate .year,
 .pastDate .until,
 .sameMonthYear {
 	color: var(--text-muted);
+	font-weight: var(--weight);
+}
+.timeWrapper:hover .sameMonthYear {
+	color: var(--text);
 }
 .sameDate {
 	color: var(--ui-success);
+	background: linear-gradient(to top right, rgba(0,0,0,0) 0%, rgba(0,0,0,0) calc(50% - 2px),
+rgba(0,0,0,1) 50%, rgba(0,0,0,0) calc(50% + 2px), rgba(0,0,0,0) 100%);
 }
 
-.root .until {
-	position:absolute;
+.root .until,
+.untilSmall {
+	position: absolute;
+	padding: 0;
+	width: 38.2%;
+	height: calc(var(--size) * 0.618);
 	margin: calc(var(--size) * -0.618) 0px 0px 0px;
-	padding:0;
-	background:var(--m-500);
-	width:38.2%;
-	height:calc(var(--size) * 0.618);
-	left:0px;
-	color:var(--m-500);
-	border:none;
+	background: var(--m-500);
+	left: 0px;
+	color: var(--m-500);
+	border: none;
+}
+.root .untilSmall {
+	width: 30px;
+	height: calc(var(--size) / 2);
+	margin: calc(var(--size) * -0.5) 0px 0px 0px;
 }
 .root .pastDate.until {
 	background: var(--m-900);
 	color: var(--m-800);
 }
-.day {
+.day, .noDay {
 	composes: hero from './_typo.css';
 }
 .root .day {
 	font-weight: var(--weight-bold);
-	margin-bottom: calc(var(--mb) - var(--line2));
+	margin: 0px var(--ui-border-width-emphasized) calc(var(--mb) - var(--line2)) 0px;
 }
-.month {
+.monthYear {
+	text-align: left;
+	margin-top: var(--line);
 	min-width: 36px;
 }
-.year {
-	composes: s from './_typo.css';
-}
-.root .year {
-	margin-top: calc(var(--line) * -2);
-}
 .timeOfDay {
-	width: 100%;
-	flex-basis: 100%;
 	margin-top: calc(var(--line) * -1);
 	white-space: nowrap;
 }
-.timeRelative {
+.statusByline {
+	font-weight: var(--weight-bold);
+	margin-top: calc(var(--line) * -1);
+}
+.eventMeta {
 	composes: s italic serif from './_typo.css';
+}
+.eventMeta,
+.eventStatus {
 	color: var(--ui-text);
 	display: inline-block;
 	/* margin-bottom: calc(var(--mb, 16px) - var(--line)); */
 }
-.pastDate .timeRelative {
+.timeWrapper .eventStatus {
+	position: relative;
+	top: var(--line);
+	margin-right: var(--grid-base);
+	font-weight: var(--weight-bold);
+}
+.noDay,
+.pastDate .eventMeta {
 	color: var(--ui-text-muted);
 }
+.eventAttendance {}
 .root .location {
+	width: 100%;
+	padding: 0px;
 	margin-bottom: calc(var(--line) * -1);
-	padding-left: 0px;
 }
-.nameWrapper {
+.root .locationDetails {
+	width: calc(var(--w) - 120px)
+}
+.topWrapper {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
@@ -164,20 +202,29 @@
 	align-items: baseline;
 	color: var(--ui-filled-off);
 }
-.hasLocation .timeRelativeWrapper {
-	flex: 0;
+.status {
+	color: var(--ui-text);
 }
+.attendanceCount {
+	color: var(--text-muted);
+	margin-right: var(--grid-base);
+}
+.nameWrapper,
 .locationWrapper {
+	flex: 0;
 	position:relative;
-	margin-top: calc(var(--line) * -1);
 }
-.hasLocation .locationWrapper {
-	flex: 1;
-}
-.actors {
+
+.contentWrapper {
 	--lt: calc(var(--line) + var(--pt));
 	background: linear-gradient(transparent var(--lt), var(--bg) var(--lt));
+	margin-bottom: calc(var(--line) * -1);
 	z-index: 9;
+}
+.rateWrapper {
+	min-height: var(--line);
+	margin-bottom: var(--line);
+	padding-left: var(--p, calc(var(--grid-base) * 2));
 }
 
 .imageWrapper {
@@ -192,11 +239,11 @@
 	padding-right: var(--grid-base,8px);
 }
 .imageWrapper.left {
-	padding-left: calc(80px + var(--grid-base,8px) * 3);
+	padding-left: calc(88px + var(--grid-base,8px) * 3);
 	padding-right: 0px;
 }
 .wideDate .imageWrapper.left {
-	padding-left: calc(106px + var(--grid-base,8px) * 3);
+	padding-left: calc(112px + var(--grid-base,8px) * 3);
 	padding-right: 0px;
 }
 .imageLabel {
@@ -216,6 +263,10 @@
 .imagesWrapper {
 	margin-top: var(--line);
 }
+.captionWrapper { }
+.root .inLanguage {
+	padding-left: calc(var(--grid-base) * 3);
+}
 .imagesLoaded:checked + .imageWrapper,
 .imagesWrapper {
 	display: none;
@@ -224,18 +275,16 @@
 	display: block;
 }
 .moreCount {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	position: absolute;
-	right: 0px;
-	top: calc(var(--lineHalf) * -1 - var(--pt));
-	color: var(--text-muted);
-	background-color: var(--bg, #000);
-	padding: 0px var(--grid-base) var(--ui-border-width-emphasized) var(--grid-base);
-	cursor: pointer;
+	composes: moreCount from './locationsDates.m.css';
+}
+.imageWrapper .moreCount {
+	--rt: calc(var(--lineHalf) - var(--pt) - var(--ui-border-width-emphasized));
+	left: auto;
+	right: var(--rt);
+	top: var(--rt);
+	max-width: var(--line2);
+	max-height: var(--line2);
 	z-index: 99;
-	transition: var(--ui-dpd-0,80ms) background-color var(--ui-easing);
 }
 .imageWrapper:hover .moreCount {
 	background-color: var(--ui-border-hover, #333);
@@ -245,6 +294,30 @@
 	text-align: center;
 }
 .root .locationMoreCount {
-	right: calc(var(--grid-base) * 2);
+	right: var(--grid-base,8px);
 	left: auto;
+}
+.cancelled::after {
+	content: "";
+	display: block;
+	position: absolute;
+	width: var(--w);
+	height: calc(100% - var(--line3));
+	background: linear-gradient(to top left, rgba(0,0,0,0) 0%, rgba(0,0,0,0) calc(50% - 8px),
+	var(--ui-error) calc(50% - 8px), var(--ui-error) calc(50% + 8px), rgba(0,0,0,0) calc(50% + 8px), rgba(0,0,0,0) 100%);
+	z-index: 99;
+	opacity: 0.5;
+}
+.postponed .timeWrapper,
+.cancelled .timeWrapper {
+	opacity: 0.8;
+}
+.postponed .eventAttendance,
+.cancelled .eventAttendance,
+.postponed .nameWrapper,
+.cancelled .nameWrapper,
+.postponed .locationWrapper,
+.cancelled .locationWrapper,
+.cancelled .content {
+	opacity: 0.64;
 }

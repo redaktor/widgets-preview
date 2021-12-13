@@ -206,7 +206,7 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 		onfocus={handleFocus}
 	>
 		{getNode(0, false)}
-		{dates.length > 1 && <output classes={themedCss.moreCount}>+{dates.length-1}</output>}
+		{dates.length > 1 && <output classes={themedCss.moreCount}>{` +${dates.length-1}`}</output>}
 		{dates.length > 1 && <ul id={menuId} role="menu" aria-modal="true" classes={themedCss.fold}>
 			{...dates.map((d, i) => getNode(i))}
 		</ul>}

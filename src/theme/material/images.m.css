@@ -545,6 +545,9 @@ TODO above
 	margin-top: var(--line);
 	order: 3;
 }
+.hasChildren.captionWrapper .locales {
+	margin-bottom: calc(var(--line) * -1);
+}
 .meta:empty + .captionWrapper,
 .attributions + .captionWrapper {
 	margin-top: 0px;
@@ -558,7 +561,7 @@ TODO above
 }
 .attributions {
 	order: 2;
-	margin-top: 0px;
+	margin-top: -1px; /* TODO */
 	transition: margin-left var(--ui-dpd-4,320ms) var(--ui-easing);
 }
 .singleAttributions {

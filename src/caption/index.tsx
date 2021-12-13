@@ -40,6 +40,12 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	itemsPerPage?: number;
 	/* hover animation for scroller, grayscale -> colors, default true */
 	desaturateScroll?: boolean;
+
+	locationIsDetails?: boolean;
+	/* larger location font */
+	largeLocation?: boolean;
+	/* larger date font */
+	largeDate?: boolean;
 	/* when details are opened */
 	onToggle?: (isOpen: boolean) => any;
 	/* when all images have loaded */
@@ -81,10 +87,11 @@ export const Caption = factory(function Caption({
 	const {
 		locale: currentLocale, compact = false, hasDetails = false, isOpen = false,
 		dateOpenIndex = false, locationOpenIndex = false, size = 'm', view = 'column', colored = false,
-		isImageCaption = false, contentLines: cl, onToggle, onFocusPrevious, onDate, onLocation, onLocale
+		largeLocation = false, locationIsDetails = false, largeDate = false, isImageCaption = false, contentLines: cl,
+		onToggle, onFocusPrevious, onDate, onLocation, onLocale
 	} = properties();
 	const {
-		href = '', name: n, summary, content, sensitive, attachment, omitProperties, ...APo
+		href = '', name: n, summary, content, sensitive, attachment, omitProperties, ...ld
 	} = i18nActivityPub.normalized();
 	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
 	getOrSet('currentLocale', currentLocale ? {locale: currentLocale} : locale);
@@ -107,20 +114,24 @@ export const Caption = factory(function Caption({
 
 	const attributionsClasses = [
 		themedCss.attributions,
-		!!APo.attributedTo && APo.attributedTo.length === 1 ? themedCss.singleAttributions : void 0
+		!!ld.attributedTo && ld.attributedTo.length === 1 ? themedCss.singleAttributions : void 0
 	];
-	const nodes = <div classes={themedCss.captionWrapper}>
+	console.log(children());
+	const nodes = <div classes={[themedCss.captionWrapper, !!(children().length) && themedCss.hasChildren]}>
 		{!!locales && locales.length > 1 && !omitProperties.has('locales') &&
-			<Locales locale={get('currentLocale')||{locale:'en'}} locales={locales} onValue={(l) => {
-				i18nActivityPub.setLocale(l);
-				onLocale && onLocale(l)
-			}} />
+			<div classes={themedCss.locales}>
+				<Locales key="locales" locale={get('currentLocale')||{locale:'en'}} locales={locales} onValue={(l) => {
+					i18nActivityPub.setLocale(l);
+					onLocale && onLocale(l)
+				}} />
+			</div>
 		}
-		{!omitProperties.has('name') && <div classes={themedCss.columnName}>{nameNode}</div>}
-		<div classes={[themedCss.contentWrapper, viewCss.content, !!viewDesktopCSS && viewDesktopCSS.content]}>
+		{children()}
+		{!omitProperties.has('name') && <div key="name" classes={themedCss.columnName}>{nameNode}</div>}
+		<div key="contentWrapper" classes={[themedCss.contentWrapper, viewCss.content, !!viewDesktopCSS && viewDesktopCSS.content]}>
 			{!omitProperties.has('name') && <div classes={themedCss.rowName}>{nameNode}</div>}
 
-			{!sensitive && !omitProperties.has('summary') && (summary && <Paginated colored={colored} compact={compact} key="summary" property="summary">
+			{!sensitive && !omitProperties.has('summary') && (summary && <Paginated key="paginatedsummary" colored={colored} compact={compact} property="summary">
 				{clampStrings(summary, summaryLength).map((_summaries, i) => <span>
 					{_summaries.map((s: any) => <MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={s} />)}
 				</span>)}
@@ -136,23 +147,24 @@ export const Caption = factory(function Caption({
 			}
 		</div>
 	</div>
-// location -> 	() => { set('focusKey', 'date'); focus.focus(); }
+// location -> 	() => { set('focusKey', 'date'); focus.focus(); } / date focus={get('focusKey') === 'date' ? focus.shouldFocus : void 0}
 	const allNodes = <virtual>
-		{children()}
 		<span key="meta" classes={[themedCss.meta]}>
-			{!omitProperties.has('date') && <Dates key="date" {...APo}
-				focus={get('focusKey') === 'date' ? focus.shouldFocus : void 0}
+			{!omitProperties.has('date') && <Dates key="date" {...ld}
 				classes={{ '@redaktor/widgets/locationsDates': { root: [themedCss.dates] } }}
+				large={largeDate}
 				hasCalendar={true}
 				dateOpenIndex={dateOpenIndex}
 				onFocusPrevious={onFocusPrevious}
 				onDate={(date, i) => { onDate && onDate(date, i) }}
 			/>}
-			{!omitProperties.has('location') && <Location key="location" {...APo}
+			{!omitProperties.has('location') && <Location key="location" {...ld}
 				classes={{ '@redaktor/widgets/locationsDates': {
 					root: [themedCss.location],
 					moreCount: [themedCss.moreCount]
 				} }}
+				large={largeLocation}
+				isDetails={locationIsDetails}
 				hasMap={true}
 				locationOpenIndex={locationOpenIndex}
 				onFocusPrevious={onFocusPrevious}
@@ -160,7 +172,7 @@ export const Caption = factory(function Caption({
 			/>}
 		</span>
 
-		{!omitProperties.has('attributedTo') && <AttributedTo key="attributions" {...APo}
+		{!omitProperties.has('attributedTo') && <AttributedTo key="attributions" {...ld}
 			classes={{ '@redaktor/widgets/actors': { root: attributionsClasses } }}
 			max={39}
 		/>}
@@ -179,7 +191,7 @@ export const Caption = factory(function Caption({
 				</details>
 		)}
 
-		{attachment && !omitProperties.has('attributedTo') && <virtual>
+		{attachment && !omitProperties.has('attachment') && <virtual>
 			<hr classes={viewCss.hrAttachment} />
 			<Attachment attachment={attachment} isRow={isRow} />
 		</virtual>}
@@ -188,7 +200,7 @@ export const Caption = factory(function Caption({
 const rootClasses = [themedCss.pageCaption, viewCss.pageCaption];
 return isImageCaption ? <figcaption key="root" classes={rootClasses}>
 	{allNodes}
-</figcaption> : <div key="root" classes={rootClasses}>
+</figcaption> : <div key="divroot" classes={rootClasses}>
 	{allNodes}
 </div>
 });

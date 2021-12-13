@@ -41,7 +41,7 @@ export const asSupportedExtensions = {
 	Emoji: 'toot:Emoji',
 	featured: 'toot:featured'
 };
-export function ldPartial<P = any>(o: {[key: string]: P}, vocabulary: string, toArrays = false) {
+export function ldPartial<P = any>(o: {[key: string]: P}, vocabulary: string = 'schema', toArrays = false) {
   const res: {[key: string]: (P|P[])} = {};
   for (let k in o) {
     const [prefix, key] = k.split(':');
@@ -50,4 +50,26 @@ export function ldPartial<P = any>(o: {[key: string]: P}, vocabulary: string, to
     }
   }
   return res
+}
+type LocO = string | {[key: string]: string};
+export function schemaLanguages(a: LocO | LocO[], localizeLocale: string): LocO[] {
+	if (!Array.isArray(a)) { a = [a] }
+	return a.map((_o) => {
+		if (typeof _o === 'string') { return _o }
+		let {name, alternateName} = ldPartial(_o);
+		name = Array.isArray(name) ? name[0] : name;
+		alternateName = Array.isArray(alternateName) ? alternateName[0] : alternateName;
+		if (localizeLocale && !!Intl && !!(Intl as any).DisplayNames) {
+			console.log({name, alternateName});
+			const commonBCP47 = /^[A-Za-z]{2,4}([_-][A-Za-z]{4})?([_-]([A-Za-z]{2}|[0-9]{3}))?$/;
+			const langCode = commonBCP47.test(alternateName) ? alternateName :
+				(commonBCP47.test(name) ? name : '');
+			if ((!!langCode.length )) {
+				const localizedLanguage = new (Intl as any).DisplayNames(langCode, { type: 'language' });
+				const localized = localizedLanguage.of(localizeLocale)
+				if (!!localized && !!localized.length) { return localized }
+			}
+		}
+		return name || alternateName || ''
+	});
 }

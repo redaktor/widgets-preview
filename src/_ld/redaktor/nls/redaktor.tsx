@@ -13,6 +13,10 @@ const messages = {
 	ContentLocation: 'Location depicted or described in the content',
 	LocationCreated: 'Location where it was created',
 	location: 'Location',
+	locationCount: `{count, plural, offset:0
+		=0 {no location}
+		=1 {one location}
+		other {# locations}}`,
 	contentCreated: 'created',
 	contentCreatedTitle: 'Date when the content was created',
 	dateCreated: 'created/added',

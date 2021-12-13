@@ -76,7 +76,8 @@
 .previous,
 .next {
 	background: none;
-	border: 0;
+	border: 0px;
+	margin: 0px;
 	color: inherit;
 	font-family: inherit;
 	cursor: pointer;
@@ -315,6 +316,8 @@
 	border-left: var(--ui-border-width) solid var(--border);
   border-top: var(--ui-border-width) solid var(--border);
 	overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ui-flat-off) var(--ui-bg);
 }
 .dayCell {
   flex: 1 0 50%;

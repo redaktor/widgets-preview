@@ -7,7 +7,6 @@
 	font-style: normal;
 	font-display: block;
 }
-
 .slide {
   overflow: hidden;
   position: relative;
@@ -37,6 +36,9 @@
 	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+.colored.icon {
+	color: var(--text-flat);
 }
 .slide > .root:nth-child(2) { --i: 1; }
 .slide > .root:nth-child(3) { --i: 2; }
@@ -842,4 +844,14 @@
 }
 .close {
 	position: relative;
+}
+
+.half {
+	position: relative;
+	overflow: hidden;
+	display: inline-block;
+}
+.half::before {
+	position: relative;
+	right: -50%;
 }

@@ -1,0 +1,41 @@
+.root, .half, .full {
+	margin: 0;
+	padding: 0;
+}
+.root {
+	padding-top: var(--pt);
+	min-height: var(--line);
+  border: none;
+  float: left;
+}
+.root > .input {
+	display: none;
+}
+.label {
+	composes: icon star from './icon.m.css';
+}
+.root .half::before {
+	position: absolute;
+	display: inline-block;
+	width: calc(var(--size) / 2);
+	overflow: hidden;
+}
+.root > .label {
+  color: var(--text-muted);
+	float: right;
+}
+/* color when clicked, hover current icon, hover previous icons in list */
+.root > .input:checked ~ .label,
+.root:not(:checked) > .label:hover,
+.root:not(:checked) > .label:hover ~ .label { color: var(--ui-text-muted);  }
+/* hover colors */
+.readWrite > .input:checked + .label:hover,
+.readWrite > .input:checked ~ .label:hover,
+.readWrite > .label:hover ~ .input:checked ~ .label,
+.readWrite > .input:checked ~ .label:hover ~ .label { color: var(--ui-text);  }
+
+.root.readOnly > .input,
+.root.readOnly > .label {
+	color: var(--border);
+	pointer-events: none;
+}

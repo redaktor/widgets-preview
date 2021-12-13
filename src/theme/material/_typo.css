@@ -175,7 +175,7 @@ ol li::marker {
 }
 details ul,
 details ol {
-  padding: 0px 0px 0px 3px;
+  padding: 0px 0px 0px 2px;
 }
 hr {
   height: 2px;

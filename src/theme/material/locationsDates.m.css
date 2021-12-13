@@ -1,11 +1,20 @@
 .root {
 	position: relative;
 	cursor: pointer;
+}
+.root.isDetails {
+	width: calc(var(--w) - 112px - var(--grid-base,8px) * 3);
+}
+.root,
+.muted {
 	color: var(--text-muted);
 }
 .root.hasFold,
 .root.singleItem {
 	padding: 0px;
+}
+.large {
+	composes: l from './_typo.css';
 }
 .rootSummary {
 	padding-bottom: 4px;
@@ -27,7 +36,6 @@
   position: absolute;
 	top: 0px;
 	left: calc(var(--grid-base) * -1);
-	transition: top 0.3s linear;
 	z-index: 999999;
 	cursor: pointer;
 }
@@ -44,7 +52,7 @@
 .foldItem {
 	display: block;
 	position: relative;
-	padding: var(--pt) var(--grid-base) 0 var(--grid-base);
+	padding: var(--pt) var(--grid-base) 0px var(--grid-base);
 	width: 100%;
 	max-width: calc(var(--w) - var(--touch-target-min));
 	height: calc(var(--line) * 1.5);
@@ -53,30 +61,53 @@
 	transition: transform var(--ui-dpd-8) var(--ui-easing), margin-top var(--ui-dpd-8) var(--ui-easing);
 	margin-top: 0px;
 	transform: perspective(0px) rotateX(0deg);
-	transform-origin: top;
+	transform-origin: center;
 	filter: brightness(1);
+}
+.detailsUl {
+	margin-bottom: var(--line);
+}
+.detailsLi {
+	display: block;
+	position: relative;
+	width: 100%;
+	max-width: calc(var(--w) - var(--touch-target-min));
+	margin-bottom: calc(var(--mb) - var(--line));
+}
+.detailsLi:focus {
+	outline: none;
+}
+.detailsSummary { }
+.detailsSummary::after {
+	content: "";
+	width: 100%;
+	height: calc(var(--line) + var(--pt));
+	position: absolute;
+	top: calc(var(--line) * -1 + var(--pt));
+	left: 0px;
+	z-index: 99;
 }
 .foldItem.full {
 	min-width: 100%;
 	width: calc(var(--w) - var(--grid-base) * 2);
 }
-.item,
-.icon,
-.markerIcon {
-	transition: var(--ui-dpd-0,80ms) color var(--ui-easing);
+.item {
+	transition: color var(--ui-dpd-0,80ms) var(--ui-easing);
 }
 .root.singleItem:hover .item .icon,
+.root .detailsLi:hover .icon,
 .foldItem:hover .icon,
 .root:hover + .marker .markerIcon {
 	color: var(--ui-filled, #eee) !important;
 }
-.root:hover .item,
+.root:not(.isDetails):hover .item,
 .foldItem:focus,
 .foldItem:hover {
 	color: var(--text);
 	outline: none;
 }
 .item:focus,
+.detailsLi:focus .icon,
 .foldItem:focus .icon {
 	color: var(--ui-focus, #fff);
 }
@@ -93,17 +124,33 @@
 }
 
 .item {
-	display: flex;
-	align-items: flex-start;
 	font-style: normal;
 	color: inherit;
 	width: 100%;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-  overflow: hidden;
 	position: relative;
 	cursor: pointer;
 	z-index: 2;
+}
+.item:not(.detailsItem) {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+}
+.item:not(.detailsItem),
+.detailsSummary .detailsItem {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.detailsSummaryOpen {
+	position: absolute;
+}
+.detailsSummaryOpen,
+details[open] .detailsSummary .detailsItem {
+	opacity: 0;
+}
+details[open] .detailsSummary .detailsSummaryOpen {
+	opacity: 1;
 }
 .iconWrapper {
 	min-width: 128px;
@@ -113,6 +160,7 @@
 .root .icon {
 	padding: 0px;
 	margin-top: -2px;
+	margin-bottom: 0px;
 	display: inline-block;
 }
 .name {
@@ -122,30 +170,69 @@
 	cursor: pointer;
 	font-weight: var(--weight, 400);
 }
-.muted {
-	color: var(--text-muted);
-}
 
+.postalAddress {
+	composes: s from './_typo.css';
+	position: relative;
+}
+.root .postalAddress {
+	flex-basis:100%;
+	padding: 0;
+	margin: 0;
+}
+.detailsSummary .postalAddress {
+	display: none;
+}
+details[open] > .detailsSummary .postalAddress {
+	display: block;
+}
+.postalAddressItem { }
+.postalAddressItem[itemprop="name"] {
+	font-weight: var(--weight-bold);
+	border-bottom: var(--ui-border-width-emphasized) dotted var(--ui-flat-empty);
+}
+.detailsLi:hover .postalAddressItem[itemprop="name"] {
+	border-color: var(--ui-filled);
+}
 .moreCount {
 	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
 	left: 0px;
-	top: calc(var(--lineHalf) * -1 - var(--pt));
+	top: calc(var(--lineHalf) * -1 - var(--pt) - var(--ui-border-width-emphasized));
 	color: var(--text-muted);
 	background: var(--paper, #333);
 	border-radius: 9999px;
+	aspect-ratio: 1 / 1;
+	min-height: var(--line);
 	min-width: var(--line);
-	text-align: center;
 	cursor: pointer;
 	z-index: -1;
 	transition: var(--ui-dpd-0,80ms) background-color var(--ui-easing);
 }
-.root:hover .moreCount {
+@supports not (aspect-ratio: 1 / 1) {
+  .moreCount::before {
+    float: left;
+    padding-top: 100%;
+    content: "";
+  }
+
+  .moreCount::after {
+    display: block;
+    content: "";
+    clear: both;
+  }
+}
+.root:not(.isDetails):hover .moreCount,
+details:not([open]) .detailsSummary:hover .moreCount {
 	background: var(--ui-border-hover, #333);
 }
-.expanded .moreCount,
-.mapOpen.hasFold .moreCount {
+details[open] .moreCount {
 	display: none;
 }
+
 .marker {
 	color: var(--r-blueGrey);
 	position: absolute;
@@ -154,9 +241,12 @@
 	z-index: 2;
 }
 
-
-.hasFold:focus .moreCount,
-.hasFold:focus-within .moreCount,
+.expanded .moreCount,
+.mapOpen.hasFold:not(.isDetails) .moreCount {
+	display: none;
+}
+.hasFold:not(.isDetails):focus .moreCount,
+.hasFold:not(.isDetails):focus-within .moreCount,
 .hasFold:focus + .root,
 .hasFold:focus-within + .root {
 	opacity: 0;

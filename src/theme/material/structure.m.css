@@ -1,0 +1,35 @@
+.root {
+	padding-bottom:  var(--line);
+}
+
+.tripleRow {
+	display: flex;
+	composes: s from './_typo.css';
+	justify-content: space-between;
+}
+.root .tripleRow {
+	margin-bottom: calc(var(--mb, 16px) - var(--line));
+}
+.predicate {
+	font-weight: bold;
+	display: flex;
+}
+
+.object {
+	flex: 1;
+	padding-left: 8px;
+	word-break: break-all;
+}
+
+.border {
+	width: calc(16px * var(--level,1));
+	border-right: 2px solid var(--level-border,var(--ui-text));
+	margin-right: 4px;
+}
+.border.index {
+	border-right: none;
+	margin-right: 12px;
+}
+.muted {
+	color: var(--text-muted);
+}

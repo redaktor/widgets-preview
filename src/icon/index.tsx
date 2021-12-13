@@ -21,13 +21,14 @@ interface BaseIconProperties extends ThemeProperties {
 	title?: string;
 	maxWidth?: string | number;
 	maxHeight?: string | number;
+	half?: boolean;
 }
-interface TypeIconProperties extends BaseIconProperties {
+export interface TypeIconProperties extends BaseIconProperties {
 	/** Icon type if no custom as:`icon` property, e.g. Place, downIcon, searchIcon, etc. */
 	type: IconType | AsObject['type'];
 	icon?: ApIconType[];
 }
-interface ApIconProperties extends BaseIconProperties {
+export interface ApIconProperties extends BaseIconProperties {
 	/** Custom as:icon property */
 	icon: ApIconType[];
 	type?: IconType | AsObject['type'];
@@ -40,10 +41,12 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 	const {
 		aria = { hidden: 'true' },
 		type: t,
+		half = false,
 		title,
 		altText,
 		maxWidth,
-		maxHeight
+		maxHeight,
+		color
 	} = properties();
 	const { icon } = normalizeAs(properties() as any);
 	const themedCss = theme.classes(css);
@@ -76,6 +79,8 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 					theme.sized(ui, 'l'),
 					theme.spaced(ui),
 					theme.colored(colors),
+					!!color && themedCss.colored,
+					!!half && themedCss.half,
 					themedCss.icon,
 					themedCss[_type]
 				]}

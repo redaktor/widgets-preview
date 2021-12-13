@@ -4,6 +4,7 @@ import { AsObject, AsImage } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Image, { ImageProperties } from '@redaktor/widgets/image';
 import Event from '@redaktor/widgets/event';
+import Structure from '@redaktor/widgets/structure';
 /*
 import Images from '@redaktor/widgets/images';
 import Table from '@redaktor/widgets/table';
@@ -30,8 +31,8 @@ const locations: [number,number][] = [
 ]
 const LOC: any = locations.map((a, i) => {
   const o: {location: AsObject, [key: string]: any} = i === 2 || i === 4 ?
-    {location: {id: uuid(), type: "Place", name: i+"Dortmund"}} :
-    ({location: {id: uuid(), type: "Place", name: i+"Museum of Modern Art, NY - Lorem Ipsum", longitude: a[0], latitude: a[1]}});
+    {location: {id: uuid(), type: "Place", name: "Dortmund"}} :
+    ({location: {id: uuid(), type: "Place", name: "Museum of Modern Art, NY - Lorem Ipsum", longitude: a[0], latitude: a[1]}});
   if (i === 2 || i === 3) {
     o.location.icon = [{
       id: uuid(),
@@ -42,9 +43,10 @@ const LOC: any = locations.map((a, i) => {
   		"height": i === 2 ? 16 : 32
   	}]
   }
-  if (!i) {
-    o.location['schema:PostalAddress'] = {name: "Schema Test"};
+  if (!i || i === 4 || i === 5) {
+    o.location['schema:address'] = "Schema Test";
   }
+
   return i > 3 ? o : ({location: [{...o.location, altitude: 200, radius: i >1 ? 800 : 400},{...o.location, altitude: 200, radius: i >1 ? 800 : 400, longitude: locations[4][0], latitude: locations[4][1]},{...o.location, longitude: locations[5][0], latitude: locations[5][1], altitude: 200, radius: i >1 ? 800 : 400},{...o.location, altitude: 200, radius: i >1 ? 800 : 400}]})
 });
 const _1_1: AsImage = {id: uuid(), type: "Image", url: {type: "Link", href: "card-photo-1-1.D8Qv-iDb.jpg", width: 600, height: 600, mediaType: "image/jpg"}, blurhash: 'UPF5Q:~W0z9uDND%EfNHyEtRs9xaE1WCxtV@', published: "2015-09-12T12:12:12Z", ...LOC[9]};
@@ -139,9 +141,114 @@ exampleImage.attachment = [ _1_1 ].concat([
 
 exampleImage['schema:contentLocation'] = {'@type': 'schema:Place', 'schema:name': "Schema Test", 'schema:longitude': locations[2][0], 'schema:latitude': locations[2][1]}
 
+console.log(LOC[5].location);
+LOC[5].location.type = ['Place', 'schema:Place'];
+LOC[5].location["schema:address"] = {
+  "@type": "PostalAddress",
+  "schema:addressLocality": "Seattle",
+  "schema:addressRegion": "WA",
+  "schema:postalCode": "98052",
+  "schema:streetAddress": "20341 Whitworth Institute 405 N. Whitworth"
+};
+const exampleEvent = {
+  summary: summary, content, attributedTo, ...{location: [LOC[5].location, LOC[4].location]},
+  image: [{..._3_2, summary: exampleText, updated: "2018-09-12T12:12:12Z"},{..._2_3, summary: exampleText, updated: "2018-09-12T12:12:12Z"}],
+  startTime: '2021-12-24T20:00:00-08:00',
+  endTime: '2021-12-24T21:00:00-08:00',
+  'schema:eventAttendanceMode': "https://schema.org/MixedEventAttendanceMode",
+  'schema:maximumVirtualAttendeeCapacity': 199,
+  'schema:maximumPhysicalAttendeeCapacity': 99,
+  'schema:inLanguage': {
+    "@type": "Language",
+    "schema:name": "Spanish",
+    "schema:alternateName": "es"
+  },
+  "schema:aggregateRating": {
+    "@type": "AggregateRating",
+    "schema:ratingValue": "4",
+    "schema:reviewCount": "250"
+  },
+  // 'schema:eventStatus': 'https://schema.org/EventRescheduled',
+  'schema:previousStartDate': '2021-12-23T20:00:00-08:00',
+  nameMap: {
+    en: "PRESSURE DROP-Boss Reggae (late-)Allnighter ft. Selekta Bebek",
+    de: "PRESSURE DROP-Boss Reggae (spät-)Allnighter ft. Selekta Bebek"
+  }
+};
+
+const exampleSchemaO = {
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  "event": [
+      {
+          "@type": "Event",
+          "testObj": {lorem: "ipsum", ipsum: "lorem"},
+          "location": "Memphis, TN, US",
+          "offers": "ticketmaster.com/foofighters/may20-2011",
+          "startDate": "2011-05-20",
+          "url": "foo-fighters-may20-fedexforum"
+      },
+      {
+          "@type": "Event",
+          "location": "Council Bluffs, IA, US",
+          "offers": "ticketmaster.com/foofighters/may23-2011",
+          "startDate": "2011-05-23",
+          "url": "foo-fighters-may23-midamericacenter"
+      }
+  ],
+  "image": [
+      "foofighters-1.jpg",
+      "foofighters-2.jpg",
+      "foofighters-3.jpg"
+  ],
+  "name": "Foo Fighters",
+  "track": [
+      {
+          "@type": "MusicRecording",
+          "audio": "foo-fighters-rope-play.html",
+          "duration": "PT4M5S",
+          "inAlbum": "foo-fighters-wasting-light.html",
+          "interactionStatistic": {
+              "@type": "InteractionCounter",
+              "interactionType": "https://schema.org/ListenAction",
+              "userInteractionCount": "14300"
+          },
+          "name": "Rope",
+          "offers": "foo-fighters-rope-buy.html",
+          "url": "foo-fighters-rope.html"
+      },
+      {
+          "@type": "MusicRecording",
+          "audio": "foo-fighters-everlong-play.html",
+          "duration": "PT6M33S",
+          "inAlbum": "foo-fighters-color-and-shape.html",
+          "name": "Everlong",
+          "interactionStatistic": {
+              "@type": "InteractionCounter",
+              "interactionType": "https://schema.org/ListenAction",
+              "userInteractionCount": "11700"
+          },
+          "offers": "foo-fighters-everlong-buy.html",
+          "url": "foo-fighters-everlong.html"
+      }
+  ],
+  "subjectOf": {
+      "@type": "VideoObject",
+      "description": "Catch this exclusive interview with Dave Grohl and the Foo Fighters about their new album, Rope.",
+      "duration": "PT1M33S",
+      "name": "Interview with the Foo Fighters",
+      "thumbnail": "foo-fighters-interview-thumb.jpg",
+      "interactionStatistic": {
+          "@type": "InteractionCounter",
+          "interactionType": "https://schema.org/CommentAction",
+          "userInteractionCount": "18"
+      }
+  }
+}
+
 const factory = create();
 export default factory(function Basic() {
-console.log(exampleImage)
+console.log('Event example',exampleEvent)
 /* tableRow is meant to be 100vw */
 	return (
 		<Example spaced={true}>
@@ -150,14 +257,9 @@ console.log(exampleImage)
 
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
+            <Structure value={exampleSchemaO} />
             <Event id="event1" type="Event"
-              {...{summary: summary, content, attributedTo, ...LOC[0], image: [{..._3_2, summary: exampleText, updated: "2018-09-12T12:12:12Z"},{..._2_3, summary: exampleText, updated: "2018-09-12T12:12:12Z"}]}}
-              startTime="2021-12-24T20:00:00-08:00"
-              endTime="2021-12-25T20:00:00-08:00"
-              nameMap={[{
-                en: "PRESSURE DROP-Boss Reggae (late-)Allnighter ft. Selekta Bebek",
-                de: "PRESSURE DROP-Boss Reggae (spät-)Allnighter ft. Selekta Bebek"
-              }]}
+              {...exampleEvent}
               hasAttachment={false}
             />
             <br /><br />

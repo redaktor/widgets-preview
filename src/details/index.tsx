@@ -5,6 +5,7 @@ import * as css from '../theme/material/details.m.css';
 import theme from '../middleware/theme';
 
 export interface DetailsProperties {
+	responsive?: boolean;
 	/* if summary is just a string … */
 	summary?: string | undefined;
 	/* serif summary, default false */
@@ -31,7 +32,7 @@ const factory = create({ theme })
 
 export const Details = factory(function Details({ children, properties, middleware: { theme } }) {
 	const themedCss = theme.classes(css);
-	const { summary: txtSummary, open, serif = false, animated = true } = properties();
+	const { summary: txtSummary, open, responsive = false, serif = false, animated = true } = properties();
 
 	let summary, content;
 	if (typeof children()[0] === 'object' && (children()[0] as any).hasOwnProperty('summary')) {
@@ -45,7 +46,8 @@ export const Details = factory(function Details({ children, properties, middlewa
 	return (
 		<details open={open} key="root" classes={[
 			theme.variant(),
-			themedCss.root
+			themedCss.root,
+			responsive && themedCss.responsive
 		]}>
 			{summary && (
 				<summary key="summary" classes={[
