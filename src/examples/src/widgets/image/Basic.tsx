@@ -179,10 +179,10 @@ const exampleEvent = {
 const exampleSchemaO = {
   "@context": "https://schema.org",
   "@type": "MusicGroup",
-  "event": [
+  "schema:event": [
       {
           "@type": "Event",
-          "testObj": {lorem: "ipsum", ipsum: "lorem"},
+          "testObj": {lorem: "ipsum", ipsum: "lorem", dolor: {ipsum: [["dolor", "lorem"], "sunt"], sunt: {lorem: 'ipsum'}}},
           "location": "Memphis, TN, US",
           "offers": "ticketmaster.com/foofighters/may20-2011",
           "startDate": "2011-05-20",
@@ -196,7 +196,7 @@ const exampleSchemaO = {
           "url": "foo-fighters-may23-midamericacenter"
       }
   ],
-  "image": [
+  "http://schema.org/image": [
       "foofighters-1.jpg",
       "foofighters-2.jpg",
       "foofighters-3.jpg"
