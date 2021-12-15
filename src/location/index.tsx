@@ -25,6 +25,8 @@ return <Details classes={classes} serif open={open}>
 export interface LocationProperties extends AsObjectNormalized {
 	/** Is a map is connected? Location w. close icon */
 	hasMap?: boolean;
+	/** Is it online too ? */
+	hasOnline?: boolean;
 	/** If a map is connected, is any location open? */
 	locationOpenIndex?: number|false;
 
@@ -46,7 +48,7 @@ const factory = create({ theme, focus, icache, id, i18nActivityPub }).properties
 const Location = factory(function Location({ properties, middleware: { theme, focus, icache, id, i18nActivityPub } }) {
 	const themedCss = theme.classes(css);
 	const {
-		hasMap = false, locationOpenIndex = false, isDetails = false, large = false,
+		hasMap = false, hasOnline = false, locationOpenIndex = false, isDetails = false, large = false,
 		onLocation, onToggle, onFocusPrevious
 	} = properties();
 	const {
@@ -54,17 +56,17 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 		'schema:contentLocation': contentLocation = [],
 		'schema:spatialCoverage': spatialCoverage = [],
 		'schema:locationCreated': locationCreated = [],
-		location: asLocation = ([] as (AsObjectNormalized[])),
+		location: asLoc = ([] as (AsObjectNormalized[])),
 		...ld
 	} = i18nActivityPub.normalized<LocationProperties>();
 
-console.log(asLocation, ld, schemaToAsLocation(asLocation[0], type))
+console.log(asLoc, ld, schemaToAsLocation(asLoc[0], type))
 
 	const { messages, format } = i18nActivityPub.localize(bundle);
 	const {get, getOrSet, set} = icache;
 	hasMap && set('locationOpenIndex', locationOpenIndex, false);
-
-	const asLocationIds: any = (asLocation as (AsObjectNormalized[])).map((l) => l.id||'').reduce((o: any, k, i) => {
+	const asLocation: AsObjectNormalized[] = asLoc;
+	const asLocationIds: any = asLocation.map((l) => l.id||'').reduce((o: any, k, i) => {
 		o[k] = `${i}`;
 		return o
 	}, {});
@@ -181,30 +183,36 @@ console.log(asLocation, ld, schemaToAsLocation(asLocation[0], type))
 					!isDetails && large && themedCss.large
 				]}
 			>
-				{loc.latitude && loc.longitude &&
-					<span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
-						{!loc.name && latLngStr(loc)||''}
-						<meta itemprop="latitude" content={`${loc.latitude}`} />
-						<meta itemprop="longitude" content={`${loc.longitude}`} />
-					</span>
-				}
-				{(!isDetails || !isFold) && (loc.name ?
-					<span classes={[
-						themedCss.name,
-						location.length === 1 && themedCss.rootSummary,
-						location.length === 1 && detailsCss.summaryContent
-					]} itemprop="name">
-						{locIcon}{loc.name}
-					</span> :
-					locIcon)
-				}
-				{isFold && isDetails && <span classes={themedCss.postalAddress}>
-					{locIcon}
-					<I18nAddress
-						itemClasses={themedCss.postalAddressItem}
-						address={{ name: loc.name, ...(loc['schema:address']||{}) }}
-					/>
-				</span>}
+				<span classes={[themedCss.detailsSummaryOpen]}>
+					{format('locationCount',{count: location.length})}
+					{hasOnline && ` & ${messages.online}`}
+				</span>
+				<span classes={[themedCss.detailsSummaryClosed]}>
+					{loc.latitude && loc.longitude &&
+						<span itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+							{!loc.name && latLngStr(loc)||''}
+							<meta itemprop="latitude" content={`${loc.latitude}`} />
+							<meta itemprop="longitude" content={`${loc.longitude}`} />
+						</span>
+					}
+					{(!isDetails || !isFold) && (loc.name ?
+						<span classes={[
+							themedCss.name,
+							location.length === 1 && themedCss.rootSummary,
+							location.length === 1 && detailsCss.summaryContent
+						]} itemprop="name">
+							{locIcon}{loc.name}
+						</span> :
+						locIcon)
+					}
+					{isFold && isDetails && <span classes={themedCss.postalAddress}>
+						{locIcon}
+						<I18nAddress
+							itemClasses={themedCss.postalAddressItem}
+							address={{ name: loc.name, ...(loc['schema:address']||{}) }}
+						/>
+					</span>}
+				</span>
 			</address>
 			{loc.latitude && loc.longitude && !hasMap && <Icon
 				type="mapMarker"
@@ -263,18 +271,14 @@ console.log(asLocation, ld, schemaToAsLocation(asLocation[0], type))
 	>
 
 	{isDetails ? <Details
-		responsive
 		size={large ? 'l' : 's'}
 		classes={{ '@redaktor/widgets/details': { summary: [themedCss.detailsSummary] } }}
 	>
 			{{
 				summary: <virtual>
-					<span classes={[themedCss.detailsSummaryOpen]}>
-						{format('locationCount',{count:location.length})}
-					</span>
 					{getAddressNode(get('locationOpenIndex')||0, false, true)}
 					{location.length > 1 && <virtual>
-						<output classes={themedCss.moreCount}>{` +${location.length-1}`}</output>
+						<output classes={themedCss.moreCount}>{` +${location.length-(hasOnline ? 0 : 1)}`}</output>
 					</virtual>}
 				</virtual>,
 				content: <ul classes={themedCss.detailsUl}>

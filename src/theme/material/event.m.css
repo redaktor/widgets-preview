@@ -232,7 +232,7 @@ rgba(0,0,0,1) 50%, rgba(0,0,0,0) calc(50% + 2px), rgba(0,0,0,0) 100%);
 	width: 100%;
 	min-height: calc(var(--l) * var(--line));
 	margin-bottom: calc(var(--line) * -2);
-	z-index: 1;
+	z-index: -1;
 }
 .imageWrapper.max {
 	height: calc(var(--line) * var(--l,19));

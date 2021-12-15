@@ -142,15 +142,13 @@
 	white-space: nowrap;
 	overflow: hidden;
 }
-.detailsSummaryOpen {
-	position: absolute;
-}
+
 .detailsSummaryOpen,
-details[open] .detailsSummary .detailsItem {
-	opacity: 0;
+details[open] .detailsSummary .detailsSummaryClosed {
+	display: none;
 }
 details[open] .detailsSummary .detailsSummaryOpen {
-	opacity: 1;
+	display: block;
 }
 .iconWrapper {
 	min-width: 128px;

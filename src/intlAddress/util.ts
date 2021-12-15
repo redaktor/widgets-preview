@@ -142,21 +142,21 @@ export default function intlAddress(schemaPartial: any, region: Region, type: 'p
   }
   if (!o.areaServed && !!o.addressRegion) { o.areaServed = o.addressRegion }
 
-  const formatArray = Array.isArray(addressFormats[region]) ? addressFormats[region] :
+  const formatedAddressArray = Array.isArray(addressFormats[region]) ? addressFormats[region] :
     (typeof addressFormats[region] === 'object' && addressFormats[region].hasOwnProperty(type) ?
       ((addressFormats as any)[region][type]) : (formats.US||[])) || (formats.US||[]);
 
-  return formatArray.map((a: any[]) => {
+  return formatedAddressArray.map((a: any[]) => {
     return a.map((so) => {
       if (typeof so === 'string' && o.hasOwnProperty(so)) {
-        const value = Array.isArray(o[so]) ? o[so].join(' ') :
-          (typeof o[so] === 'string' ? o[so] : '');
+        const value = (Array.isArray(o[so]) ? o[so].join(' ') :
+          (typeof o[so] === 'string' ? o[so] : '')).replace(/,,/g, ',');
         return { itemprop: so, value }
       }
       if (typeof so === 'object' && o.hasOwnProperty(so.attr)) {
         const itemprop = so.attr;
-        let value = Array.isArray(o[itemprop]) ? o[itemprop].join(' ') :
-          (typeof o[itemprop] === 'string' ? o[itemprop] : '');
+        let value = (Array.isArray(o[itemprop]) ? o[itemprop].join(' ') :
+          (typeof o[itemprop] === 'string' ? o[itemprop] : '')).replace(/,,/g, ',');
         so.transforms.forEach((fn: (s:string) => any) => { value = fn(value) })
         return { itemprop, value }
       }

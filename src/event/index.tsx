@@ -10,11 +10,13 @@ import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import Paginated from '../paginated';
 import TimeRelative from '../timeRelative';
-import Caption from '../caption';
+import Caption, { coveredLD as captionCoveredLD } from '../caption';
 import Calendar from '../calendar';
 import Map from '../map';
 import Rate from '../rate';
-import Icon, {IconType} from '../icon';
+import Details from '../details';
+import Structure from '../structure';
+import Icon from '../icon';
 import Images from '../images';
 import Img, { getWH } from '../image/image';
 // import * as ui from '../theme/material/_ui.m.css';
@@ -106,6 +108,14 @@ remainingAttendeeCapacity int
 
 // <Icon type="image" spaced={image.length < 11 ? 'right' : false} />
 */
+export const coveredLD = captionCoveredLD.concat([
+	'image', 'startTime', 'endTime', 'date', 'published', 'updated', 'duration', 'dc:created',
+	'event', 'schema:event', 'schema:startDate', 'schema:endDate', 'schema:dateCreated',
+	'schema:contentReferenceTime', 'schema:expires', 'schema:startDate', 'schema:endDate',
+	'schema:eventAttendanceMode', 'schema:eventStatus', 'schema:previousStartDate',
+	'schema:inLanguage', 'schema:aggregateRating', 'schema:maximumAttendeeCapacity',
+	'schema:maximumPhysicalAttendeeCapacity', 'schema:maximumVirtualAttendeeCapacity'
+]);
 export const Event = factory(function Event({
 	middleware: { icache, id, i18nActivityPub, theme, breakpoints /*, resource */ },
 	properties
@@ -200,7 +210,6 @@ export const Event = factory(function Event({
 			});
 			return !xsdDate ? '' : intlDate.format(jsDate);
 		}
-
 	 	const isSameThanStart = key === 'endTime' && !!startTime &&
 			startTime.split('T')[0] === endTime.split('T')[0];
 		const jsNow = new Date();
@@ -297,9 +306,6 @@ export const Event = factory(function Event({
 			{!!mode && !isCancelled && !isPostponed &&
 				<span classes={themedCss.eventMeta}>{(messages as any)[`${mode}Short`]}</span>
 			}
-			<Icon icon={ld.icon} type="event" size={!ld.icon ? 's' : 'xl'} spaced={true}
-				maxWidth="var(--line2)" maxHeight="var(--line2)"
-			/>
 		</span>
 	</span>;
 
@@ -396,7 +402,7 @@ export const Event = factory(function Event({
 					</Paginated>}
 				</div>
 				<div classes={themedCss.locationWrapper}>
-					<Caption {...(ld)} colored largeLocation locationIsDetails
+					<Caption {...(ld)} locationHasOnline={mode === 'online' || mode === 'mixed'} colored largeLocation locationIsDetails
 						classes={{
 							'@redaktor/widgets/images': { meta: [themedCss.location], moreCount: [themedCss.locationMoreCount] },
 							'@redaktor/widgets/locationsDates': { root: [themedCss.locationDetails] }
@@ -449,6 +455,12 @@ export const Event = factory(function Event({
 			{!!aggregateRating && <div classes={themedCss.rateWrapper}>
 				<Rate readOnly {...ldPartial(aggregateRating)} />
 			</div>}
+			<Details>
+				{{
+					summary: <span>{messages.moreInfo}</span>,
+					content: <Structure omitProperties={coveredLD} value={ld} />
+				}}
+			</Details>
 		</div>
 	</div>
 });

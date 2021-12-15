@@ -21,5 +21,6 @@ export default {
 	updatedTitle: 'Date when the content was updated in the Fediverse via ActivityPub',
 	expires: 'verfällt',
 	expiresTitle: 'Date the content expires and is no longer useful or available',
-	date: 'Date'
+	date: 'Date',
+	online: 'online'
 };

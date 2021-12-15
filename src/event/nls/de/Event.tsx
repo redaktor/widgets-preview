@@ -15,5 +15,6 @@ export default {
 	mixedShort: 'hybrid',
 	updated: 'geändert',
 	tba: 'wird angekündigt',
-	previousStartDate: 'vorheriges Datum war'
+	previousStartDate: 'vorheriges Datum war',
+	moreInfo: 'Weiterführende Informationen'
 };

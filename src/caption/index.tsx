@@ -40,8 +40,10 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	itemsPerPage?: number;
 	/* hover animation for scroller, grayscale -> colors, default true */
 	desaturateScroll?: boolean;
-
+	/* location options */
 	locationIsDetails?: boolean;
+	locationHasMap?: boolean;
+	locationHasOnline?: boolean;
 	/* larger location font */
 	largeLocation?: boolean;
 	/* larger date font */
@@ -75,6 +77,11 @@ const factory = create({ theme, focus, icache, i18nActivityPub })
 	.properties<CaptionProperties>()
 	.children<RenderResult | undefined>();
 
+export const coveredLD = [
+	'@context', '@type', 'type', 'name', 'nameMap', 'summary', 'summaryMap',
+	'content', 'contentMap', 'location', 'attributedTo', 'attachment',
+	'sensitive', 'locale', 'locales'
+];
 export const Caption = factory(function Caption({
 	middleware: { theme, focus, icache, i18nActivityPub },
 	properties,
@@ -87,8 +94,8 @@ export const Caption = factory(function Caption({
 	const {
 		locale: currentLocale, compact = false, hasDetails = false, isOpen = false,
 		dateOpenIndex = false, locationOpenIndex = false, size = 'm', view = 'column', colored = false,
-		largeLocation = false, locationIsDetails = false, largeDate = false, isImageCaption = false, contentLines: cl,
-		onToggle, onFocusPrevious, onDate, onLocation, onLocale
+		largeLocation = false, locationIsDetails = false, locationHasOnline = false, locationHasMap = true,
+		largeDate = false, isImageCaption = false, contentLines: cl, onToggle, onFocusPrevious, onDate, onLocation, onLocale
 	} = properties();
 	const {
 		href = '', name: n, summary, content, sensitive, attachment, omitProperties, ...ld
@@ -116,7 +123,7 @@ export const Caption = factory(function Caption({
 		themedCss.attributions,
 		!!ld.attributedTo && ld.attributedTo.length === 1 ? themedCss.singleAttributions : void 0
 	];
-	console.log(children());
+
 	const nodes = <div classes={[themedCss.captionWrapper, !!(children().length) && themedCss.hasChildren]}>
 		{!!locales && locales.length > 1 && !omitProperties.has('locales') &&
 			<div classes={themedCss.locales}>
@@ -165,7 +172,8 @@ export const Caption = factory(function Caption({
 				} }}
 				large={largeLocation}
 				isDetails={locationIsDetails}
-				hasMap={true}
+				hasOnline={locationHasOnline}
+				hasMap={locationHasMap}
 				locationOpenIndex={locationOpenIndex}
 				onFocusPrevious={onFocusPrevious}
 				onLocation={(location, i) => { onLocation && onLocation(location, i) }}

@@ -17,6 +17,7 @@ export const marker: string;
 export const markerIcon: string;
 export const detailsItem: string;
 export const detailsSummaryOpen: string;
+export const detailsSummaryClosed: string;
 export const iconWrapper: string;
 export const name: string;
 export const postalAddress: string;

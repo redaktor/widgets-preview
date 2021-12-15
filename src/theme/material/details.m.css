@@ -33,6 +33,7 @@
 	display: inline-block;
 	padding-bottom: calc(var(--ui-border-width-emphasized) * 2);
 	margin-bottom: calc(var(--ui-border-width-emphasized) * -2);
+	max-width: calc(100% - (var(--grid-base,8px) * 2));
 }
 .responsive .summaryContent {
 	width: calc(100% - (var(--grid-base,8px) * 2));
@@ -50,7 +51,7 @@
 	transform: scaleX(0);
 }
 .animated .summaryContent::after {
-	transition: transform var(--ui-dpd-8) var(--ui-easing);
+	transition: transform var(--ui-dpd-4) var(--ui-easing);
 }
 .summary:focus .summaryContent::after,
 .root[open] .summaryContent::after {

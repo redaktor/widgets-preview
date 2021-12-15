@@ -23,7 +23,8 @@ const messages = {
 	mixedShort: 'hybrid',
 	updated: 'updated',
 	tba: 'to be announced',
-	previousStartDate: 'previous date was'
+	previousStartDate: 'previous date was',
+	moreInfo: 'further information'
 };
 
 export default { locales, messages };

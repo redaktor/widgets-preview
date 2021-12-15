@@ -151,6 +151,7 @@ LOC[5].location["schema:address"] = {
   "schema:streetAddress": "20341 Whitworth Institute 405 N. Whitworth"
 };
 const exampleEvent = {
+  'schema:doorTime': '2021-12-24T20:00:00-08:00',
   summary: summary, content, attributedTo, ...{location: [LOC[5].location, LOC[4].location]},
   image: [{..._3_2, summary: exampleText, updated: "2018-09-12T12:12:12Z"},{..._2_3, summary: exampleText, updated: "2018-09-12T12:12:12Z"}],
   startTime: '2021-12-24T20:00:00-08:00',
@@ -175,7 +176,7 @@ const exampleEvent = {
     de: "PRESSURE DROP-Boss Reggae (spät-)Allnighter ft. Selekta Bebek"
   }
 };
-
+/*
 const exampleSchemaO = {
   "@context": "https://schema.org",
   "@type": "MusicGroup",
@@ -245,6 +246,8 @@ const exampleSchemaO = {
       }
   }
 }
+<Structure omitProperties={['schema:event','event']} value={exampleSchemaO} />
+*/
 
 const factory = create();
 export default factory(function Basic() {
@@ -257,7 +260,6 @@ console.log('Event example',exampleEvent)
 
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
-            <Structure value={exampleSchemaO} />
             <Event id="event1" type="Event"
               {...exampleEvent}
               hasAttachment={false}

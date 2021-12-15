@@ -73,3 +73,32 @@ export function schemaLanguages(a: LocO | LocO[], localizeLocale: string): LocO[
 		return name || alternateName || ''
 	});
 }
+
+export interface SplitPrefix {
+	key: string;
+	url: string;
+	prefix: string;
+	hasUrl: boolean;
+}
+export function splitPrefix(key: string): SplitPrefix {
+	for (let url of [
+		'http://www.w3.org/1999/02/22-rdf-syntax-ns#/',
+		'http://www.w3.org/2000/01/rdf-schema#'
+	]) {
+		if (key.trim().indexOf(url) === 0) {
+			key = `@${text.replace(url,'')}`;
+			return { key, url, prefix: 'rdf', hasUrl: true }
+		}
+	}
+	for (let prefix in wellKnownVocab) {
+		const url = wellKnownVocab[(prefix as keyof typeof wellKnownVocab)];
+		if (key.trim().indexOf(url) === 0) {
+			key = key.replace(url, '');
+			return { key, url, prefix, hasUrl: true }
+		} else if (key.trim().indexOf(`${prefix}:`) === 0) {
+			key = key.replace(`${prefix}:`,'');
+			return { key, url, prefix, hasUrl: false }
+		}
+	}
+	return { key, url: '', prefix: '', hasUrl: false }
+}
