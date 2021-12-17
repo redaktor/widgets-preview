@@ -502,6 +502,20 @@ em,
 .tabular {
   font-variant-numeric: tabular-nums;
 }
+
+a::before {
+  font-family: 'redaktor' !important;
+  margin-right: var(--ml, 4px);
+}
+a:not([href^='mailto:']):not([href^='tel:']):not([href^='#']):not([href^='/'])[target="_blank"]::before {
+  content: '\e906';
+}
+a[href^='mailto:']::before {
+  content: '\f0e0'
+}
+a[href^='tel:']::before {
+  content: '\f095'
+}
 /*--------------------------------------------------------------
 Typo <---
 --------------------------------------------------------------*/

@@ -205,12 +205,12 @@ export const Caption = factory(function Caption({
 		</virtual>}
 	</virtual>
 
-const rootClasses = [themedCss.pageCaption, viewCss.pageCaption];
-return isImageCaption ? <figcaption key="root" classes={rootClasses}>
-	{allNodes}
-</figcaption> : <div key="divroot" classes={rootClasses}>
-	{allNodes}
-</div>
+	const rootClasses = [themedCss.pageCaption, viewCss.pageCaption];
+	return isImageCaption ? <figcaption key="root" classes={rootClasses}>
+		{allNodes}
+	</figcaption> : <div key="divroot" classes={rootClasses}>
+		{allNodes}
+	</div>
 });
 
 export default Caption;

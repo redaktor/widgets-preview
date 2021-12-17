@@ -11,7 +11,7 @@ import breakpoints from '../middleware/breakpoint';
 import Paginated from '../paginated';
 import TimeRelative from '../timeRelative';
 import Caption, { coveredLD as captionCoveredLD } from '../caption';
-import Calendar from '../calendar';
+import I18nAddress from '../intlAddress';
 import Map from '../map';
 import Rate from '../rate';
 import Details from '../details';
@@ -20,11 +20,11 @@ import Icon from '../icon';
 import Images from '../images';
 import Img, { getWH } from '../image/image';
 // import * as ui from '../theme/material/_ui.m.css';
-import bundle from './nls/Event';
+import bundle from './nls/Place';
 import * as viewCSS from '../theme/material/_view.m.css';
-import * as css from '../theme/material/event.m.css';
+import * as css from '../theme/material/place.m.css';
 /* TODO ISSUE in /images */
-export interface EventProperties extends AsObject {
+export interface PlaceProperties extends AsObject {
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 	fullscreen?: boolean;
 	fit?: boolean;
@@ -40,7 +40,7 @@ export interface EventProperties extends AsObject {
 	onMouseLeave?: (evt: MouseEvent) => any;
 }
 
-export interface EventIcache {
+export interface PlaceIcache {
 	currentLocale: {locale: string, rtl?: boolean};
 	brightnessClass: string;
 	loadedImages: boolean;
@@ -48,116 +48,78 @@ export interface EventIcache {
 	mapWasOpen: boolean;
 	map: any;
 	mapView: any;
-	calendarOpen: boolean;
 	locationOpenIndex?: number | false;
 }
-export interface EventChildren {
+export interface PlaceChildren {
 	/** Optional Header */
 	timeWrapper?: RenderResult;
 	/** Optional Footer */
 	footer?: RenderResult;
 }
 
-const icache = createICacheMiddleware<EventIcache>();
+const icache = createICacheMiddleware<PlaceIcache>();
 const factory = create({ icache, id, i18nActivityPub, theme, breakpoints })
-	.properties<EventProperties>()
-	.children<EventChildren | RenderResult | undefined>();
+	.properties<PlaceProperties>()
+	.children<PlaceChildren | RenderResult | undefined>();
 
 /* TODO
-duration // schema: dateCreated, contentReferenceTime, expires
-
-[AP similar] duration, startDate, endDate, location + Thing
+[AP similar] icon: logo, image: photo
 AP 			context [is similar to: ]
-schema 	eventSchedule		Schedule
+schema
 
-// TODO: address region select
-rating review
-? review 							https://schema.org/Review
+slogan
+tourBookingPage
+event Upcoming or past event associated with this place, organization, or action.
+amenityFeature
+branchCode
+isicV4
+globalLocationNumber
+containedInPlace, containsPlace
+geo …
 
-// STRUCT
-? doorTime 						DATES
-? audience 						Audience
-? typicalAgeRange			Text
-? subEvent/superEvent
-? recordedIn					CreativeWork
-? workFeatured / workPerformed
-? subEvent/superEvent
+boolean:
+hasDriveThroughService
+isAccessibleForFree
+publicAccess
+smokingAllowed
 
-
-Organization or Person:
-- organizer
-- performer
-- funder
-- sponsor
-- translator
-- attendee
-contributor
-composer
-director
-actor (e.g. tv, Person)
-
-// ACTIONS - ticket btn etc.
-isAccessibleForFree boolean
-"offers": {
-"@type": "Offer",
-"price": "13.00",
-"priceCurrency": "USD",
-"url": "http://www.ticketfly.com/purchase/309433"
-}
-remainingAttendeeCapacity int
+maximumAttendeeCapacity 		Int
+openingHoursSpecification		OpeningHoursSpecification
+specialOpeningHoursSpecification
 
 
 More specific Types
-BusinessEvent
-ChildrensEvent
-ComedyEvent
-CourseInstance
-DanceEvent
-DeliveryEvent
-EducationEvent
-EventSeries
-ExhibitionEvent
-Festival
-FoodEvent
-Hackathon
-LiteraryEvent
-MusicEvent
-PublicationEvent
-SaleEvent
-ScreeningEvent
-SocialEvent
-SportsEvent
-TheaterEvent
-VisualArtsEvent
-
-// <Icon type="image" spaced={image.length < 11 ? 'right' : false} />
+Accommodation
+AdministrativeArea
+CivicStructure
+Landform
+LandmarksOrHistoricalBuildings
+LocalBusiness
+Residence
+TouristAttraction
+TouristDestination
 */
 export const coveredLD = captionCoveredLD.concat([
-	'image', 'startTime', 'endTime', 'date', 'duration', 'dc:created',
-	'event', 'schema:event', 'schema:startDate', 'schema:endDate', 'schema:dateCreated',
-	'schema:contentReferenceTime', 'schema:expires', 'schema:startDate', 'schema:endDate',
-	'schema:eventAttendanceMode', 'schema:eventStatus', 'schema:previousStartDate',
-	'schema:inLanguage', 'schema:aggregateRating', 'schema:maximumAttendeeCapacity',
-	'schema:maximumPhysicalAttendeeCapacity', 'schema:maximumVirtualAttendeeCapacity'
+	'image'
 ]);
-export const Event = factory(function event({
+export const Place = factory(function place({
 	middleware: { icache, id, i18nActivityPub, theme, breakpoints /*, resource */ },
 	properties
 }) {
+	const {
+		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
+		color = 'cyan', fit = false, view = 'column'
+	} = properties();
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
 	const { messages } = i18nActivityPub.localize(bundle);
-	const {
-		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		color = 'red', fit = false, view = 'column'
-	} = properties();
 
 	const {
 		startTime: start, endTime: end, published, updated, duration,
 		'dc:created': contentCreated = [],
 		omitProperties = new Set(),
 		...ld
-	} = i18nActivityPub.normalized<EventProperties>();
+	} = i18nActivityPub.normalized<PlaceProperties>();
 
 	if (view === 'tableRow') {
 		return 'TODO'
@@ -170,7 +132,7 @@ export const Event = factory(function event({
 		vp = breakpoint;
 	}
 	const { name, image = [] } = ld;
-	const { /* TODO dateCreated, contentReferenceTime, expires */
+	const {
 		dateCreated = [], contentReferenceTime = [], expires = [], startDate, endDate,
 		eventAttendanceMode = '', eventStatus = '', previousStartDate, inLanguage, aggregateRating,
 		maximumAttendeeCapacity: mc,
@@ -185,7 +147,7 @@ export const Event = factory(function event({
 			(eventAttendanceMode.replace(sUrl,'') === 'OnlineEventAttendanceMode' ? 'online' : 'offline'));
 	const inLanguages = schemaLanguages(inLanguage, i18nActivityPub.get().locale);
 	const [isCancelled, isPostponed] = [status === 'EventCancelled', status === 'EventPostponed'];
-
+console.log(inLanguages);
 	const startTime = start || startDate;
 	const endTime = (isCancelled || isPostponed ? void 0 : end || endDate);
 
@@ -205,82 +167,14 @@ export const Event = factory(function event({
 		1.25, 1.3333, 1.5, 1.6, 1.7777, 2.2857, 2.6666, 3, 4.5
 	].reduce((n, ar, i) => aspectRatio > ar ? i+1 : n, 0);
 
-	let jsDates: any = {};
-	try {
-		jsDates = !startTime ? {} : (!endTime ? {
-			start: new Date(startTime)
-		} : {
-			start: new Date(startTime),
-			end: new Date(endTime)
-		})
-	} catch(e) { }
-
-	let isPast = false;
-	type TimeKey = 'startTime' | 'endTime' | 'date';
-	const getTimeNode = (key: TimeKey = 'startTime', customDate?: string) => {
-		if ((!startTime && !endTime) || isPostponed) {
-			return key !== 'startTime' ? '' : <div classes={[themedCss.time, isPast && themedCss.pastDate]}>
-				<h1 classes={[themedCss.noDay]}>?</h1>
-				{!!startTime && <small classes={[themedCss.statusByline]}>{messages.tba}</small>}
-			</div>
-		}
-		const xsdDate = !!customDate ? customDate : (key === 'startTime' ? startTime : endTime);
-		const jsDate = xsdDate ? new Date(xsdDate) : void 0;
-		if (!jsDate) { return '' }
-		if (key === 'date') {
-			const intlDate = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en'], {
-				weekday: 'short', year: 'numeric', month: 'long', day: 'numeric',
-				hour: 'numeric', minute: 'numeric'
-			});
-			return !xsdDate ? '' : intlDate.format(jsDate);
-		}
-	 	const isSameThanStart = key === 'endTime' && !!startTime &&
-			startTime.split('T')[0] === endTime.split('T')[0];
-		const jsNow = new Date();
-		const locShortMonth = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en'], {
-			month: 'short'
-		}).format(jsDate);
-		const timeOfDay = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en'], {
-			hour: '2-digit',
-			minute: '2-digit',
-			timeZoneName: 'short'
-		}).format(jsDate);
-		const [curYear, curMonth, curDate] = [jsNow.getFullYear(), jsNow.getMonth(), jsNow.getDate()];
-		const [year = 0, month = 0, date = 0] = [jsDate.getFullYear(), jsDate.getMonth(), jsDate.getDate()];
-		const isSameYear = curYear === year;
-		const isSameMonth = !!isSameYear && curMonth === month;
-		const isSameDate = isCancelled || (!!isSameYear && !!isSameMonth && curDate === date);
-		isPast = isCancelled || Date.parse(xsdDate) < jsNow.getTime();
-		const datetime = isCancelled ? '' : xsdDate;
-
- 		return <virtual>
-			{key === 'endTime' && <hr classes={[!isSameThanStart ? themedCss.until : themedCss.untilSmall]} />}
-			<time key={key} classes={[themedCss.time, isPast && themedCss.pastDate]} datetime={datetime}>
-				{!isSameThanStart && <virtual>
-					<h1 classes={[themedCss.day, isSameDate && themedCss.sameDate]}>
-						{date}
-					</h1>
-					<p classes={[themedCss.monthYear]}>
-						<b classes={isSameMonth && themedCss.sameMonthYear}>{locShortMonth}</b>
-						<br />
-						<span classes={isSameYear && themedCss.sameMonthYear}>{year}</span>
-					</p>
-				</virtual>}
-				<small classes={[themedCss.timeOfDay]}>{timeOfDay}</small>
-			</time>
-		</virtual>
-	}
-
 	const timeOrStatusNode = !startTime && !endTime ? '' : (isCancelled || isPostponed ?
-		<h5 classes={themedCss.eventStatus}>
+		<h5 classes={themedCss.placeStatus}>
 			<Icon type={isCancelled ? 'cancel' : 'bullhorn'} spaced="right" />
 			{isCancelled ? messages.cancelled : messages.postponed}
-		</h5> : <small classes={themedCss.eventMeta}>
-			<TimeRelative date={startTime||endTime||''} />
+		</h5> : <small classes={themedCss.placeMeta}>
+			<TimeRelative date={startTime||endTime} />
 		</small>);
 
-	const isWideDate = (!!jsDates.hasOwnProperty('start') && jsDates.start.getDate() > 9) ||
-		(!!jsDates.hasOwnProperty('end') && jsDates.end.getDate() > 9);
 	const images = <div classes={themedCss.imagesWrapper}>
 		<Images {...ld}
 			key="images"
@@ -290,13 +184,7 @@ export const Event = factory(function event({
 		/>
 	</div>
 
-	const setCalendar = () => {
-		set('mapOpen', false, false);
-		set('locationOpenIndex', false);
-		set('calendarOpen', true);
-	}
 	const setMap = (location: AsObjectNormalized|false,	locationOpenIndex: number|false) => {
-		location !== false && set('calendarOpen', false, false);
 		set('locationOpenIndex', locationOpenIndex, false);
 		set('mapWasOpen', true, false);
 		set('mapOpen', location);
@@ -306,7 +194,7 @@ export const Event = factory(function event({
 		}
 	}
 
-	const attendanceNodes = <span classes={themedCss.eventAttendance}>
+	const attendanceNodes = <span classes={themedCss.placeAttendance}>
 		{status === 'EventMovedOnline' && <Icon type="update" spaced="right" title={messages.movedOnline} />}
 		{status === 'EventMovedOnline' && <span classes={themedCss.attendanceCount}>{messages.updated}</span>}
 		{(mode === 'mixed' || mode === 'online' || !!mvc) &&
@@ -328,21 +216,17 @@ export const Event = factory(function event({
 		}
 		<span title={!!mode ? (messages as any)[`${mode}Event`] : (!isCancelled ? messages.cancelled : messages.event)}>
 			{!!mode && !isCancelled && !isPostponed &&
-				<span classes={themedCss.eventMeta}>{(messages as any)[`${mode}Short`]}</span>
+				<span classes={themedCss.placeMeta}>{(messages as any)[`${mode}Short`]}</span>
 			}
 		</span>
 	</span>;
-
+console.log('LD',ld);
 	return <div
 		key="root"
 		classes={[
 			themedCss.root,
-			isWideDate && themedCss.wideDate,
-			isPast && themedCss.pastDate,
-			!!get('loadedImages') && themedCss.imagesOpen,
-			isCancelled && themedCss.cancelled,
-			isPostponed && themedCss.postponed,
 			theme.variant(),
+			// !!get('loadedImages') && themedCss.imagesOpen,
 			// isColumn ? themedCss.column : themedCss.row,
 			viewCSS.item,
 			!!viewDesktopCSS && viewDesktopCSS.item,
@@ -382,60 +266,20 @@ export const Event = factory(function event({
 			/>)}
 		</div>}
 		<div classes={themedCss.header}>
-			<details classes={[
-				themedCss.details,
-				(isCancelled || isPostponed) && themedCss.noContent
-			]}>
-				<summary onclick={setCalendar} classes={themedCss.timeWrapper}>
-					{status === 'EventRescheduled' && <small classes={themedCss.eventStatus}>
-						<Icon size="s" type="alert" spaced="right" /> {messages.rescheduled}
-					</small>}
-					{!!startTime && getTimeNode()}
-					{!!endTime && getTimeNode('endTime')}
-				</summary>
-				{!omitProperties.has('date') && !isCancelled && !isPostponed &&
-					<div classes={themedCss.calendarWrapper}>
-						{status === 'EventRescheduled' && previousStartDate && <p classes={themedCss.attendanceCount}>
-							<Icon color="red" size="s" type="alert" spaced="right" />
-							{messages.previousStartDate} {getTimeNode('date', previousStartDate)}
-						</p>}
-						<Calendar
-							{...jsDates}
-							color={color}
-							readonly
-							responsive
-							weekendDivider
-							onValue={(start, end) => {
-								console.log(start, end);
-								// icache.set('start', start);
-								// icache.set('end', end);
-							}}
-						/>
-					</div>
-				}
-			</details>
-
 			<div classes={themedCss.topWrapper}>
-				<div classes={themedCss.timeRelativeWrapper}>
+				<div classes={themedCss.metaWrapper}>
 					{timeOrStatusNode}
 					{attendanceNodes}
 				</div>
 				<div classes={themedCss.nameWrapper}>
 					{name && <Paginated key="name" property="name" spaced={false}>
-						{clampStrings(name, 250).map((s) => s.length < 125 ? <h3>{s}</h3> : <h5>{s}</h5>)}
+						{clampStrings(name, 250).map((s) => <h5>{s}</h5>)}
 					</Paginated>}
 				</div>
-				<div classes={themedCss.locationWrapper}>
-					<Caption {...(ld)} locationHasOnline={mode === 'online' || mode === 'mixed'} colored largeLocation locationIsDetails
-						classes={{
-							'@redaktor/widgets/images': { meta: [themedCss.location], moreCount: [themedCss.locationMoreCount] },
-							'@redaktor/widgets/locationsDates': { root: [themedCss.locationDetails] }
-						}}
-						omitProperties={['name','date','locales','attributedTo','summary','content']}
-						onLocation={setMap}
-						locationOpenIndex={get('locationOpenIndex')}
-					/>
-				</div>
+				<I18nAddress
+					address={(ld['schema:address']||{})}
+					additionalProperties={['email','telephone','faxNumber','hoursAvailable','availableLanguage']}
+				/>
 			</div>
 		</div>
 		<div classes={themedCss.content}>
@@ -470,11 +314,7 @@ export const Event = factory(function event({
 					contentLines={3+addLines}
 					omitProperties={['name','date','location']}
 					onLocale={(l) => i18nActivityPub.setLocale(l)}
-				>
-					{!!inLanguages.length && <small classes={[themedCss.eventMeta, themedCss.inLanguage]}>
-						{messages.eventInLang} {inLanguages.join(',')}
-					</small>}
-				</Caption>
+				/>
 			</div>
 			{!!aggregateRating && <div classes={themedCss.rateWrapper}>
 				<Rate readOnly {...ldPartial(aggregateRating)} />
@@ -489,4 +329,4 @@ export const Event = factory(function event({
 	</div>
 });
 
-export default Event;
+export default Place;

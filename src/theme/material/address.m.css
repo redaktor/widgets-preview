@@ -1,0 +1,8 @@
+.root {
+
+}
+.contactWrapper {
+	display: flex;
+	justify-content: space-between;
+	color: var(--text-muted);
+}

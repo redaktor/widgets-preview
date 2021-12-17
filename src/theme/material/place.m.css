@@ -1,0 +1,124 @@
+.root {
+	padding-bottom: var(--line);
+}
+.header {
+	display: flex;
+	align-items: flex-end;
+	position: relative;
+	width:100%;
+	padding: 0px var(--grid-base,8px) 0px 0px;
+	border-radius: 0px 0px 0px var(--ui-border-radius-emphasized);
+	z-index: 2;
+}
+.content {
+	z-index: 1;
+}
+.mapWrapper.closed {
+	display: none;
+}
+
+.placeMeta {
+	composes: s italic serif from './_typo.css';
+}
+.placeMeta,
+.placeStatus {
+	color: var(--ui-text);
+	display: inline-block;
+}
+.placeAttendance {}
+
+.topWrapper {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-self: stretch;
+	z-index: 9;
+}
+.metaWrapper {
+	flex: 1;
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	color: var(--ui-filled-off);
+}
+.attendanceCount {
+	color: var(--text-muted);
+	margin-right: var(--grid-base);
+}
+.nameWrapper,
+.locationWrapper {
+	flex: 0;
+	position:relative;
+}
+
+.contentWrapper {
+	--lt: calc(var(--line) + var(--pt));
+	background: linear-gradient(transparent var(--lt), var(--bg) var(--lt));
+	z-index: 9;
+}
+.rateWrapper {
+	min-height: var(--line);
+	margin-bottom: 0px;
+	padding-left: var(--p, calc(var(--grid-base) * 2));
+}
+
+.imageWrapper {
+	position: relative;
+	width: 100%;
+	min-height: calc(var(--l) * var(--line));
+	margin-bottom: calc(var(--line) * -2);
+	z-index: -1;
+}
+.imageWrapper.max {
+	height: calc(var(--line) * var(--l,19));
+	padding-right: var(--grid-base,8px);
+}
+.imageWrapper.left {
+	padding-left: calc(88px + var(--grid-base,8px) * 3);
+	padding-right: 0px;
+}
+.imageLabel {
+	display: block;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.imagesLoaded {
+	visibility: hidden;
+	position: absolute;
+	top: -4000px;
+	height: 0px;
+}
+.imagesWrapper {
+	margin-top: var(--line);
+}
+.captionWrapper { }
+.imagesLoaded:checked + .imageWrapper,
+.imagesWrapper {
+	display: none;
+}
+.imagesLoaded:checked + .imageWrapper + .imagesWrapper {
+	display: block;
+}
+.moreCount {
+	composes: moreCount from './locationsDates.m.css';
+}
+.imageWrapper .moreCount {
+	--rt: calc(var(--lineHalf) - var(--pt) - var(--ui-border-width-emphasized));
+	left: auto;
+	right: var(--rt);
+	top: var(--rt);
+	max-width: var(--line2);
+	max-height: var(--line2);
+	z-index: 99;
+}
+.imageWrapper:hover .moreCount {
+	background-color: var(--ui-border-hover, #333);
+}
+.moreCount,
+.moreCount * {
+	text-align: center;
+}

@@ -223,7 +223,7 @@ rgba(0,0,0,1) 50%, rgba(0,0,0,0) calc(50% + 2px), rgba(0,0,0,0) 100%);
 }
 .rateWrapper {
 	min-height: var(--line);
-	margin-bottom: var(--line);
+	margin-bottom: 0px;
 	padding-left: var(--p, calc(var(--grid-base) * 2));
 }
 

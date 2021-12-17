@@ -98,11 +98,24 @@ export const addressFormats = {
   BO: formats.AR, CL: formats.AR, CO: formats.AR, EC: formats.AR, GY: formats.AR,
   PY: formats.AR, PE: formats.AR, UY: formats.AR, VE: formats.AR
 };
+const additionalOrder1: string[] = ['telephone', 'faxNumber'];
+const additionalOrder2: string[] = ['ISO3166', 'availableLanguage', 'hoursAvailable'] // TODO:
+// contactType
+// hoursAvailable	OpeningHoursSpecification
+const additionalOrders = new Set(['email', ...additionalOrder1, ...additionalOrder2]);
 
 export type Region = keyof typeof addressFormats;
+export interface IntlAddress { itemprop:string; value:string; }
 /* TODO contactType */
-export default function intlAddress(schemaPartial: any, region: Region, type: 'personal'|'business' = 'personal'): {itemprop:string; value:string;}[][] {
+export default function intlAddress(
+  schemaPartial: any,
+  region: Region,
+  type: 'personal'|'business' = 'personal',
+  additional: string[] = []
+): IntlAddress[][] {
+  const additionals = new Set(additional);
   const o: any = {};
+
   for (let k in schemaPartial) {
     const splits = k.split('schema:');
     const key = splits[splits.length-1];
@@ -117,7 +130,6 @@ export default function intlAddress(schemaPartial: any, region: Region, type: 'p
     } else if (typeof schemaPartial[k] === 'string') {
       o[key] = schemaPartial[k].trim()
     } else {
-      console.log(key, typeof key)
       o[key] = ''
     }
   }
@@ -146,6 +158,13 @@ export default function intlAddress(schemaPartial: any, region: Region, type: 'p
     (typeof addressFormats[region] === 'object' && addressFormats[region].hasOwnProperty(type) ?
       ((addressFormats as any)[region][type]) : (formats.US||[])) || (formats.US||[]);
 
+
+  const additionalProperties1 = o.hasOwnProperty('email') ? ['email'] : [];
+  const additionalProperties2 = additionalOrder1.filter((k) => (additionals.has(k) && o.hasOwnProperty(k)));
+  const additionalProperties3 = additionalOrder2.filter((k) => (additionals.has(k) && o.hasOwnProperty(k)));
+  const additionalProperties4 = additional.filter((k) => (o.hasOwnProperty(k) && !additionalOrders.has(k)));
+  const mapProperties = (k: any) => ({itemprop: k, value: o[k]});
+
   return formatedAddressArray.map((a: any[]) => {
     return a.map((so) => {
       if (typeof so === 'string' && o.hasOwnProperty(so)) {
@@ -157,10 +176,15 @@ export default function intlAddress(schemaPartial: any, region: Region, type: 'p
         const itemprop = so.attr;
         let value = (Array.isArray(o[itemprop]) ? o[itemprop].join(' ') :
           (typeof o[itemprop] === 'string' ? o[itemprop] : '')).replace(/,,/g, ',');
-        so.transforms.forEach((fn: (s:string) => any) => { value = fn(value) })
+        so.transforms.forEach((fn: (s:string) => any) => { value = fn(value) });
         return { itemprop, value }
       }
       return ''
     }).filter((o: any) => !!a && typeof o === 'object' && !!o.value.length)
-  }).filter((a: any[]) => !!a && !!a.length)
+  })
+    .concat([additionalProperties1.map(mapProperties)])
+    .concat([additionalProperties2.map(mapProperties)])
+    .concat([additionalProperties3.map(mapProperties)])
+    .concat([additionalProperties4.map(mapProperties)])
+    .filter((a: any[]) => !!a && !!a.length)
 }

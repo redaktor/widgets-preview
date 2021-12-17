@@ -42,8 +42,7 @@ export interface MDProperties {
 	unwrapDisallowed?: boolean;
 	/* Target to use on links (such as _blank for <a target="_blank"…) */
 	linkTarget?: string | ((href: string, children: any, title: string) => string)
-	/* URL to use for links. The default allows only http, https, mailto, and tel,
-	and is available at ReactMarkdown.uriTransformer. Pass null to allow all URLs. … security */
+	/* URL to use for links. The default allows only http, https, mailto, and tel */
 	transformLinkUri?: ((href: string, children: any, title: string) => string);
 	/* 	Same as transformLinkUri but for images */
 	transformImageUri?: ((href: string, alt: string, title: string) => string);
@@ -56,7 +55,7 @@ const factory = create({}).properties<MDProperties>();
 export const MD = factory(function MD({ properties, id, children }) {
 	const {
 		content,
-		classes = [],
+		classes,
 		remarkPlugins = [remarkHashtags, remarkGFM],
 		rehypePlugins = [],
 	} = properties();
@@ -74,7 +73,8 @@ export const MD = factory(function MD({ properties, id, children }) {
   const hastNode /*: Root*/ = processor.runSync(processor.parse(content || ''));
 
   if (hastNode.type !== 'root') {
-    throw new TypeError('Expected a `root` node')
+		return ''
+    /* throw new TypeError('Expected a `root` node') */
   }
 
 	const options = {

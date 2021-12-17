@@ -127,7 +127,7 @@ console.log(asLoc, ld, schemaToAsLocation(asLoc[0], type))
 	const getAddressNode = (i: number, isFold = true, isDetails = false) => {
 		const loc = location[i];
 		const locOpenIndex = get('locationOpenIndex');
-		const rType = loc.type[0].split('redaktor:');
+		const rType = !!loc.type ? loc.type[0].split('redaktor:') : 'Place';
 		const defaultIconType: any = isFold && locOpenIndex === i ? 'close' :
 			((rType.length > 1 && rType[1] === 'ContentLocation' || rType[1] === 'SpatialCoverage') ?
 				(type && type.filter((t) => t.split(':').length === 1)[0] || 'Place') :

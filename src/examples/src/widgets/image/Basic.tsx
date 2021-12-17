@@ -4,7 +4,7 @@ import { AsObject, AsImage } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Image, { ImageProperties } from '@redaktor/widgets/image';
 import Event from '@redaktor/widgets/event';
-import Structure from '@redaktor/widgets/structure';
+import Place from '@redaktor/widgets/place';
 /*
 import Images from '@redaktor/widgets/images';
 import Table from '@redaktor/widgets/table';
@@ -57,7 +57,7 @@ const _2_3: AsImage = {id: uuid(), type: "Image", url: {type: "Link", href: "car
 _1_1.location = LOC[2].location[0];
 
 const summary = ["10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For","summary2"];
-const content = [`Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs #Parkett. \nParsed handle @sl@sl.de – handle @sl@sl.de – link-handle @https://localhost:9999 – link https://localhost:9999 \n Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Parkett. Dies sind Sätze mit Zeichen bis zu 500 LOREM IPSUM dolor sit amet, consectetur adipiscing elit.
+const content = [`Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs #Parkett. \nParsed handle @sl@sl.de – handle @sl@sl.de – link-handle @https://localhost:9999 – mail mail@example.com link https://localhost:9999 \n Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Parkett. Dies sind Sätze mit Zeichen bis zu 500 LOREM IPSUM dolor sit amet, consectetur adipiscing elit.
 
 ---
 
@@ -147,9 +147,14 @@ LOC[5].location["schema:address"] = {
   "@type": "PostalAddress",
   "schema:addressLocality": "Seattle",
   "schema:addressRegion": "WA",
+  "schema:addressCountry": "USA",
   "schema:postalCode": "98052",
-  "schema:streetAddress": "20341 Whitworth Institute 405 N. Whitworth"
+  "schema:streetAddress": "20341 Whitworth Institute 405 N. Whitworth",
+  "schema:telephone": "+49 40-2808441111",
+  "schema:faxNumber": "+49 40-2808441112",
+  "schema:email": "mails@superlongexample.com"
 };
+LOC[5].location['schema:telephone'] = '040-2808441';
 const exampleEvent = {
   'schema:doorTime': '2021-12-24T20:00:00-08:00',
   summary: summary, content, attributedTo, ...{location: [LOC[5].location, LOC[4].location]},
@@ -260,9 +265,13 @@ console.log('Event example',exampleEvent)
 
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
-            <Event id="event1" type="Event"
+            <Place id="place1" key="place1"
+              {...LOC[5].location}
+              type="Place"
+            />
+            <Event id="event1" key="event1"
               {...exampleEvent}
-              hasAttachment={false}
+              type="Event" hasAttachment={false}
             />
             <br /><br />
             <Image {...exampleImage} />

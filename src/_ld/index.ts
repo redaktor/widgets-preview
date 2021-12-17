@@ -71,7 +71,7 @@ export function schemaLanguages(a: LocO | LocO[], localizeLocale: string): LocO[
 			}
 		}
 		return name || alternateName || ''
-	});
+	}).filter((v) => !!v);
 }
 
 export interface SplitPrefix {
