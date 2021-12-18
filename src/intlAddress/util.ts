@@ -5,12 +5,14 @@ type AddressFormats = {
 const commaSuffix = (s: string) => `${s},`;
 const capitalize = (s: string) => s.toUpperCase();
 
-const [H, T, F, S, L, FL, SL, N, A, AR, C, CO, C2, P, PR, ST] = [
+const cover = [
   'honorific', 'title', 'firstName', 'secondName',
   'lastName', 'firstLastName', 'secondLastName', 'name' /* all */,
   'streetAddress', 'streetAddressRest', 'addressLocality' /* city */,
   'addressCountry', 'ISO3166', 'postalCode', 'addressRegion', 'areaServed'
 ];
+const covered = new Set(cover);
+const [H, T, F, S, L, FL, SL, N, A, AR, C, CO, C2, P, PR, ST] = cover;
 const formats: AddressFormats = {
   // Argentina
   AR: [[H,F,S,FL],[SL],[N],[A,AR],[P,C],[ST],[CO]],
@@ -119,18 +121,22 @@ export default function intlAddress(
   for (let k in schemaPartial) {
     const splits = k.split('schema:');
     const key = splits[splits.length-1];
-    if (Array.isArray(schemaPartial[k])) {
-      if (key === 'streetAddress') {
-        const [streetAddress, ...streetAddressRest] = schemaPartial[k];
-        o.streetAddress = streetAddress;
-        o.streetAddressRest = streetAddressRest;
+    if (schemaPartial.hasOwnProperty(k)) {
+      if (Array.isArray(schemaPartial[k])) {
+        if (key === 'streetAddress') {
+          const [streetAddress, ...streetAddressRest] = schemaPartial[k];
+          o.streetAddress = streetAddress;
+          o.streetAddressRest = streetAddressRest;
+        } else if (covered.has(k)) {
+          o[key] = schemaPartial[k].join(' ')
+        } else {
+          o[key] = Array.isArray(schemaPartial[k]) ? schemaPartial[k] : [schemaPartial[k]]
+        }
+      } else if (typeof schemaPartial[k] === 'string') {
+        o[key] = schemaPartial[k].trim()
       } else {
-        o[key] = schemaPartial[k].join(' ')
+        o[key] = ''
       }
-    } else if (typeof schemaPartial[k] === 'string') {
-      o[key] = schemaPartial[k].trim()
-    } else {
-      o[key] = ''
     }
   }
   if (!o.streetAddress && !!o.postOfficeBoxNumber) {
@@ -163,8 +169,11 @@ export default function intlAddress(
   const additionalProperties2 = additionalOrder1.filter((k) => (additionals.has(k) && o.hasOwnProperty(k)));
   const additionalProperties3 = additionalOrder2.filter((k) => (additionals.has(k) && o.hasOwnProperty(k)));
   const additionalProperties4 = additional.filter((k) => (o.hasOwnProperty(k) && !additionalOrders.has(k)));
-  const mapProperties = (k: any) => ({itemprop: k, value: o[k]});
-
+  const reduceProperties = (a: any[], k: any) => {
+    const _a = (Array.isArray(o[k]) ?
+      o[k].map((value: any) => ({itemprop: k, value})) : {itemprop: k, value: o[k]});
+    return a.concat(Array.isArray(_a) ? _a : [_a])
+  }
   return formatedAddressArray.map((a: any[]) => {
     return a.map((so) => {
       if (typeof so === 'string' && o.hasOwnProperty(so)) {
@@ -182,9 +191,9 @@ export default function intlAddress(
       return ''
     }).filter((o: any) => !!a && typeof o === 'object' && !!o.value.length)
   })
-    .concat([additionalProperties1.map(mapProperties)])
-    .concat([additionalProperties2.map(mapProperties)])
-    .concat([additionalProperties3.map(mapProperties)])
-    .concat([additionalProperties4.map(mapProperties)])
+    .concat([additionalProperties1.reduce(reduceProperties, [])])
+    .concat([additionalProperties2.reduce(reduceProperties, [])])
+    .concat([additionalProperties3.reduce(reduceProperties, [])])
+    .concat([additionalProperties4.reduce(reduceProperties, [])])
     .filter((a: any[]) => !!a && !!a.length)
 }

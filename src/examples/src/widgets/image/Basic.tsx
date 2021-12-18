@@ -143,17 +143,27 @@ exampleImage['schema:contentLocation'] = {'@type': 'schema:Place', 'schema:name'
 
 console.log(LOC[5].location);
 LOC[5].location.type = ['Place', 'schema:Place'];
-LOC[5].location["schema:address"] = {
+LOC[5].location["schema:address"] = [{
   "@type": "PostalAddress",
   "schema:addressLocality": "Seattle",
   "schema:addressRegion": "WA",
   "schema:addressCountry": "USA",
   "schema:postalCode": "98052",
-  "schema:streetAddress": "20341 Whitworth Institute 405 N. Whitworth",
-  "schema:telephone": "+49 40-2808441111",
+  "schema:streetAddress": ["20341 Whitworth Institute 405 N. Whitworth", "x2"],
+  "schema:telephone": ["+49 40-2808441111", "+49 40-2808441110"],
   "schema:faxNumber": "+49 40-2808441112",
   "schema:email": "mails@superlongexample.com"
-};
+}, {
+  "@type": "PostalAddress",
+  "schema:addressLocality": "Seattle",
+  "schema:addressRegion": "WA",
+  "schema:addressCountry": "USA",
+  "schema:postalCode": "38052",
+  "schema:streetAddress": ["40341 Whitworth Institute 405 N. Whitworth", "x2"],
+  "schema:telephone": ["+49 40-2808441111", "+49 40-2808441110"],
+  "schema:faxNumber": "+49 40-2808441112",
+  "schema:email": "mails@superlongexample.com"
+}];
 LOC[5].location['schema:telephone'] = '040-2808441';
 const exampleEvent = {
   'schema:doorTime': '2021-12-24T20:00:00-08:00',

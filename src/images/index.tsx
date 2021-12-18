@@ -95,7 +95,8 @@ export const Images = factory(function Images({
 		captionsOpen = false, onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen
 		// fit = false, width = 80, height = 80
 	} = properties();
-	const { image = [], omitProperties = new Set(), ...ld } = i18nActivityPub.normalized<ImagesProperties>();
+	const { image = [], ...ld } = i18nActivityPub.normalized<ImagesProperties>();
+	const omit = i18nActivityPub.omit();
 	const itemsPerPage = image.length === 1 ? 1 : ipp;
 
 	if (!image.length) {
@@ -226,11 +227,11 @@ export const Images = factory(function Images({
 		const lights = get('lightImages');
 		return !!lights && !!lights[i] ? themedCss.lightImage : themedCss.darkImage;
 	}
-// {!omitProperties.has('date') &&
+// {!omit.has('date') &&
 	const dates = getLdDates(ld, i18nActivityPub.localize(ldBundle).messages);
 	const localizedDateShort = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en']);
 	return <virtual>
-		{itemsPerPage === 1 && !omitProperties.has('date') && <div
+		{itemsPerPage === 1 && !omit.has('date') && <div
 			role="region"
 			aria-label={messages.calendar}
 			classes={[themedCss.calendarWrapper, !get('calendarOpen') && themedCss.closed]}
@@ -259,7 +260,7 @@ export const Images = factory(function Images({
 				}}
 			/>
 		</div>}
-		{itemsPerPage === 1 && !omitProperties.has('location') && ld.location && ld.location.length && <div
+		{itemsPerPage === 1 && !omit.has('location') && ld.location && ld.location.length && <div
 			role="region"
 			aria-label={messages.locationmap}
 			classes={[themedCss.mapWrapper, get('mapWasOpen') && !get('mapOpen') && themedCss.closed]}

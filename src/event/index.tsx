@@ -133,11 +133,10 @@ VisualArtsEvent
 // <Icon type="image" spaced={image.length < 11 ? 'right' : false} />
 */
 export const coveredLD = captionCoveredLD.concat([
-	'image', 'startTime', 'endTime', 'date', 'duration', 'dc:created',
-	'event', 'schema:event', 'schema:startDate', 'schema:endDate', 'schema:dateCreated',
-	'schema:contentReferenceTime', 'schema:expires', 'schema:startDate', 'schema:endDate',
-	'schema:eventAttendanceMode', 'schema:eventStatus', 'schema:previousStartDate',
-	'schema:inLanguage', 'schema:aggregateRating', 'schema:maximumAttendeeCapacity',
+	'event', 'image', 'startTime', 'endTime', 'date', 'duration', 'dc:created',
+	'schema:event', 'schema:startDate', 'schema:endDate', 'schema:previousStartDate',
+	'schema:dateCreated', 'schema:contentReferenceTime', 'schema:expires', 'schema:eventAttendanceMode',
+	'schema:eventStatus', 'schema:inLanguage', 'schema:aggregateRating', 'schema:maximumAttendeeCapacity',
 	'schema:maximumPhysicalAttendeeCapacity', 'schema:maximumVirtualAttendeeCapacity'
 ]);
 export const Event = factory(function event({
@@ -149,15 +148,14 @@ export const Event = factory(function event({
 	const { messages } = i18nActivityPub.localize(bundle);
 	const {
 		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		color = 'red', fit = false, view = 'column'
+		color = 'red', fit = false, view = 'column',
 	} = properties();
 
 	const {
 		startTime: start, endTime: end, published, updated, duration,
-		'dc:created': contentCreated = [],
-		omitProperties = new Set(),
-		...ld
+		'dc:created': contentCreated = [], ...ld
 	} = i18nActivityPub.normalized<EventProperties>();
+	const omit = i18nActivityPub.omit();
 
 	if (view === 'tableRow') {
 		return 'TODO'
@@ -357,7 +355,7 @@ export const Event = factory(function event({
 		aria-label="Image"
 		role="region"
 	>
-		{!omitProperties.has('location') && ld.location && ld.location.length && <div
+		{!omit.has('location') && ld.location && ld.location.length && <div
 			role="region"
 			aria-label={messages.locationmap}
 			classes={[themedCss.mapWrapper, get('mapWasOpen') && !get('mapOpen') && themedCss.closed]}
@@ -393,7 +391,7 @@ export const Event = factory(function event({
 					{!!startTime && getTimeNode()}
 					{!!endTime && getTimeNode('endTime')}
 				</summary>
-				{!omitProperties.has('date') && !isCancelled && !isPostponed &&
+				{!omit.has('date') && !isCancelled && !isPostponed &&
 					<div classes={themedCss.calendarWrapper}>
 						{status === 'EventRescheduled' && previousStartDate && <p classes={themedCss.attendanceCount}>
 							<Icon color="red" size="s" type="alert" spaced="right" />
@@ -421,7 +419,7 @@ export const Event = factory(function event({
 					{attendanceNodes}
 				</div>
 				<div classes={themedCss.nameWrapper}>
-					{name && <Paginated key="name" property="name" spaced={false}>
+					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced={false}>
 						{clampStrings(name, 250).map((s) => s.length < 125 ? <h3>{s}</h3> : <h5>{s}</h5>)}
 					</Paginated>}
 				</div>

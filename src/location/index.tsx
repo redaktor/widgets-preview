@@ -134,6 +134,8 @@ console.log(asLoc, ld, schemaToAsLocation(asLoc[0], type))
 				(loc.latitude && loc.longitude ? 'mapMarker' : (loc.type.filter((t) => t.split(':').length === 1)[0] || 'Place')));
 		const title = isDetails ? '' : (rType[0] === '' && rType.length > 1 && messages.hasOwnProperty(rType[1]) && (messages as any)[rType[1]]) ||
 			messages.location;
+		const primaryAddress = (!loc['schema:address'] ? {} :
+			(Array.isArray(loc['schema:address']) && !!loc['schema:address'].length ? loc['schema:address'][0] : loc['schema:address']))||{};
 
 		const handleKeydown = (event: KeyboardEvent) => {
 			event.stopPropagation();
@@ -209,7 +211,7 @@ console.log(asLoc, ld, schemaToAsLocation(asLoc[0], type))
 						{locIcon}
 						<I18nAddress
 							itemClasses={themedCss.postalAddressItem}
-							address={{ name: loc.name, ...(loc['schema:address']||{}) }}
+							address={{ name: loc.name, ...primaryAddress }}
 						/>
 					</span>}
 				</span>

@@ -1,8 +1,22 @@
 import { tsx } from '@dojo/framework/core/vdom';
-import { AsTypes } from './interfaces';
+import global from '@dojo/framework/shim/global';
+import {
+	AsActors, AsActivities, AsObjects, AsLinks
+} from './activityPub';
+import {
+	AsTypes, RedaktorActor, AsActor, AsActivity, AsObject,
+	AsObjectNormalized, AsLinkObject, LangMap
+} from './interfaces';
 import { as, vocab } from '../_ld';
 import { defaultContext } from '../_ld/as';
+import is from '../framework/is';
+import realCharacters from '../framework/String/split';
+import dateTimeR from '../framework/String/regex/regexXSDdateTime';
+import durationR from '../framework/String/regex/regexXSDduration';
+import * as asCSS from '../theme/material/_as.m.css';
+
 const jsonld = require('jsonld/dist/jsonld.esm.min.js');
+export const omitSymbol = Symbol.for('rOmitProperties');
 /*
 name	Text
 The name of the item.
@@ -293,20 +307,6 @@ export async function compact(doc: any) {
 	return compacted
 }
 
-import {
-	AsActors, AsActivities, AsObjects, AsLinks
-} from './activityPub';
-import {
-	RedaktorActor, AsActor, AsActivity, AsObject,
-	AsObjectNormalized, AsLinkObject, LangMap
-} from './interfaces';
-import global from '@dojo/framework/shim/global';
-import is from '../framework/is';
-import realCharacters from '../framework/String/split';
-import dateTimeR from '../framework/String/regex/regexXSDdateTime';
-import durationR from '../framework/String/regex/regexXSDduration';
-import * as asCSS from '../theme/material/_as.m.css';
-
 export const isAP = (o:any, type?:string) => {
 	const hasType = (typeof o === 'object' && o.type && (typeof o.type === 'string' || Array.isArray(o.type)));
 	if (!type) {
@@ -391,7 +391,7 @@ export function clampStrings(s: string | string[], length: number, isWordLike = 
   }, [])
 }
 
-export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = false): AsObjectNormalized {
+export function normalizeAs(as: APall, language?: string, includeBcc: boolean = false): AsObjectNormalized {
 	/* TODO
 
   default '@context'
@@ -399,10 +399,8 @@ export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = 
 
 	hreflang Value must be a [BCP47] Language-Tag.
 	*/
-
-	if (typeof ap === 'string') { return ap }
-	if (typeof ap === 'object' && !ap.type) { (ap as AsActivity).type = 'Create' }
-	if (typeof ap !== 'object') { return {type: []} }
+	if (!as || Array.isArray(as) || typeof as !== 'object') { return {type: []} }
+	if (!as.type) { (as as AsActivity).type = 'Create' }
 	const locales: string[] = [];
 	const userLang = typeof language === 'string' ? language :
 		(new Intl.DateTimeFormat().resolvedOptions().locale ||
@@ -425,6 +423,13 @@ export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = 
 				(_o.hasOwnProperty(uLang.split('-')[0]) ? _o[uLang.split('-')[0]] : _o[Object.keys(o)[0]]);
 		})
 	}
+
+	const {
+		omitProperties: _omits,
+		...ap
+	} = as;
+	const omits = new Set(Array.isArray(_omits) ? _omits : []);
+
 
 	const {
 		id,
@@ -459,11 +464,14 @@ export function normalizeAs(ap: APall, language?: string, includeBcc: boolean = 
 		href, hreflang, rel,
 		// Actor
 		inbox, outbox, following, followers, liked, streams, preferredUsername, endpoints,
-		omitProperties: _omits,
 		// ... other properties
 		...notAP
 	} = ap;
- 	let o: any = { id, type, omitProperties: new Set(Array.isArray(_omits) ? _omits : []), ...notAP };
+
+	// make omit Set, check has for all following  //  include only JSON datatypes
+	// Schema and prefix url …
+
+ 	let o: any = { id, type, [omitSymbol]: omits, ...notAP };
 
 	/* TODO
 	id

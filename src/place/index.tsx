@@ -13,6 +13,7 @@ import TimeRelative from '../timeRelative';
 import Caption, { coveredLD as captionCoveredLD } from '../caption';
 import I18nAddress from '../intlAddress';
 import Map from '../map';
+import { latLngStr } from '../map/util';
 import Rate from '../rate';
 import Details from '../details';
 import Structure from '../structure';
@@ -67,16 +68,6 @@ const factory = create({ icache, id, i18nActivityPub, theme, breakpoints })
 AP 			context [is similar to: ]
 schema
 
-slogan
-tourBookingPage
-event Upcoming or past event associated with this place, organization, or action.
-amenityFeature
-branchCode
-isicV4
-globalLocationNumber
-containedInPlace, containsPlace
-geo …
-
 boolean:
 hasDriveThroughService
 isAccessibleForFree
@@ -85,8 +76,20 @@ smokingAllowed
 
 maximumAttendeeCapacity 		Int
 openingHoursSpecification		OpeningHoursSpecification
-specialOpeningHoursSpecification
+specialOpeningHoursSpecification "
+amenityFeature 		https://schema.org/LocationFeatureSpecification
 
+text:
+slogan
+branchCode
+isicV4
+globalLocationNumber
+
+tourBookingPage		URL
+event 						Event Upcoming or past event associated with this place
+
+containedInPlace, containsPlace
+geo …
 
 More specific Types
 Accommodation
@@ -116,10 +119,9 @@ export const Place = factory(function place({
 
 	const {
 		startTime: start, endTime: end, published, updated, duration,
-		'dc:created': contentCreated = [],
-		omitProperties = new Set(),
-		...ld
+		'dc:created': contentCreated = [], ...ld
 	} = i18nActivityPub.normalized<PlaceProperties>();
+	const omit = i18nActivityPub.omit();
 
 	if (view === 'tableRow') {
 		return 'TODO'
@@ -220,6 +222,9 @@ console.log(inLanguages);
 			}
 		</span>
 	</span>;
+
+	const addressArray = Array.isArray(ld['schema:address']) ? ld['schema:address'] :
+		(!!ld['schema:address'] ? [ld['schema:address']] : []);
 console.log('LD',ld);
 	return <div
 		key="root"
@@ -241,7 +246,7 @@ console.log('LD',ld);
 		aria-label="Image"
 		role="region"
 	>
-		{!omitProperties.has('location') && ld.location && ld.location.length && <div
+		{!omit.has('location') && ld.location && ld.location.length && <div
 			role="region"
 			aria-label={messages.locationmap}
 			classes={[themedCss.mapWrapper, get('mapWasOpen') && !get('mapOpen') && themedCss.closed]}
@@ -268,18 +273,22 @@ console.log('LD',ld);
 		<div classes={themedCss.header}>
 			<div classes={themedCss.topWrapper}>
 				<div classes={themedCss.metaWrapper}>
+					<span>{latLngStr(ld)}</span>
 					{timeOrStatusNode}
 					{attendanceNodes}
 				</div>
 				<div classes={themedCss.nameWrapper}>
-					{name && <Paginated key="name" property="name" spaced={false}>
+					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced={false}>
 						{clampStrings(name, 250).map((s) => <h5>{s}</h5>)}
 					</Paginated>}
 				</div>
-				<I18nAddress
-					address={(ld['schema:address']||{})}
-					additionalProperties={['email','telephone','faxNumber','hoursAvailable','availableLanguage']}
-				/>
+				{!!addressArray.length && !omit.has('schema:address') &&
+					<Paginated key="address" property="schema:address" spaced={false}>
+						{...addressArray.map((o: any = {}) =>	<I18nAddress address={o}
+							additionalProperties={['email','telephone','faxNumber','hoursAvailable','availableLanguage']}
+						/>)}
+					</Paginated>
+				}
 			</div>
 		</div>
 		<div classes={themedCss.content}>

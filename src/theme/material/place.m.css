@@ -33,6 +33,7 @@
 	flex-direction: column;
 	justify-content: flex-end;
 	align-self: stretch;
+	padding-left: calc(var(--grid-base,8px) * 2);
 	z-index: 9;
 }
 .metaWrapper {

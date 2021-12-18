@@ -78,9 +78,9 @@ const factory = create({ theme, focus, icache, i18nActivityPub })
 	.children<RenderResult | undefined>();
 
 export const coveredLD = [
-	'@context', '@type', 'type', 'name', 'nameMap', 'summary', 'summaryMap',
-	'content', 'contentMap', 'location', 'attributedTo', 'attachment',
-	'sensitive', 'locale', 'locales'
+	'@context', '@type', 'id', 'key', 'hasAttachment', 'type', 'name', 'nameMap',
+	'summary', 'summaryMap', 'content', 'contentMap', 'location', 'attributedTo',
+	'attachment', 'sensitive', 'locale', 'locales'
 ];
 export const Caption = factory(function Caption({
 	middleware: { theme, focus, icache, i18nActivityPub },
@@ -98,8 +98,10 @@ export const Caption = factory(function Caption({
 		largeDate = false, isImageCaption = false, contentLines: cl, onToggle, onFocusPrevious, onDate, onLocation, onLocale
 	} = properties();
 	const {
-		href = '', name: n, summary, content, sensitive, attachment, omitProperties, ...ld
+		href = '', name: n, summary, content, sensitive, attachment, ...ld
 	} = i18nActivityPub.normalized();
+	const omit = i18nActivityPub.omit();
+	console.log(omit,ld);
 	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
 	getOrSet('currentLocale', currentLocale ? {locale: currentLocale} : locale);
 	const name = n || [href];
@@ -125,7 +127,7 @@ export const Caption = factory(function Caption({
 	];
 
 	const nodes = <div classes={[themedCss.captionWrapper, !!(children().length) && themedCss.hasChildren]}>
-		{!!locales && locales.length > 1 && !omitProperties.has('locales') &&
+		{!!locales && locales.length > 1 && !omit.has('locales') &&
 			<div classes={themedCss.locales}>
 				<Locales key="locales" locale={get('currentLocale')||{locale:'en'}} locales={locales} onValue={(l) => {
 					i18nActivityPub.setLocale(l);
@@ -134,16 +136,16 @@ export const Caption = factory(function Caption({
 			</div>
 		}
 		{children()}
-		{!omitProperties.has('name') && <div key="name" classes={themedCss.columnName}>{nameNode}</div>}
+		{!omit.has('name') && <div key="name" classes={themedCss.columnName}>{nameNode}</div>}
 		<div key="contentWrapper" classes={[themedCss.contentWrapper, viewCss.content, !!viewDesktopCSS && viewDesktopCSS.content]}>
-			{!omitProperties.has('name') && <div classes={themedCss.rowName}>{nameNode}</div>}
+			{!omit.has('name') && <div classes={themedCss.rowName}>{nameNode}</div>}
 
-			{!sensitive && !omitProperties.has('summary') && (summary && <Paginated key="paginatedsummary" colored={colored} compact={compact} property="summary">
+			{!sensitive && !omit.has('summary') && (summary && <Paginated key="paginatedsummary" colored={colored} compact={compact} property="summary">
 				{clampStrings(summary, summaryLength).map((_summaries, i) => <span>
 					{_summaries.map((s: any) => <MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={s} />)}
 				</span>)}
 			</Paginated>)}
-			{!!content && !omitProperties.has('content') && <Collapsed responsive={!isRow} lines={contentLines} classes={
+			{!!content && !omit.has('content') && <Collapsed responsive={!isRow} lines={contentLines} classes={
 					{ '@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] } }
 				}>
 					{content.map((_content: string, i: number) => <virtual>
@@ -157,7 +159,7 @@ export const Caption = factory(function Caption({
 // location -> 	() => { set('focusKey', 'date'); focus.focus(); } / date focus={get('focusKey') === 'date' ? focus.shouldFocus : void 0}
 	const allNodes = <virtual>
 		<span key="meta" classes={[themedCss.meta]}>
-			{!omitProperties.has('date') && <Dates key="date" {...ld}
+			{!omit.has('date') && <Dates key="date" {...ld}
 				classes={{ '@redaktor/widgets/locationsDates': { root: [themedCss.dates] } }}
 				large={largeDate}
 				hasCalendar={true}
@@ -165,7 +167,7 @@ export const Caption = factory(function Caption({
 				onFocusPrevious={onFocusPrevious}
 				onDate={(date, i) => { onDate && onDate(date, i) }}
 			/>}
-			{!omitProperties.has('location') && <Location key="location" {...ld}
+			{!omit.has('location') && <Location key="location" {...ld}
 				classes={{ '@redaktor/widgets/locationsDates': {
 					root: [themedCss.location],
 					moreCount: [themedCss.moreCount]
@@ -180,7 +182,7 @@ export const Caption = factory(function Caption({
 			/>}
 		</span>
 
-		{!omitProperties.has('attributedTo') && <AttributedTo key="attributions" {...ld}
+		{!omit.has('attributedTo') && <AttributedTo key="attributions" {...ld}
 			classes={{ '@redaktor/widgets/actors': { root: attributionsClasses } }}
 			max={39}
 		/>}
@@ -199,7 +201,7 @@ export const Caption = factory(function Caption({
 				</details>
 		)}
 
-		{attachment && !omitProperties.has('attachment') && <virtual>
+		{attachment && !omit.has('attachment') && <virtual>
 			<hr classes={viewCss.hrAttachment} />
 			<Attachment attachment={attachment} isRow={isRow} />
 		</virtual>}

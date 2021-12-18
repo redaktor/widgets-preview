@@ -3,7 +3,7 @@ import { AsObject, AsObjectNormalized, Labeled } from '../common/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import i18n from '@dojo/framework/core/middleware/i18n';
 import { defaultContext } from '../_ld/as';
-import { normalizeAs } from '../common/activityPubUtil';
+import { normalizeAs, omitSymbol } from '../common/activityPubUtil';
 
 interface LocalesProperties extends AsObject {
   userLocale?: string;
@@ -79,6 +79,14 @@ export const AsCachingMiddleware = factory(({ properties, middleware: { i18n, ic
     },
     setLocale(locale: string) {
       return normalized(locale, true)
+    },
+    omit: () => {
+      const { id } = properties();
+      if (!!id) {
+        const o: any = icache.get(id);
+        return o[omitSymbol] || new Set(properties().omit||[])
+      }
+      return new Set(properties().omit||[])
     },
     normalized
   }

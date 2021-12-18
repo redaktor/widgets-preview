@@ -43,12 +43,22 @@ console.log('!', formattedAddress);
 
 	const getPhoneLink = (nr: string|number) => {
 		const s = `${nr}`;
-		const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
-		const phoneO = phoneUtil.parse(s, 'DE');
-		if (!phoneUtil.isValidNumber(phoneO)) { return s }
-		return <a href={`tel:${phoneUtil.format(phoneO, libphonenumber.PhoneNumberFormat.INTERNATIONAL)}`}>
-			{s}
-		</a>
+		console.log(s);
+		try {
+			const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
+			const phoneO = phoneUtil.parse(s, 'DE');
+			if (!phoneUtil.isValidNumber(phoneO)) { return s }
+			return <a href={`tel:${phoneUtil.format(phoneO, libphonenumber.PhoneNumberFormat.INTERNATIONAL)}`}>
+				{s}
+			</a>
+		} catch(e) {
+			console.log(s,e)
+			return s
+		}
+	}
+	const getPhoneLinks = (values: string|number|(string|number)[]): any[] => {
+		return Array.isArray(values) ? values.map((nr) => getPhoneLink(nr)) :
+			[getPhoneLink(values)]
 	}
 
 	const separator = s || <br />;
@@ -62,7 +72,7 @@ console.log('!', formattedAddress);
 						}
 						{o.itemprop === 'email' ?
 							<MD components={{p:'span'}} content={o.value} /> :
-							(o.itemprop === 'telephone' ? getPhoneLink(o.value) : o.value)
+							(o.itemprop === 'telephone' ? getPhoneLinks(o.value) : o.value)
 						}{' '}
 					</span>
 				})}
