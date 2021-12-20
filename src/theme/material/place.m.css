@@ -13,6 +13,9 @@
 .content {
 	z-index: 1;
 }
+.images {
+	margin-bottom: calc(var(--line) * -1);
+}
 .mapWrapper.closed {
 	display: none;
 }
@@ -20,12 +23,15 @@
 .placeMeta {
 	composes: s italic serif from './_typo.css';
 }
+.kicker {
+	composes: s from './_typo.css';
+}
 .placeMeta,
 .placeStatus {
 	color: var(--ui-text);
 	display: inline-block;
 }
-.placeAttendance {}
+.placeAttendance { }
 
 .topWrapper {
 	flex: 1;
@@ -37,20 +43,48 @@
 	z-index: 9;
 }
 .metaWrapper {
+	padding-top: var(--pt);
+	margin-bottom: var(--mb);
 	flex: 1;
 	display: flex;
 	justify-content: space-between;
 	align-items: baseline;
 	color: var(--ui-filled-off);
 }
-.attendanceCount {
-	color: var(--text-muted);
-	margin-right: var(--grid-base);
+.switchButtons {
+	height: var(--line2);
 }
+.switchButton {
+	position: relative;
+	min-width: calc(var(--grid-base,8px) * 6);
+}
+.noLocation + .switchButtons {
+	display: none;
+}
+.switchButtons .switchButton:last-child {
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+.switchButtons .switchButton:not(:last-child) {
+	border-radius: 0px;
+}
+
 .nameWrapper,
 .locationWrapper {
 	flex: 0;
 	position:relative;
+}
+.geoCoordinates {
+	position: relative;
+	padding-left: calc(var(--grid-base,8px) * 2);
+}
+.geoCoordinates::before {
+	position: absolute;
+	left: 0px;
+	font-family: 'redaktor' !important;
+	font-size: var(--line);
+	bottom: 0px;
+	content: "\f041";
 }
 
 .contentWrapper {

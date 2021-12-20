@@ -1,8 +1,8 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import theme from '../middleware/theme';
 import i18nActivityPub from '../middleware/i18nActivityPub';
-import * as libphonenumber from 'google-libphonenumber';
 import intlAddress, { Region } from './util';
+import Telephone from '../telephone';
 import MD from '../MD';
 import Icon from '../icon';
 import * as css from '../theme/material/address.m.css';
@@ -41,26 +41,6 @@ export const IntlAddress = factory(function _address({properties, middleware: { 
 	}
 console.log('!', formattedAddress);
 
-	const getPhoneLink = (nr: string|number) => {
-		const s = `${nr}`;
-		console.log(s);
-		try {
-			const phoneUtil = libphonenumber.PhoneNumberUtil.getInstance();
-			const phoneO = phoneUtil.parse(s, 'DE');
-			if (!phoneUtil.isValidNumber(phoneO)) { return s }
-			return <a href={`tel:${phoneUtil.format(phoneO, libphonenumber.PhoneNumberFormat.INTERNATIONAL)}`}>
-				{s}
-			</a>
-		} catch(e) {
-			console.log(s,e)
-			return s
-		}
-	}
-	const getPhoneLinks = (values: string|number|(string|number)[]): any[] => {
-		return Array.isArray(values) ? values.map((nr) => getPhoneLink(nr)) :
-			[getPhoneLink(values)]
-	}
-
 	const separator = s || <br />;
 	return <span classes={[themedCss.root, theme.uiColor('cyan'), theme.uiSize(size), theme.variant()]}>
 		{formattedAddress.map((a, i, addrA) => contact.hasOwnProperty(a[0].itemprop) ?
@@ -70,10 +50,9 @@ console.log('!', formattedAddress);
 						{additionalIcon.hasOwnProperty(o.itemprop) &&
 							<Icon type={additionalIcon[o.itemprop]} spaced="right" />
 						}
-						{o.itemprop === 'email' ?
-							<MD components={{p:'span'}} content={o.value} /> :
-							(o.itemprop === 'telephone' ? getPhoneLinks(o.value) : o.value)
-						}{' '}
+						{o.itemprop === 'email' && <MD components={{p:'span'}} content={o.value} />}
+						{o.itemprop === 'telephone' && <Telephone telephone={o.value} />} 
+						{o.itemprop !== 'email' && o.itemprop !== 'telephone' && o.value}{' '}
 					</span>
 				})}
 			</div> :

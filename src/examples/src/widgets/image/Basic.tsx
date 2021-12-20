@@ -143,13 +143,14 @@ exampleImage['schema:contentLocation'] = {'@type': 'schema:Place', 'schema:name'
 
 console.log(LOC[5].location);
 LOC[5].location.type = ['Place', 'schema:Place'];
+LOC[5].location["schema:slogan"] = 'Just do it.';
 LOC[5].location["schema:address"] = [{
   "@type": "PostalAddress",
   "schema:addressLocality": "Seattle",
   "schema:addressRegion": "WA",
   "schema:addressCountry": "USA",
   "schema:postalCode": "98052",
-  "schema:streetAddress": ["20341 Whitworth Institute 405 N. Whitworth", "x2"],
+  "schema:streetAddress": "20341 Whitworth Institute 405 N. Whitworth",
   "schema:telephone": ["+49 40-2808441111", "+49 40-2808441110"],
   "schema:faxNumber": "+49 40-2808441112",
   "schema:email": "mails@superlongexample.com"
@@ -165,6 +166,29 @@ LOC[5].location["schema:address"] = [{
   "schema:email": "mails@superlongexample.com"
 }];
 LOC[5].location['schema:telephone'] = '040-2808441';
+
+const rating = {
+  "@type": "AggregateRating",
+  "schema:ratingValue": "4",
+  "schema:reviewCount": "250"
+};
+const examplePlace = {
+  ...{...LOC[5].location},
+  name: [LOC[5].location.name],
+  id: uuid(),
+  type:'Place',
+  summaryMap: {en: summary, de: 'de'},
+  content,
+  attributedTo: attributedTo[0],
+  "schema:aggregateRating": rating,
+  image: [
+    {..._1_1, summary: exampleText, updated: "2018-09-12T12:12:12Z"},
+    {..._3_2, name: "test", updated: "2018-10-11T12:12:12Z"},
+    _2_3, _4_1, _2_3, _3_2, _1_1, _4_1, _3_2, _4_1, _2_3, _3_2, _1_1, _4_1, _3_2,
+    _2_3, _4_1, _2_3, _3_2, _1_1, _4_1, _3_2, _4_1, _2_3, _3_2, _1_1, _4_1, _3_2,
+    _2_3, _4_1, _2_3, _3_2, _1_1, _4_1, _3_2
+  ]
+};
 const exampleEvent = {
   'schema:doorTime': '2021-12-24T20:00:00-08:00',
   summary: summary, content, attributedTo, ...{location: [LOC[5].location, LOC[4].location]},
@@ -179,11 +203,7 @@ const exampleEvent = {
     "schema:name": "Spanish",
     "schema:alternateName": "es"
   },
-  "schema:aggregateRating": {
-    "@type": "AggregateRating",
-    "schema:ratingValue": "4",
-    "schema:reviewCount": "250"
-  },
+  "schema:aggregateRating": rating,
   // 'schema:eventStatus': 'https://schema.org/EventRescheduled',
   'schema:previousStartDate': '2021-12-23T20:00:00-08:00',
   nameMap: {
@@ -275,10 +295,7 @@ console.log('Event example',exampleEvent)
 
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
-            <Place id="place1" key="place1"
-              {...LOC[5].location}
-              type="Place"
-            />
+            <Place key="place1" {...examplePlace} />
             <Event id="event1" key="event1"
               {...exampleEvent}
               type="Event" hasAttachment={false}

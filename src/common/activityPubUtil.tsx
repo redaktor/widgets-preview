@@ -423,6 +423,14 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 				(_o.hasOwnProperty(uLang.split('-')[0]) ? _o[uLang.split('-')[0]] : _o[Object.keys(o)[0]]);
 		})
 	}
+	const toLangMap = (l: any, lMap: any, key: string) => {
+		if (!!lMap) {
+			o[key] = langMap(lMap);
+			o[`${key}Map`] = lMap;
+		} else {
+			o[key] = toArray(l);
+		}
+	}
 
 	const {
 		omitProperties: _omits,
@@ -513,18 +521,11 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 
 	if (typeof mediaType === 'string') { o.mediaType = mediaType }
 
-	if (isCaption(name, nameMap)) {
-		if (!!nameMap) {
-			o.name = toArray(langMap(nameMap));
-			o.nameMap = nameMap;
-		} else {
-			o.name = toArray(name);
-		}
-	}
-	if (isCaption(summary, summaryMap)) {
-		o.summary = toArray(summaryMap ? langMap(summaryMap) : summary) }
-	if (isCaption(content, contentMap)) { o.content = toArray(contentMap ? langMap(contentMap) : content) }
-	if (isCaption(source, sourceMap)) { o.source = toArray(sourceMap ? langMap(sourceMap) : source) }
+	if (isCaption(name, nameMap)) { toLangMap(name, nameMap, 'name') }
+	if (isCaption(summary, summaryMap)) { toLangMap(summary, summaryMap, 'summary') }
+	if (isCaption(content, contentMap)) { toLangMap(content, contentMap, 'content') }
+	if (isCaption(source, sourceMap)) { toLangMap(source, sourceMap, 'source') }
+
 	if (isDatetime(published)) { o.published = published }
 	if (isDatetime(updated)) { o.updated = updated }
 

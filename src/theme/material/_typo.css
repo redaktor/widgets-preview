@@ -507,6 +507,10 @@ a::before {
   font-family: 'redaktor' !important;
   margin-right: var(--ml, 4px);
 }
+a:not([itemprop])::before {
+  font-size: 50%;
+  margin-right: 0px;
+}
 a:not([href^='mailto:']):not([href^='tel:']):not([href^='#']):not([href^='/'])[target="_blank"]::before {
   content: '\e906';
 }

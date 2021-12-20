@@ -18,11 +18,16 @@
 	position: relative;
 	width: var(--w);
 }
-.singleImage .figure,
 .hasPagination.multiItem .figure {
+	position: static;
+}
+.singleImage .figure,
+.hasPagination {
 	padding-top: var(--line2);
 }
-
+.pageRadio[data-i="1"] { --i: 0; } .pageRadio[data-i="2"] { --i: 1; } .pageRadio[data-i="3"] { --i: 2; }
+.pageRadio[data-i="4"] { --i: 3; } .pageRadio[data-i="5"] { --i: 4; } .pageRadio[data-i="6"] { --i: 5; }
+.pageRadio[data-i="7"] { --i: 6; } .pageRadio[data-i="8"] { --i: 7; } .pageRadio[data-i="9"] { --i: 8; }
 /* A "page" with images */
 .page {
 	--minWidth: 240px;
@@ -407,28 +412,35 @@ TODO above
 	top: var(--ui-border-width-emphasized);
 	margin: 0px;
 }
+.multiItem .pageRadio {
+	--remainhalf: calc(50% - (var(--touch-target-min) * var(--pagecount) / 2));
+	left: calc(var(--touch-target-min) * var(--i) + var(--remainhalf) + (var(--grid-base,8px) / 2));
+}
 .multiItem .pageRadio:checked + .prev.control {
-	left: calc(50% - var(--line3))
+	left: var(--grid-base,8px);
 }
 .multiItem .pageRadio:checked + .prev.control + .next.control {
-	right: calc(50% - 42px);
+	right: var(--grid-base,8px);
 }
 .pageRadio:not(:checked) + .prev.control + .next.control + .page,
 .pageRadio:not(:checked) + .prev.control + .next.control + .page + .pageCaption {
 	display: none;
 }
 
-.multiItem:not(.hasCounter) .pageRadio {
+.multiItem:not(.hasCounter) .pageRadio,
+.multiItem:not(.hasCounter) .pageRadio::after {
 	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+}
+.multiItem:not(.hasCounter) .pageRadio {
+	height: var(--touch-target-min);
+	width: calc(var(--touch-target-min) - var(--grid-base,8px));
 	order: 2;
 	-webkit-appearance: none;
 	-moz-appearance: none;
 	appearance: none;
-	border-radius: 50%;
-	width: var(--line);
-	height: var(--line);
-	border: var(--ui-border-width-emphasized) solid var(--paper, #999);
-	background-color: var(--paper, #999);
 	transition: var(--ui-dpd-0,80ms) all var(--ui-easing);
 	margin: 0px;
 	padding: 0px;
@@ -436,23 +448,23 @@ TODO above
 	cursor: pointer;
 }
 .multiItem:not(.hasCounter) .pageRadio::after {
+	content: attr(data-i);
+	height: var(--line);
+	width: var(--line);
+	border: var(--ui-border-width-emphasized) solid var(--paper, #999);
+	background-color: var(--paper, #999);
+	border-radius: 50%;
+	color: transparent;
+}
+.multiItem:not(.hasCounter) .pageRadio:hover::after {
 	color: var(--text-muted);
-	display: flex;
-	width: 100%;
-	align-items: center;
-	justify-content: center;
-	text-align: center;
-	position: relative;
-	top: -1px;
 }
 .multiItem:not(.hasCounter) .pageRadio:checked::after {
-	content: attr(data-i);
-}
-.multiItem .pageRadio:checked {
-	border-color: var(--ui-border, #999);
-	background-color: transparent;
+	color: var(--text);
 }
 .multiItem .pageRadio:checked::after {
+	border-color: var(--ui-border, #999);
+	background-color: transparent;
 	color: var(--text);
 }
 
@@ -470,10 +482,10 @@ TODO above
 		filter: unset;
 	}
 
-	.root:not(.hasCounter) .pageRadio:not(:checked) {
+	.root:not(.hasCounter) .pageRadio:not(:checked)::after {
 		border-color: var(--paper, #999);
 	}
-	.root:not(.hasCounter) .pageRadio:not(:checked):hover {
+	.root:not(.hasCounter) .pageRadio:not(:checked):hover::after {
 		border-color: var(--border, #666);
 	}
 	.scrollWrapperLabel,
@@ -545,7 +557,7 @@ TODO above
 	margin-top: var(--line);
 	order: 3;
 }
-.hasChildren.captionWrapper .locales {
+.root .hasChildren.captionWrapper .locales {
 	margin-bottom: calc(var(--line) * -1);
 }
 .meta:empty + .captionWrapper,

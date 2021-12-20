@@ -26,7 +26,7 @@ export interface ButtonProperties extends ThemeProperties {
 	/** Handler for events triggered by button losing focus */
 	onBlur?(): void;
 	/** Handler for events triggered by a button click */
-	onClick?(id: string): void;
+	onClick?(e: MouseEvent, id: string): void;
 	/** Handler for events triggered by "on down" */
 	onDown?(e: PointerEvent): void;
 	/** Handler for events triggered by "on focus" */
@@ -129,7 +129,7 @@ export const Button = factory(function Button({
 		onclick: (event: MouseEvent) => {
 			console.log('CLICK');
 			event.stopPropagation();
-			onClick && onClick(idBase);
+			onClick && onClick(event, idBase);
 		},
 		onfocus: () => onFocus && onFocus(),
 		onpointerenter: () => onOver && onOver(),

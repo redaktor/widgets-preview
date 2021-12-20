@@ -306,7 +306,7 @@ export const Images = factory(function Images({
 				theme.uiSize(),
 				// isColumn ? themedCss.column : themedCss.row,
 				navPosition === 'bottom' && themedCss.navBottom,
-				(itemCount === 1 || !paginationInputsVisible) && themedCss.hasCounter,
+				(itemCount === 1 || paginated.length > 6 || !paginationInputsVisible) && themedCss.hasCounter,
 				(!!has('host-node') || allLoaded) && themedCss.loaded,
 				(maxImages.length > itemCount) && themedCss.hasPagination,
 				itemCount === 1 ? themedCss.singleItem : themedCss.multiItem,
@@ -314,7 +314,7 @@ export const Images = factory(function Images({
 				(itemCount === 2 || itemCount === 3) && view !== 'full' && themedCss.singleRow,
 				themedCss[(size as keyof typeof themedCss)]
 			]}
-			style={`--count: ${itemCount};`}
+			style={`--count: ${itemCount}; --pagecount: ${paginated.length}`}
 			aria-label="Images"
 			aria-live="polite"
 			role="region"

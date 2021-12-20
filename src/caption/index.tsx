@@ -101,10 +101,10 @@ export const Caption = factory(function Caption({
 		href = '', name: n, summary, content, sensitive, attachment, ...ld
 	} = i18nActivityPub.normalized();
 	const omit = i18nActivityPub.omit();
-	console.log(omit,ld);
 	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
 	getOrSet('currentLocale', currentLocale ? {locale: currentLocale} : locale);
 	const name = n || [href];
+	if (ld.type.indexOf('Place') > -1) {console.log('locales',locales)}
 
 	const [isColumn, isResponsive, isRow] = [(view === 'column'), (view === 'responsive'), (view === 'row')];
 	let [vp, isMini, typoClass] = [size, false, viewCss.typo];
@@ -127,6 +127,7 @@ export const Caption = factory(function Caption({
 	];
 
 	const nodes = <div classes={[themedCss.captionWrapper, !!(children().length) && themedCss.hasChildren]}>
+		{children()}
 		{!!locales && locales.length > 1 && !omit.has('locales') &&
 			<div classes={themedCss.locales}>
 				<Locales key="locales" locale={get('currentLocale')||{locale:'en'}} locales={locales} onValue={(l) => {
@@ -135,7 +136,6 @@ export const Caption = factory(function Caption({
 				}} />
 			</div>
 		}
-		{children()}
 		{!omit.has('name') && <div key="name" classes={themedCss.columnName}>{nameNode}</div>}
 		<div key="contentWrapper" classes={[themedCss.contentWrapper, viewCss.content, !!viewDesktopCSS && viewDesktopCSS.content]}>
 			{!omit.has('name') && <div classes={themedCss.rowName}>{nameNode}</div>}

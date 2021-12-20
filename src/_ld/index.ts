@@ -6,7 +6,6 @@ export const wellKnownVocab = {
 	bibo: 'http://purl.org/ontology/bibo/',
 	dc: 'http://purl.org/dc/elements/1.1/',
 	dcat: 'http://www.w3.org/ns/dcat#',
-	dct: 'http://purl.org/dc/terms/',
 	dcterms: 'http://purl.org/dc/terms/',
 	dctype: 'http://purl.org/dc/dcmitype/',
 	eli: 'http://data.europa.eu/eli/ontology#',

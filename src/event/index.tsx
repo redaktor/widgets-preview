@@ -170,11 +170,13 @@ export const Event = factory(function event({
 	const { name, image = [] } = ld;
 	const { /* TODO dateCreated, contentReferenceTime, expires */
 		dateCreated = [], contentReferenceTime = [], expires = [], startDate, endDate,
-		eventAttendanceMode = '', eventStatus = '', previousStartDate, inLanguage, aggregateRating,
+		eventAttendanceMode = '', eventStatus = '', previousStartDate, inLanguage,
+		aggregateRating: rating,
 		maximumAttendeeCapacity: mc,
 		maximumPhysicalAttendeeCapacity: mpc,
 		maximumVirtualAttendeeCapacity: mvc
 	} = ldPartial(ld);
+	const aggregateRating = Array.isArray(rating) ? rating[0] : rating;
 
 	const sUrl = 'https://schema.org/';
 	const status = eventStatus.replace(sUrl,'');

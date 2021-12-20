@@ -8,8 +8,8 @@ import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
+import Button from '../button';
 import Paginated from '../paginated';
-import TimeRelative from '../timeRelative';
 import Caption, { coveredLD as captionCoveredLD } from '../caption';
 import I18nAddress from '../intlAddress';
 import Map from '../map';
@@ -19,10 +19,10 @@ import Details from '../details';
 import Structure from '../structure';
 import Icon from '../icon';
 import Images from '../images';
-import Img, { getWH } from '../image/image';
 // import * as ui from '../theme/material/_ui.m.css';
 import bundle from './nls/Place';
 import * as viewCSS from '../theme/material/_view.m.css';
+import * as nameCss from '../theme/material/name.m.css';
 import * as css from '../theme/material/place.m.css';
 /* TODO ISSUE in /images */
 export interface PlaceProperties extends AsObject {
@@ -68,39 +68,7 @@ const factory = create({ icache, id, i18nActivityPub, theme, breakpoints })
 AP 			context [is similar to: ]
 schema
 
-boolean:
-hasDriveThroughService
-isAccessibleForFree
-publicAccess
-smokingAllowed
-
-maximumAttendeeCapacity 		Int
-openingHoursSpecification		OpeningHoursSpecification
-specialOpeningHoursSpecification "
-amenityFeature 		https://schema.org/LocationFeatureSpecification
-
-text:
-slogan
-branchCode
-isicV4
-globalLocationNumber
-
-tourBookingPage		URL
-event 						Event Upcoming or past event associated with this place
-
-containedInPlace, containsPlace
-geo …
-
-More specific Types
-Accommodation
-AdministrativeArea
-CivicStructure
-Landform
-LandmarksOrHistoricalBuildings
-LocalBusiness
-Residence
-TouristAttraction
-TouristDestination
+address -> postOfficeBoxNumber
 */
 export const coveredLD = captionCoveredLD.concat([
 	'image'
@@ -109,20 +77,19 @@ export const Place = factory(function place({
 	middleware: { icache, id, i18nActivityPub, theme, breakpoints /*, resource */ },
 	properties
 }) {
+
+	const { messages } = i18nActivityPub.localize(bundle);
 	const {
 		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
 		color = 'cyan', fit = false, view = 'column'
 	} = properties();
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
-	const { messages } = i18nActivityPub.localize(bundle);
-
 	const {
-		startTime: start, endTime: end, published, updated, duration,
-		'dc:created': contentCreated = [], ...ld
+		published, updated, duration, 'dc:created': contentCreated = [], ...ld
 	} = i18nActivityPub.normalized<PlaceProperties>();
 	const omit = i18nActivityPub.omit();
-
+	const idBase = id.getId('place');
 	if (view === 'tableRow') {
 		return 'TODO'
 	}
@@ -134,57 +101,61 @@ export const Place = factory(function place({
 		vp = breakpoint;
 	}
 	const { name, image = [] } = ld;
+
+	const { tz } = ldPartial(ld, 'vcard');
 	const {
-		dateCreated = [], contentReferenceTime = [], expires = [], startDate, endDate,
-		eventAttendanceMode = '', eventStatus = '', previousStartDate, inLanguage, aggregateRating,
-		maximumAttendeeCapacity: mc,
-		maximumPhysicalAttendeeCapacity: mpc,
-		maximumVirtualAttendeeCapacity: mvc
+		// text:
+		slogan = [],
+		branchCode = [],
+		isicV4 = [],
+		globalLocationNumber = [],
+		// int:
+		maximumAttendeeCapacity = [],
+		// URL:
+		tourBookingPage = []
+	} = ldPartial(ld, 'schema', true);
+
+	// map boolean to undetermined or boolean
+	const {
+		aggregateRating: rating,
+		// boolean:
+		isAccessibleForFree: b1 = 'und',
+		publicAccess: b2 = 'und',
+		hasDriveThroughService: b3 = 'und',
+		smokingAllowed: b4 = 'und'
 	} = ldPartial(ld);
-
-	const sUrl = 'https://schema.org/';
-	const status = eventStatus.replace(sUrl,'');
-	const mode = status === 'EventMovedOnline' ? 'online' :
-		(eventAttendanceMode.replace(sUrl,'') === 'MixedEventAttendanceMode' ? 'mixed' :
-			(eventAttendanceMode.replace(sUrl,'') === 'OnlineEventAttendanceMode' ? 'online' : 'offline'));
-	const inLanguages = schemaLanguages(inLanguage, i18nActivityPub.get().locale);
-	const [isCancelled, isPostponed] = [status === 'EventCancelled', status === 'EventPostponed'];
-console.log(inLanguages);
-	const startTime = start || startDate;
-	const endTime = (isCancelled || isPostponed ? void 0 : end || endDate);
-
-	const imgId = id.getId('eventimages');
-	const hasImage = !!image.length;
-	let img;
-	let fitContain = true;
-	let aspectRatio = 1;
-	if (!!hasImage) {
-		img = image[0];
-		if (typeof img === 'string') { img = {type: ['Image'], url: img} }
-		const {width = 0, height = 0} = getWH(img as AsObjectNormalized);
-		aspectRatio = (!width || !height ? 0 : width/height)
-		fitContain = aspectRatio < 1.16;
+	const aggregateRating = Array.isArray(rating) ? rating[0] : rating;
+	const checkBoolean = (b: any): boolean|'und' => {
+		if (typeof b === 'boolean') { return b }
+			// just in case
+		if (b === 'true') { return true }
+		if (b === 'false') { return false }
+		return Array.isArray(b) ? (!!b.length && checkBoolean(b[0])) : 'und'
 	}
-	const addLines = [
-		1.25, 1.3333, 1.5, 1.6, 1.7777, 2.2857, 2.6666, 3, 4.5
-	].reduce((n, ar, i) => aspectRatio > ar ? i+1 : n, 0);
+	const [isAccessibleForFree,publicAccess,hasDriveThroughService,smokingAllowed] = [b1,b2,b3,b4].map(checkBoolean);
 
-	const timeOrStatusNode = !startTime && !endTime ? '' : (isCancelled || isPostponed ?
-		<h5 classes={themedCss.placeStatus}>
-			<Icon type={isCancelled ? 'cancel' : 'bullhorn'} spaced="right" />
-			{isCancelled ? messages.cancelled : messages.postponed}
-		</h5> : <small classes={themedCss.placeMeta}>
-			<TimeRelative date={startTime||endTime} />
-		</small>);
 
-	const images = <div classes={themedCss.imagesWrapper}>
-		<Images {...ld}
-			key="images"
-			view={view}
-			size={(vp as any)}
-			image={image}
-		/>
-	</div>
+	/*
+	openingHoursSpecification		OpeningHoursSpecification
+	specialOpeningHoursSpecification "
+	amenityFeature 		https://schema.org/LocationFeatureSpecification
+	event 						Event Upcoming or past event associated with this place
+
+	containedInPlace, containsPlace
+	geo …
+
+	More specific Types
+	Accommodation
+	AdministrativeArea
+	CivicStructure
+	Landform
+	LandmarksOrHistoricalBuildings
+	LocalBusiness
+	Residence
+	TouristAttraction
+	TouristDestination
+	*/
+	// const sUrl = 'https://schema.org/';
 
 	const setMap = (location: AsObjectNormalized|false,	locationOpenIndex: number|false) => {
 		set('locationOpenIndex', locationOpenIndex, false);
@@ -196,36 +167,17 @@ console.log(inLanguages);
 		}
 	}
 
-	const attendanceNodes = <span classes={themedCss.placeAttendance}>
-		{status === 'EventMovedOnline' && <Icon type="update" spaced="right" title={messages.movedOnline} />}
-		{status === 'EventMovedOnline' && <span classes={themedCss.attendanceCount}>{messages.updated}</span>}
-		{(mode === 'mixed' || mode === 'online' || !!mvc) &&
-			<Icon color="neutral" type="display" spaced="right" size="s" />
-		}
-		{(!!mvc || isCancelled) &&
-			<span classes={themedCss.attendanceCount}>{isCancelled ? '0' : mvc}</span>
-		}
-		{(mode === 'mixed' || mode === 'offline' || (mode !== 'online' && !!mpc)) &&
-			<Icon color="neutral" type="place" spaced="right" size="s" />
-		}
-		{mode !== 'online' && (!!mpc || isCancelled) &&
-			<span classes={themedCss.attendanceCount}>{isCancelled ? '0' : mpc}</span>
-		}
-		{!!mc && !mvc && !mpc &&
-			<span classes={themedCss.attendanceCount}>
-				{mc} <Icon type="people" size="s" />
-			</span>
-		}
-		<span title={!!mode ? (messages as any)[`${mode}Event`] : (!isCancelled ? messages.cancelled : messages.event)}>
-			{!!mode && !isCancelled && !isPostponed &&
-				<span classes={themedCss.placeMeta}>{(messages as any)[`${mode}Short`]}</span>
-			}
-		</span>
-	</span>;
-
 	const addressArray = Array.isArray(ld['schema:address']) ? ld['schema:address'] :
 		(!!ld['schema:address'] ? [ld['schema:address']] : []);
-console.log('LD',ld);
+
+	const btnClasses = {
+		'@redaktor/widgets/button': {
+			root: [themedCss.switchButton],
+			disabled: [themedCss.disabled]
+		}
+	};
+	const preventDefault = (e: Event) => { e.preventDefault(); }
+
 	return <div
 		key="root"
 		classes={[
@@ -246,6 +198,36 @@ console.log('LD',ld);
 		aria-label="Image"
 		role="region"
 	>
+		<div classes={themedCss.header}>
+			<div classes={themedCss.topWrapper}>
+				<div classes={themedCss.metaWrapper}>
+					<span classes={themedCss.geoCoordinates}>{latLngStr(ld)}</span>
+
+				</div>
+				<noscript><i classes={themedCss.noLocation} /></noscript>
+				<div classes={themedCss.switchButtons}>
+					<Button color="cyan" design="filled" responsive={false} classes={btnClasses}>
+						<Icon type="map" size="xl" spaced="right" /> Karte öffnen
+					</Button>
+					<Button disabled={true} color="cyan" design="filled" responsive={false} classes={btnClasses}>
+						<Icon type="image" size="xl" spaced="right" />
+					</Button>
+				</div>
+				<div classes={[nameCss.root, themedCss.nameWrapper]}>
+					{!!slogan.length && <p classes={[nameCss.kicker, themedCss.kicker]}>{slogan.join(', ')}</p>}
+					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced={false}>
+						{clampStrings(name, 250).map((s) => <h5>{s}</h5>)}
+					</Paginated>}
+				</div>
+				{!!addressArray.length && !omit.has('schema:address') &&
+					<Paginated key="address" property="schema:address" spaced={false}>
+						{...addressArray.map((o: any = {}) =>	<I18nAddress address={o}
+							additionalProperties={['email','telephone','faxNumber','hoursAvailable','availableLanguage']}
+						/>)}
+					</Paginated>
+				}
+			</div>
+		</div>
 		{!omit.has('location') && ld.location && ld.location.length && <div
 			role="region"
 			aria-label={messages.locationmap}
@@ -270,57 +252,17 @@ console.log('LD',ld);
 				}}
 			/>)}
 		</div>}
-		<div classes={themedCss.header}>
-			<div classes={themedCss.topWrapper}>
-				<div classes={themedCss.metaWrapper}>
-					<span>{latLngStr(ld)}</span>
-					{timeOrStatusNode}
-					{attendanceNodes}
-				</div>
-				<div classes={themedCss.nameWrapper}>
-					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced={false}>
-						{clampStrings(name, 250).map((s) => <h5>{s}</h5>)}
-					</Paginated>}
-				</div>
-				{!!addressArray.length && !omit.has('schema:address') &&
-					<Paginated key="address" property="schema:address" spaced={false}>
-						{...addressArray.map((o: any = {}) =>	<I18nAddress address={o}
-							additionalProperties={['email','telephone','faxNumber','hoursAvailable','availableLanguage']}
-						/>)}
-					</Paginated>
-				}
-			</div>
+		<div classes={themedCss.images}>
+			<Images key="images" view={view} image={image} size={(vp as any)} />
 		</div>
 		<div classes={themedCss.content}>
-			{img && <virtual>
-				<input tabIndex={-1} classes={themedCss.imagesLoaded} type="checkbox" id={imgId} checked={!!get('loadedImages')} />
-				<div
-					classes={[
-						themedCss.imageWrapper,
-						aspectRatio < 0.75 && themedCss.left,
-						!!fitContain && themedCss.max,
-						!!fitContain ? viewCSS.m7by6 : viewCSS.m3by2,
-						!!fitContain && !!viewDesktopCSS && viewDesktopCSS.item,
-						!!viewDesktopCSS && (!!fitContain ? viewDesktopCSS.m7by6 : viewDesktopCSS.m3by2)
-					]}
-					onclick={() => { getOrSet('loadedImages', true) }}
-				>
-						<Img {...img}
-							baselined={!fitContain}
-							fit={fitContain ? 'contain' : false}
-							align={aspectRatio < 0.75 ? 'left' : 'right'}
-						/>
-					{image.length > 1 && <output classes={themedCss.moreCount}>{` +${image.length-1}`}</output>}
-				</div>
-				{!!icache.get('loadedImages') || image.length === 1 ? images : <noscript>{images}</noscript>}
-			</virtual>}
 			<div classes={themedCss.contentWrapper}>
 				<Caption {...(ld)}
 					classes={{
 						'@redaktor/widgets/images': { captionWrapper: [themedCss.captionWrapper] }
 					}}
 					colored
-					contentLines={3+addLines}
+					contentLines={3}
 					omitProperties={['name','date','location']}
 					onLocale={(l) => i18nActivityPub.setLocale(l)}
 				/>
