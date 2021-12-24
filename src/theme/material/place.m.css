@@ -17,15 +17,17 @@
 .mapWrapper.closed {
 	display: none;
 }
+.topWrapper {
+	flex: 1;
+	align-self: stretch;
+	padding-left: calc(var(--grid-base,8px) * 2);
+	z-index: 9;
+}
 .placeMeta,
 .placeStatus {
 	composes: s italic serif from './_typo.css';
 	display: inline-block;
 	color: var(--ui-text);
-}
-.attendanceCount {
-	color: var(--text-muted);
-	margin-right: var(--grid-base);
 }
 .placeMeta {
 	padding: 0px calc(var(--grid-base,8px) * 2) 0px var(--grid-base,8px);
@@ -33,6 +35,11 @@
 .root .placeStatus {
 	color: var(--text-muted);
 	margin: 0px 72px calc(var(--mb) - var(--line)) calc(var(--grid-base,8px) * -2);
+	padding: 0px;
+}
+.root .attendanceCount {
+	color: var(--text-muted);
+	margin: 0px var(--grid-base) 0px 0px;
 }
 .placeStatus > :last-child:not(:first-child) {
 	margin-left: var(--grid-base,8px);
@@ -69,15 +76,6 @@
 }
 .placeAttendance { }
 
-.topWrapper {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	align-self: stretch;
-	padding-left: calc(var(--grid-base,8px) * 2);
-	z-index: 9;
-}
 .switchButtons {
 	height: var(--line2);
 	margin-left: calc(var(--grid-base,8px) * -2);
@@ -104,6 +102,9 @@
 }
 .moreThan2Features .nameWrapper {
 	margin-right: calc(var(--line2) - (var(--grid-base,8px) * 2));
+}
+.topContact {
+	margin-top: calc(var(--line) * -1);
 }
 .geoCoordinates {
 	padding-left: var(--grid-base,8px);

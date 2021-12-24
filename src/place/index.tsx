@@ -61,8 +61,9 @@ export interface PlaceChildren {
 }
 
 /* TODO
+!! vcard:tz – TIMEZONE OF PLACE
 address -> postOfficeBoxNumber
-branchCode = [], isicV4 = [], globalLocationNumber = [], tourBookingPage
+tourBookingPage
 
 More specific Types
 Accommodation, AdministrativeArea,  CivicStructure, Landform, LandmarksOrHistoricalBuildings,
@@ -93,7 +94,7 @@ export const coveredLD = captionCoveredLD.concat([
 	'schema:aggregateRating', 'schema:isAccessibleForFree', 'schema:publicAccess',
 	'schema:hasDriveThroughService', 'schema:smokingAllowed',	'schema:address', 'schema:email',
 	'schema:telephone', 'schema:faxNumber', 'schema:hoursAvailable', 'schema:availableLanguage'
-	// branchCode = [], isicV4 = [], globalLocationNumber = [], tourBookingPage
+	// 'schema:tourBookingPage'
 ]);
 export const Place = factory(function place({
 	middleware: { icache, id, i18nActivityPub, theme, breakpoints /*, resource */ },
@@ -129,9 +130,6 @@ export const Place = factory(function place({
 		amenityFeature = [],
 		// text:
 		slogan = [],
-		branchCode = [],
-		isicV4 = [],
-		globalLocationNumber = [],
 		email,
 		telephone,
 		faxNumber,
@@ -183,11 +181,11 @@ export const Place = factory(function place({
 	} /* otherwise smoking status is in additional properties */
 
 	const msg = (s: string, b: string) => !!s && messages.hasOwnProperty(s) ?
-		<div classes={themedCss.statusMessage}>
+		<span>
 			<Icon type={b === 'yes' ? 'check' : 'closed'} color={b === 'yes' ? color : 'error'}
 				spaced="right" />
 			{(messages as any)[s]}
-		</div> : '';
+		</span> : '';
 
 	const [isPublic, isFree] = [
 		msg(`public_${publicAccess}`, publicAccess),
@@ -235,9 +233,9 @@ export const Place = factory(function place({
 	>
 		<div classes={themedCss.header}>
 			{!!featureIcons.length && <div classes={themedCss.featureIcons}>
-				{!!mc && <span classes={themedCss.attendanceCount}>
+				{!!mc && <p classes={themedCss.attendanceCount}>
 					{mc} <Icon type="people" size="s" />
-				</span>}
+				</p>}
 				{featureIcons}
 			</div>}
 			<div classes={themedCss.topWrapper}>
@@ -261,12 +259,12 @@ export const Place = factory(function place({
 					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced={false}>
 						{clampStrings(name, 250).map((s) => <h5>{s}</h5>)}
 					</Paginated>}
-					{(email || telephone || faxNumber || hoursAvailable || availableLanguage) && <div>
+					{(email || telephone || faxNumber || hoursAvailable || availableLanguage) && <p classes={themedCss.topContact}>
 						<I18nAddress address={{email, telephone, faxNumber, hoursAvailable, availableLanguage}}
 							additionalProperties={['email','telephone','faxNumber','hoursAvailable','availableLanguage']}
 							onlyAdditional={true}
 						/>
-					</div>}
+					</p>}
 				</div>
 				{!!addressArray.length && !omit.has('schema:address') &&
 					<Paginated key="address" property="schema:address" spaced={false}>
