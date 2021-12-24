@@ -2,7 +2,7 @@ import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { AsObject, AsObjectNormalized } from '../common/interfaces';
-import { ldPartial, schemaLanguages } from '../_ld';
+import { ldPartial, schemaLanguages, toIntStr } from '../_ld';
 import { clampStrings } from '../common/activityPubUtil';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
@@ -172,10 +172,11 @@ export const Event = factory(function event({
 		dateCreated = [], contentReferenceTime = [], expires = [], startDate, endDate,
 		eventAttendanceMode = '', eventStatus = '', previousStartDate, inLanguage,
 		aggregateRating: rating,
-		maximumAttendeeCapacity: mc,
-		maximumPhysicalAttendeeCapacity: mpc,
-		maximumVirtualAttendeeCapacity: mvc
+		maximumAttendeeCapacity: _mc,
+		maximumPhysicalAttendeeCapacity: _mpc,
+		maximumVirtualAttendeeCapacity: _mvc
 	} = ldPartial(ld);
+	const [mc, mpc, mvc] = [toIntStr(_mc), toIntStr(_mpc), toIntStr(_mvc)];
 	const aggregateRating = Array.isArray(rating) ? rating[0] : rating;
 
 	const sUrl = 'https://schema.org/';

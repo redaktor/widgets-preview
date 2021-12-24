@@ -75,7 +75,7 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 	const getIconByType = (_type: CssKey) => (<span {...titleO} classes={themedCss.root}>
 			<i
 				classes={[
-					// theme.variant(),
+					theme.variant(),
 					theme.sized(ui, 'l'),
 					theme.spaced(ui),
 					theme.colored(colors),

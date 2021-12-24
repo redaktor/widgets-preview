@@ -159,21 +159,18 @@ export default function intlAddress(
     }
   }
   if (!o.areaServed && !!o.addressRegion) { o.areaServed = o.addressRegion }
-
   const formatedAddressArray = Array.isArray(addressFormats[region]) ? addressFormats[region] :
     (typeof addressFormats[region] === 'object' && addressFormats[region].hasOwnProperty(type) ?
       ((addressFormats as any)[region][type]) : (formats.US||[])) || (formats.US||[]);
-
 
   const additionalProperties1 = o.hasOwnProperty('email') ? ['email'] : [];
   const additionalProperties2 = additionalOrder1.filter((k) => (additionals.has(k) && o.hasOwnProperty(k)));
   const additionalProperties3 = additionalOrder2.filter((k) => (additionals.has(k) && o.hasOwnProperty(k)));
   const additionalProperties4 = additional.filter((k) => (o.hasOwnProperty(k) && !additionalOrders.has(k)));
-  const reduceProperties = (a: any[], k: any) => {
-    const _a = (Array.isArray(o[k]) ?
-      o[k].map((value: any) => ({itemprop: k, value})) : {itemprop: k, value: o[k]});
-    return a.concat(Array.isArray(_a) ? _a : [_a])
-  }
+  const reduceProperties = (a: any[], k: any) => a.concat((Array.isArray(o[k]) ?
+    o[k].map((value: any) => ({itemprop: k, value})) : [{itemprop: k, value: o[k]}]).filter(hasValue)
+  );
+  const hasValue = (o: any) => typeof o === 'object' && o.hasOwnProperty('value') && !!o.value.length;
   return formatedAddressArray.map((a: any[]) => {
     return a.map((so) => {
       if (typeof so === 'string' && o.hasOwnProperty(so)) {

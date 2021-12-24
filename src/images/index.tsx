@@ -167,7 +167,7 @@ export const Images = factory(function Images({
     	focus.focus();
 		}
 		if (setLocation && get('mapOpen') && paginated[i][0].location) {
-			setMap({...paginated[i][0].location[0], apType: paginated[i][0].type[0], geoMeta: `location of image ${i}`}, 0);
+			setMap({...paginated[i][0].location[0], apType: paginated[i][0].type[0], geoMeta: `location of image ${i}`}, 0); /* TODO i18n */
 		}
 	}
 	const handleKeydown = (i: number, keyTrigger?: 'prev'|'next'|'stack', max?: number) => {

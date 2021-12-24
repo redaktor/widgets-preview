@@ -28,6 +28,15 @@ export const wellKnownVocab = {
 export const wellKnownUnits = {
   cm: 1e-2, feet: 1, inches: (1 / 12), km: 1e3, m: 1, miles: 5280
 }
+export const toIntStr = (s: number|string): string => Array.isArray(s) ? toIntStr(s[0]) :
+	(typeof s === 'number' ? `${Math.round(s)}` : s);
+export const toBooleanStr = (b: any): 'yes'|'no'|'und' => {
+	if (typeof b === 'boolean') { return b === true ? 'yes' : 'no' }
+		// just in case
+	if (b === 'true') { return 'yes' }
+	if (b === 'false') { return 'no' }
+	return Array.isArray(b) && !!b.length ? toBooleanStr(b[0]) : 'und'
+}
 export const asSupportedExtensions = {
 	manuallyApprovesFollowers: 'as:manuallyApprovesFollowers',
 	sensitive: 'as:sensitive',

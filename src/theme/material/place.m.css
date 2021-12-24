@@ -2,8 +2,6 @@
 	padding-bottom: var(--line);
 }
 .header {
-	display: flex;
-	align-items: flex-end;
 	position: relative;
 	width:100%;
 	padding: 0px var(--grid-base,8px) 0px 0px;
@@ -19,17 +17,55 @@
 .mapWrapper.closed {
 	display: none;
 }
-
-.placeMeta {
+.placeMeta,
+.placeStatus {
 	composes: s italic serif from './_typo.css';
+	display: inline-block;
+	color: var(--ui-text);
+}
+.attendanceCount {
+	color: var(--text-muted);
+	margin-right: var(--grid-base);
+}
+.placeMeta {
+	padding: 0px calc(var(--grid-base,8px) * 2) 0px var(--grid-base,8px);
+}
+.root .placeStatus {
+	color: var(--text-muted);
+	margin: 0px 72px calc(var(--mb) - var(--line)) calc(var(--grid-base,8px) * -2);
+}
+.placeStatus > :last-child:not(:first-child) {
+	margin-left: var(--grid-base,8px);
+}
+.statusMessage {
+	display: inline-block;
+	max-height: var(--line);
 }
 .kicker {
 	composes: s from './_typo.css';
 }
-.placeMeta,
-.placeStatus {
-	color: var(--ui-text);
-	display: inline-block;
+.featureIcons {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	position: absolute;
+	right: 4px;
+	top: 0px;
+	min-height: var(--line2);
+	max-width: var(--line4);
+}
+.featureIcon {
+	--mtr: calc(var(--grid-base,8px) / 2);
+	--wh: calc(var(--line) * 1.5 - var(--mtr));
+	width: var(--wh);
+	height: var(--wh);
+	margin: var(--mtr) var(--mtr) 0px 0px;
+	padding: var(--ui-border-width-emphasized);
+}
+.featureIcon.circle {
+	background: var(--base, #fff);
+	border-radius: 100%;
+	border: var(--ui-border-width-emphasized) dotted var(--border);
 }
 .placeAttendance { }
 
@@ -42,17 +78,9 @@
 	padding-left: calc(var(--grid-base,8px) * 2);
 	z-index: 9;
 }
-.metaWrapper {
-	padding-top: var(--pt);
-	margin-bottom: var(--mb);
-	flex: 1;
-	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
-	color: var(--ui-filled-off);
-}
 .switchButtons {
 	height: var(--line2);
+	margin-left: calc(var(--grid-base,8px) * -2);
 }
 .switchButton {
 	position: relative;
@@ -74,17 +102,11 @@
 	flex: 0;
 	position:relative;
 }
-.geoCoordinates {
-	position: relative;
-	padding-left: calc(var(--grid-base,8px) * 2);
+.moreThan2Features .nameWrapper {
+	margin-right: calc(var(--line2) - (var(--grid-base,8px) * 2));
 }
-.geoCoordinates::before {
-	position: absolute;
-	left: 0px;
-	font-family: 'redaktor' !important;
-	font-size: var(--line);
-	bottom: 0px;
-	content: "\f041";
+.geoCoordinates {
+	padding-left: var(--grid-base,8px);
 }
 
 .contentWrapper {
@@ -156,4 +178,21 @@
 .moreCount,
 .moreCount * {
 	text-align: center;
+}
+.root .smokeRoot {
+	display: none;
+}
+.root .additional:hover .smokeRoot,
+.root .additional:focus-within .smokeRoot {
+	display: inline-block;
+}
+.smokeWrapper {
+	animation-duration: 0s;
+}
+.additional:hover .smokeWrapper,
+.additional:focus-within .smokeWrapper {
+	animation-duration: var(--duration);
+}
+.additionalContent {
+
 }

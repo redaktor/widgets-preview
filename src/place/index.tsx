@@ -2,7 +2,7 @@ import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { AsObject, AsObjectNormalized } from '../common/interfaces';
-import { ldPartial, schemaLanguages } from '../_ld';
+import { ldPartial, toIntStr, toBooleanStr } from '../_ld';
 import { clampStrings } from '../common/activityPubUtil';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
@@ -13,12 +13,14 @@ import Paginated from '../paginated';
 import Caption, { coveredLD as captionCoveredLD } from '../caption';
 import I18nAddress from '../intlAddress';
 import Map from '../map';
-import { latLngStr } from '../map/util';
 import Rate from '../rate';
 import Details from '../details';
 import Structure from '../structure';
 import Icon from '../icon';
 import Images from '../images';
+import { latLngStr } from '../map/util';
+import { osmKeyAndIcon, LocationFeatureSpecification } from './util';
+import Smoke, { Smoking } from '../smoke';
 // import * as ui from '../theme/material/_ui.m.css';
 import bundle from './nls/Place';
 import * as viewCSS from '../theme/material/_view.m.css';
@@ -58,20 +60,40 @@ export interface PlaceChildren {
 	footer?: RenderResult;
 }
 
+/* TODO
+address -> postOfficeBoxNumber
+branchCode = [], isicV4 = [], globalLocationNumber = [], tourBookingPage
+
+More specific Types
+Accommodation, AdministrativeArea,  CivicStructure, Landform, LandmarksOrHistoricalBuildings,
+LocalBusiness, Residence, TouristAttraction, TouristDestination
+
+[AP similar] icon: logo, image: photo
+AP 			context [is similar to: ]
+schema
+
+openingHoursSpecification		OpeningHoursSpecification
+specialOpeningHoursSpecification "
+hoursAvailable, validFrom, validTo
+
+event 						Event Upcoming or past event associated with this place
+
+containedInPlace, containsPlace
+geo …
+*/
+
+// const sUrl = 'https://schema.org/';
 const icache = createICacheMiddleware<PlaceIcache>();
 const factory = create({ icache, id, i18nActivityPub, theme, breakpoints })
 	.properties<PlaceProperties>()
 	.children<PlaceChildren | RenderResult | undefined>();
 
-/* TODO
-[AP similar] icon: logo, image: photo
-AP 			context [is similar to: ]
-schema
-
-address -> postOfficeBoxNumber
-*/
 export const coveredLD = captionCoveredLD.concat([
-	'image'
+	'image', 'schema:amenityFeature', 'schema:slogan', 'schema:maximumAttendeeCapacity',
+	'schema:aggregateRating', 'schema:isAccessibleForFree', 'schema:publicAccess',
+	'schema:hasDriveThroughService', 'schema:smokingAllowed',	'schema:address', 'schema:email',
+	'schema:telephone', 'schema:faxNumber', 'schema:hoursAvailable', 'schema:availableLanguage'
+	// branchCode = [], isicV4 = [], globalLocationNumber = [], tourBookingPage
 ]);
 export const Place = factory(function place({
 	middleware: { icache, id, i18nActivityPub, theme, breakpoints /*, resource */ },
@@ -104,17 +126,23 @@ export const Place = factory(function place({
 
 	const { tz } = ldPartial(ld, 'vcard');
 	const {
+		amenityFeature = [],
 		// text:
 		slogan = [],
 		branchCode = [],
 		isicV4 = [],
 		globalLocationNumber = [],
-		// int:
-		maximumAttendeeCapacity = [],
+		email,
+		telephone,
+		faxNumber,
+		hoursAvailable,
+		availableLanguage,
 		// URL:
-		tourBookingPage = []
+		tourBookingPage = [],
+		// int:
+		maximumAttendeeCapacity: _mc = []
 	} = ldPartial(ld, 'schema', true);
-
+	const mc = toIntStr(_mc);
 	// map boolean to undetermined or boolean
 	const {
 		aggregateRating: rating,
@@ -125,37 +153,48 @@ export const Place = factory(function place({
 		smokingAllowed: b4 = 'und'
 	} = ldPartial(ld);
 	const aggregateRating = Array.isArray(rating) ? rating[0] : rating;
-	const checkBoolean = (b: any): boolean|'und' => {
-		if (typeof b === 'boolean') { return b }
-			// just in case
-		if (b === 'true') { return true }
-		if (b === 'false') { return false }
-		return Array.isArray(b) ? (!!b.length && checkBoolean(b[0])) : 'und'
-	}
-	const [isAccessibleForFree,publicAccess,hasDriveThroughService,smokingAllowed] = [b1,b2,b3,b4].map(checkBoolean);
+	const [isAccessibleForFree,publicAccess,hasDriveThroughService,smokingAllowed] = [b1,b2,b3,b4].map(toBooleanStr);
 
-
-	/*
-	openingHoursSpecification		OpeningHoursSpecification
-	specialOpeningHoursSpecification "
-	amenityFeature 		https://schema.org/LocationFeatureSpecification
-	event 						Event Upcoming or past event associated with this place
-
-	containedInPlace, containsPlace
-	geo …
-
-	More specific Types
-	Accommodation
-	AdministrativeArea
-	CivicStructure
-	Landform
-	LandmarksOrHistoricalBuildings
-	LocalBusiness
-	Residence
-	TouristAttraction
-	TouristDestination
+	// amenityFeature: https://schema.org/LocationFeatureSpecification
+	/* TODO:
+	- validFrom startTime			Date
+	- validTo endTime 				Date
+	- hoursAvailable 	OpeningHoursSpecification
 	*/
-	// const sUrl = 'https://schema.org/';
+	let smoking: Smoking|'und';
+	const smokingFeature = amenityFeature.filter((o: LocationFeatureSpecification) => o.propertyID === 'smoking');
+	if (!!smokingFeature.length) {
+		smoking = smokingFeature[0].value;
+	} else {
+		smoking = smokingAllowed;
+	}
+	if (hasDriveThroughService === 'yes') {
+		amenityFeature.push({propertyID: 'hasDriveThroughService', value: hasDriveThroughService })
+	}
+	const featureIcons = osmKeyAndIcon(amenityFeature).map((a) => {
+		const titleO = messages.hasOwnProperty(a[0]) ? { title: (messages as any)[a[0]] } : {};
+		return <img {...titleO}
+			classes={[themedCss.featureIcon, a[0].indexOf('wheelchair') !== 0 && themedCss.circle]}
+			src={a[1]}
+		/>
+	});
+	if (smoking === 'no') {
+		featureIcons.push(<Smoke smoking="no" />);
+	} /* otherwise smoking status is in additional properties */
+
+	const msg = (s: string, b: string) => !!s && messages.hasOwnProperty(s) ?
+		<div classes={themedCss.statusMessage}>
+			<Icon type={b === 'yes' ? 'check' : 'closed'} color={b === 'yes' ? color : 'error'}
+				spaced="right" />
+			{(messages as any)[s]}
+		</div> : '';
+
+	const [isPublic, isFree] = [
+		msg(`public_${publicAccess}`, publicAccess),
+		msg(`free_${isAccessibleForFree}`, isAccessibleForFree)
+	];
+	const statusByline = featureIcons.length > 4 ? ' ' : (!isFree && !isPublic ? '' :
+		<virtual>{isPublic} {isFree}</virtual>);
 
 	const setMap = (location: AsObjectNormalized|false,	locationOpenIndex: number|false) => {
 		set('locationOpenIndex', locationOpenIndex, false);
@@ -171,12 +210,8 @@ export const Place = factory(function place({
 		(!!ld['schema:address'] ? [ld['schema:address']] : []);
 
 	const btnClasses = {
-		'@redaktor/widgets/button': {
-			root: [themedCss.switchButton],
-			disabled: [themedCss.disabled]
-		}
+		'@redaktor/widgets/button': { root: [themedCss.switchButton] }
 	};
-	const preventDefault = (e: Event) => { e.preventDefault(); }
 
 	return <div
 		key="root"
@@ -199,25 +234,39 @@ export const Place = factory(function place({
 		role="region"
 	>
 		<div classes={themedCss.header}>
+			{!!featureIcons.length && <div classes={themedCss.featureIcons}>
+				{!!mc && <span classes={themedCss.attendanceCount}>
+					{mc} <Icon type="people" size="s" />
+				</span>}
+				{featureIcons}
+			</div>}
 			<div classes={themedCss.topWrapper}>
-				<div classes={themedCss.metaWrapper}>
-					<span classes={themedCss.geoCoordinates}>{latLngStr(ld)}</span>
-
-				</div>
 				<noscript><i classes={themedCss.noLocation} /></noscript>
 				<div classes={themedCss.switchButtons}>
-					<Button color="cyan" design="filled" responsive={false} classes={btnClasses}>
-						<Icon type="map" size="xl" spaced="right" /> Karte öffnen
+					<Button disabled={!!get('mapOpen')} color="cyan" responsive={false} classes={btnClasses} onClick={
+						() => { console.log('clicked'); setMap({...ld, apType: 'Place', geoMeta: `location of the event`}, 0) }
+					}>
+						<Icon type="map" size="xl" spaced="right" />
+						{!get('mapOpen') && <span>Karte<span classes={themedCss.geoCoordinates}>{latLngStr(ld)}</span></span>}
 					</Button>
-					<Button disabled={true} color="cyan" design="filled" responsive={false} classes={btnClasses}>
+					<Button disabled={!get('mapOpen')} color="cyan" responsive={false} classes={btnClasses} onClick={() => { setMap(false,false) }}>
 						<Icon type="image" size="xl" spaced="right" />
+						{!!get('mapOpen') && <span>12 Bilder</span>}
 					</Button>
 				</div>
-				<div classes={[nameCss.root, themedCss.nameWrapper]}>
+
+				{!!statusByline && <p classes={themedCss.placeStatus}>{statusByline}</p>}
+				<div classes={[nameCss.root, themedCss.nameWrapper, featureIcons.length > 2 && themedCss.moreThan2Features]}>
 					{!!slogan.length && <p classes={[nameCss.kicker, themedCss.kicker]}>{slogan.join(', ')}</p>}
 					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced={false}>
 						{clampStrings(name, 250).map((s) => <h5>{s}</h5>)}
 					</Paginated>}
+					{(email || telephone || faxNumber || hoursAvailable || availableLanguage) && <div>
+						<I18nAddress address={{email, telephone, faxNumber, hoursAvailable, availableLanguage}}
+							additionalProperties={['email','telephone','faxNumber','hoursAvailable','availableLanguage']}
+							onlyAdditional={true}
+						/>
+					</div>}
 				</div>
 				{!!addressArray.length && !omit.has('schema:address') &&
 					<Paginated key="address" property="schema:address" spaced={false}>
@@ -228,7 +277,7 @@ export const Place = factory(function place({
 				}
 			</div>
 		</div>
-		{!omit.has('location') && ld.location && ld.location.length && <div
+		{!omit.has('location') && <div
 			role="region"
 			aria-label={messages.locationmap}
 			classes={[themedCss.mapWrapper, get('mapWasOpen') && !get('mapOpen') && themedCss.closed]}
@@ -242,7 +291,7 @@ export const Place = factory(function place({
 				zoom={15}
 				onView={(view) => {
 					set('mapView', view, false);
-					ld.location && setMap(ld.location[0], 0);
+					ld && setMap(ld, 0);
 				}}
 				onActivityPubLocation={({pointer}) => {
 
@@ -252,9 +301,9 @@ export const Place = factory(function place({
 				}}
 			/>)}
 		</div>}
-		<div classes={themedCss.images}>
-			<Images key="images" view={view} image={image} size={(vp as any)} />
-		</div>
+		{!omit.has('image') && !get('mapOpen') && <div classes={themedCss.images}>
+			<Images key="images" view={view} image={image} itemsPerPage={4} size={(vp as any)} />
+		</div>}
 		<div classes={themedCss.content}>
 			<div classes={themedCss.contentWrapper}>
 				<Caption {...(ld)}
@@ -270,10 +319,19 @@ export const Place = factory(function place({
 			{!!aggregateRating && <div classes={themedCss.rateWrapper}>
 				<Rate readOnly {...ldPartial(aggregateRating)} />
 			</div>}
-			<Details>
+			<Details classes={{'@redaktor/widgets/details': {root: [themedCss.additional]}}}>
 				{{
-					summary: <span>{messages.moreInfo}</span>,
-					content: <Structure omitProperties={coveredLD} value={ld} />
+					summary: <span>{messages.moreInfo}{!!smoking && smoking !== 'no' && smoking !== 'und' &&
+						<Smoke smoking={smoking} classes={{
+							'@redaktor/widgets/smoke': { root: [themedCss.smokeRoot], smokeWrapper: [themedCss.smokeWrapper] }
+						}} />}
+					</span>,
+					content: <div classes={themedCss.additionalContent}>
+						<p classes={themedCss.placeMeta}>
+							{!!smoking && (messages as any)[`smoking_${smoking}`]}
+						</p>
+						<Structure omitProperties={coveredLD} value={ld} />
+					</div>
 				}}
 			</Details>
 		</div>

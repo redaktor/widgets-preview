@@ -180,13 +180,18 @@ const examplePlace = {
   summaryMap: {en: summary, de: 'de'},
   content,
   attributedTo: attributedTo[0],
+  "schema:email": "mails@superlongexample.com",
+  "schema:isAccessibleForFree": true,
+  "schema:publicAccess": true,
+  "schema:maximumAttendeeCapacity": 40000,
   "schema:aggregateRating": rating,
+  "schema:amenityFeature": [{propertyID: 'amenity', value: 'restaurant'}, {propertyID: 'wheelchair', value: 'yes'}, {propertyID: 'smoking', value: 'no'}],
+  "schema:smokingAllowed": true,
   image: [
     {..._1_1, summary: exampleText, updated: "2018-09-12T12:12:12Z"},
     {..._3_2, name: "test", updated: "2018-10-11T12:12:12Z"},
     _2_3, _4_1, _2_3, _3_2, _1_1, _4_1, _3_2, _4_1, _2_3, _3_2, _1_1, _4_1, _3_2,
-    _2_3, _4_1, _2_3, _3_2, _1_1, _4_1, _3_2, _4_1, _2_3, _3_2, _1_1, _4_1, _3_2,
-    _2_3, _4_1, _2_3, _3_2, _1_1, _4_1, _3_2
+    _2_3, _4_1, _2_3, _3_2, _1_1
   ]
 };
 const exampleEvent = {

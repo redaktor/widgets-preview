@@ -14,13 +14,14 @@ export interface AddressProperties {
 	type?: 'personal'|'business';
 	separator?: string;
 	itemClasses?: string | string[];
+	onlyAdditional?: boolean;
 }
 
 const factory = create({ theme, i18nActivityPub }).properties<AddressProperties>();
 export const IntlAddress = factory(function _address({properties, middleware: { theme, i18nActivityPub }}) {
 	const {
 		address, type = 'personal', separator: s, itemClasses = [], additionalProperties = [],
-		size = 'm'
+		size = 'm', onlyAdditional = false
 	} = properties();
 	const themedCss = theme.classes(css);
 	let { region } = properties();
@@ -51,7 +52,7 @@ console.log('!', formattedAddress);
 							<Icon type={additionalIcon[o.itemprop]} spaced="right" />
 						}
 						{o.itemprop === 'email' && <MD components={{p:'span'}} content={o.value} />}
-						{o.itemprop === 'telephone' && <Telephone telephone={o.value} />} 
+						{o.itemprop === 'telephone' && <Telephone telephone={o.value} />}
 						{o.itemprop !== 'email' && o.itemprop !== 'telephone' && o.value}{' '}
 					</span>
 				})}

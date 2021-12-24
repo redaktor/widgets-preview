@@ -3,6 +3,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	padding-bottom:  var(--line);
+	margin-top: 0px; /* overrides default for dl */
 }
 
 .predicate {

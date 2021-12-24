@@ -36,6 +36,7 @@ import * as multiSelectTypeahead from './typeaheadMulti.m.css';
 import * as nativeSelect from './selectNative.m.css';
 import * as pagination from './pagination.m.css';
 import * as passwordInput from './inputPassword.m.css';
+import * as place from './place.m.css';
 import * as progress from './progress.m.css';
 import * as radioGroup from './radioGroup.m.css';
 import * as radio from './radio.m.css';
@@ -43,6 +44,7 @@ import * as rangeSlider from './sliderRange.m.css';
 import * as select from './select.m.css';
 import * as slidePane from './paneSlide.m.css';
 import * as slider from './progress.m.css';
+import * as smoke from './smoke.m.css';
 import * as snackbar from './snackbar.m.css';
 import * as switchControl from './switch.m.css';
 import * as tabController from './tabController.m.css';
@@ -104,8 +106,10 @@ export default {
 		'@redaktor/widgets/radio': radio,
 		'@redaktor/widgets/sliderRange': rangeSlider,
 		'@redaktor/widgets/select': select,
+		'@redaktor/widgets/place': place,
 		'@redaktor/widgets/paneSlide': slidePane,
 		'@redaktor/widgets/slider': slider,
+		'@redaktor/widgets/smoke': smoke,
 		'@redaktor/widgets/snackbar': snackbar,
 		'@redaktor/widgets/switch': switchControl,
 		'@redaktor/widgets/tabController': tabController,
