@@ -2,8 +2,8 @@ import { create, tsx } from '@dojo/framework/core/vdom';
 import theme from '../middleware/theme';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import intlAddress, { Region } from './util';
-import Telephone from '../telephone';
-import MD from '../MD';
+import Telephone from '../tel';
+import Mailto from '../mailto';
 import Icon from '../icon';
 import * as css from '../theme/material/address.m.css';
 
@@ -47,11 +47,11 @@ console.log('!', formattedAddress);
 		{formattedAddress.map((a, i, addrA) => contact.hasOwnProperty(a[0].itemprop) ?
 			<div classes={themedCss.contactWrapper}>
 				{a.map((o) => {
-					return <span classes={itemClasses} itemprop={o.itemprop}>
+					return <span classes={itemClasses}>
 						{additionalIcon.hasOwnProperty(o.itemprop) &&
 							<Icon type={additionalIcon[o.itemprop]} spaced="right" />
 						}
-						{o.itemprop === 'email' && <MD components={{p:'span'}} content={o.value} />}
+						{o.itemprop === 'email' && <Mailto email={o.value} />}
 						{o.itemprop === 'telephone' && <Telephone telephone={o.value} />}
 						{o.itemprop !== 'email' && o.itemprop !== 'telephone' && o.value}{' '}
 					</span>

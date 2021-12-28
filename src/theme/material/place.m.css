@@ -1,6 +1,7 @@
 .root {
 	padding-bottom: var(--line);
 }
+.expanded { }
 .header {
 	position: relative;
 	width:100%;
@@ -23,23 +24,35 @@
 	padding-left: calc(var(--grid-base,8px) * 2);
 	z-index: 9;
 }
-.placeMeta,
-.placeStatus {
+.metaWrapper {
+	width:100%;
+	height: var(--line);
+	display:flex;
+	justify-content: space-between;
+	align-items: baseline;
+}
+.placeMeta {
 	composes: s italic serif from './_typo.css';
 	display: inline-block;
 	color: var(--ui-text);
-}
-.placeMeta {
 	padding: 0px calc(var(--grid-base,8px) * 2) 0px var(--grid-base,8px);
+}
+.placeStatus {
+	composes: l italic serif from './_typo.css';
 }
 .root .placeStatus {
 	color: var(--text-muted);
-	margin: 0px 72px calc(var(--mb) - var(--line)) calc(var(--grid-base,8px) * -2);
-	padding: 0px;
+	height: calc(var(--line) - var(--mb));
+}
+.root:not(.expanded) .placeStatus.topSpace {
+	height: calc(var(--line2) - var(--mb));
+}
+.root .placeStatus + .nameWrapper {
+	margin-top: calc(var(--line) * -1);
 }
 .root .attendanceCount {
 	color: var(--text-muted);
-	margin: 0px var(--grid-base) 0px 0px;
+	margin: 0px;
 }
 .placeStatus > :last-child:not(:first-child) {
 	margin-left: var(--grid-base,8px);
@@ -51,14 +64,16 @@
 .kicker {
 	composes: s from './_typo.css';
 }
+.featureWrapper {
+	display: flex;
+}
 .featureIcons {
+	position: absolute;
+	right: var(--ui-border-width-emphasized);
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: flex-end;
-	position: absolute;
-	right: 4px;
-	top: 0px;
-	min-height: var(--line2);
+	margin-top: calc(var(--lineHalf) * -1);
 	max-width: var(--line4);
 }
 .featureIcon {
@@ -68,14 +83,25 @@
 	height: var(--wh);
 	margin: var(--mtr) var(--mtr) 0px 0px;
 	padding: var(--ui-border-width-emphasized);
-}
-.featureIcon.circle {
 	background: var(--base, #fff);
 	border-radius: 100%;
 	border: var(--ui-border-width-emphasized) dotted var(--border);
 }
+.smokingAndWheelchair {
+	position: absolute;
+	right: var(--grid-base,8px);
+	display: flex;
+}
+.wheelchair {
+	margin: 0px;
+	padding: 0px;
+	width: var(--line);
+	height: var(--line);
+	right: var(--grid-base,8px);
+}
 .placeAttendance { }
 
+/*
 .switchButtons {
 	height: var(--line2);
 	margin-left: calc(var(--grid-base,8px) * -2);
@@ -93,23 +119,27 @@
 }
 .switchButtons .switchButton:not(:last-child) {
 	border-radius: 0px;
-}
+} */
 
-.nameWrapper,
-.locationWrapper {
+.nameWrapper {
 	flex: 0;
 	position:relative;
 }
+/* , featureIcons.length > 2 && themedCss.moreThan2Features
 .moreThan2Features .nameWrapper {
 	margin-right: calc(var(--line2) - (var(--grid-base,8px) * 2));
 }
+*/
+.addressWrapper {
+	padding-left: calc(var(--grid-base,8px) * 2);
+}
+.mapDetails,
 .topContact {
 	margin-top: calc(var(--line) * -1);
 }
 .geoCoordinates {
 	padding-left: var(--grid-base,8px);
 }
-
 .contentWrapper {
 	--lt: calc(var(--line) + var(--pt));
 	background: linear-gradient(transparent var(--lt), var(--bg) var(--lt));

@@ -8,7 +8,7 @@ import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
-import Button from '../button';
+// import Button from '../button';
 import Paginated from '../paginated';
 import Caption, { coveredLD as captionCoveredLD } from '../caption';
 import I18nAddress from '../intlAddress';
@@ -19,7 +19,8 @@ import Structure from '../structure';
 import Icon from '../icon';
 import Images from '../images';
 import { latLngStr } from '../map/util';
-import { osmKeyAndIcon, LocationFeatureSpecification } from './util';
+import Geo from '../geo';
+import { osmWheelchairAndAmenities, LocationFeatureSpecification } from './util';
 import Smoke, { Smoking } from '../smoke';
 // import * as ui from '../theme/material/_ui.m.css';
 import bundle from './nls/Place';
@@ -28,6 +29,7 @@ import * as nameCss from '../theme/material/name.m.css';
 import * as css from '../theme/material/place.m.css';
 /* TODO ISSUE in /images */
 export interface PlaceProperties extends AsObject {
+	addressExpanded?: boolean;
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 	fullscreen?: boolean;
 	fit?: boolean;
@@ -60,26 +62,25 @@ export interface PlaceChildren {
 	footer?: RenderResult;
 }
 
-/* TODO
-!! vcard:tz – TIMEZONE OF PLACE
+/* TODO [AP similar] icon: logo, image: photo
+AP 			context [is similar to: ]
+schema
+---
+CONCEPTS:
+containedInPlace, containsPlace,
+event 						Event Upcoming or past event associated with this place
+---
+vcard:tz – TIMEZONE OF PLACE
 address -> postOfficeBoxNumber
 tourBookingPage
 
-More specific Types
-Accommodation, AdministrativeArea,  CivicStructure, Landform, LandmarksOrHistoricalBuildings,
-LocalBusiness, Residence, TouristAttraction, TouristDestination
+TMP places / Opening Hours:
+- validFrom startTime			Date
+- validTo endTime 				Date
+- openingHoursSpecification		OpeningHoursSpecification
+- specialOpeningHoursSpecification "
+adr - hoursAvailable 	OpeningHoursSpecification
 
-[AP similar] icon: logo, image: photo
-AP 			context [is similar to: ]
-schema
-
-openingHoursSpecification		OpeningHoursSpecification
-specialOpeningHoursSpecification "
-hoursAvailable, validFrom, validTo
-
-event 						Event Upcoming or past event associated with this place
-
-containedInPlace, containsPlace
 geo …
 */
 
@@ -89,6 +90,7 @@ const factory = create({ icache, id, i18nActivityPub, theme, breakpoints })
 	.properties<PlaceProperties>()
 	.children<PlaceChildren | RenderResult | undefined>();
 
+/* TODO osm and wikidata ID per API e.g. https://api.openstreetmap.org/api/0.6/node/6171146490.json */
 export const coveredLD = captionCoveredLD.concat([
 	'image', 'schema:amenityFeature', 'schema:slogan', 'schema:maximumAttendeeCapacity',
 	'schema:aggregateRating', 'schema:isAccessibleForFree', 'schema:publicAccess',
@@ -96,6 +98,9 @@ export const coveredLD = captionCoveredLD.concat([
 	'schema:telephone', 'schema:faxNumber', 'schema:hoursAvailable', 'schema:availableLanguage'
 	// 'schema:tourBookingPage'
 ]);
+export const schemaSubTypes = [ 'Accommodation', 'AdministrativeArea', 'CivicStructure',
+	'Landform', 'LandmarksOrHistoricalBuildings', 'LocalBusiness', 'Residence',
+	'TouristAttraction', 'TouristDestination' ];
 export const Place = factory(function place({
 	middleware: { icache, id, i18nActivityPub, theme, breakpoints /*, resource */ },
 	properties
@@ -104,7 +109,7 @@ export const Place = factory(function place({
 	const { messages } = i18nActivityPub.localize(bundle);
 	const {
 		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		color = 'cyan', fit = false, view = 'column'
+		addressExpanded = false, fit = false, color = 'amber', view = 'column'
 	} = properties();
 	const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
@@ -152,13 +157,23 @@ export const Place = factory(function place({
 	} = ldPartial(ld);
 	const aggregateRating = Array.isArray(rating) ? rating[0] : rating;
 	const [isAccessibleForFree,publicAccess,hasDriveThroughService,smokingAllowed] = [b1,b2,b3,b4].map(toBooleanStr);
-
+	if (hasDriveThroughService === 'yes') {
+		amenityFeature.push({propertyID: 'hasDriveThroughService', value: hasDriveThroughService })
+	}
+	const { wheelchair, amenities: _amenities } = osmWheelchairAndAmenities(amenityFeature);
+	const toFeatureIcons = (a: [string, string]) => {
+		const titleO = messages.hasOwnProperty(a[0]) ? { title: (messages as any)[a[0]] } : {};
+		return <img {...titleO}
+			classes={a[0].indexOf('wheelchair') !== 0 ? themedCss.featureIcon : themedCss.wheelchair}
+			src={a[1]}
+		/>
+	}
+	const { type } = ld;
+	const specificAmenities: [string, string][] = schemaSubTypes
+		.filter(s => type.includes(s)||type.includes(`http://schema.org/${s}`)||type.includes(`schema:${s}`))
+		.map(s => [s, `/assets/osm/${s}.svg`]);
+	const amenities = specificAmenities.concat(_amenities);
 	// amenityFeature: https://schema.org/LocationFeatureSpecification
-	/* TODO:
-	- validFrom startTime			Date
-	- validTo endTime 				Date
-	- hoursAvailable 	OpeningHoursSpecification
-	*/
 	let smoking: Smoking|'und';
 	const smokingFeature = amenityFeature.filter((o: LocationFeatureSpecification) => o.propertyID === 'smoking');
 	if (!!smokingFeature.length) {
@@ -166,25 +181,13 @@ export const Place = factory(function place({
 	} else {
 		smoking = smokingAllowed;
 	}
-	if (hasDriveThroughService === 'yes') {
-		amenityFeature.push({propertyID: 'hasDriveThroughService', value: hasDriveThroughService })
-	}
-	const featureIcons = osmKeyAndIcon(amenityFeature).map((a) => {
-		const titleO = messages.hasOwnProperty(a[0]) ? { title: (messages as any)[a[0]] } : {};
-		return <img {...titleO}
-			classes={[themedCss.featureIcon, a[0].indexOf('wheelchair') !== 0 && themedCss.circle]}
-			src={a[1]}
-		/>
-	});
-	if (smoking === 'no') {
-		featureIcons.push(<Smoke smoking="no" />);
-	} /* otherwise smoking status is in additional properties */
+	const featureIcons = amenities.map(toFeatureIcons);
 
 	const msg = (s: string, b: string) => !!s && messages.hasOwnProperty(s) ?
 		<span>
 			<Icon type={b === 'yes' ? 'check' : 'closed'} color={b === 'yes' ? color : 'error'}
 				spaced="right" />
-			{(messages as any)[s]}
+			<small>{(messages as any)[s]}</small>
 		</span> : '';
 
 	const [isPublic, isFree] = [
@@ -203,13 +206,25 @@ export const Place = factory(function place({
 			view.setActivityPub(location);
 		}
 	}
-
-	const addressArray = Array.isArray(ld['schema:address']) ? ld['schema:address'] :
-		(!!ld['schema:address'] ? [ld['schema:address']] : []);
-
+/*
 	const btnClasses = {
 		'@redaktor/widgets/button': { root: [themedCss.switchButton] }
 	};
+
+
+	<noscript><i classes={themedCss.noLocation} /></noscript>
+
+	{!!featureIcons.length && <div classes={themedCss.featureIcons}>{featureIcons}</div>}
+*/
+	const addressArray = Array.isArray(ld['schema:address']) ? ld['schema:address'] :
+		(!!ld['schema:address'] ? [ld['schema:address']] : []);
+	const addressPaginated = <Paginated key="address" property="schema:address" spaced={false}>
+		{...addressArray.map((o: any = {}) =>	<I18nAddress address={o}
+			additionalProperties={['email','telephone','faxNumber','hoursAvailable','availableLanguage']}
+		/>)}
+	</Paginated>
+	const namePR = (isPublic || isFree || !!slogan.length) ? '0px' :
+		`calc((var(--line) + var(--grid-base)) * ${smoking === 'no' ? 2 : 1})`;
 
 	return <div
 		key="root"
@@ -224,7 +239,8 @@ export const Place = factory(function place({
 			theme.uiSize(),
 			theme.uiColor(color),
 			theme.uiElevation(),
-			theme.animated(themedCss)
+			theme.animated(themedCss),
+			!!addressExpanded && themedCss.expanded
 		]}
 		onMouseEnter={onMouseEnter}
 		onMouseLeave={onMouseLeave}
@@ -232,73 +248,65 @@ export const Place = factory(function place({
 		role="region"
 	>
 		<div classes={themedCss.header}>
-			{!!featureIcons.length && <div classes={themedCss.featureIcons}>
-				{!!mc && <p classes={themedCss.attendanceCount}>
-					{mc} <Icon type="people" size="s" />
-				</p>}
-				{featureIcons}
-			</div>}
 			<div classes={themedCss.topWrapper}>
-				<noscript><i classes={themedCss.noLocation} /></noscript>
-				<div classes={themedCss.switchButtons}>
-					<Button disabled={!!get('mapOpen')} color="cyan" responsive={false} classes={btnClasses} onClick={
-						() => { console.log('clicked'); setMap({...ld, apType: 'Place', geoMeta: `location of the event`}, 0) }
-					}>
-						<Icon type="map" size="xl" spaced="right" />
-						{!get('mapOpen') && <span>Karte<span classes={themedCss.geoCoordinates}>{latLngStr(ld)}</span></span>}
-					</Button>
-					<Button disabled={!get('mapOpen')} color="cyan" responsive={false} classes={btnClasses} onClick={() => { setMap(false,false) }}>
-						<Icon type="image" size="xl" spaced="right" />
-						{!!get('mapOpen') && <span>12 Bilder</span>}
-					</Button>
+				<div classes={themedCss.metaWrapper}>
+					{<p classes={themedCss.attendanceCount}><Geo {...ld} /></p>}
+					{!!mc && <p classes={themedCss.attendanceCount}>
+						{mc} <Icon type="people" size="s" />
+						<div classes={themedCss.smokingAndWheelchair}>
+							{smoking === 'no' && <Smoke smoking="no" />}
+							{wheelchair.map(toFeatureIcons)}
+						</div>
+					</p>}
 				</div>
 
-				{!!statusByline && <p classes={themedCss.placeStatus}>{statusByline}</p>}
-				<div classes={[nameCss.root, themedCss.nameWrapper, featureIcons.length > 2 && themedCss.moreThan2Features]}>
+				<div classes={[nameCss.root, themedCss.nameWrapper]} style={`--pr: ${namePR};`}>
+					{!!statusByline && <p classes={[themedCss.placeStatus, (isPublic||isFree) && !slogan.length && themedCss.topSpace]}>
+						{statusByline}
+					</p>}
 					{!!slogan.length && <p classes={[nameCss.kicker, themedCss.kicker]}>{slogan.join(', ')}</p>}
-					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced={false}>
+					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced="right">
 						{clampStrings(name, 250).map((s) => <h5>{s}</h5>)}
 					</Paginated>}
 					{(email || telephone || faxNumber || hoursAvailable || availableLanguage) && <p classes={themedCss.topContact}>
 						<I18nAddress address={{email, telephone, faxNumber, hoursAvailable, availableLanguage}}
 							additionalProperties={['email','telephone','faxNumber','hoursAvailable','availableLanguage']}
-							onlyAdditional={true}
+							onlyAdditional={true} color={color}
 						/>
 					</p>}
 				</div>
-				{!!addressArray.length && !omit.has('schema:address') &&
-					<Paginated key="address" property="schema:address" spaced={false}>
-						{...addressArray.map((o: any = {}) =>	<I18nAddress address={o}
-							additionalProperties={['email','telephone','faxNumber','hoursAvailable','availableLanguage']}
-						/>)}
-					</Paginated>
+			</div>
+			<div classes={themedCss.addressWrapper}>
+				{!!featureIcons.length && <div classes={themedCss.featureIcons}>{featureIcons}</div>}
+				{!!addressArray.length && !omit.has('schema:address') && !!addressExpanded ? addressPaginated :
+					<Details color={color}>{{
+						summary: messages.adrContact,
+						content: addressPaginated
+					}}</Details>
 				}
+				{!omit.has('location') && <Details color={color}>{{
+					summary: <span><Icon type="map" color="neutral" spaced="right" /> {messages.map}</span>,
+					content: (get('mapWasOpen') || get('mapOpen')) ? getOrSet('map', <Map
+						key="map"
+						{...ld}
+						hasCenterMarker
+						hasSearch
+						center={get('mapOpen')||void 0}
+						zoom={15}
+						onView={(view) => {
+							set('mapView', view, false);
+							ld && setMap(ld, 0);
+						}}
+						onActivityPubLocation={({pointer}) => {
+
+						}}
+						onActivityPubLocationOpen={({id, pointer}) => {
+
+						}}
+					/>) : ''
+				}}</Details>}
 			</div>
 		</div>
-		{!omit.has('location') && <div
-			role="region"
-			aria-label={messages.locationmap}
-			classes={[themedCss.mapWrapper, get('mapWasOpen') && !get('mapOpen') && themedCss.closed]}
-		>
-			{(get('mapWasOpen') || get('mapOpen')) && getOrSet('map', <Map
-				key="map"
-				{...ld}
-				hasCenterMarker
-				hasSearch
-				center={get('mapOpen')||void 0}
-				zoom={15}
-				onView={(view) => {
-					set('mapView', view, false);
-					ld && setMap(ld, 0);
-				}}
-				onActivityPubLocation={({pointer}) => {
-
-				}}
-				onActivityPubLocationOpen={({id, pointer}) => {
-
-				}}
-			/>)}
-		</div>}
 		{!omit.has('image') && !get('mapOpen') && <div classes={themedCss.images}>
 			<Images key="images" view={view} image={image} itemsPerPage={4} size={(vp as any)} />
 		</div>}
@@ -309,6 +317,7 @@ export const Place = factory(function place({
 						'@redaktor/widgets/images': { captionWrapper: [themedCss.captionWrapper] }
 					}}
 					colored
+					color={color}
 					contentLines={3}
 					omitProperties={['name','date','location']}
 					onLocale={(l) => i18nActivityPub.setLocale(l)}

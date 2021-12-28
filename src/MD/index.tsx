@@ -44,10 +44,14 @@ export interface MDProperties {
 	linkTarget?: string | ((href: string, children: any, title: string) => string)
 	/* URL to use for links. The default allows only http, https, mailto, and tel */
 	transformLinkUri?: ((href: string, children: any, title: string) => string);
-	/* 	Same as transformLinkUri but for images */
+	/* Same as transformLinkUri but for images */
 	transformImageUri?: ((href: string, alt: string, title: string) => string);
+	/* Transform dojo render result */
+	transformNodes?: ((node: RenderResult) => RenderResult)
 	/* Object mapping tag names to Dojo modules */
 	components?: any;
+	/* return first element of type x */
+	onlyFirst?: string;
 }
 
 const factory = create({}).properties<MDProperties>();
@@ -56,8 +60,10 @@ export const MD = factory(function MD({ properties, id, children }) {
 	const {
 		content,
 		classes,
+		onlyFirst,
+		transformNodes,
 		remarkPlugins = [remarkHashtags, remarkGFM],
-		rehypePlugins = [],
+		rehypePlugins = []
 	} = properties();
 
 	if (!content) { return '' }
@@ -83,13 +89,18 @@ export const MD = factory(function MD({ properties, id, children }) {
 		children: content
 	};
 
-  return classes ?
-  <div classes={classes}>
-    {...childrenToDojo({options, schema: html, listDepth: 0}, hastNode)}
-  </div> :
-  <virtual>
-    {...childrenToDojo({options, schema: html, listDepth: 0}, hastNode)}
-  </virtual>
+	let nodes = childrenToDojo({options, schema: html, listDepth: 0}, hastNode);
+	if (!!onlyFirst && !!nodes && !!nodes.length && !!nodes[0].children && !!nodes[0].children.length) {
+		for (let o of nodes[0].children) {
+			if (o.tag === onlyFirst) {
+				nodes = [(o as RenderResult)]
+			}
+		}
+	}
+	if (!!transformNodes) {
+		nodes = nodes.map(transformNodes)
+	}
+  return classes ? <div classes={classes}>{...nodes}</div> : <virtual>{...nodes}</virtual>
 
 });
 

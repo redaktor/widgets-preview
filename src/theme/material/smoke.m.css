@@ -8,13 +8,10 @@
   --duration: 2s;
 }
 .root.no {
-  --mtr: calc(var(--grid-base,8px) / 2);
-  --wh: calc(var(--line) * 1.5 - var(--mtr));
   display: inline-block;
-  width: var(--wh);
-  height: var(--wh);
-  margin: var(--mtr) var(--mtr) 0px 0px;
-  padding-left: var(--ui-border-width-emphasized);
+  width: var(--line);
+  height: var(--line);
+  margin: -1px var(--grid-base,8px) 0px 0px;
 }
 .smokeWrapper,
 .separated::after,

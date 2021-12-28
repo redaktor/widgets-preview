@@ -95,7 +95,8 @@ export const Caption = factory(function Caption({
 		locale: currentLocale, compact = false, hasDetails = false, isOpen = false,
 		dateOpenIndex = false, locationOpenIndex = false, size = 'm', view = 'column', colored = false,
 		largeLocation = false, locationIsDetails = false, locationHasOnline = false, locationHasMap = true,
-		largeDate = false, isImageCaption = false, contentLines: cl, onToggle, onFocusPrevious, onDate, onLocation, onLocale
+		largeDate = false, isImageCaption = false, color, contentLines: cl,
+		onToggle, onFocusPrevious, onDate, onLocation, onLocale
 	} = properties();
 	const {
 		href = '', name: n, summary, content, sensitive, attachment, ...ld
@@ -145,7 +146,7 @@ export const Caption = factory(function Caption({
 					{_summaries.map((s: any) => <MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={s} />)}
 				</span>)}
 			</Paginated>)}
-			{!!content && !omit.has('content') && <Collapsed responsive={!isRow} lines={contentLines} classes={
+			{!!content && !omit.has('content') && <Collapsed color={color} responsive={!isRow} lines={contentLines} classes={
 					{ '@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] } }
 				}>
 					{content.map((_content: string, i: number) => <virtual>

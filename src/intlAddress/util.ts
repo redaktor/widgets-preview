@@ -100,7 +100,7 @@ export const addressFormats = {
   BO: formats.AR, CL: formats.AR, CO: formats.AR, EC: formats.AR, GY: formats.AR,
   PY: formats.AR, PE: formats.AR, UY: formats.AR, VE: formats.AR
 };
-const additionalOrder1: string[] = ['telephone', 'faxNumber'];
+const additionalOrder1: string[] = ['email', 'telephone', 'faxNumber'];
 const additionalOrder2: string[] = ['ISO3166', 'availableLanguage', 'hoursAvailable'] // TODO:
 // contactType
 // hoursAvailable	OpeningHoursSpecification
@@ -163,10 +163,9 @@ export default function intlAddress(
     (typeof addressFormats[region] === 'object' && addressFormats[region].hasOwnProperty(type) ?
       ((addressFormats as any)[region][type]) : (formats.US||[])) || (formats.US||[]);
 
-  const additionalProperties1 = o.hasOwnProperty('email') ? ['email'] : [];
-  const additionalProperties2 = additionalOrder1.filter((k) => (additionals.has(k) && o.hasOwnProperty(k)));
-  const additionalProperties3 = additionalOrder2.filter((k) => (additionals.has(k) && o.hasOwnProperty(k)));
-  const additionalProperties4 = additional.filter((k) => (o.hasOwnProperty(k) && !additionalOrders.has(k)));
+  const additionalProperties1 = additionalOrder1.filter((k) => (additionals.has(k) && o.hasOwnProperty(k)));
+  const additionalProperties2 = additionalOrder2.filter((k) => (additionals.has(k) && o.hasOwnProperty(k)));
+  const additionalProperties3 = additional.filter((k) => (o.hasOwnProperty(k) && !additionalOrders.has(k)));
   const reduceProperties = (a: any[], k: any) => a.concat((Array.isArray(o[k]) ?
     o[k].map((value: any) => ({itemprop: k, value})) : [{itemprop: k, value: o[k]}]).filter(hasValue)
   );
@@ -191,6 +190,5 @@ export default function intlAddress(
     .concat([additionalProperties1.reduce(reduceProperties, [])])
     .concat([additionalProperties2.reduce(reduceProperties, [])])
     .concat([additionalProperties3.reduce(reduceProperties, [])])
-    .concat([additionalProperties4.reduce(reduceProperties, [])])
     .filter((a: any[]) => !!a && !!a.length)
 }

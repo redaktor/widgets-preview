@@ -1,3 +1,4 @@
+import { tsx } from '@dojo/framework/core/vdom';
 import { JSONpointer } from '../framework/JSON/Pointer';
 import { AsObjectNormalized } from '../common/interfaces';
 
@@ -14,16 +15,56 @@ export function toDMS(coordinate: number, posCardinal: string, negCardinal: stri
   const cardinal = coordinate >= 0 ? posCardinal : negCardinal;
   return `${degrees}°${minutes}'${seconds}"${cardinal}`
 }
+function latLng(latitude: number, longitude: number) {
+  return [Math.round(latitude * 100000)/100000, Math.round(longitude * 100000)/100000]
+}
+function toMeter(v: number, units = 'm', delimiter = ',') {
+  const toM = {cm:v*100, feet:v/3.281, inches:v/39.37, km:v/1000, miles:v*1609, m:v*1};
+  if (units === 'm') {
+    return `${delimiter}${v}`
+  } else if (toM.hasOwnProperty(units)) {
+    return `${delimiter}${toM[(units as keyof typeof toM)]}`
+  }
+  return ''
+}
 export function latLngStr(
 	{latitude, longitude, altitude, units, accuracy, radius}: Partial<AsObjectNormalized>,
 	onlyCoordinates = false
 ) {
-	if (!latitude || !longitude) { return '' }
-	const [lat, lng] = [Math.round(latitude * 100000)/100000, Math.round(longitude * 100000)/100000];
+	if (typeof latitude !== 'number' || typeof longitude !== 'number') { return '' }
+	const [lat, lng] = latLng(latitude, longitude);
 	if (onlyCoordinates) { return `${lat}, ${lng}` }
-	const alt = !altitude ? '' : ` ⬍${altitude}${units||'m'}`;
+	const alt = typeof altitude !== 'number' ? '' : ` ⬍${altitude}${units||'m'}`;
 	const rad = !radius ? '' : ` ⌀${radius}${units||'m'}`;
 	return `${toDMS(lat,'N','S')} ${toDMS(lng,'E','W')}${alt}${rad}`
+}
+
+export function geoHref(
+	{latitude, longitude, altitude, units, accuracy, radius, name = []}: Partial<AsObjectNormalized>
+) {
+  if (!Array.isArray(name)) { name = [`${name}`] }
+  if (typeof latitude !== 'number' || typeof longitude !== 'number') {
+    return {
+      href: `geo:0,0?q=${name.join(',')}`,
+      content: name.join(',')
+    }
+  }
+	const [lat, lng] = latLng(latitude, longitude);
+	const hrefs = [`geo:${lat},${lng}`];
+  if (typeof altitude === 'number') { hrefs.push(toMeter(altitude, units)) }
+  if (typeof radius === 'number') { hrefs.push(toMeter(radius, units, ';u=')) }
+  const href = hrefs.join('');
+
+  const alti = typeof altitude !== 'number' ? '' : ` ⬍${altitude}${units||'m'}`;
+  const radi = !radius ? '' : ` ⌀${radius}${units||'m'}`;
+  const content = <virtual>
+    <span itemprop="latitude">{toDMS(lat,'N','S')}</span>
+    <span> </span>
+    <span itemprop="longitude">{toDMS(lng,'E','W')}</span>
+    {!!alti && <span itemprop="altitude">{alti}</span>}
+    {!!radi && <span itemprop="radius">{radi}</span>}
+  </virtual>;
+  return { href, content }
 }
 
 export function apToGeoJSON(ap: AsObjectNormalized, messages: any = {}) {

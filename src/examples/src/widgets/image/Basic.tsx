@@ -143,7 +143,7 @@ exampleImage['schema:contentLocation'] = {'@type': 'schema:Place', 'schema:name'
 
 console.log(LOC[5].location);
 LOC[5].location.type = ['Place', 'schema:Place'];
-LOC[5].location["schema:slogan"] = 'Just do it.';
+// LOC[5].location["schema:slogan"] = 'Just do it.';
 LOC[5].location["schema:address"] = [{
   "@type": "PostalAddress",
   "schema:addressLocality": "Seattle",
@@ -175,8 +175,10 @@ const rating = {
 const examplePlace = {
   ...{...LOC[5].location},
   name: [LOC[5].location.name],
+  altitude: 4000,
+  radius: 1000,
   id: uuid(),
-  type:'Place',
+  type: 'Place',
   summaryMap: {en: summary, de: 'de'},
   content,
   attributedTo: attributedTo[0],
@@ -300,7 +302,7 @@ console.log('Event example',exampleEvent)
 
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
-            <Place key="place1" {...examplePlace} />
+            <Place key="place1" {...examplePlace} addressExpanded={false} />
             <Event id="event1" key="event1"
               {...exampleEvent}
               type="Event" hasAttachment={false}

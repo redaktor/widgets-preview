@@ -8,6 +8,8 @@ const locales = {
 };
 const messages = {
 	calendar: 'calendar',
+	adrContact: 'address & contact',
+	map: 'map',
 	locationmap: 'event location',
 	moreInfo: 'further information',
 	amenity_restaurant: 'Restaurant',

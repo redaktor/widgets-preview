@@ -19,6 +19,9 @@
   background-repeat: no-repeat;
 	list-style: none;
 }
+.colored .summary {
+	color: var(--ui-text-muted);
+}
 .summary:focus {
 	outline: none;
 }
@@ -26,8 +29,15 @@
 .root[open] .summary {
 	color: var(--text);
 }
+.colored[open] .summary {
+	color: var(--ui-text);
+}
 .root[open] .summary:hover {
 	color: var(--text-muted);
+}
+.colored:hover .summary,
+.colored[open] .summary:hover {
+	color: var(--text);
 }
 .summaryContent {
 	display: inline-block;

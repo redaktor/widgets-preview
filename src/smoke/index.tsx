@@ -5,11 +5,11 @@ export type Smoking = 'yes'|'no'|'dedicated'|'separated'|'isolated'|'outside';
 export interface SmokeProperties { smoking?: Smoking; }
 
 const noSmokingO = { 'xmlns:xlink': 'http://www.w3.org/1999/xlink', 'xml:space': 'preserve' }
-const noSmoking = <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
-	 width="28px" height="28px" viewBox="0 0 56 56" enable-background="new 0 0 56 56" {...noSmokingO}>
-<g id="g5" transform="translate(-30.253,-31.61)">
+const noSmoking = <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+	 width="27px" height="27px" viewBox="0 0 56 56" enable-background="new 0 0 56 56" {...noSmokingO}>
+<g transform="translate(-30.253,-31.61)">
 	<rect fill="var(--text,#000000)" x="38.491" y="55.423" width="25.204" height="4.03"/>
-	<path ill="none" stroke="var(--text,#000000)" stroke-width="1.3509" stroke-linejoin="round" stroke-miterlimit="10" d="
+	<path fill="none" stroke="var(--text,#000000)" stroke-width="1.3509" stroke-linejoin="round" stroke-miterlimit="10" d="
 		M55.808,39.323c-2.393,0-3.368,1.937-3.368,3.431c0,1.702,1.399,3.535,4.054,3.379c-0.918,1.558-0.113,4.089,2.062,4.089
 		c0.008,0,3.629,0,3.629,0c1.937,0,2.939,1.029,2.939,2.62v1.851"/>
 	<path fill="none" stroke="var(--text,#000000)" stroke-width="1.3509" stroke-linejoin="round" stroke-miterlimit="10" d="

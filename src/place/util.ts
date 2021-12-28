@@ -231,9 +231,9 @@ const icons: any = {
     mini_roundabout: '9/9b/Highway_mini_roundabout'
   },
   railway: {
-    station: 'https://wiki.openstreetmap.org/w/images/1/11/Rendering-railway-tram_stop-mapnik.png.png',
-    halt: 'https://wiki.openstreetmap.org/w/images/1/11/Rendering-railway-tram_stop-mapnik.png.png',
-    tram_stop: 'https://wiki.openstreetmap.org/w/images/1/11/Rendering-railway-tram_stop-mapnik.png.png',
+    station: '1/11/Tram-16',
+    halt: '1/11/Tram-16',
+    tram_stop: '1/11/Tram-16',
     subway_entrance: '3/3c/Subway-entrance-12',
     level_crossing: 'f/f7/Level_crossing',
     crossing: 'f/f7/Level_crossing'
@@ -303,9 +303,9 @@ const icons: any = {
   capital: '0/0d/Place-capital-8',
   office: '9/92/Office-16'
 };
-
-export function osmKeyAndIcon(locationFeatures: LocationFeatureSpecification[] | LocationFeatureSpecification) {
-  if (typeof locationFeatures !== 'object') { return [] }
+interface WheelchairAndAmenities { wheelchair: [string,string][]; amenities: [string,string][]; }
+export function osmWheelchairAndAmenities(locationFeatures: LocationFeatureSpecification[] | LocationFeatureSpecification): WheelchairAndAmenities {
+  if (typeof locationFeatures !== 'object') { return {wheelchair: [], amenities: []} }
   const _a = (!Array.isArray(locationFeatures) ? [locationFeatures] : locationFeatures);
   const sl = (s: string) => s.trim().toLowerCase();
   const o = _a.reduce((_o: any, l) => {
@@ -394,10 +394,17 @@ export function osmKeyAndIcon(locationFeatures: LocationFeatureSpecification[] |
   if (!!o.entrance && !!o.access && !!o.access.no) {
     a.push(['noEntrance', '0/0d/Rectdiag'])
   }
-  const withFullIcon = (_a: [string, string]) => { _a[1] = `https://wiki.openstreetmap.org/w/images/${_a[1]}.svg`; return _a }
+
+
+  const withFullIcon = (_a: [string, string], external = false) => {
+    const base = external === true ? 'https://wiki.openstreetmap.org/w/images/' : '/assets/osm/';
+    const file = external === true ? _a[1] : _a[1].split('/').reverse()[0];
+    _a[1] = `${base}${file}.svg`;
+    return _a
+  }
 
   for (let k in o) {
-    if (k === 'wheelchair' || !o.hasOwnProperty(k)) { continue }
+    if (k === 'wheelchair' || k === 'hasDriveThroughService' || !o.hasOwnProperty(k)) { continue }
     if (a.length > 1) { break }
     if (icons.hasOwnProperty(k)) {
       for (let v in o[k]) {
@@ -409,17 +416,19 @@ export function osmKeyAndIcon(locationFeatures: LocationFeatureSpecification[] |
       !a.length && typeof icons[k] === 'string' && a.push([k, icons[k]]);
     }
   }
-  if (!!o.wheelchair) {
-    for (let wk in o.wheelchair) {
-      o.wheelchair.hasOwnProperty(wk) && a.push([`wheelchair_${wk}`, icons.wheelchair[wk]]);
-    }
-  } else {
-    a.push(['wheelchair_und', '9/93/Wheelchair_sign_unknown']);
-  }
   if (!!o.hasDriveThroughService && !!o.hasDriveThroughService.yes) {
     a.push(['hasDriveThroughService_yes','c/c4/Car-14'])
   }
-  return a.map(withFullIcon)
+
+  let w: [string, string][] = [];
+  if (!!o.wheelchair) {
+    for (let wk in o.wheelchair) {
+      o.wheelchair.hasOwnProperty(wk) && w.push([`wheelchair_${wk}`, icons.wheelchair[wk]]);
+    }
+  } else {
+    w.push(['wheelchair_und', '9/93/Wheelchair_sign_unknown']);
+  }
+  return {wheelchair: w.map(withFullIcon), amenities: a.map(withFullIcon)}
 }
 
 /* TODO multi-level keys ...

@@ -113,9 +113,9 @@ background: linear-gradient(var(--ui-hover), var(--ui-focus-muted));
 	color: var(--text);
 }
 .sameDate {
-	color: var(--ui-success);
-	background: linear-gradient(to top right, rgba(0,0,0,0) 0%, rgba(0,0,0,0) calc(50% - 2px),
-rgba(0,0,0,1) 50%, rgba(0,0,0,0) calc(50% + 2px), rgba(0,0,0,0) 100%);
+	color: var(--ui-success) !important;
+	/* background: linear-gradient(to top right, rgba(0,0,0,0) 0%, rgba(0,0,0,0) calc(50% - 2px),
+rgba(0,0,0,1) 50%, rgba(0,0,0,0) calc(50% + 2px), rgba(0,0,0,0) 100%); */
 }
 
 .root .until,

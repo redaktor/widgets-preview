@@ -32,7 +32,7 @@ const factory = create({ theme })
 
 export const Details = factory(function Details({ children, properties, middleware: { theme } }) {
 	const themedCss = theme.classes(css);
-	const { summary: txtSummary, open, responsive = false, serif = false, animated = true } = properties();
+	const { summary: txtSummary, open, color, responsive = false, serif = false, animated = true } = properties();
 
 	let summary, content;
 	if (typeof children()[0] === 'object' && (children()[0] as any).hasOwnProperty('summary')) {
@@ -47,12 +47,14 @@ export const Details = factory(function Details({ children, properties, middlewa
 		<details open={open} key="root" classes={[
 			theme.variant(),
 			themedCss.root,
-			responsive && themedCss.responsive
+			!!color && themedCss.colored,
+			!!responsive && themedCss.responsive
 		]}>
 			{summary && (
 				<summary key="summary" classes={[
 					themedCss.summary,
 					theme.uiSize('l'),
+					theme.uiColor(),
 					serif && themedCss.serif,
 					animated && themedCss.animated
 				]}>
