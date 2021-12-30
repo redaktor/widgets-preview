@@ -2,6 +2,7 @@ export default {
 	calendar: 'Kalendar',
 	adrContact: 'Adresse & Kontakt',
 	map: 'Karte',
+	images: 'Bilder',
 	locationmap: 'Veranstaltungsort',
 	moreInfo: 'Weiterführende Informationen',
 	amenity_restaurant: 'Restaurant',

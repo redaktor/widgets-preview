@@ -16,7 +16,7 @@ export interface CollapsedProperties extends ThemeProperties {
 	/** full width, default true */
 	responsive?: boolean;
 	/** label content */
-	label?: 'read'|'readMore'|'view'|'viewMore';
+	label?: 'read'|'readMore'|'view'|'viewMore'|string;
 }
 
 const factory = create({ theme, id, i18n })
@@ -51,7 +51,7 @@ export const Collapsed = factory(function Collapsed({ properties, children, midd
 			{children()}
 		</div>
 		<Button labelFor={idBase} {...{size, spaced, color, design, responsive}}>
-			<span classes={themedCss.more} /> {messages[label]}
+			<span classes={themedCss.more} /> {messages.hasOwnProperty(label) ? messages[label as keyof typeof messages] : label}
 		</Button>
 	</virtual>
 });

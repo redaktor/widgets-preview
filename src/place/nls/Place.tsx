@@ -10,6 +10,7 @@ const messages = {
 	calendar: 'calendar',
 	adrContact: 'address & contact',
 	map: 'map',
+	images: 'images',
 	locationmap: 'event location',
 	moreInfo: 'further information',
 	amenity_restaurant: 'Restaurant',

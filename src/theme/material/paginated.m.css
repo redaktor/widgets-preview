@@ -11,6 +11,9 @@
   width: 1px;
   border-left: var(--ui-border-width-emphasized) dotted var(--m-500);
 }
+.colored.solid::after {
+  border-style: solid;
+}
 .compact.colored::after {
   left: 0px;
 }

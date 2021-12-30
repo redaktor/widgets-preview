@@ -118,6 +118,11 @@ export default function intlAddress(
   const additionals = new Set(additional);
   const o: any = {};
 
+  if (!schemaPartial.hasOwnProperty('streetAddress') && !!schemaPartial.hasOwnProperty('postOfficeBoxNumber')) {
+    schemaPartial.streetAddress = schemaPartial.postOfficeBoxNumber.replace(/[.]/g,'').trim().indexOf('POB') !== 0 ?
+      `P.O.B ${schemaPartial.postOfficeBoxNumber}` : schemaPartial.postOfficeBoxNumber
+  }
+
   for (let k in schemaPartial) {
     const splits = k.split('schema:');
     const key = splits[splits.length-1];

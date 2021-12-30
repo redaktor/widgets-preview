@@ -1,10 +1,11 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { uuid } from '@dojo/framework/core/util';
-import { AsObject, AsImage } from '../../../../common/interfaces';
+import { AsObject, AsImage, AsActivity } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Image, { ImageProperties } from '@redaktor/widgets/image';
 import Event from '@redaktor/widgets/event';
 import Place from '@redaktor/widgets/place';
+import Question from '@redaktor/widgets/question';
 /*
 import Images from '@redaktor/widgets/images';
 import Table from '@redaktor/widgets/table';
@@ -290,6 +291,13 @@ const exampleSchemaO = {
 }
 <Structure omitProperties={['schema:event','event']} value={exampleSchemaO} />
 */
+const exampleQuestion: AsActivity = {
+  "nameMap": {"en": "A question about robots", "de": "Eine Frage zu Robotern"},
+  "summary": "A question summary",
+  "id": "http://help.example.org/question/1",
+  "type": "Question",
+  "content": "I'd like to build a robot to feed my cat. Should I use Arduino or Raspberry Pi?"
+}
 
 const factory = create();
 export default factory(function Basic() {
@@ -302,6 +310,7 @@ console.log('Event example',exampleEvent)
 
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
+            <Question {...exampleQuestion} />
             <Place key="place1" {...examplePlace} addressExpanded={false} />
             <Event id="event1" key="event1"
               {...exampleEvent}

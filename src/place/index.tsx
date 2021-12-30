@@ -18,7 +18,6 @@ import Details from '../details';
 import Structure from '../structure';
 import Icon from '../icon';
 import Images from '../images';
-import { latLngStr } from '../map/util';
 import Geo from '../geo';
 import { osmWheelchairAndAmenities, LocationFeatureSpecification } from './util';
 import Smoke, { Smoking } from '../smoke';
@@ -63,17 +62,14 @@ export interface PlaceChildren {
 }
 
 /* TODO [AP similar] icon: logo, image: photo
-AP 			context [is similar to: ]
-schema
+AP 			context [see CONCEPTS]
 ---
 CONCEPTS:
 containedInPlace, containsPlace,
 event 						Event Upcoming or past event associated with this place
 ---
 vcard:tz – TIMEZONE OF PLACE
-address -> postOfficeBoxNumber
-tourBookingPage
-
+---
 TMP places / Opening Hours:
 - validFrom startTime			Date
 - validTo endTime 				Date
@@ -81,10 +77,13 @@ TMP places / Opening Hours:
 - specialOpeningHoursSpecification "
 adr - hoursAvailable 	OpeningHoursSpecification
 
+schema:
+tourBookingPage
 geo …
+
+address format
 */
 
-// const sUrl = 'https://schema.org/';
 const icache = createICacheMiddleware<PlaceIcache>();
 const factory = create({ icache, id, i18nActivityPub, theme, breakpoints })
 	.properties<PlaceProperties>()
@@ -249,18 +248,18 @@ export const Place = factory(function place({
 	>
 		<div classes={themedCss.header}>
 			<div classes={themedCss.topWrapper}>
-				<div classes={themedCss.metaWrapper}>
-					{<p classes={themedCss.attendanceCount}><Geo {...ld} /></p>}
-					{!!mc && <p classes={themedCss.attendanceCount}>
+				<div key="meta" classes={themedCss.metaWrapper}>
+					{<p key="meta1" classes={themedCss.attendanceCount}><Geo {...ld} /></p>}
+					{!!mc && <p key="meta2" classes={themedCss.attendanceCount}>
 						{mc} <Icon type="people" size="s" />
-						<div classes={themedCss.smokingAndWheelchair}>
+						<div key="meta3" classes={themedCss.smokingAndWheelchair}>
 							{smoking === 'no' && <Smoke smoking="no" />}
 							{wheelchair.map(toFeatureIcons)}
 						</div>
 					</p>}
 				</div>
 
-				<div classes={[nameCss.root, themedCss.nameWrapper]} style={`--pr: ${namePR};`}>
+				<div key="nameWrapper" classes={[nameCss.root, themedCss.nameWrapper]} style={`--pr: ${namePR};`}>
 					{!!statusByline && <p classes={[themedCss.placeStatus, (isPublic||isFree) && !slogan.length && themedCss.topSpace]}>
 						{statusByline}
 					</p>}
@@ -276,7 +275,7 @@ export const Place = factory(function place({
 					</p>}
 				</div>
 			</div>
-			<div classes={themedCss.addressWrapper}>
+			<div key="addressWrapper" classes={themedCss.addressWrapper}>
 				{!!featureIcons.length && <div classes={themedCss.featureIcons}>{featureIcons}</div>}
 				{!!addressArray.length && !omit.has('schema:address') && !!addressExpanded ? addressPaginated :
 					<Details color={color}>{{
@@ -284,34 +283,46 @@ export const Place = factory(function place({
 						content: addressPaginated
 					}}</Details>
 				}
-				{!omit.has('location') && <Details color={color}>{{
-					summary: <span><Icon type="map" color="neutral" spaced="right" /> {messages.map}</span>,
-					content: (get('mapWasOpen') || get('mapOpen')) ? getOrSet('map', <Map
-						key="map"
-						{...ld}
-						hasCenterMarker
-						hasSearch
-						center={get('mapOpen')||void 0}
-						zoom={15}
-						onView={(view) => {
-							set('mapView', view, false);
-							ld && setMap(ld, 0);
-						}}
-						onActivityPubLocation={({pointer}) => {
-
-						}}
-						onActivityPubLocationOpen={({id, pointer}) => {
-
-						}}
-					/>) : ''
-				}}</Details>}
 			</div>
 		</div>
-		{!omit.has('image') && !get('mapOpen') && <div classes={themedCss.images}>
-			<Images key="images" view={view} image={image} itemsPerPage={4} size={(vp as any)} />
+		{!omit.has('location') && <Details
+			color={color}
+			classes={{'@redaktor/widgets/details': { summary: [themedCss.mapDetails] }}}
+			onToggle={(e) => {
+				if (e.target && !e.target.open) {
+					set('mapOpen', false)
+				} else {
+					getOrSet('mapOpen', ld)
+				}
+			}}
+		>{{
+			summary: !get('mapOpen') ?
+				<span><Icon type="map" color="neutral" spaced="right" />{messages.map}</span> :
+				<span><Icon type="image" color="neutral" spaced="right" />({image.length} {messages.images})</span>,
+			content: (get('mapWasOpen') || get('mapOpen')) ? getOrSet('map', <Map
+				key="map"
+				{...ld}
+				hasCenterMarker
+				hasSearch
+				center={get('mapOpen')||void 0}
+				zoom={15}
+				onView={(view) => {
+					set('mapView', view, false);
+					ld && setMap(ld, 0);
+				}}
+				onActivityPubLocation={({pointer}) => {
+
+				}}
+				onActivityPubLocationOpen={({id, pointer}) => {
+
+				}}
+			/>) : ''
+		}}</Details>}
+		{!omit.has('image') && <div key="images" classes={themedCss.images}>
+			<Images view={view} image={image} itemsPerPage={4} size={(vp as any)} />
 		</div>}
 		<div classes={themedCss.content}>
-			<div classes={themedCss.contentWrapper}>
+			<div key="contentWrapper" classes={themedCss.contentWrapper}>
 				<Caption {...(ld)}
 					classes={{
 						'@redaktor/widgets/images': { captionWrapper: [themedCss.captionWrapper] }
@@ -323,7 +334,7 @@ export const Place = factory(function place({
 					onLocale={(l) => i18nActivityPub.setLocale(l)}
 				/>
 			</div>
-			{!!aggregateRating && <div classes={themedCss.rateWrapper}>
+			{!!aggregateRating && <div key="rateWrapper" classes={themedCss.rateWrapper}>
 				<Rate readOnly {...ldPartial(aggregateRating)} />
 			</div>}
 			<Details classes={{'@redaktor/widgets/details': {root: [themedCss.additional]}}}>

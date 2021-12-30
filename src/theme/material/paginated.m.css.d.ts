@@ -1,5 +1,6 @@
 export const root: string;
 export const colored: string;
+export const solid: string;
 export const compact: string;
 export const spaceEqual: string;
 export const column: string;

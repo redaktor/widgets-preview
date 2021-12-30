@@ -12,7 +12,7 @@
 .content {
 	z-index: 1;
 }
-.images {
+.images:not(:empty) {
 	margin-bottom: calc(var(--line) * -1);
 }
 .mapWrapper.closed {
@@ -25,11 +25,11 @@
 	z-index: 9;
 }
 .metaWrapper {
-	width:100%;
-	height: var(--line);
-	display:flex;
+	display: flex;
 	justify-content: space-between;
 	align-items: baseline;
+	width:100%;
+	height: var(--line);
 }
 .placeMeta {
 	composes: s italic serif from './_typo.css';
@@ -73,7 +73,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: flex-end;
-	margin-top: calc(var(--lineHalf) * -1);
+	margin-top: calc(var(--lineHalf) * -1 + var(--pt));
 	max-width: var(--line4);
 }
 .featureIcon {
@@ -101,39 +101,17 @@
 }
 .placeAttendance { }
 
-/*
-.switchButtons {
-	height: var(--line2);
-	margin-left: calc(var(--grid-base,8px) * -2);
-}
-.switchButton {
-	position: relative;
-	min-width: calc(var(--grid-base,8px) * 6);
-}
-.noLocation + .switchButtons {
-	display: none;
-}
-.switchButtons .switchButton:last-child {
-	border-top-left-radius: 0px;
-	border-bottom-left-radius: 0px;
-}
-.switchButtons .switchButton:not(:last-child) {
-	border-radius: 0px;
-} */
-
 .nameWrapper {
 	flex: 0;
-	position:relative;
+	position: relative;
 }
-/* , featureIcons.length > 2 && themedCss.moreThan2Features
-.moreThan2Features .nameWrapper {
-	margin-right: calc(var(--line2) - (var(--grid-base,8px) * 2));
-}
-*/
-.addressWrapper {
+.addressWrapper,
+.mapDetails {
 	padding-left: calc(var(--grid-base,8px) * 2);
 }
-.mapDetails,
+.mapDetails[open] + .images {
+	display: none;
+}
 .topContact {
 	margin-top: calc(var(--line) * -1);
 }
@@ -151,60 +129,10 @@
 	padding-left: var(--p, calc(var(--grid-base) * 2));
 }
 
-.imageWrapper {
-	position: relative;
-	width: 100%;
-	min-height: calc(var(--l) * var(--line));
-	margin-bottom: calc(var(--line) * -2);
-	z-index: -1;
-}
-.imageWrapper.max {
-	height: calc(var(--line) * var(--l,19));
-	padding-right: var(--grid-base,8px);
-}
-.imageWrapper.left {
-	padding-left: calc(88px + var(--grid-base,8px) * 3);
-	padding-right: 0px;
-}
-.imageLabel {
-	display: block;
-	height: 100%;
-	width: 100%;
-	margin: 0;
-	padding: 0;
-}
-
-.imagesLoaded {
-	visibility: hidden;
-	position: absolute;
-	top: -4000px;
-	height: 0px;
-}
-.imagesWrapper {
-	margin-top: var(--line);
-}
 .captionWrapper { }
-.imagesLoaded:checked + .imageWrapper,
-.imagesWrapper {
-	display: none;
-}
-.imagesLoaded:checked + .imageWrapper + .imagesWrapper {
-	display: block;
-}
+
 .moreCount {
 	composes: moreCount from './locationsDates.m.css';
-}
-.imageWrapper .moreCount {
-	--rt: calc(var(--lineHalf) - var(--pt) - var(--ui-border-width-emphasized));
-	left: auto;
-	right: var(--rt);
-	top: var(--rt);
-	max-width: var(--line2);
-	max-height: var(--line2);
-	z-index: 99;
-}
-.imageWrapper:hover .moreCount {
-	background-color: var(--ui-border-hover, #333);
 }
 .moreCount,
 .moreCount * {
@@ -227,3 +155,23 @@
 .additionalContent {
 
 }
+
+/*
+.switchButtons {
+	height: var(--line2);
+	margin-left: calc(var(--grid-base,8px) * -2);
+}
+.switchButton {
+	position: relative;
+	min-width: calc(var(--grid-base,8px) * 6);
+}
+.noLocation + .switchButtons {
+	display: none;
+}
+.switchButtons .switchButton:last-child {
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+}
+.switchButtons .switchButton:not(:last-child) {
+	border-radius: 0px;
+} */

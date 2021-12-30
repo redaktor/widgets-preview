@@ -14,6 +14,7 @@ export interface DetailsProperties {
 	animated?: boolean;
 	/* start opened */
 	open?: boolean;
+	onToggle?: (e: Event & {target: HTMLDetailsElement}) => any;
 }
 export interface DetailsChildren {
 	summary?: RenderResult;
@@ -32,7 +33,9 @@ const factory = create({ theme })
 
 export const Details = factory(function Details({ children, properties, middleware: { theme } }) {
 	const themedCss = theme.classes(css);
-	const { summary: txtSummary, open, color, responsive = false, serif = false, animated = true } = properties();
+	const {
+		summary: txtSummary, open, color, onToggle, responsive = false, serif = false, animated = true
+	} = properties();
 
 	let summary, content;
 	if (typeof children()[0] === 'object' && (children()[0] as any).hasOwnProperty('summary')) {
@@ -44,12 +47,15 @@ export const Details = factory(function Details({ children, properties, middlewa
 	}
 
 	return (
-		<details open={open} key="root" classes={[
-			theme.variant(),
-			themedCss.root,
-			!!color && themedCss.colored,
-			!!responsive && themedCss.responsive
-		]}>
+		<details open={open} key="root"
+			ontoggle={(e: Event & {target: HTMLDetailsElement}) => { onToggle && onToggle(e) }}
+			classes={[
+				theme.variant(),
+				themedCss.root,
+				!!color && themedCss.colored,
+				!!responsive && themedCss.responsive
+			]}
+		>
 			{summary && (
 				<summary key="summary" classes={[
 					themedCss.summary,

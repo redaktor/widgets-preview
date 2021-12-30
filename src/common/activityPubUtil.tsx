@@ -18,6 +18,16 @@ import * as asCSS from '../theme/material/_as.m.css';
 const jsonld = require('jsonld/dist/jsonld.esm.min.js');
 export const omitSymbol = Symbol.for('rOmitProperties');
 /*
+as:context
+PLACE
+	- EVENT = upcoming events at the place
+	- PLACE = place contained in the place
+
+
+---
+
+schema.org similar:
+
 name	Text
 The name of the item.
 about	Thing
@@ -64,15 +74,6 @@ AUDIO --> AudioObject
 IMAGE --> ImageObject / Barcode
 VIDEO --> VideoObject / MusicVideoObject
 PAGE --> SEE FULL WebPage
-
-
-Object: `{gender, select,
-	female {{host} invites {guest} to her party},
-  male {{host} invites {guest} to his party},
-	neutral {{host} invites {guest} to his party},
-  gendered {{host} invites {guest} to their party}
-}
-
 
 {
 	Object: [''],
@@ -130,25 +131,6 @@ Object: `{gender, select,
 	Person: [],
 	Service: []
 }
-
-Person
-die Person
-
-
-Bild
-NOM
-das Bild
-ein Bild
-GEN
-des Bilds
-eines Bilds
-DAT
-dem Bild
-einem Bild
-AKK
-das Bild
-ein Bild
-
 */
 type LDTypeSuggestions = {
 	[K in AsTypes]?: {

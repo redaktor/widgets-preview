@@ -14,14 +14,19 @@ export interface PaginatedProperties extends ThemeProperties {
 	widgetId?: string;
 	/* small typo, media captions */
 	compact?: boolean;
+	/* inherit ui colors */
 	colored?: boolean;
+	/* solid border */
+	solid?: boolean;
+	/*  */
+	transformNodes?: (node: RenderResult) => RenderResult;
 }
 
 const factory = create({ id, theme })
 	.properties<PaginatedProperties>();
 
 export const Paginated = factory(function Paginated({ properties, children, middleware: { id, theme } }) {
-	const { property = '', view = 'column', compact = false, colored = false } = properties();
+	const { property = '', view = 'column', compact = false, colored = false, solid = false, transformNodes } = properties();
 
 	const c = children();
 	if (!c || !c.length) { return '' }
@@ -31,7 +36,8 @@ export const Paginated = factory(function Paginated({ properties, children, midd
 		themedCss.root,
 		theme.spaced(themedCss, true),
 		compact && themedCss.compact,
-		colored && themedCss.colored
+		colored && themedCss.colored,
+		solid && themedCss.solid
 	];
 
 	if (c.length === 1) {
@@ -55,7 +61,7 @@ export const Paginated = factory(function Paginated({ properties, children, midd
 					<input id={ids[i]} key={`${idBase}_${i}`} type="radio" classes={themedCss.input} name={idBase} />
 				}
 				<div classes={[themedCss.pane]}>
-					{node}
+					{!!transformNodes ? transformNodes(node) : node}
 					{
 						i === a.length-1 && a.length > 2 ?
 							<label role="button" classes={themedCss.prev} for={ids[0]} onclick={stopEventJS}>

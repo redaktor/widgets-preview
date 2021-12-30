@@ -26,7 +26,9 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 	/* small typo, media captions */
 	compact?: boolean;
-	/* if not compact, visible lines of content, default 12 */
+	/* content is paginated, not collapsed */
+	contentPaginated?: boolean;
+	/* if not compact, visible lines of collapsed content, default 12 */
 	contentLines?: number;
 	/* is in a details tag */
 	hasDetails?: boolean;
@@ -48,6 +50,8 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	largeLocation?: boolean;
 	/* larger date font */
 	largeDate?: boolean;
+	/** label for read more content */
+	moreLabel?: 'read'|'readMore'|'view'|'viewMore'|string;
 	/* when details are opened */
 	onToggle?: (isOpen: boolean) => any;
 	/* when all images have loaded */
@@ -65,6 +69,8 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	colored?: boolean;
 	dateOpenIndex?: number | false;
 	locationOpenIndex?: number | false;
+
+	transformPaginated?: (node: RenderResult) => RenderResult;
 }
 
 export interface CaptionIcache {
@@ -95,8 +101,8 @@ export const Caption = factory(function Caption({
 		locale: currentLocale, compact = false, hasDetails = false, isOpen = false,
 		dateOpenIndex = false, locationOpenIndex = false, size = 'm', view = 'column', colored = false,
 		largeLocation = false, locationIsDetails = false, locationHasOnline = false, locationHasMap = true,
-		largeDate = false, isImageCaption = false, color, contentLines: cl,
-		onToggle, onFocusPrevious, onDate, onLocation, onLocale
+		largeDate = false, isImageCaption = false, contentPaginated = false, color, contentLines: cl, moreLabel,
+		transformPaginated, onToggle, onFocusPrevious, onDate, onLocation, onLocale
 	} = properties();
 	const {
 		href = '', name: n, summary, content, sensitive, attachment, ...ld
@@ -141,12 +147,15 @@ export const Caption = factory(function Caption({
 		<div key="contentWrapper" classes={[themedCss.contentWrapper, viewCss.content, !!viewDesktopCSS && viewDesktopCSS.content]}>
 			{!omit.has('name') && <div classes={themedCss.rowName}>{nameNode}</div>}
 
-			{!sensitive && !omit.has('summary') && (summary && <Paginated key="paginatedsummary" colored={colored} compact={compact} property="summary">
-				{clampStrings(summary, summaryLength).map((_summaries, i) => <span>
-					{_summaries.map((s: any) => <MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={s} />)}
-				</span>)}
-			</Paginated>)}
-			{!!content && !omit.has('content') && <Collapsed color={color} responsive={!isRow} lines={contentLines} classes={
+			{summary && !omit.has('summary') && !sensitive &&
+				<Paginated key="paginatedsummary" colored={colored} compact={compact} property="summary"  transformNodes={transformPaginated}>
+					{clampStrings(summary, summaryLength).map((_summaries, i) => <span>
+						{_summaries.map((s: any) => <MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={s} />)}
+					</span>)}
+				</Paginated>}
+
+			{!!content && !omit.has('content') && !contentPaginated &&
+				<Collapsed color={color} responsive={!isRow} lines={contentLines} label={moreLabel} classes={
 					{ '@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] } }
 				}>
 					{content.map((_content: string, i: number) => <virtual>
@@ -154,6 +163,12 @@ export const Caption = factory(function Caption({
 						<hr />
 					</virtual>)}
 				</Collapsed>
+			}
+			{!!content && !omit.has('content') && !!contentPaginated &&
+				<Paginated key="paginatedcontent" solid colored={colored} compact={compact} property="content" transformNodes={transformPaginated}>
+					{content.map((s: string, i: number) =>
+						<MD classes={[themedCss.summary, typoClass]} key={`content${i}`} content={s} />)}
+				</Paginated>
 			}
 		</div>
 	</div>
