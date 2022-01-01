@@ -315,8 +315,8 @@ console.log( 'render', dimensions.get('measure'), dimensions.get('input') )
 							if (value.length < 20 && lineCount < 2) {
 								set('style', 'height: var(--line2);')
 							} else if (value.length < oldValue.length) {
-								// TODO mini flicker in Safari when deleting 
-								set('style', 'height: var(--line2);');
+								// TODO mini flicker in Safari when deleting
+								set('style', 'height: auto;');
 								setTimeout(measure,1)
 							} else {
 								measure()
