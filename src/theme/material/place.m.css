@@ -152,9 +152,6 @@
 .additional:focus-within .smokeWrapper {
 	animation-duration: var(--duration);
 }
-.additionalContent {
-
-}
 
 /*
 .switchButtons {

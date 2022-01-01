@@ -337,21 +337,20 @@ export const Place = factory(function place({
 			{!!aggregateRating && <div key="rateWrapper" classes={themedCss.rateWrapper}>
 				<Rate readOnly {...ldPartial(aggregateRating)} />
 			</div>}
-			<Details classes={{'@redaktor/widgets/details': {root: [themedCss.additional]}}}>
-				{{
-					summary: <span>{messages.moreInfo}{!!smoking && smoking !== 'no' && smoking !== 'und' &&
-						<Smoke smoking={smoking} classes={{
-							'@redaktor/widgets/smoke': { root: [themedCss.smokeRoot], smokeWrapper: [themedCss.smokeWrapper] }
-						}} />}
-					</span>,
-					content: <div classes={themedCss.additionalContent}>
-						<p classes={themedCss.placeMeta}>
+			<div classes={themedCss.additional}>
+				<Structure omitProperties={coveredLD} value={ld}>
+					{{
+						detailsSummary: <span>{messages.moreInfo}{!!smoking && smoking !== 'no' && smoking !== 'und' &&
+							<Smoke smoking={smoking} classes={{
+								'@redaktor/widgets/smoke': { root: [themedCss.smokeRoot], smokeWrapper: [themedCss.smokeWrapper] }
+							}} />}
+						</span>,
+						header: <p classes={themedCss.placeMeta}>
 							{!!smoking && (messages as any)[`smoking_${smoking}`]}
 						</p>
-						<Structure omitProperties={coveredLD} value={ld} />
-					</div>
-				}}
-			</Details>
+					}}
+				</Structure>
+			</div>
 		</div>
 	</div>
 });

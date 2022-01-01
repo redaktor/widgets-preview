@@ -9,6 +9,9 @@ const locales = {
 const messages = {
 	question: 'Question',
 	questionShort: 'Q',
+	asked: 'asked',
+	active: 'active',
+	vote: 'vote',
 	readAnswers: 'read all the answers',
 	moreInfo: 'further information'
 };

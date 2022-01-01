@@ -11,6 +11,7 @@
 	color: var(--text);
 	padding: 0;
 	composes: wrapper from './_ui.m.css';
+	cursor: pointer;
 }
 @media (pointer:fine) {
 	.root { --checkbox-ripple-alpha: 0.8; }

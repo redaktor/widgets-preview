@@ -1,7 +1,7 @@
-.root {
+fieldset.root {
 	border: 0;
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
 }
 
 .vertical {
@@ -10,5 +10,5 @@
 }
 
 .legend {
-	padding: 0;
+	padding: 0px;
 }

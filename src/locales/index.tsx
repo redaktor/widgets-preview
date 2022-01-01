@@ -17,7 +17,9 @@ const factory = create({ theme }).properties<LocalesProperties>();
 
 export const Locales = factory(function Locales({ properties, middleware: { theme } }) {
 	const themedCss = theme.classes(css);
-	const { locales = [], locale = { locale: 'en' }, open = false, classes, onValue } = properties();
+	const { locales = [], locale = { locale: 'en' }, open = false, classes = {
+		'@redaktor/widgets/details': { root: [themedCss.oneLine] }
+	}, onValue } = properties();
 	if (!locales || !locales.length) { return '' }
 
 	const initialValue = !locale.locale ? locales[0].value : !!locales.filter((o) => o.value === locale.locale).length ?

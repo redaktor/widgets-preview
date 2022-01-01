@@ -31,4 +31,3 @@ export const moreCount: string;
 export const smokeRoot: string;
 export const additional: string;
 export const smokeWrapper: string;
-export const additionalContent: string;

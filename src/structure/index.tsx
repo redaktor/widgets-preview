@@ -2,20 +2,29 @@ import { RenderResult } from '@dojo/framework/core/interfaces';
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { splitPrefix } from '../_ld';
+import Details from '../details';
 import theme from '../middleware/theme';
 import is from '../framework/is';
+import { isRenderResult } from '../common/util';
 import * as colors from '@redaktor/widgets/theme/material/_color.m.css';
 import * as css from '../theme/material/structure.m.css';
 
 export interface StructureProperties {
+	/* The LD object */
 	value: string | { [key: string]: any };
 	omitProperties?: string[];
 	colors?: (keyof typeof colors)[];
 }
+export interface StructureChildren {
+	/* Render in <Details> */
+	detailsSummary?: RenderResult;
+	header?: RenderResult;
+	footer?: RenderResult;
+}
 const icache = createICacheMiddleware<{omits: Set<any>}>();
 
-const factory = create({ theme, icache }).properties<StructureProperties>();
-export const Structure = factory(function structure({ middleware: { theme, icache }, properties}) {
+const factory = create({ theme, icache }).properties<StructureProperties>().children<StructureChildren | RenderResult | RenderResult[] | undefined>();
+export const Structure = factory(function structure({ middleware: { theme, icache }, properties, children}) {
 	const themedCss = theme.classes(css);
 	const {
 		value,
@@ -80,7 +89,7 @@ export const Structure = factory(function structure({ middleware: { theme, icach
 				colorI = Math.round(colorI/colors.length)||0
 			}
 			const vocabUrlO = !!(url||_vocabUrl) ? {title: `${key}`} : {};
-			nodes.push(
+			!!key && nodes.push(
 				<virtual key={`${level}${key}`}>
 					<dt key={`dt-${level}${key}`} {...vocabUrlO} classes={themedCss.breaked}></dt>
 					<dt key={`dt-${level}${key}2`} title={`${url||_vocabUrl}${key}`} classes={[
@@ -112,7 +121,18 @@ export const Structure = factory(function structure({ middleware: { theme, icach
 	}
 	parse('', omit(omitProperties, o));
 
-	return <dl key="root" classes={themedCss.root}>{...nodes}</dl>
+	const [render] = children();
+	let {header, footer = '', detailsSummary = ''} = isRenderResult(render) ? {header: render} : render;
+
+	const allNodes = <virtual>
+		{header}
+		<dl key="root" classes={themedCss.root}>{...nodes}</dl>
+		{footer}
+	</virtual>;
+	return !nodes.length && !header ? '' : (!!detailsSummary ? <Details>{{
+			summary: detailsSummary,
+			content: allNodes
+		}}</Details> : allNodes)
 });
 
 export default Structure;

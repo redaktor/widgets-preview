@@ -188,8 +188,7 @@ const examplePlace = {
   "schema:publicAccess": true,
   "schema:maximumAttendeeCapacity": 40000,
   "schema:aggregateRating": rating,
-  "schema:amenityFeature": [{propertyID: 'amenity', value: 'restaurant'}, {propertyID: 'wheelchair', value: 'yes'}, {propertyID: 'smoking', value: 'no'}],
-  "schema:smokingAllowed": true,
+  "schema:amenityFeature": [{propertyID: 'amenity', value: 'restaurant'}, {propertyID: 'wheelchair', value: 'yes'}, {propertyID: 'smoking', value: 'outside'}],
   image: [
     {..._1_1, summary: exampleText, updated: "2018-09-12T12:12:12Z"},
     {..._3_2, name: "test", updated: "2018-10-11T12:12:12Z"},
@@ -296,7 +295,13 @@ const exampleQuestion: AsActivity = {
   "summary": "A question summary",
   "id": "http://help.example.org/question/1",
   "type": "Question",
-  "content": "I'd like to build a robot to feed my cat. Should I use Arduino or Raspberry Pi?"
+  "content": "I'd like to build a robot to feed my cat. Should I use Arduino or Raspberry Pi?",
+  /*"anyOf": [
+     {"name": "arduino", "summary": "Lorem Ipsum"},
+     {"name": "raspberry pi", "summary": "Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum"}
+   ],*/
+   "published": "2021-12-23T20:00:00-08:00",
+   "updated": "2021-12-24T20:00:00-08:00"
 }
 
 const factory = create();

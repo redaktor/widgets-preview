@@ -15,6 +15,7 @@
 .box {
 	composes: box from './_ui.m.css';
 	display: inline-block;
+	top: calc(50% - var(--h) / 2) !important;
 	height: var(--h);
 	min-width: var(--h);
 	margin-bottom: 0;

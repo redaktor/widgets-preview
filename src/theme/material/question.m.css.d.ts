@@ -6,6 +6,7 @@ export const metaWrapper: string;
 export const meta: string;
 export const questionWrapper: string;
 export const questionStatus: string;
+export const questionMark: string;
 export const nameWrapper: string;
 export const teaserIcon: string;
 export const answerWrapper: string;

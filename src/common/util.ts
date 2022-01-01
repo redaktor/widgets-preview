@@ -1,3 +1,5 @@
+import { DNode, RenderResult } from '@dojo/framework/core/interfaces';
+import { isVNode, isWNode } from '@dojo/framework/core/vdom';
 /**
  * @type LabeledProperties
  * @property labelAfter     If false, moves the label before the input
@@ -43,17 +45,6 @@ export enum AspectRatioNamed {
 	"portraitVideo","9/16","portraitPhoto","2/3","3/4","4/5","6/7","square","1/1",
 	"7/6","5/4","4/3","photo","3/2","16/10","video","16/9","cinema","37/20","16/7",
 	"cinemaWide","21/9","8/3","apsP","3/1","16/5","10/3","pano3","9/2","pano4","12/2"
-}
-
-interface AriaPropertyObject {
-	[key: string]: string | null;
-}
-export function formatAriaProperties(aria: AriaPropertyObject): AriaPropertyObject {
-	const formattedAria = Object.keys(aria).reduce((a: AriaPropertyObject, key: string) => {
-		a[`aria-${key.toLowerCase()}`] = aria[key];
-		return a;
-	}, {});
-	return formattedAria;
 }
 
 export enum PointerDevice {
@@ -140,3 +131,27 @@ export interface ExampleProperties {
 }
 export const designs: ExampleProperties['design'][] = ['flat','filled','outlined','raised','shaped'];
 export const exampleColors: ExampleProperties['color'][] = ['primary','secondary','amber','green','dark','neutral','light'];
+
+interface AriaPropertyObject {
+	[key: string]: string | null;
+}
+export function formatAriaProperties(aria: AriaPropertyObject): AriaPropertyObject {
+	const formattedAria = Object.keys(aria).reduce((a: AriaPropertyObject, key: string) => {
+		a[`aria-${key.toLowerCase()}`] = aria[key];
+		return a;
+	}, {});
+	return formattedAria;
+}
+export function isRenderResult<T extends {}>(child: RenderResult | T): child is RenderResult {
+	let childIsRenderResult =
+		child == null ||
+		typeof child === 'string' ||
+		typeof child === 'boolean' ||
+		Array.isArray(child) ||
+		isWNode(child);
+	try {
+		childIsRenderResult = childIsRenderResult || isVNode(child as DNode);
+	} catch {}
+
+	return childIsRenderResult;
+}

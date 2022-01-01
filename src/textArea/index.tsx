@@ -2,6 +2,7 @@ import { create, tsx } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import focus from '@dojo/framework/core/middleware/focus';
+import dimensions from '@dojo/framework/core/middleware/dimensions';
 import validity from '@dojo/framework/core/middleware/validity';
 import Label from '@redaktor/widgets/label';
 import * as labelCss from '@redaktor/widgets/theme/material/label.m.css';
@@ -95,7 +96,7 @@ const factory = create({
 	icache: createICacheMiddleware<TextAreaICache>(),
 	theme,
 	focus,
-	// dimensions,
+	dimensions,
 	validity
 })
 	.properties<TextAreaProperties>()
@@ -103,14 +104,15 @@ const factory = create({
 
 export const TextArea = factory(function TextArea({
 	id,
-	middleware: { icache, theme, focus, /*dimensions,*/ validity },
+	middleware: { icache, theme, focus, dimensions, validity },
 	properties,
 	children
 }) {
 	const themedCss = theme.classes(css);
-	const line = icache.getOrSet('line', 22); // TODO FIXME and do:
+	const { getOrSet, get, set } = icache;
+	// const line = getOrSet('line', 22); // TODO FIXME and do:
 	/*
-	if (!icache.get('line')) {
+	if (!get('line')) {
 		const r = renderer(() => dnode);
 		const div = global.document.createElement('div');
 		div.style.position = 'absolute';
@@ -135,15 +137,15 @@ export const TextArea = factory(function TextArea({
 	}
 
 	function validate() {
-		const { customValidator, value = icache.get('value') || '' } = properties();
-		const dirty = icache.getOrSet('dirty', false);
+		const { customValidator, value = get('value') || '' } = properties();
+		const dirty = getOrSet('dirty', false);
 
 		if (value === '' && !dirty) {
 			callOnValidate(undefined, '');
 			return;
 		}
 
-		icache.set('dirty', true);
+		set('dirty', true);
 
 		let { valid, message = '' } = validity.get('input', value || '');
 		if (valid && customValidator) {
@@ -197,12 +199,12 @@ export const TextArea = factory(function TextArea({
 	let { value } = properties();
 
 	if (value === undefined) {
-		value = icache.get('value');
-		const existingInitialValue = icache.get('initialValue');
+		value = get('value');
+		const existingInitialValue = get('initialValue');
 
 		if (initialValue !== existingInitialValue) {
-			icache.set('value', initialValue);
-			icache.set('initialValue', initialValue);
+			set('value', initialValue);
+			set('initialValue', initialValue);
 			value = initialValue;
 		}
 	}
@@ -218,6 +220,7 @@ export const TextArea = factory(function TextArea({
 		children() : void 0) || void 0;
 
 // const [label] = children();
+console.log( 'render', dimensions.get('measure'), dimensions.get('input') )
 
 	return (
 		<div key="root" classes={[
@@ -270,7 +273,7 @@ export const TextArea = factory(function TextArea({
 					key="input"
 					{...formatAriaProperties(aria)}
 					classes={themedCss.input}
-					style={expand && icache.get('style')}
+					style={expand && get('style')}
 					cols={columns}
 					disabled={disabled}
 					focus={focus.shouldFocus}
@@ -296,12 +299,29 @@ export const TextArea = factory(function TextArea({
 					oninput={(event: Event) => {
 						const { onValue } = properties();
 						event.stopPropagation();
+						const oldValue = get('value')||'';
 						const value = (event.target as HTMLInputElement).value;
+						set('value', value);
 						if (expand) {
-							let numberOfLineBreaks = (value.match(/\n/g) || []).length + 1;
-						  icache.set('style', `height: ${numberOfLineBreaks * line}px;`);
+							const measure = () => {
+								const { height } = dimensions.get('input').scroll || { height: 0 };
+								if (!!height) {
+									set('style', `height: ${height}px;`);
+								} else {
+								  set('style', `height: calc(var(--line) * ${Math.max(2,lineCount)});`);
+								}
+							}
+							let lineCount = (value.match(/\n/g) || []).length + 1;
+							if (value.length < 20 && lineCount < 2) {
+								set('style', 'height: var(--line2);')
+							} else if (value.length < oldValue.length) {
+								// TODO mini flicker in Safari when deleting 
+								set('style', 'height: var(--line2);');
+								setTimeout(measure,1)
+							} else {
+								measure()
+							}
 						}
-						icache.set('value', value);
 						onValue && onValue(value);
 					}}
 					onkeydown={(event: KeyboardEvent) => {
@@ -317,7 +337,7 @@ export const TextArea = factory(function TextArea({
 						const { onKeyUp } = properties();
 						event.stopPropagation();
 						/*
-						icache.set('style', 'height: auto;');
+						set('style', 'height: auto;');
 						expand && setExpandStyle();
 						*/
 						onKeyUp &&

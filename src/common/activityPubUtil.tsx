@@ -604,6 +604,14 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 		const intransitive: any = {Question:1,Travel:1,Arrive:1};
 
 		for (let key in _Aap) {
+			if (key === 'oneOf' && Array.isArray(_Aap.oneOf) && !!_Aap.oneOf.length) {
+				_Aap.oneOf = _Aap.oneOf.map((oneO: AsObject) => ((typeof oneO === 'object') && !oneO.hasOwnProperty('type')) ?
+					{...oneO, type: 'Object'} : oneO)
+			}
+			if (key === 'anyOf' && Array.isArray(_Aap.anyOf) && !!_Aap.anyOf.length) {
+				_Aap.anyOf = _Aap.anyOf.map((oneO: AsObject) => ((typeof oneO === 'object') && !oneO.hasOwnProperty('type')) ? 
+					{...oneO, type: 'Object'} : oneO)
+			}
 			if (key === 'object') {
 				const doForbid = typeof ap.type === 'string' ? !!intransitive[ap.type] :
 					(Array.isArray(ap.type) ? !!ap.type.filter((t) => !!intransitive[t]).length : false);

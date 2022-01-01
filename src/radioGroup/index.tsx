@@ -64,7 +64,7 @@ export const RadioGroup = factory(function({
 	}
 
 	return (
-		<fieldset key="root" classes={[theme.variant(), themedCss.root, vertical && themedCss.vertical]} name={name}>
+		<fieldset key="root" classes={[theme.variant(), themedCss.root, vertical ? themedCss.vertical : themedCss.horizontal]} name={name}>
 			{label && <legend classes={themedCss.legend}>{label}</legend>}
 			{renderRadios()}
 		</fieldset>

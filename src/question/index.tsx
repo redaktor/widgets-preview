@@ -1,22 +1,25 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { AsObject, AsActivity } from '../common/interfaces';
+import { AsActivity, AsObjectNormalized } from '../common/interfaces';
 import { ldPartial, toIntStr, toBooleanStr } from '../_ld';
 import { clampStrings } from '../common/activityPubUtil';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
-// import Button from '../button';
+// import Details from '../details';
 import Paginated from '../paginated';
+import TimeRelative from '../timeRelative';
 import Caption, { coveredLD as captionCoveredLD } from '../caption';
 import Rate from '../rate';
-import Details from '../details';
 import Structure from '../structure';
-import Icon from '../icon';
+import RadioGroup from '../radioGroup';
+import CheckboxGroup from '../checkboxGroup';
+import TextArea from '../textArea';
 import Images from '../images';
 import Button from '../button';
+import Icon from '../icon';
 // import * as ui from '../theme/material/_ui.m.css';
 import bundle from './nls/Question';
 import * as viewCSS from '../theme/material/_view.m.css';
@@ -61,6 +64,7 @@ schema
 acceptedAnswer	Answer | ItemList
 answerCount			Integer
 eduQuestionType	Text
+
 For questions that are part of learning resources (e.g. Quiz), eduQuestionType indicates the format.
 Example: "Multiple choice", "Open ended", "Flashcard".
 suggestedAnswer	Answer | ItemList
@@ -117,10 +121,28 @@ export const Question = factory(function question({
 	} = ldPartial(ld);
 	const aggregateRating = Array.isArray(rating) ? rating[0] : rating;
 
-	const boldQmark = (s: RenderResult) => typeof s === 'string' ? s.split(/[?]/g).map((s) => <span>{s}<b>?</b></span>) : s;
-	// if (!!ld.summary && !!ld.summary.length) { (ld.summary as any) = ld.summary.map(boldQmark) }
-	// if (!!ld.content && !!ld.content.length) { (ld.content as any) = ld.content.map(boldQmark) }
-	console.log(boldQmark('Id like to build a robot to feed my cat. Should I use Arduino or Raspberry Pi?'))
+	const boldQmark = (s: RenderResult): RenderResult => Array.isArray(s) ? s.map(boldQmark) :
+		typeof s === 'string' ? s.split(/[?]/g).map((s,i,a) => !s ? '' :
+			(i === a.length-1 ? s : <span>{s}<b classes={themedCss.questionMark}>?</b></span>)) : (s as any);
+
+	const toOptions = (o: AsObjectNormalized) => {
+		let {name:n = [], summary:s = [], content:c} = o;
+		const [value, title] = [n.join(' '), s.join(' ')];
+		const name = value.length < 42 ? value : `${value.substr(0,42)}…`;
+		const summary = title.length < 84 ? title : `${title.substr(0,84)}…`;
+		const titleO = title.length < 84 ? {} : {title}
+		if (!!n) {
+			return !s && !c ? {value} : {value, label:<span {...titleO}>{name}<br /><small>{summary}</small></span>}
+		}
+		return false;
+	}
+	const answerActionNode = !(oneOf.length+anyOf.length) ?
+		<TextArea color={color} expand responsive design="flat" /> :
+		<virtual>
+			{!!oneOf.length && <RadioGroup color={color} vertical options={oneOf.map(toOptions).filter((o: any) => !!o)} />}
+			{!!anyOf.length && <CheckboxGroup color={color} vertical options={anyOf.map(toOptions).filter((o: any) => !!o)} />}
+		</virtual>;
+	const moreInfoNode = <Structure omitProperties={coveredLD} value={ld} />;
 
 	return <div
 		key="root"
@@ -145,12 +167,19 @@ export const Question = factory(function question({
 		<div classes={themedCss.header}>
 			<div classes={themedCss.topWrapper}>
 				<div key="meta" classes={themedCss.metaWrapper}>
-					<p classes={themedCss.meta}>Lorem Ipsum</p>
+					<p>
+						<Icon type="published" color="grey" size="s" spaced="right" />
+						<span classes={themedCss.meta}>{messages.asked} <TimeRelative date={published||''} /></span>
+					</p>
+					<p classes={themedCss.meta}>
+						<Icon type="update" color="grey" size="s" spaced="right" />
+						<span classes={themedCss.meta}>{messages.active} <TimeRelative date={updated||''} /></span>
+					</p>
 				</div>
 				<div key="nameWrapper" classes={[nameCss.root, themedCss.nameWrapper]}>
-					<p classes={themedCss.questionStatus}>Lorem Ipsum</p>
-					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced="right" transformNodes={boldQmark}>
-						{clampStrings(name, 250).map((s) => <h5>{s}</h5>)}
+					<p classes={themedCss.questionStatus}>#IoT #robot</p>
+					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced="right">
+						{clampStrings(name, 250).map((s) => <h5>{boldQmark(s)}</h5>)}
 					</Paginated>}
 				</div>
 				<i classes={themedCss.teaserIcon} />
@@ -162,7 +191,7 @@ export const Question = factory(function question({
 					}}
 					colored
 					contentPaginated
-					transformPaginated={boldQmark}
+					transformContent={boldQmark}
 					color={color}
 					contentLines={3}
 					omitProperties={['name','date','location']}
@@ -174,22 +203,21 @@ export const Question = factory(function question({
 			<Images view={view} image={image} itemsPerPage={4} size={(vp as any)} />
 		</div>}
 		<div key="answerWrapper" classes={themedCss.answerWrapper}>
-			answers
+			{answerActionNode}
+
+			{!(oneOf.length+anyOf.length) && <p>TODO top answers</p>}
 
 			<Button labelFor={idBase} {...{color, responsive: true}}>
-				{messages.readAnswers}
+				{!(oneOf.length+anyOf.length) ? messages.readAnswers : messages.vote}
 			</Button>
 		</div>
 		{!!aggregateRating && <div key="rateWrapper" classes={themedCss.rateWrapper}>
 			<Rate readOnly {...ldPartial(aggregateRating)} />
 		</div>}
-		<Details>
-			{{
-				summary: <span>{messages.moreInfo}</span>,
-				content: <Structure omitProperties={coveredLD} value={ld} />
-			}}
-		</Details>
+
+		<Structure omitProperties={coveredLD} value={ld}>
+			{{ detailsSummary: <span>{messages.moreInfo}</span> }}
+		</Structure>
 	</div>
 });
-
 export default Question;

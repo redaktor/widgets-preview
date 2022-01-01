@@ -18,7 +18,7 @@ const factory = create({ theme }).properties<HelperTextProperties>();
 export default factory(function HelperText({ properties, middleware: { theme } }) {
 	const { text, valid, classes = [] } = properties();
 	const themedCss = theme.classes(css);
-
+	if (!text) { return '' }
 	return (
 		<div
 			key="root"

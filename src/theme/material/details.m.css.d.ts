@@ -3,6 +3,7 @@ export const meta: string;
 export const serif: string;
 export const summary: string;
 export const colored: string;
+export const oneLine: string;
 export const summaryContent: string;
 export const responsive: string;
 export const animated: string;

@@ -70,7 +70,7 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	dateOpenIndex?: number | false;
 	locationOpenIndex?: number | false;
 
-	transformPaginated?: (node: RenderResult) => RenderResult;
+	transformContent?: (node: RenderResult) => RenderResult;
 }
 
 export interface CaptionIcache {
@@ -102,7 +102,7 @@ export const Caption = factory(function Caption({
 		dateOpenIndex = false, locationOpenIndex = false, size = 'm', view = 'column', colored = false,
 		largeLocation = false, locationIsDetails = false, locationHasOnline = false, locationHasMap = true,
 		largeDate = false, isImageCaption = false, contentPaginated = false, color, contentLines: cl, moreLabel,
-		transformPaginated, onToggle, onFocusPrevious, onDate, onLocation, onLocale
+		transformContent, onToggle, onFocusPrevious, onDate, onLocation, onLocale
 	} = properties();
 	const {
 		href = '', name: n, summary, content, sensitive, attachment, ...ld
@@ -148,7 +148,7 @@ export const Caption = factory(function Caption({
 			{!omit.has('name') && <div classes={themedCss.rowName}>{nameNode}</div>}
 
 			{summary && !omit.has('summary') && !sensitive &&
-				<Paginated key="paginatedsummary" colored={colored} compact={compact} property="summary"  transformNodes={transformPaginated}>
+				<Paginated key="paginatedsummary" colored={colored} compact={compact} property="summary">
 					{clampStrings(summary, summaryLength).map((_summaries, i) => <span>
 						{_summaries.map((s: any) => <MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={s} />)}
 					</span>)}
@@ -165,9 +165,10 @@ export const Caption = factory(function Caption({
 				</Collapsed>
 			}
 			{!!content && !omit.has('content') && !!contentPaginated &&
-				<Paginated key="paginatedcontent" solid colored={colored} compact={compact} property="content" transformNodes={transformPaginated}>
-					{content.map((s: string, i: number) =>
-						<MD classes={[themedCss.summary, typoClass]} key={`content${i}`} content={s} />)}
+				<Paginated key="paginatedcontent" solid colored={colored} compact={compact} property="content">
+					{clampStrings(content, 9999).map((s) => <p>{content.map((s: string, i: number) =>
+						<MD classes={[themedCss.summary, typoClass]} key={`content${i}`} content={transformContent ? transformContent(s) : s} />)}
+					</p>)}
 				</Paginated>
 			}
 		</div>

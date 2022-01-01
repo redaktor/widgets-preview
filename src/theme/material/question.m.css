@@ -31,6 +31,13 @@
 .questionStatus {
 	composes: l italic serif from './_typo.css';
 }
+.questionMark {
+	display: inline-block;
+	font-size: calc(var(--size) * 1.618);
+	margin: 0px 0px calc(var(--size) * -0.618) 0.2ch;
+	padding: 0px;
+	line-height: 0px;
+}
 .root .questionStatus {
 	color: var(--text-muted);
 	height: calc(var(--line) - var(--mb));
@@ -60,9 +67,9 @@
 }
 
 .answerWrapper {
-	margin-top: var(--line);
 	z-index: 9;
 }
+
 .rateWrapper {
 	min-height: var(--line);
 	margin-bottom: 0px;

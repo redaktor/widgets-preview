@@ -198,6 +198,7 @@ select:-webkit-autofill:focus
 .wrapper.focused:not(:hover) .box::after {
 	--border-fill: var(--ui-focus);
 }
+.input:focus + .box::after,
 .wrapper:focus-within .box::after,
 .wrapper.focused .box::after {
 	transform: scaleX(1);

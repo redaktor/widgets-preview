@@ -39,6 +39,9 @@
 .colored[open] .summary:hover {
 	color: var(--text);
 }
+.root:not([open]).oneLine {
+	height: var(--line2);
+}
 .summaryContent {
 	display: inline-block;
 	padding-bottom: calc(var(--ui-border-width-emphasized) * 2);
