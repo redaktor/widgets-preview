@@ -28,6 +28,8 @@ export interface TextAreaProperties extends ThemeProperties {
 	disabled?: boolean;
 	/** Renders helper text to the user */
 	helperText?: string;
+	/** Slides the placeholder label */
+	labelAnimated?: boolean;
 	/** Hides the label from view while still remaining accessible for screen readers */
 	labelHidden?: boolean;
 	/** Maximum number of characters allowed in the input */
@@ -70,8 +72,13 @@ export interface TextAreaProperties extends ThemeProperties {
 	readOnly?: boolean;
 	/** Sets the input as required to complete the form */
 	required?: boolean;
-	/** Number of rows, controls the height of the textarea */
+	/**
+	 * Number of rows, controls the height of the textarea
+	 * if used with expand, specifies minimum rows
+	 */
 	rows?: number;
+	/** The minimum rows for expand in noscript environments */
+	expandNoscriptRows?: number;
 	/** If the field is valid and optionally display a message */
 	valid?: { valid?: boolean; message?: string } | boolean;
 	/** The initial value */
@@ -178,6 +185,7 @@ export const TextArea = factory(function TextArea({
 		responsive = false,
 		expand = true,
 		columns = 20,
+		labelAnimated = true,
 		disabled,
 		widgetId = `textarea-${id}`,
 		maxLength,
@@ -186,7 +194,8 @@ export const TextArea = factory(function TextArea({
 		placeholder,
 		readOnly,
 		required,
-		rows = 2,
+		rows = 1,
+		expandNoscriptRows: nrows = 1,
 		initialValue,
 		wrapText,
 		theme: themeProp,
@@ -219,8 +228,10 @@ export const TextArea = factory(function TextArea({
 	const label = (!!l ? l : (!l && !!children()) ?
 		children() : void 0) || void 0;
 
+	const noscriptMinHeight = typeof nrows === 'number' ? `--nmh: calc(var(--line) * ${Math.max(1,nrows)});` : '';
+	const minHeight = noscriptMinHeight+
+		(typeof rows === 'number' ? `--mh: calc(var(--line) * ${Math.max(1,rows)});` : '--mh: var(--line);');
 // const [label] = children();
-console.log( 'render', dimensions.get('measure'), dimensions.get('input') )
 
 	return (
 		<div key="root" classes={[
@@ -233,7 +244,9 @@ console.log( 'render', dimensions.get('measure'), dimensions.get('input') )
 			theme.spaced(ui),
 			theme.animated(themedCss),
 			expand ? themedCss.expand : null,
-			responsive ? themedCss.responsive : null
+			responsive ? themedCss.responsive : null,
+			label && labelAnimated === true ? themedCss.slideLabel : themedCss.staticLabel,
+			!label || labelHidden ? themedCss.noLabel : null
 		]}>
 			<div
 				key="wrapper"
@@ -247,33 +260,14 @@ console.log( 'render', dimensions.get('measure'), dimensions.get('input') )
 					required ? themedCss.required : null,
 					inputFocused ? themedCss.focused : null
 				]}
+				style={expand && get('style')}
 			>
-				{label ? (
-					<Label
-						theme={theme.compose(
-							labelCss,
-							css,
-							'label'
-						)}
-						classes={classes}
-						disabled={disabled}
-						valid={valid}
-						readOnly={readOnly}
-						required={required}
-						hidden={labelHidden}
-						forId={widgetId}
-						focused={inputFocused}
-						active={!!value || inputFocused}
-					>
-						{label}
-					</Label>
-				) : null}
+				<noscript><i classes={themedCss.noscript} /></noscript>
 				<textarea
 					id={widgetId}
 					key="input"
 					{...formatAriaProperties(aria)}
 					classes={themedCss.input}
-					style={expand && get('style')}
 					cols={columns}
 					disabled={disabled}
 					focus={focus.shouldFocus}
@@ -281,7 +275,7 @@ console.log( 'render', dimensions.get('measure'), dimensions.get('input') )
 					maxlength={maxLength ? `${maxLength}` : null}
 					minlength={minLength ? `${minLength}` : null}
 					name={name}
-					placeholder={placeholder}
+					placeholder={placeholder ? placeholder : (labelAnimated === true ? ' ' : void 0)}
 					readOnly={readOnly}
 					aria-readonly={readOnly ? 'true' : void 0}
 					required={required}
@@ -306,17 +300,17 @@ console.log( 'render', dimensions.get('measure'), dimensions.get('input') )
 							const measure = () => {
 								const { height } = dimensions.get('input').scroll || { height: 0 };
 								if (!!height) {
-									set('style', `height: ${height}px;`);
+									set('style', `--th: ${height}px; ${minHeight}`);
 								} else {
-								  set('style', `height: calc(var(--line) * ${Math.max(2,lineCount)});`);
+								  set('style', `--th: calc(var(--line) * ${Math.max(1,lineCount)}); ${minHeight}`);
 								}
 							}
 							let lineCount = (value.match(/\n/g) || []).length + 1;
 							if (value.length < 20 && lineCount < 2) {
-								set('style', 'height: var(--line2);')
+								set('style', minHeight)
 							} else if (value.length < oldValue.length) {
 								// TODO mini flicker in Safari when deleting
-								set('style', 'height: auto;');
+								set('style', '--th: auto;');
 								setTimeout(measure,1)
 							} else {
 								measure()
@@ -363,6 +357,19 @@ console.log( 'render', dimensions.get('measure'), dimensions.get('input') )
 				{
 					/*this.properties.outlined ? null : v('b', {classes: this.theme(css.box)}),*/
 				}
+				{label && (<label
+					classes={[inputCss.label, themedCss.label]}
+					theme={themeProp}
+					disabled={disabled}
+					valid={valid}
+					readOnly={readOnly}
+					required={required}
+					hidden={labelHidden}
+					for={widgetId}
+					active={!!value || inputFocused}
+				>
+					{label}
+				</label>)}
 			</div>
 			<HelperText
 				text={computedHelperText}

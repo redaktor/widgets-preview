@@ -136,8 +136,8 @@ export const Question = factory(function question({
 		}
 		return false;
 	}
-	const answerActionNode = !(oneOf.length+anyOf.length) ?
-		<TextArea color={color} expand responsive design="flat" /> :
+	const answerActionNode = !oneOf.length+anyOf.length ?
+		<TextArea responsive color={color} design="flat" expandNoscriptRows={5}>{messages.answer}</TextArea> :
 		<virtual>
 			{!!oneOf.length && <RadioGroup color={color} vertical options={oneOf.map(toOptions).filter((o: any) => !!o)} />}
 			{!!anyOf.length && <CheckboxGroup color={color} vertical options={anyOf.map(toOptions).filter((o: any) => !!o)} />}
@@ -205,7 +205,7 @@ export const Question = factory(function question({
 		<div key="answerWrapper" classes={themedCss.answerWrapper}>
 			{answerActionNode}
 
-			{!(oneOf.length+anyOf.length) && <p>TODO top answers</p>}
+			{!(oneOf.length+anyOf.length) && <p>TODO accepted / top answers</p>}
 
 			<Button labelFor={idBase} {...{color, responsive: true}}>
 				{!(oneOf.length+anyOf.length) ? messages.readAnswers : messages.vote}

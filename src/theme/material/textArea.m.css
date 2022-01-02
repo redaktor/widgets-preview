@@ -10,6 +10,7 @@
 .invalid { composes: invalid from './inputText.m.css'; }
 .slideLabel { composes: slideLabel from './inputText.m.css'; }
 .staticLabel { composes: staticLabel from './inputText.m.css'; }
+.noLabel { composes: noLabel from './inputText.m.css'; }
 .shaped { }
 /* Added to a read-only input */
 .readonly {
@@ -20,6 +21,7 @@
 /* TODO nojs for expand ? */
 .root,
 .root:hover {
+  --mh: var(--line);
   background: none !important;
 }
 .root:not(.expand) .wrapper {
@@ -36,19 +38,20 @@
   margin-bottom: var(--pt);
   padding-right: var(--ui-border-width-emphasized);
 }
+
 .root .input {
   box-sizing: border-box;
   padding-top: 0px;
   padding-bottom: 0px;
 	width: 100%;
-	height: 100%;
+	height: var(--th,var(--mh,100%));
 	z-index: 9;
   /* no resize transition */
   position: relative;
   transition: none;
   border: none;
 }
-
+textarea::placeholder,
 .input::placeholder {
 	font-size: var(--small-size);
 	padding-top: var(--pt);
@@ -59,7 +62,10 @@
   display: block;
   resize: both;
   overflow: hidden;
-  min-height: var(--line2);
+  min-height: var(--mh, var(--line));
+}
+.root.expand .noscript + textarea.input {
+  min-height: var(--nmh, var(--mh, var(--line)));
 }
 .outlined.staticLabel .wrapper > label,
 .outlined.slideLabel .input:focus ~ label,
@@ -103,4 +109,10 @@
 
 .root.expand:not(.outlined) .input:focus:not(:invalid) ~ .box::after {
   border-top: var(--ui-border-width-emphasized) dotted var(--root-bg);
+}
+
+.root .label {
+  bottom: calc(var(--th, var(--mh)) - var(--line));
+  transform: translateY(calc(var(--line,16px) * -1.2)) scale(0.8);
+  margin-bottom: calc(var(--mb) - var(--pt));
 }

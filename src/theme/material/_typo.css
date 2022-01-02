@@ -431,6 +431,7 @@ sub, sup, button, input, label, select, textarea,
 .small, .p, .p-small, .h6, .h5, .h4, .h3, .h2, .h1, .hero, .xs, .s, .m, .l, .xl, .xxl,
 .meta {
   font-size: var(--size, 16px);
+  font-weight: var(--weight);
   line-height: var(--lh, 24px);
   padding-top: var(--pt, 8px);
   margin-bottom: var(--mb, 16px);
@@ -528,6 +529,31 @@ fieldset {
   border: 0;
   padding: 0px;
   margin: 0px;
+}
+
+input::-webkit-input-placeholder {
+	font-size: inherit;
+  color: var(--text-muted);
+	padding-top: var(--pt);
+	line-height: 1;
+}
+textarea::-webkit-input-placeholder {
+	font-size: inherit;
+  color: var(--text-muted);
+	padding-top: var(--pt);
+	line-height: 1;
+}
+::-moz-placeholder {
+	font-size: inherit;
+  color: var(--text-muted);
+	padding-top: var(--pt);
+	line-height: 1;
+}
+::placeholder {
+	font-size: inherit;
+  color: var(--text-muted);
+	padding-top: var(--pt);
+	line-height: 1;
 }
 /*--------------------------------------------------------------
 Typo <---

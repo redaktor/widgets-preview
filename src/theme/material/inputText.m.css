@@ -259,6 +259,12 @@ select:-webkit-autofill:focus
 .input:not(.input:focus):placeholder-shown ~ .label {
 	--label-fill: var(--text-muted);
 }
+.slideLabel textarea.input {
+	margin-top: var(--line,16px);
+}
+.slideLabel textarea.input:not(.input:focus):placeholder-shown {
+	margin-top: 0px;
+}
 .slideLabel .input:not(.input:focus):placeholder-shown ~ .label {
 	transform: translateY(0) scale(1);
 }

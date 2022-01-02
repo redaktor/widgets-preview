@@ -1,4 +1,5 @@
 export const root: string;
+export const noscript: string;
 export const wrapper: string;
 export const inner: string;
 export const input: string;
@@ -10,6 +11,7 @@ export const valid: string;
 export const invalid: string;
 export const slideLabel: string;
 export const staticLabel: string;
+export const noLabel: string;
 export const shaped: string;
 export const readonly: string;
 export const required: string;
@@ -19,3 +21,4 @@ export const outlined: string;
 export const bg: string;
 export const filled: string;
 export const focused: string;
+export const label: string;

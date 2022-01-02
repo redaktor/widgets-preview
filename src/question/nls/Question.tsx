@@ -8,6 +8,7 @@ const locales = {
 };
 const messages = {
 	question: 'Question',
+	answer: 'Answer',
 	questionShort: 'Q',
 	asked: 'asked',
 	active: 'active',
