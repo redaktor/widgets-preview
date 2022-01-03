@@ -1,5 +1,4 @@
 export const root: string;
-export const noscript: string;
 export const wrapper: string;
 export const inner: string;
 export const input: string;
@@ -17,6 +16,7 @@ export const readonly: string;
 export const required: string;
 export const expand: string;
 export const fixed: string;
+export const noscript: string;
 export const outlined: string;
 export const bg: string;
 export const filled: string;

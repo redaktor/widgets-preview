@@ -193,15 +193,21 @@ p:not(.uiClick) > .uiClick {
   margin-left: 0;
 }
 
-/* Addded to a disabled widget */
 .box {
 	--mark: var(--text);
 	--on: var(--ui-filled-on);
 }
+/* Addded to a disabled widget */
 .disabled,
 .disabled:hover {
 	opacity: var(--disabledAlpha);
 	cursor: default;
+	pointer-events: none;
+}
+:invalid [type="submit"] {
+	opacity: var(--disabledAlpha) !important;
+	cursor: default !important;
+	pointer-events: none !important;
 }
 .flat {
 	--pulse: var(--ui-flat-accent);

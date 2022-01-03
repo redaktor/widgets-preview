@@ -237,6 +237,7 @@ export const TextArea = factory(function TextArea({
 		<div key="root" classes={[
 			themedCss.root,
 			theme.variant(),
+			(inputCss as any)[design],
 			theme.shaped(ui),
 			theme.sized(ui),
 			theme.colored(colors),

@@ -8,7 +8,8 @@ import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
-// import Details from '../details';
+import Chip from '../chip';
+import Details from '../details';
 import Paginated from '../paginated';
 import TimeRelative from '../timeRelative';
 import Caption, { coveredLD as captionCoveredLD } from '../caption';
@@ -43,6 +44,7 @@ export interface QuestionProperties extends AsActivity {
 }
 
 export interface QuestionIcache {
+	value: string;
 	closed: boolean;
 }
 export interface QuestionChildren {
@@ -91,16 +93,16 @@ export const Question = factory(function question({
 	properties
 }) {
 
-	const { messages } = i18nActivityPub.localize(bundle);
+	const { messages, format } = i18nActivityPub.localize(bundle);
+	const { get, set, getOrSet } = icache;
 	const {
 		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
 		addressExpanded = false, fit = false, color = 'pink', view = 'column'
 	} = properties();
-	// const { get, set, getOrSet } = icache;
 	const themedCss = theme.classes(css);
 	const {
 		published, updated, duration, 'dc:created': contentCreated = [],
-		oneOf = [], anyOf = [], closed, ...ld
+		oneOf = [], anyOf = [], closed = false, ...ld
 	} = i18nActivityPub.normalized<QuestionProperties>();
 	const omit = i18nActivityPub.omit();
 	const idBase = id.getId('question');
@@ -115,11 +117,14 @@ export const Question = factory(function question({
 		vp = breakpoint;
 	}
 	const { name, image = [] } = ld;
-
 	const {
 		aggregateRating: rating
 	} = ldPartial(ld);
 	const aggregateRating = Array.isArray(rating) ? rating[0] : rating;
+
+	getOrSet('closed',!!closed,false);
+	/* TODO did already vote + closed = canVote */
+	getOrSet('value','');
 
 	const boldQmark = (s: RenderResult): RenderResult => Array.isArray(s) ? s.map(boldQmark) :
 		typeof s === 'string' ? s.split(/[?]/g).map((s,i,a) => !s ? '' :
@@ -136,8 +141,12 @@ export const Question = factory(function question({
 		}
 		return false;
 	}
-	const answerActionNode = !oneOf.length+anyOf.length ?
-		<TextArea responsive color={color} design="flat" expandNoscriptRows={5}>{messages.answer}</TextArea> :
+	const isPoll = oneOf.length + anyOf.length > 0;
+	const answerInput = get('closed') ? '' : !isPoll ?
+		<TextArea
+			required responsive color={color} design="flat" expandNoscriptRows={5}
+			onValue={(v) => set('value',v||'')}
+		>{messages.answer}</TextArea> :
 		<virtual>
 			{!!oneOf.length && <RadioGroup color={color} vertical options={oneOf.map(toOptions).filter((o: any) => !!o)} />}
 			{!!anyOf.length && <CheckboxGroup color={color} vertical options={anyOf.map(toOptions).filter((o: any) => !!o)} />}
@@ -202,15 +211,17 @@ export const Question = factory(function question({
 		{!omit.has('image') && <div key="images" classes={themedCss.images}>
 			<Images view={view} image={image} itemsPerPage={4} size={(vp as any)} />
 		</div>}
-		<div key="answerWrapper" classes={themedCss.answerWrapper}>
-			{answerActionNode}
-
-			{!(oneOf.length+anyOf.length) && <p>TODO accepted / top answers</p>}
-
-			<Button labelFor={idBase} {...{color, responsive: true}}>
-				{!(oneOf.length+anyOf.length) ? messages.readAnswers : messages.vote}
+		<form key="answerWrapper" classes={themedCss.answerWrapper}>
+			{!isPoll && <p>TODO accepted||top answer</p>}
+			{!isPoll && <Details size="xl">{{
+				summary: <span><Chip color={color}>99</Chip> {format('readAnswers',{count: 99})}</span>,
+				content: '...'
+			}}</Details>}
+			{answerInput}
+			<Button responsive type="submit" labelFor={idBase} color={color}>
+				{isPoll ? messages.doVote : messages.doAnswer}
 			</Button>
-		</div>
+		</form>
 		{!!aggregateRating && <div key="rateWrapper" classes={themedCss.rateWrapper}>
 			<Rate readOnly {...ldPartial(aggregateRating)} />
 		</div>}

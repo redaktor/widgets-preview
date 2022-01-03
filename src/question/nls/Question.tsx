@@ -12,8 +12,12 @@ const messages = {
 	questionShort: 'Q',
 	asked: 'asked',
 	active: 'active',
-	vote: 'vote',
-	readAnswers: 'read all the answers',
+	doVote: 'vote',
+	doAnswer: 'answer',
+	readAnswers: `{count, plural, offset:0
+		=0 {no answers}
+		=1 {read answer}
+		other {read answers}}`,
 	moreInfo: 'further information'
 };
 

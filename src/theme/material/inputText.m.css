@@ -219,9 +219,9 @@ select:-webkit-autofill:focus
 }
 
 .invalid .input ~ .box,
-.input:invalid ~ .box,
 .invalid .box::after,
-.root:not(.disabled) .input:invalid + .box::after {
+.root:not(.flat):not(.disabled) .input:invalid ~ .box,
+.root:not(.flat):not(.disabled) .input:invalid + .box::after {
 	transform: scaleX(1);
 	background-color: var(--ui-error, red) !important;
 	border-color: var(--ui-error, red) !important;

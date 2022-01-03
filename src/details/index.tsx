@@ -52,6 +52,7 @@ export const Details = factory(function Details({ children, properties, middlewa
 			classes={[
 				theme.variant(),
 				themedCss.root,
+				theme.uiColor(),
 				!!color && themedCss.colored,
 				!!responsive && themedCss.responsive
 			]}
@@ -60,7 +61,6 @@ export const Details = factory(function Details({ children, properties, middlewa
 				<summary key="summary" classes={[
 					themedCss.summary,
 					theme.uiSize('l'),
-					theme.uiColor(),
 					serif && themedCss.serif,
 					animated && themedCss.animated
 				]}>
