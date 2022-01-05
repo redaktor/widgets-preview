@@ -33,6 +33,7 @@ const UNITS: [number,number,string][] = ['minute','hour','day','week','month'].m
   return [UV[i+1],UV[i],s]
 });
 
+export const intervalKey = Symbol.for('redaktorMinuteInterval');
 export const timeagoMiddleware = factory(({ middleware: { icache, invalidator }, properties }) => {
   const { get, set, getOrSet } = icache;
   const { date: d, isLive = true } = properties();
@@ -41,7 +42,6 @@ export const timeagoMiddleware = factory(({ middleware: { icache, invalidator },
 		start(isShort = false) {
       set('isShort', isShort, false);
       if (!isLive || !!get('isSubscribed') || !window || !window.dispatchEvent) { return }
-      const intervalKey = Symbol.for('redaktorMinuteInterval');
       const result = getOrSet('result', this.format(true), false);
       const [i18nType, {n = 0}] = result;
       getOrSet('id', `${i18nType}${n}`, false);

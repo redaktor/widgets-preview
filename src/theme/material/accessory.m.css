@@ -1,0 +1,130 @@
+.root {
+	composes: s italic serif from './_typo.css';
+	z-index: var(--zindex-alert, 999);
+}
+
+.bookmark {
+	width: var(--p);
+	padding: calc(var(--lineHalf) + var(--pt)) 0;
+	position: absolute;
+	top: calc(var(--grid-base,8px) * -1);
+	right: var(--lineHalf);
+	text-align: center;
+	border-top-left-radius: 3px;
+	color: var(--text-filled, var(--text, #000));
+	background: var(--bg, #f47530);
+}
+.bookmark:before {
+	height: 0px;
+	width: 0px;
+	right: calc(var(--grid-base,8px) * -1);
+	top: 0px;
+	border-bottom: var(--grid-base,8px) solid #555;
+	border-right: var(--grid-base,8px) solid transparent;
+}
+.bookmark:before,
+.bookmark:after {
+	content: '';
+	position: absolute;
+}
+.bookmark:after {
+	--pHalf: calc(var(--p) * 0.5 + 0.1px);
+	width: 0px;
+	height: 0px;
+	left: 0px;
+	bottom: calc(var(--p) * -0.5 + 0.1px);
+	border-left: var(--pHalf) solid var(--bg, #f47530);
+	border-right: var(--pHalf) solid var(--bg, #f47530);
+	border-bottom: var(--pHalf) solid transparent;
+}
+
+.tag,
+.topic {
+	display: block;
+	position: absolute;
+	top: calc(var(--line) + var(--line) * var(--i,1));
+	color: var(--text-filled, var(--text, #000));
+	background: linear-gradient(
+		to bottom,
+		transparent 0%,
+		transparent 7px,
+		var(--ui-filled, #00b3ed) 7px,
+		var(--ui-filled, #00b3ed) 100%
+	);
+	box-shadow: -1px 2px 3px rgba(0, 0, 0, 0.3);
+}
+.topic {
+	left: 0px;
+	padding-right: var(--grid-base,8px);
+	font-weight: var(--weight-semibold);
+}
+.tag {
+	right: 0px;
+	padding-left: var(--grid-base,8px);
+	font-weight: var(--weight);
+	filter: saturate(0);
+	opacity: 0.64;
+	transition: filter, opacity var(--ui-dpd-0) var(--ui-easing);
+}
+.root:hover .tag {
+	filter: saturate(1);
+	opacity: 1;
+}
+.tag::before,
+.tag::after,
+.topic::before,
+.topic::after {
+	content: '';
+	position: absolute;
+}
+.tag::before,
+.topic::before {
+	width: 7px;
+	height: 100%;
+	top: 7px;
+	padding: 0px 0px 7px 0px;
+	background: var(--ui-filled, #00b3ed);
+}
+.tag::after,
+.topic::after {
+	width: 5px;
+	height: 5px;
+	bottom: -5px;
+	background: var(--text-muted);
+	opacity: 0.64;
+}
+.tag::before {
+	right: -7px;
+	border-radius: 0 5px 5px 0;
+}
+.tag::after {
+	right: -5px;
+	border-radius: 0 5px 5px 0;
+}
+.topic::before {
+	left: -7px;
+	border-radius: 5px 0 0 5px;
+}
+.topic::after {
+	left: -5px;
+	border-radius: 5px 0 0 5px;
+}
+
+.ribbon {
+	height: 188px;
+	position: relative;
+	margin-bottom: 30px;
+	background: url(); /* TODO */
+	background-size: cover;
+	text-transform: uppercase;
+	color: white;
+}
+
+.root .onlyHover {
+	width: 0px;
+	color: transparent;
+}
+.root:hover .onlyHover {
+	width: auto;
+	color: var(--text-filled, var(--text, #000));
+}

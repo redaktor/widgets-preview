@@ -15,7 +15,7 @@ const messages = {
 	doVote: 'vote',
 	doAnswer: 'answer',
 	readAnswers: `{count, plural, offset:0
-		=0 {no answers}
+		=0 {no answers yet}
 		=1 {read answer}
 		other {read answers}}`,
 	moreInfo: 'further information'

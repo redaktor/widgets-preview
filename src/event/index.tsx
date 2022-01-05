@@ -14,7 +14,6 @@ import Caption, { coveredLD as captionCoveredLD } from '../caption';
 import Calendar from '../calendar';
 import Map from '../map';
 import Rate from '../rate';
-import Details from '../details';
 import Structure from '../structure';
 import Icon from '../icon';
 import Images from '../images';

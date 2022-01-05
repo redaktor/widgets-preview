@@ -1,14 +1,16 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { AsActivity, AsObjectNormalized } from '../common/interfaces';
-import { ldPartial, toIntStr, toBooleanStr } from '../_ld';
+import { AsActivity, AsObject, AsObjectNormalized } from '../common/interfaces';
+import { ldPartial } from '../_ld';
+import is from '../framework/is';
 import { clampStrings } from '../common/activityPubUtil';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import Chip from '../chip';
+import Accessory from '../accessory';
 import Details from '../details';
 import Paginated from '../paginated';
 import TimeRelative from '../timeRelative';
@@ -45,7 +47,9 @@ export interface QuestionProperties extends AsActivity {
 
 export interface QuestionIcache {
 	value: string;
-	closed: boolean;
+	closed: boolean | Date;
+	canVote: boolean;
+	listens: boolean;
 }
 export interface QuestionChildren {
 	/** Optional Header */
@@ -54,11 +58,33 @@ export interface QuestionChildren {
 	footer?: RenderResult;
 }
 
-/* TODO
-
-Problem:
+/* Problem:
 In https://www.w3.org/TR/activitystreams-vocabulary/#dfn-question `name` is the Question
 but In https://www.w3.org/TR/activitystreams-vocabulary/#questions `content` is the Question …
+
+Note - Client :
+USE `result`
+Describes the result of the activity.
+For instance, if a particular action results in the creation of a new resource,
+the result property can be used to describe that new resource.
+---
+`endTime` answers "when will this question close"
+while
+`close` answers "did and/or when did this question close"
+(so if a question will close 2 seconds after user opened page, the onMinute SHOULD be attached)
+UI :
+Question has NO visual attributedTo cause it is an IntransitiveActivity and so the author is
+the questioner - "asking for a friend" :)
+
+TODO
+see didVote
+image, icon
+map choices -> image, icon -> full
+instrument
+tag
+startTime / endTime VS closed Object | Link | xsd:dateTime | xsd:boolean
+result
+
 
 AS oneOf | anyOf | closed
 
@@ -101,14 +127,61 @@ export const Question = factory(function question({
 	} = properties();
 	const themedCss = theme.classes(css);
 	const {
-		published, updated, duration, 'dc:created': contentCreated = [],
-		oneOf = [], anyOf = [], closed = false, ...ld
+		published, updated, duration, startTime, endTime,
+		'dc:created': contentCreated = [], oneOf = [], anyOf = [],
+		tag = [], closed: anyClosed = false, ...ld
 	} = i18nActivityPub.normalized<QuestionProperties>();
+
+	console.log(properties(), tag);
 	const omit = i18nActivityPub.omit();
-	const idBase = id.getId('question');
+	// const idBase = id.getId('question');
 	if (view === 'tableRow') {
 		return 'TODO'
 	}
+
+	getOrSet('closed', false, false);
+	const checkClosed = () => {
+		const jsNow = new Date();
+		if (!!endTime && is(endTime, 'string')) {
+			const ends = Date.parse(endTime);
+			if (ends < jsNow.getTime()) {
+				set('closed', new Date(ends));
+			}
+		}
+		switch (is(anyClosed)) {
+			// TODO - it can be `Link`, what would it mean ???
+			// ... ???
+			case 'boolean':
+				// it can be `boolean`
+				set('closed', (anyClosed as boolean))
+			break;
+			case 'object':
+				const closed: AsObject = anyClosed as AsObject;
+				// it can be `Object`	???
+				if (!!closed.endTime && is(endTime, 'string')) {
+					const ends = Date.parse(closed.endTime);
+					if (ends < jsNow.getTime()) {
+						set('closed', new Date(ends));
+					}
+				}
+			break;
+			case 'string':
+				// it can be `xsd:dateTime`
+				const ends = Date.parse(anyClosed as string);
+				set('closed', ends < jsNow.getTime() && new Date(ends));
+			break;
+			default:
+				getOrSet('closed', false)
+		}
+	}
+	checkClosed();
+	!get('listens') && window.addEventListener('redaktorMinute', checkClosed);
+	getOrSet('listens', true, false);
+/* TODO did already vote + closed = canVote */
+const didVote = false;
+console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didVote))
+	set('canVote', !(get('closed')||false) && !didVote);
+	getOrSet('value','');
 
 	const viewDesktopCSS = theme.viewDesktopCSS();
 	let vp = 'm' ;
@@ -116,15 +189,11 @@ export const Question = factory(function question({
 		const {breakpoint = 's'} = breakpoints.get('measure')||{};
 		vp = breakpoint;
 	}
-	const { name, image = [] } = ld;
-	const {
-		aggregateRating: rating
-	} = ldPartial(ld);
+	const { name, image = [], replies = { totalItems: 0 } } = ld;
+	const { aggregateRating: rating } = ldPartial(ld);
+	const replyCount = (typeof replies.totalItems === 'string' ? parseInt(replies.totalItems,10) : replies.totalItems) || 0
 	const aggregateRating = Array.isArray(rating) ? rating[0] : rating;
-
-	getOrSet('closed',!!closed,false);
-	/* TODO did already vote + closed = canVote */
-	getOrSet('value','');
+	const isPoll = oneOf.length + anyOf.length > 0;
 
 	const boldQmark = (s: RenderResult): RenderResult => Array.isArray(s) ? s.map(boldQmark) :
 		typeof s === 'string' ? s.split(/[?]/g).map((s,i,a) => !s ? '' :
@@ -141,7 +210,7 @@ export const Question = factory(function question({
 		}
 		return false;
 	}
-	const isPoll = oneOf.length + anyOf.length > 0;
+
 	const answerInput = get('closed') ? '' : !isPoll ?
 		<TextArea
 			required responsive color={color} design="flat" expandNoscriptRows={5}
@@ -151,8 +220,7 @@ export const Question = factory(function question({
 			{!!oneOf.length && <RadioGroup color={color} vertical options={oneOf.map(toOptions).filter((o: any) => !!o)} />}
 			{!!anyOf.length && <CheckboxGroup color={color} vertical options={anyOf.map(toOptions).filter((o: any) => !!o)} />}
 		</virtual>;
-	const moreInfoNode = <Structure omitProperties={coveredLD} value={ld} />;
-
+// icons: closed, comment, edit
 	return <div
 		key="root"
 		classes={[
@@ -174,6 +242,7 @@ export const Question = factory(function question({
 		role="region"
 	>
 		<div classes={themedCss.header}>
+			<Accessory color={color} items={(tag.slice(0,10) as AsObjectNormalized[])} />
 			<div classes={themedCss.topWrapper}>
 				<div key="meta" classes={themedCss.metaWrapper}>
 					<p>
@@ -186,7 +255,7 @@ export const Question = factory(function question({
 					</p>
 				</div>
 				<div key="nameWrapper" classes={[nameCss.root, themedCss.nameWrapper]}>
-					<p classes={themedCss.questionStatus}>#IoT #robot</p>
+					<p classes={themedCss.questionStatus}></p>
 					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced="right">
 						{clampStrings(name, 250).map((s) => <h5>{boldQmark(s)}</h5>)}
 					</Paginated>}
@@ -196,14 +265,14 @@ export const Question = factory(function question({
 			<div key="questionWrapper" classes={themedCss.questionWrapper}>
 				<Caption {...(ld)}
 					classes={{
-						'@redaktor/widgets/images': { captionWrapper: [themedCss.captionWrapper] }
+						'@redaktor/widgets/images': { captionWrapper: [themedCss.captionWrapper], locales: [themedCss.locales] }
 					}}
 					colored
 					contentPaginated
 					transformContent={boldQmark}
 					color={color}
 					contentLines={3}
-					omitProperties={['name','date','location']}
+					omitProperties={['name','date','location','attributedTo']}
 					onLocale={(l) => i18nActivityPub.setLocale(l)}
 				/>
 			</div>
@@ -211,17 +280,36 @@ export const Question = factory(function question({
 		{!omit.has('image') && <div key="images" classes={themedCss.images}>
 			<Images view={view} image={image} itemsPerPage={4} size={(vp as any)} />
 		</div>}
-		<form key="answerWrapper" classes={themedCss.answerWrapper}>
-			{!isPoll && <p>TODO accepted||top answer</p>}
-			{!isPoll && <Details size="xl">{{
-				summary: <span><Chip color={color}>99</Chip> {format('readAnswers',{count: 99})}</span>,
-				content: '...'
-			}}</Details>}
+
+		{!!get('canVote') && <form key="answerWrapper" classes={themedCss.answerWrapper}>
+			{!isPoll && replyCount > 0 && <p>TODO accepted||top answer</p>}
+			{!isPoll &&
+				(!replyCount ? <span classes={themedCss.noAnswer}>
+					<Icon type="edit" color="grey" size="s" spaced="right" />
+					{format('readAnswers',{count: 0})}
+				</span> :
+					<Details size="xl">{{
+						summary: <span>
+							<Chip size={replyCount < 10 ? 's' : 'm'} color={color} spaced="right" classes={{
+								'@redaktor/widgets/chip': { root: [themedCss.answerChip] }
+							}}>
+								{replyCount}
+							</Chip>
+							{format('readAnswers',{count: replyCount})}
+						</span>,
+						content: '...'
+					}}</Details>)
+			}
 			{answerInput}
-			<Button responsive type="submit" labelFor={idBase} color={color}>
-				{isPoll ? messages.doVote : messages.doAnswer}
+			<Button responsive type="submit" color={color}>
+				<span classes={themedCss.answerLabel}>{isPoll ? messages.doVote : messages.doAnswer}</span>
 			</Button>
-		</form>
+		</form>}
+		{!!get('closed') && <span classes={themedCss.noAnswer}>
+			<Icon type="closed" color="grey" size="s" spaced="right" />
+			{format('readAnswers',{count: 0})}
+		</span>}
+
 		{!!aggregateRating && <div key="rateWrapper" classes={themedCss.rateWrapper}>
 			<Rate readOnly {...ldPartial(aggregateRating)} />
 		</div>}

@@ -40,7 +40,7 @@ export const AsCachingMiddleware = factory(({ properties, middleware: { i18n, ic
 
   function normalized<P>(locale?: string, _invalidate = false): (P & LocalesProperties & AsObjectNormalized) {
     if (!!locale) { locale = setI18n(locale); }
-    const { id, '@context': c = icache.getOrSet('@context', defaultContext) } = properties();
+    const { id = null, '@context': c = icache.getOrSet('@context', defaultContext) } = properties();
     if (!id) {
       const ap = normalizeAs(properties(), locale);
       if (!!c) { icache.set('@context', c); }

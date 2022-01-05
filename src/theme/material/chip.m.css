@@ -8,6 +8,7 @@
 	padding-right: var(--plr);
 	background-size: cover;
 	font-weight: var(--weight-semibold,500);
+	min-width: calc(var(--h) - var(--plr) * 2);
 }
 .inline {
 	margin-top: calc(var(--line) - var(--pt)) !important;

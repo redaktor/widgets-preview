@@ -679,7 +679,7 @@
 }
 /* An edit icon */
 .edit:before {
-	content: '\f040';
+	content: '\e916';
 }
 .edited:before {
   content: '\e917';

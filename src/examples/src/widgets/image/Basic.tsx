@@ -300,8 +300,17 @@ const exampleQuestion: AsActivity = {
      {"name": "arduino", "summary": "Lorem Ipsum"},
      {"name": "raspberry pi", "summary": "Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum"}
    ],*/
-   "published": "2021-12-23T20:00:00-08:00",
-   "updated": "2021-12-24T20:00:00-08:00"
+   "published": "2022-01-04T09:22:00+01:00",
+   "updated": "2021-12-24T20:00:00-08:00",
+   "replies": {
+    "type": "Collection",
+    "totalItems": 1,
+    "items": [{type:'Note',content:'Lorem Ipsum'}]
+  },
+  "tag": [
+    {type:'Note',"name": 'IoT'}, {type:'Note',"name": 'robots'}, {type:'Note',"name": 'javascript'},
+    {type:'Note',"name": 'nr4'}, {type:'Note',"name": 'nr5'}, {type:'Note',"name": 'nr6'}
+  ]
 }
 
 const factory = create();

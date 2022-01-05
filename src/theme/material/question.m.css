@@ -23,7 +23,8 @@
 	justify-content: space-between;
 	align-items: baseline;
 }
-.meta {
+.meta,
+.noAnswer {
 	composes: s italic serif from './_typo.css';
 	color: var(--ui-text);
 }
@@ -48,6 +49,10 @@
 .nameWrapper {
 	flex: 0;
 	position: relative;
+	margin-right: 72px;
+}
+.locales {
+	margin-right: 72px;
 }
 .teaserIcon {
 	composes: icon from './icon.m.css';
@@ -65,9 +70,19 @@
 .teaserIcon::before {
 	content: 'q';
 }
-
 .answerWrapper {
 	z-index: 9;
+}
+.answerLabel {
+	padding-left: var(--ui-border-width-emphasized);
+}
+.answerChip {
+	margin-top: calc(var(--pt) * -1);
+	margin-bottom: calc(var(--ui-border-width-emphasized) * -2);
+	font-weight: var(--weight-bold);
+}
+.noAnswer {
+	padding-left: calc(var(--grid-base,8px) + var(--ui-border-width-emphasized));
 }
 
 .rateWrapper {

@@ -17,6 +17,8 @@ const html = require('property-information/html');
 TODO:
 
 - replace plain text symbols in Unicode, e.g. --> = “unicode arrow” etc.
+
+- replace [date=2022-01-11 time=16:00:00 timezone="Europe/Berlin"] 
 */
 
 
