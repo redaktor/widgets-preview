@@ -28,8 +28,10 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	compact?: boolean;
 	/* content is paginated, not collapsed */
 	contentPaginated?: boolean;
-	/* if not compact, visible lines of collapsed content, default 12 */
+	/* if not compact, visible lines of collapsed content */
 	contentLines?: number;
+	/* if not compact, visible lines of collapsed content */
+	summaryLines?: number;
 	/* is in a details tag */
 	hasDetails?: boolean;
 	/* details are opened */
@@ -101,11 +103,11 @@ export const Caption = factory(function Caption({
 		locale: currentLocale, compact = false, hasDetails = false, isOpen = false,
 		dateOpenIndex = false, locationOpenIndex = false, size = 'm', view = 'column', colored = false,
 		largeLocation = false, locationIsDetails = false, locationHasOnline = false, locationHasMap = true,
-		largeDate = false, isImageCaption = false, contentPaginated = false, color, contentLines: cl, moreLabel,
-		transformContent, onToggle, onFocusPrevious, onDate, onLocation, onLocale
+		largeDate = false, isImageCaption = false, contentPaginated = false, color, contentLines: cl, summaryLines: sl,
+		moreLabel, transformContent, onToggle, onFocusPrevious, onDate, onLocation, onLocale
 	} = properties();
 	const {
-		href = '', name: n, summary: s, content, sensitive, attachment, ...ld
+		href = '', name: n = ([] as string[]), summary: s = ([] as string[]), content, sensitive, attachment, ...ld
 	} = i18nActivityPub.normalized();
 	const omit = i18nActivityPub.omit();
 	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
@@ -128,9 +130,16 @@ export const Caption = factory(function Caption({
 	const summaryLength = (!!n && !!n.length && !!n[0].length && !!content && !!content.length && !!content[0].length) ? 500 :
 		((!!n && !!n.length && !!n[0].length) || (!!content && !!content.length && !!content[0].length) ? 750 : 1000);
 
-	const summaryLines = 5;
+
+	// const clampedSummary = s.map((_s) => {console.log(_s); return clampStrings(_s, summaryLength) });
+	// console.log('clampedSummary',clampedSummary)
+	const summaries = s.reduce((a: string[], _s: string) => {
+		clampStrings(_s, summaryLength).forEach((_a) => {a = a.concat(_a)});
+		return a
+	}, []);
+	const summaryLines = compact || isRow ? sl||4 : sl||8;
 	const summary: string[] = [];
-	!!s && Array.isArray(s) && s.map((s: string) => {
+	!!summaries && Array.isArray(summaries) && summaries.map((s: string) => {
 		if (typeof s !== 'string' || !s.length) { return [] }
 		const lines = s.split(/\r?\n/);
 		lines.reduce((a: any[],l,i) => {

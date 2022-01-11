@@ -284,6 +284,13 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 		// TODO isAccepted
 		if (!o) { return '' }
 		const { aggregateRating } = o;
+		let overwrites = {};
+		if (!!o.isDuplicate) {
+			const {summary: s = [], content = []} = o;
+			const summary = `${!Array.isArray(s) ? s : s.join(' - ')}:
+${!Array.isArray(content) ? content : content.join(' - ')}`.replace(/\r?\n/g, ' ').substring(0, 250);
+			overwrites = {summary, content: ''};
+		}
 		return <virtual>
 			{!!o.isAccepted && <span classes={themedCss.accepted}><Icon color="success" size="xxl" type="check" /></span>}
 			{!!o.isDuplicate && <virtual>
@@ -295,10 +302,11 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 			{!!aggregateRating && <div key={`rateWrapper${id}`} classes={themedCss.rateWrapper}>
 				<Rate {...aggregateRating} />
 			</div>}
-			<Caption {...(o)}
+			<Caption {...o} {...overwrites}
 				compact
+				summaryLines={3}
 				contentLines={5}
-				omitProperties={['date','locales','location','attributedTo', !!o.isDuplicate && 'content']}
+				omitProperties={['date','locales','location','attributedTo']}
 				classes={{ '@redaktor/widgets/images': { pageCaption: [themedCss.replyCaption] } }}
 			/>
 		</virtual>
