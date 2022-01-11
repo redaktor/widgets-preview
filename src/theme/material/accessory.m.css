@@ -1,7 +1,12 @@
 .root {
 	composes: s italic serif from './_typo.css';
 	z-index: var(--zindex-alert, 999);
+	--top: var(--line);
 }
+.max3 {
+	--top: var(--line2);
+}
+.more3 { }
 
 .bookmark {
 	width: var(--p);
@@ -42,7 +47,7 @@
 .topic {
 	display: block;
 	position: absolute;
-	top: calc(var(--line) + var(--line) * var(--i,1));
+	top: calc(var(--top) + var(--line) * var(--i,1));
 	color: var(--text-filled, var(--text, #000));
 	background: linear-gradient(
 		to bottom,
@@ -108,6 +113,14 @@
 .topic::after {
 	left: -5px;
 	border-radius: 5px 0 0 5px;
+}
+.tagLink { }
+.tagLink::after {
+	content: "";
+	position: absolute;
+	width: calc(100% + var(--grid-base,8px));
+	height: var(--line);
+	left: 0px;
 }
 
 .ribbon {

@@ -105,7 +105,7 @@ export const Caption = factory(function Caption({
 		transformContent, onToggle, onFocusPrevious, onDate, onLocation, onLocale
 	} = properties();
 	const {
-		href = '', name: n, summary, content, sensitive, attachment, ...ld
+		href = '', name: n, summary: s, content, sensitive, attachment, ...ld
 	} = i18nActivityPub.normalized();
 	const omit = i18nActivityPub.omit();
 	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
@@ -124,9 +124,22 @@ export const Caption = factory(function Caption({
 
 	const contentLines = compact || isRow ? cl||2 : cl||12;
 	const nameNode = <Name compact={compact} name={name} isRow={isRow} size={!vp || (vp as any) === 'micro' ? 'xs' : (vp as any)} />;
-	const hasContent = (summary && summary.length) || (content && content.length);
+	const hasContent = (s && s.length) || (content && content.length);
 	const summaryLength = (!!n && !!n.length && !!n[0].length && !!content && !!content.length && !!content[0].length) ? 500 :
 		((!!n && !!n.length && !!n[0].length) || (!!content && !!content.length && !!content[0].length) ? 750 : 1000);
+
+	const summaryLines = 5;
+	const summary: string[] = [];
+	!!s && Array.isArray(s) && s.map((s: string) => {
+		if (typeof s !== 'string' || !s.length) { return [] }
+		const lines = s.split(/\r?\n/);
+		lines.reduce((a: any[],l,i) => {
+			if (!i || a[a.length-1].length === summaryLines) { a.push([]) }
+			a[a.length-1].push(l);
+			return a
+		}, [])
+		.map((a) => summary.push(a.join('\n')))
+	});
 
 	const attributionsClasses = [
 		themedCss.attributions,
@@ -148,10 +161,8 @@ export const Caption = factory(function Caption({
 			{!omit.has('name') && <div classes={themedCss.rowName}>{nameNode}</div>}
 
 			{summary && !omit.has('summary') && !sensitive &&
-				<Paginated key="paginatedsummary" colored={colored} compact={compact} property="summary">
-					{clampStrings(summary, summaryLength).map((_summaries, i) => <span>
-						{_summaries.map((s: any) => <MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={s} />)}
-					</span>)}
+				<Paginated key="paginatedsummary" colored={colored} compact={compact} property="summary" spaced={summary.length>1 ? 'left' : true}>
+					{summary.map((s, i) => <span><MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={s} /></span>)}
 				</Paginated>}
 
 			{!!content && !omit.has('content') && !contentPaginated &&

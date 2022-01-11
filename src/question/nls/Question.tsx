@@ -1,8 +1,3 @@
-/* https://github.com/discourse/discourse/blob/master/config/locales/client.de.yml
-notification_schedule
-time_shortcut
-auto_update_input
-*/
 const locales = {
 	de: () => import('./de/Question')
 };
@@ -16,8 +11,9 @@ const messages = {
 	doAnswer: 'answer',
 	readAnswers: `{count, plural, offset:0
 		=0 {no answers yet}
-		=1 {read answer}
-		other {read answers}}`,
+		=1 {no further answers yet}
+		=2 {further answer}
+		other {read further answers}}`,
 	moreInfo: 'further information'
 };
 

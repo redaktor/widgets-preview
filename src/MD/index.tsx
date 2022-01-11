@@ -18,7 +18,7 @@ TODO:
 
 - replace plain text symbols in Unicode, e.g. --> = “unicode arrow” etc.
 
-- replace [date=2022-01-11 time=16:00:00 timezone="Europe/Berlin"] 
+- replace [date=2022-01-11 time=16:00:00 timezone="Europe/Berlin"]
 */
 
 
@@ -78,7 +78,7 @@ export const MD = factory(function MD({ properties, id, children }) {
     .use(filter, properties());
 
   // @ts-ignore we’ll throw if it isn’t a root next.
-  const hastNode /*: Root*/ = processor.runSync(processor.parse(content || ''));
+  const hastNode /*: Root*/ = processor.runSync(processor.parse(content.replace(/[\r\n]/gm, '\n') || ''));
 
   if (hastNode.type !== 'root') {
 		return ''

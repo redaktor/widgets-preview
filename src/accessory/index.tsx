@@ -20,8 +20,17 @@ export const Accessory = factory(function accessory({ middleware: { theme }, pro
 		theme.uiColor()
 	]}>{
 		!items.length ? '' : items.map((o,i) => !o.name ? '' :
-		<li classes={[themedCss[mode], i>4 && themedCss.onlyHover]} style={`--i: ${i+1};`}>
-			{o.name.join('')}
+		<li style={`--i: ${i+1};`}
+			classes={[
+				themedCss[mode],
+				items.length > 3 ? themedCss.more3 : themedCss.max3,
+				i>3 && themedCss.onlyHover
+			]}
+		>
+			{o.name.map((n) => {
+				n = n.trim().replace(/^#/,'');
+				return <a href={`/tags/${n}`} title={`#${n}`} rel="noopener noreferrer tag" target="_blank" classes={themedCss.tagLink}>{n}</a>
+			})}
 		</li>)}
 	</ul>
 });

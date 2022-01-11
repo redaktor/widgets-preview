@@ -73,7 +73,6 @@ export const Rate = factory(function Rate({
 		return allowHalf ? Math.round(float*2)/2 : Math.round(float)
 	}
 	const [value, best, worst] = [toNumber(ratingValue), toNumber(bestRating), toNumber(worstRating)];
-
 	// const [{ label, icon } = { label: undefined, icon: undefined }] = children()
 	const themedCss = theme.classes(css);
 	const count = ((best-worst) * (allowHalf === true ? 2 : 1));
@@ -81,6 +80,8 @@ export const Rate = factory(function Rate({
 		...Array.from(Array(count).keys()).map((v) => (allowHalf === true ? v/2 : v) + worst),
 		best
 	].reverse();
+	let hasChecked = false;
+
 	return <fieldset name={name} classes={[
 		themedCss.root,
 		readOnly ? themedCss.readOnly : themedCss.readWrite,
@@ -89,7 +90,8 @@ export const Rate = factory(function Rate({
 		{values.map((v, i) => {
 			const vId = `${name}-${i}`;
 			const cl = is(v, 'integer') ? themedCss.full : themedCss.half;
-			const checked = typeof value === 'number' && value === v;
+			const checked = typeof value === 'number' && value >= v && !hasChecked;
+			if (!!checked) { hasChecked = true }
 			return <virtual>
 				<input classes={[themedCss.input]} type="radio" id={vId} name={idBase} value={`${v}`} checked={checked} />
 				<label classes={[themedCss.label, cl]} for={vId} title={`${v}/${best}`}></label>

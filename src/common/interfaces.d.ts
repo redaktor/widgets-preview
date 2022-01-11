@@ -399,7 +399,7 @@ export interface AsObject extends AsBase {
 	current?: AsCollectionPage | AsLink; /* Functional */
 	first?: AsCollectionPage | AsLink; /* Functional */
 	last?: AsCollectionPage | AsLink; /* Functional */
-	items?: AsCollection; /* Functional */
+	items?: AsObject[]; /* Functional */
 	totalItems?: nonNegativeInteger; /* Functional */
 	/* CollectionPage */
 	next?: AsCollectionPage | AsLink; /* Functional */
@@ -427,7 +427,7 @@ export interface AsObjectNormalized extends AsBaseNormalized {
 	current?: AsCollectionPage | AsLink; /* Functional */
 	first?: AsCollectionPage | AsLink; /* Functional */
 	last?: AsCollectionPage | AsLink; /* Functional */
-	items?: AsCollection; /* Functional */
+	items?: AsObjectNormalized[]; /* Functional */
 	totalItems?: nonNegativeInteger; /* Functional */
 	/* CollectionPage */
 	next?: AsCollectionPage | AsLink; /* Functional */
@@ -449,7 +449,7 @@ export interface AsObjectNormalized extends AsBaseNormalized {
 	/* available locales */
 	locales?: Labeled[];
 
-	omit?: Set<(keyof AsBase)>;
+	omit?: Set<(keyof AsBase)> | any;
 }
 
 export interface AsCollection extends AsCore {
@@ -457,7 +457,7 @@ export interface AsCollection extends AsCore {
 	first?: AsCollectionPage | AsLink; /* Functional */
 	last?: AsCollectionPage | AsLink; /* Functional */
 
-	items?: AsCollection; /* Functional */
+	items?: AsObject[]; /* Functional */
 	totalItems?: nonNegativeInteger; /* Functional */
 }
 export interface AsCollectionPage extends AsCollection {

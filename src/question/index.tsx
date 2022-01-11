@@ -4,7 +4,7 @@ import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { AsActivity, AsObject, AsObjectNormalized } from '../common/interfaces';
 import { ldPartial } from '../_ld';
 import is from '../framework/is';
-import { clampStrings } from '../common/activityPubUtil';
+import { isAP, clampStrings } from '../common/activityPubUtil';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
 import theme from '../middleware/theme';
@@ -58,7 +58,7 @@ export interface QuestionChildren {
 	footer?: RenderResult;
 }
 
-/* Problem:
+/* Problems:
 In https://www.w3.org/TR/activitystreams-vocabulary/#dfn-question `name` is the Question
 but In https://www.w3.org/TR/activitystreams-vocabulary/#questions `content` is the Question …
 
@@ -77,7 +77,16 @@ Question has NO visual attributedTo cause it is an IntransitiveActivity and so t
 the questioner - "asking for a friend" :)
 
 TODO
-see didVote
+To support all implementations we somehow need to sync Like/Dislike ratio and aggregateRating
+see didVote - did already vote …
+---
+DUPLICATES
+If a `Question` arrives as answer it could mean a hint it is a duplicate (?)
+It is considered a duplicate if `result` is a different question
+
+The ACCEPTED answer (if no oneOf or anyOf) is another type than `Question` in `result`
+with `inReplyTo` the `Question` …
+---
 image, icon
 map choices -> image, icon -> full
 instrument
@@ -89,6 +98,7 @@ result
 AS oneOf | anyOf | closed
 
 schema
+https://schema.org/Answer
 acceptedAnswer	Answer | ItemList
 answerCount			Integer
 eduQuestionType	Text
@@ -102,6 +112,11 @@ Properties from Comment
 downvoteCount	Integer	The number of downvotes this question, answer or comment has received from the community.
 parentItem	Comment	The parent of a question, answer or item in general.
 upvoteCount	Integer
+*/
+/* PS result …
+ audience Entities for which the object can considered to be relevant.
+ context context within which the object exists or an activity was performed.
+ relationship
 */
 
 const icache = createICacheMiddleware<QuestionIcache>();
@@ -122,8 +137,7 @@ export const Question = factory(function question({
 	const { messages, format } = i18nActivityPub.localize(bundle);
 	const { get, set, getOrSet } = icache;
 	const {
-		fullscreen, widgetId, mediaType, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
-		addressExpanded = false, fit = false, color = 'pink', view = 'column'
+		fullscreen, onMouseEnter, onMouseLeave, onLoad, onFullscreen, color = 'pink', view = 'column'
 	} = properties();
 	const themedCss = theme.classes(css);
 	const {
@@ -132,7 +146,6 @@ export const Question = factory(function question({
 		tag = [], closed: anyClosed = false, ...ld
 	} = i18nActivityPub.normalized<QuestionProperties>();
 
-	console.log(properties(), tag);
 	const omit = i18nActivityPub.omit();
 	// const idBase = id.getId('question');
 	if (view === 'tableRow') {
@@ -189,11 +202,66 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 		const {breakpoint = 's'} = breakpoints.get('measure')||{};
 		vp = breakpoint;
 	}
-	const { name, image = [], replies = { totalItems: 0 } } = ld;
-	const { aggregateRating: rating } = ldPartial(ld);
-	const replyCount = (typeof replies.totalItems === 'string' ? parseInt(replies.totalItems,10) : replies.totalItems) || 0
-	const aggregateRating = Array.isArray(rating) ? rating[0] : rating;
+	const { name, image = [], result = [], replies = {totalItems: 0, items: [] } } = (ld as AsObjectNormalized);
 	const isPoll = oneOf.length + anyOf.length > 0;
+	let replyCount = (typeof replies.totalItems === 'string' ? parseInt(replies.totalItems,10) : replies.totalItems) || 0;
+
+	/* Let us normalize the ratings in .result and .replies
+	- AS: .likes.totalItems are the preferred AS way
+	- schema: .downvoteCount and .upvoteCount
+	- schema can also have .aggregateRating
+	we need a value 1-5 and the total votes …
+	*/
+	const getAggregateRating = (o: AsObject) => {
+		const { aggregateRating: ar, upvoteCount = 0, downvoteCount = 0 } = ldPartial(o);
+		const aggregateRating = ldPartial(ar);
+		const toStarValue = (v: number, min: number = 1, max: number = 5) => {
+			return Math.max(1, ((v - min)/(max - min)) * 4 + 1)
+		}
+		const [up, down] = [
+			(Array.isArray(upvoteCount) ? upvoteCount[0] : upvoteCount) || 0,
+			(Array.isArray(downvoteCount) ? downvoteCount[0] : downvoteCount) || 0
+		];
+		const updown = !up+down ? [3, 0] : [toStarValue(up, 0-up+down, up+down), up+down];
+		let aRating = [3, 0];
+		let {
+			ratingValue: v = null, worstRating: w = 1, bestRating: b = 5, ratingCount = up+down || 1
+		} = (Array.isArray(aggregateRating) ? aggregateRating[0] : aggregateRating) || {};
+		const [ratingValue, worstRating, bestRating] = [v, w, b].map((nr) => typeof nr === 'string' ? parseInt(nr, 10) : nr);
+
+		if (([ratingValue, worstRating, bestRating].filter((nr) => (typeof nr === 'number' && !isNaN(nr)))).length === 3) {
+			aRating = [toStarValue(ratingValue, worstRating, bestRating), ratingCount]
+		}
+		return {
+			ratingValue: (updown[0]*updown[1] + aRating[0]*aRating[1]) / (updown[1]+aRating[1]),
+			ratingCount: (updown[1]+aRating[1]),
+			worstRating: 1,
+			bestRating: 5
+		}
+	}
+
+	// NOTE - if `result` contains another question, we consider it a duplicate …
+	// NOTE - if your implementation does use ratings with `Question` AND `replies` is paged,
+	// then your `replies` SHOULD be an `OrderedCollection` sorted best rating first
+	// to assure at least the best are in the first CollectionPage
+	const mapId = (o:any) => is(o, 'object') && o.hasOwnProperty('id') ? o.id : '';
+	const normRating = (o: AsObject) => { o.aggregateRating = getAggregateRating(o); return o };
+	const sortRating = (a: any, b: any) => b.aggregateRating.ratingValue - a.aggregateRating.ratingValue;
+	const duplicates = result.filter((o:any) => isAP(o, 'Question'))
+		.map((o: AsObject) => { o.isDuplicate = true; return o });
+	const results: AsObject[] = result.filter((o:any) => !isAP(o, 'Question'))
+		.map(normRating).map((o: AsObject) => { o.isAccepted = true; return o }).sort(sortRating);
+	const [dupIDs, resIDs] = [new Set(duplicates.map(mapId)), new Set(results.map(mapId))];
+	let replyItems = [...(new Set(replies.items))].filter((o) => {
+		if (dupIDs.has(o.id) || resIDs.has(o.id)) { replyCount-- }
+		return !dupIDs.has(o.id) && !resIDs.has(o.id)
+	})
+		.map(normRating).sort(sortRating);
+
+	const topReplies = !results.length ? (!duplicates.length ? [replyItems.shift()] : []) : [results.shift()];
+	const topReactions: AsObject[] = duplicates.concat(topReplies);
+	// only the best rated is initially visible
+	if (!!results.length) { replyItems = results.concat(replyItems) }
 
 	const boldQmark = (s: RenderResult): RenderResult => Array.isArray(s) ? s.map(boldQmark) :
 		typeof s === 'string' ? s.split(/[?]/g).map((s,i,a) => !s ? '' :
@@ -211,6 +279,32 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 		return false;
 	}
 
+// TODO - own widget
+	const REPLY = ((o: AsObject|null|undefined, id: number|string) => {
+		// TODO isAccepted
+		if (!o) { return '' }
+		const { aggregateRating } = o;
+		return <virtual>
+			{!!o.isAccepted && <span classes={themedCss.accepted}><Icon color="success" size="xxl" type="check" /></span>}
+			{!!o.isDuplicate && <virtual>
+				<span classes={themedCss.duplicate}>
+					<Icon color={color} size="xxl" type="move" spaced="right" />
+				</span>
+				<span classes={themedCss.meta}>considered a duplicate of</span>
+			</virtual>}
+			{!!aggregateRating && <div key={`rateWrapper${id}`} classes={themedCss.rateWrapper}>
+				<Rate {...aggregateRating} />
+			</div>}
+			<Caption {...(o)}
+				compact
+				contentLines={5}
+				omitProperties={['date','locales','location','attributedTo', !!o.isDuplicate && 'content']}
+				classes={{ '@redaktor/widgets/images': { pageCaption: [themedCss.replyCaption] } }}
+			/>
+		</virtual>
+	});
+// <--
+
 	const answerInput = get('closed') ? '' : !isPoll ?
 		<TextArea
 			required responsive color={color} design="flat" expandNoscriptRows={5}
@@ -220,7 +314,19 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 			{!!oneOf.length && <RadioGroup color={color} vertical options={oneOf.map(toOptions).filter((o: any) => !!o)} />}
 			{!!anyOf.length && <CheckboxGroup color={color} vertical options={anyOf.map(toOptions).filter((o: any) => !!o)} />}
 		</virtual>;
-// icons: closed, comment, edit
+
+	const aggregateRating = getAggregateRating(ld);
+	const classes = {
+		caption: {
+			'@redaktor/widgets/images': {
+				captionWrapper: [themedCss.captionWrapper],
+				locales: [themedCss.locales]
+			}
+		},
+		chip: { '@redaktor/widgets/chip': { root: [themedCss.answerChip] } }
+	}
+
+	// icons: closed, comment, edit
 	return <div
 		key="root"
 		classes={[
@@ -255,7 +361,10 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 					</p>
 				</div>
 				<div key="nameWrapper" classes={[nameCss.root, themedCss.nameWrapper]}>
-					<p classes={themedCss.questionStatus}></p>
+					{!aggregateRating && <p classes={themedCss.questionStatus}></p>}
+					{!!aggregateRating && <div key="rateWrapper" classes={themedCss.rateWrapper}>
+						<Rate {...aggregateRating} />
+					</div>}
 					{!!name && !omit.has('name') && <Paginated key="name" property="name" spaced="right">
 						{clampStrings(name, 250).map((s) => <h5>{boldQmark(s)}</h5>)}
 					</Paginated>}
@@ -263,15 +372,8 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 				<i classes={themedCss.teaserIcon} />
 			</div>
 			<div key="questionWrapper" classes={themedCss.questionWrapper}>
-				<Caption {...(ld)}
-					classes={{
-						'@redaktor/widgets/images': { captionWrapper: [themedCss.captionWrapper], locales: [themedCss.locales] }
-					}}
-					colored
-					contentPaginated
-					transformContent={boldQmark}
-					color={color}
-					contentLines={3}
+				<Caption {...(ld)} classes={classes.caption} colored contentPaginated
+					color={color} transformContent={boldQmark} contentLines={10}
 					omitProperties={['name','date','location','attributedTo']}
 					onLocale={(l) => i18nActivityPub.setLocale(l)}
 				/>
@@ -282,22 +384,21 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 		</div>}
 
 		{!!get('canVote') && <form key="answerWrapper" classes={themedCss.answerWrapper}>
-			{!isPoll && replyCount > 0 && <p>TODO accepted||top answer</p>}
+			{!isPoll && !!topReactions.length && <div classes={themedCss.topAnswers}>
+				{topReactions.map((o,i) => REPLY(o,`top${i}`))}
+			</div>}
+
 			{!isPoll &&
-				(!replyCount ? <span classes={themedCss.noAnswer}>
+				(!replyItems || !replyItems.length ? <span classes={themedCss.noAnswer}>
 					<Icon type="edit" color="grey" size="s" spaced="right" />
-					{format('readAnswers',{count: 0})}
+					{format('readAnswers',{count: !!topReactions.length ? 1 : 0})}
 				</span> :
 					<Details size="xl">{{
 						summary: <span>
-							<Chip size={replyCount < 10 ? 's' : 'm'} color={color} spaced="right" classes={{
-								'@redaktor/widgets/chip': { root: [themedCss.answerChip] }
-							}}>
-								{replyCount}
-							</Chip>
-							{format('readAnswers',{count: replyCount})}
+							<Chip size={replyCount < 10 ? 's' : 'm'} color={color} spaced="right" classes={classes.chip}>{replyCount}</Chip>
+							{format('readAnswers',{count: replyCount+1})}
 						</span>,
-						content: '...'
+						content: replyItems.map(REPLY)
 					}}</Details>)
 			}
 			{answerInput}
@@ -309,10 +410,6 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 			<Icon type="closed" color="grey" size="s" spaced="right" />
 			{format('readAnswers',{count: 0})}
 		</span>}
-
-		{!!aggregateRating && <div key="rateWrapper" classes={themedCss.rateWrapper}>
-			<Rate readOnly {...ldPartial(aggregateRating)} />
-		</div>}
 
 		<Structure omitProperties={coveredLD} value={ld}>
 			{{ detailsSummary: <span>{messages.moreInfo}</span> }}

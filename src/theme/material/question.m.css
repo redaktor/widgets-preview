@@ -81,14 +81,43 @@
 	margin-bottom: calc(var(--ui-border-width-emphasized) * -2);
 	font-weight: var(--weight-bold);
 }
+.topAnswers {
+	margin: 0px 0px var(--line) var(--grid-base,8px);
+	padding: 0px var(--grid-base,8px) 0px var(--grid-base,8px);
+	background: var(--paper);
+	border-radius: var(--ui-border-radius-emphasized);
+	box-shadow: var(--ui-dp-1);
+}
 .noAnswer {
 	padding-left: calc(var(--grid-base,8px) + var(--ui-border-width-emphasized));
 }
 
 .rateWrapper {
 	min-height: var(--line);
-	margin-bottom: 0px;
-	padding-left: var(--p, calc(var(--grid-base) * 2));
+	position: relative;
+	top: 2px;
+}
+.topAnswers > .rateWrapper {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: var(--line);
+}
+.accepted,
+.duplicate {
+	position: absolute;
+	transform: scale(2);
+	margin-top: -4px;
+}
+.accepted {
+	text-shadow: -3px -3px 1px var(--base);
+}
+.duplicate + .meta {
+	position: relative;
+	top: var(--pt);
+	padding-left: calc(var(--grid-base,8px) * 4);
+}
+.meta + .replyCaption {
+	padding-top: var(--line);
 }
 
 .captionWrapper { }

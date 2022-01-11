@@ -58,7 +58,7 @@ const _2_3: AsImage = {id: uuid(), type: "Image", url: {type: "Link", href: "car
 _1_1.location = LOC[2].location[0];
 
 const summary = ["10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For","summary2"];
-const content = [`Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs #Parkett. \nParsed handle @sl@sl.de – handle @sl@sl.de – link-handle @https://localhost:9999 – mail mail@example.com link https://localhost:9999 \n Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Parkett. Dies sind Sätze mit Zeichen bis zu 500 LOREM IPSUM dolor sit amet, consectetur adipiscing elit.
+const content = [`Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. \nDort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs #Parkett. \nParsed handle @sl@sl.de – handle @sl@sl.de – link-handle @https://localhost:9999 – mail mail@example.com link https://localhost:9999 \n Jetzt herrscht **Goldgräberstimmung** an der New Yorker *Technologiebörse* NASDAQ. Dort will ~~Zonk~~ Coinbase am Mittwoch mit einem sogenannten Direct Listing aufs Parkett. Dies sind Sätze mit Zeichen bis zu 500 LOREM IPSUM dolor sit amet, consectetur adipiscing elit.
 
 ---
 
@@ -171,7 +171,8 @@ LOC[5].location['schema:telephone'] = '040-2808441';
 const rating = {
   "@type": "AggregateRating",
   "schema:ratingValue": "4",
-  "schema:reviewCount": "250"
+  "schema:ratingCount": 2,
+  "schema:reviewCount": 250
 };
 const examplePlace = {
   ...{...LOC[5].location},
@@ -290,6 +291,27 @@ const exampleSchemaO = {
 }
 <Structure omitProperties={['schema:event','event']} value={exampleSchemaO} />
 */
+const acceptedReply: AsObject = {
+  id: "acceptedAnswer",
+  type:'Note',
+  name:'I have no idea',
+  summary: `just wanted to check out the distribution of text here …
+Sorry
+just wanted to check out the distribution of text here …
+Sorry
+Sorry
+just wanted to check out the distribution of text here …
+Sorry
+Sorry
+just wanted to check out the distribution of text here …
+Sorry`,
+  content,
+  "schema:aggregateRating": {
+    "@type": "AggregateRating",
+    "schema:ratingValue": "2",
+    "schema:ratingCount": 2
+  }
+};
 const exampleQuestion: AsActivity = {
   "nameMap": {"en": "A question about robots", "de": "Eine Frage zu Robotern"},
   "summary": "A question summary",
@@ -297,20 +319,33 @@ const exampleQuestion: AsActivity = {
   "type": "Question",
   "content": "I'd like to build a robot to feed my cat. Should I use Arduino or Raspberry Pi?",
   /*"anyOf": [
-     {"name": "arduino", "summary": "Lorem Ipsum"},
-     {"name": "raspberry pi", "summary": "Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum"}
-   ],*/
-   "published": "2022-01-04T09:22:00+01:00",
-   "updated": "2021-12-24T20:00:00-08:00",
-   "replies": {
+   {"name": "arduino", "summary": "Lorem Ipsum"},
+   {"name": "raspberry pi", "summary": "Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum"}
+  ],*/
+  "published": "2022-01-04T09:22:00+01:00",
+  "updated": "2022-01-05T20:00:00-08:00",
+
+  "result": {...acceptedReply, type:'Question', name:'Q'},
+
+  "replies": {
     "type": "Collection",
-    "totalItems": 1,
-    "items": [{type:'Note',content:'Lorem Ipsum'}]
+    "totalItems": 3,
+    "items": [
+      acceptedReply,
+      {
+        ...acceptedReply,
+        id: "justDupAnswer"
+      },
+      {
+        ...acceptedReply,
+        id: "justDupAnswer2"
+      }
+    ]
   },
   "tag": [
-    {type:'Note',"name": 'IoT'}, {type:'Note',"name": 'robots'}, {type:'Note',"name": 'javascript'},
-    {type:'Note',"name": 'nr4'}, {type:'Note',"name": 'nr5'}, {type:'Note',"name": 'nr6'}
-  ]
+    {type:'Note',"name": 'IoT'}, {type:'Note',"name": '#robots'}
+  ],
+  "schema:aggregateRating": rating
 }
 
 const factory = create();

@@ -75,6 +75,7 @@ export const timeagoMiddleware = factory(({ middleware: { icache, invalidator },
         set('result', resultArray, false)
         return invalidator()
       }
+      return true
     },
 		format(isUpdate = false): i18nFormat {
       const result = get('result');

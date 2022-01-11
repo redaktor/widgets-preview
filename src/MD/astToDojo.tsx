@@ -207,7 +207,23 @@ export default function childrenToDojo(context: Context, node: any): any[] {
     }
   }
 
-  return children
+  return children.filter((node) => (typeof node === 'string' && node !== '\n') || typeof node === 'object').map((node) => {
+    if (!!node.children && !!node.children.length) {
+      node.children = node.children.reduce((a: any[], s: any) => {
+        if (typeof s === 'string') {
+          const lines = s.split(/\n/gm);
+          lines.forEach((l,i,_a) => {
+            a.push(l);
+            (i !== _a.length-1) && a.push(<br />)
+          })
+        } else {
+          a.push(s);
+        }
+        return a
+      }, [])
+    }
+    return node
+  });
 }
 
 /**

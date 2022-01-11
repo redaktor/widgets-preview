@@ -5,7 +5,7 @@ import {
 } from './activityPub';
 import {
 	AsTypes, RedaktorActor, AsActor, AsActivity, AsObject,
-	AsObjectNormalized, AsLinkObject, LangMap
+	AsObjectNormalized, AsLinkObject, AsCollection, LangMap
 } from './interfaces';
 import { as, vocab } from '../_ld';
 import { defaultContext } from '../_ld/as';
@@ -357,7 +357,13 @@ export function clampStrings(s: string | string[], length: number, isWordLike = 
 			splitted = splitted.reduce((a, splits, i) => {
 				if (splits[splits.length-1] !== ' ' && i < splitted.length-1) {
 			  	const j = splitted[i+1].indexOf(' ');
-			    splits = splits.concat(splitted[i+1].splice(j < 0 ? splitted[i+1].length-1 : j));
+					if (j < 0) {
+						splits = splits.concat(splitted[i+1]);
+						splitted[i+1] = [];
+					} else {
+						splits = splits.concat(splitted[i+1].slice(0,j));
+						splitted[i+1] = splitted[i+1].splice(j+1);
+					}
 			  }
 			  return a.concat([splits])
 			}, []).filter((a: any[]) => !!a.length)
@@ -418,7 +424,7 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 		omitProperties: _omits,
 		...ap
 	} = as;
-	const omits = new Set(Array.isArray(_omits) ? _omits : []);
+	const omits = new Set(Array.isArray(_omits) ? _omits.filter((s) => is(s,'string')) : []);
 
 
 	const {
@@ -461,8 +467,6 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 	// make omit Set, check has for all following  //  include only JSON datatypes
 	// Schema and prefix url …
 
- 	let o: any = { id, type, [omitSymbol]: omits, ...notAP };
-
 	/* TODO
 	id
 	HOW MANY multiple max. ?
@@ -476,7 +480,7 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 		hreflang?: string;
 	}
 	*/
-
+	let o: any = { id, type, [omitSymbol]: omits, ...notAP };
 	if (Array.isArray(type)) {
 		o.type = type.filter((s: any) => typeof s === 'string' && !!s)
 	} else if (typeof type === 'string' && !!type) {
@@ -518,7 +522,7 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 	if (isPosInteger(width)) { o.width = width }
 
 	if (isCollection(replies)) {
-		(o as AsObject).replies = replies
+		(o as AsObjectNormalized).replies = normalizeAs((replies as AsCollection), language, includeBcc);
 	}
 
 	if (isObject(ap)) {
@@ -545,7 +549,9 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 			if (isCollectionPage(last) || isLink(last)) {
 				(o as AsObject).last = last
 			}
-			if (isCollection(items)) { (o as AsObject).items = items }
+			if (is(items, 'array')) {
+				(o as AsObject).items = items.map((item: AsObject) => normalizeAs(item, language, includeBcc))
+			}
 			if (isPosInteger(totalItems)) { (o as AsObject).totalItems = totalItems }
 			if (isAP(ap, 'OrderedCollection') && isPosInteger(startIndex)) {
 				(o as AsObject).startIndex = startIndex
@@ -585,7 +591,7 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 		if (typeof preferredUsername === 'string') { (o as any).preferredUsername = preferredUsername }
 		if (typeof endpoints === 'object') {
 			for (let key in endpoints) {
-				if (isLink(endpoints[key])) {
+				if (endpoints.hasOwnProperty(key) && isLink(endpoints[key])) {
 					if (!(o as any).endpoints) { (o as any).endpoints = {} }
 					(o as any).endpoints[key] = endpoints[key];
 				}
@@ -604,12 +610,13 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 		const intransitive: any = {Question:1,Travel:1,Arrive:1};
 
 		for (let key in _Aap) {
+			if (!_Aap.hasOwnProperty(key)) { continue }
 			if (key === 'oneOf' && Array.isArray(_Aap.oneOf) && !!_Aap.oneOf.length) {
 				_Aap.oneOf = _Aap.oneOf.map((oneO: AsObject) => ((typeof oneO === 'object') && !oneO.hasOwnProperty('type')) ?
 					{...oneO, type: 'Object'} : oneO)
 			}
 			if (key === 'anyOf' && Array.isArray(_Aap.anyOf) && !!_Aap.anyOf.length) {
-				_Aap.anyOf = _Aap.anyOf.map((oneO: AsObject) => ((typeof oneO === 'object') && !oneO.hasOwnProperty('type')) ? 
+				_Aap.anyOf = _Aap.anyOf.map((oneO: AsObject) => ((typeof oneO === 'object') && !oneO.hasOwnProperty('type')) ?
 					{...oneO, type: 'Object'} : oneO)
 			}
 			if (key === 'object') {
@@ -649,6 +656,7 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 		_ap.bto = bto;
 	}
 	for (let key in _ap) {
+		if (!_ap.hasOwnProperty(key)) { continue }
 		if (typeof _ap[key] === 'object' || typeof _ap[key] === 'string') {
 			o[key] = Array.isArray(_ap[key]) ?
 				_ap[key].map((o:any) => normalizeAs(o, language)) :
