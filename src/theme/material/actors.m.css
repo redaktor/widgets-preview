@@ -76,13 +76,13 @@
 	z-index: 0;
 	margin-right: var(--grid-base,8px);
 	width: var(--line2);
-	margin-left: calc(var(--line) * -1);
+	margin-left: var(--minusLine);
 }
 
 .profileImage {
 	display: none;
 	height: calc(var(--l) * var(--line));
-	margin: calc(var(--line) * -1) calc(var(--grid-base,8px) * -1) calc(var(--lineHalf) * -1) calc(var(--grid-base,8px) * -1);
+	margin: var(--minusLine) calc(var(--grid-base,8px) * -1) calc(var(--lineHalf) * -1) calc(var(--grid-base,8px) * -1);
 	position: relative;
 	z-index: 0;
 }
@@ -100,10 +100,10 @@
 	z-index: 2;
 }
 .attributions[open] .summary {
-	margin: 0 0 calc(var(--line) * -1) 0;
+	margin: 0 0 var(--minusLine) 0;
 }
 .attributions[open] .summary.hasProfileImage {
-	margin: var(--lineHalf) 0 calc(var(--line) * -1) 0;
+	margin: var(--lineHalf) 0 var(--minusLine) 0;
 }
 .attributions .summary::-webkit-details-marker {
   display: none;
@@ -210,6 +210,13 @@
 .root .actorName {
 	padding-bottom: calc(var(--ui-border-width-emphasized) * 2);
 }
+.actorByline {
+	margin-top: calc(var(--mb) - var(--line) - (var(--ui-border-width-emphasized) * 2));
+	display: block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 .actorName + .detailsContent .handle {
 	padding: 0px;
 }
@@ -223,6 +230,7 @@
 	max-width: calc(var(--w) - 64px);
 }
 .attributions:not([open]) .actorName {
+	width: 100%;
 	max-width: calc(var(--w) - 48px);
 }
 .attributions[open] .closed,

@@ -71,6 +71,7 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	colored?: boolean;
 	dateOpenIndex?: number | false;
 	locationOpenIndex?: number | false;
+	attributionsByline?: RenderResult;
 
 	transformContent?: (node: RenderResult) => RenderResult;
 }
@@ -100,7 +101,7 @@ export const Caption = factory(function Caption({
 	const viewDesktopCSS = theme.viewDesktopCSS();
 
 	const {
-		locale: currentLocale, compact = false, hasDetails = false, isOpen = false,
+		attributionsByline, locale: currentLocale, compact = false, hasDetails = false, isOpen = false,
 		dateOpenIndex = false, locationOpenIndex = false, size = 'm', view = 'column', colored = false,
 		largeLocation = false, locationIsDetails = false, locationHasOnline = false, locationHasMap = true,
 		largeDate = false, isImageCaption = false, contentPaginated = false, color, contentLines: cl, summaryLines: sl,
@@ -159,7 +160,7 @@ export const Caption = factory(function Caption({
 		{children()}
 		{!!locales && locales.length > 1 && !omit.has('locales') &&
 			<div classes={themedCss.locales}>
-				<Locales key="locales" locale={get('currentLocale')||{locale:'en'}} locales={locales} onValue={(l) => {
+				<Locales size="s" key="locales" locale={get('currentLocale')||{locale:'en'}} locales={locales} onValue={(l) => {
 					i18nActivityPub.setLocale(l);
 					onLocale && onLocale(l)
 				}} />
@@ -220,6 +221,7 @@ export const Caption = factory(function Caption({
 		</span>
 
 		{!omit.has('attributedTo') && <AttributedTo key="attributions" {...ld}
+			byline={attributionsByline}
 			classes={{ '@redaktor/widgets/actors': { root: attributionsClasses } }}
 			max={39}
 		/>}

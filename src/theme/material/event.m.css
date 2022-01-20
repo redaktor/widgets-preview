@@ -99,7 +99,7 @@ background: linear-gradient(var(--ui-hover), var(--ui-focus-muted));
 	padding: 0px var(--grid-base,8px) 0px var(--grid-base,8px);
 }
 .until + .time {
-	margin-top: calc(var(--line) * -1);
+	margin-top: var(--minusLine);
 }
 .pastDate .day,
 .pastDate .monthYear,
@@ -152,15 +152,15 @@ rgba(0,0,0,1) 50%, rgba(0,0,0,0) calc(50% + 2px), rgba(0,0,0,0) 100%); */
 	min-width: 36px;
 }
 .timeOfDay {
-	margin-top: calc(var(--line) * -1);
+	margin-top: var(--minusLine);
 	white-space: nowrap;
 }
 .statusByline {
 	font-weight: var(--weight-bold);
-	margin-top: calc(var(--line) * -1);
+	margin-top: var(--minusLine);
 }
 .eventMeta {
-	composes: s italic serif from './_typo.css';
+	composes: s from './_typo.css';
 }
 .eventMeta,
 .eventStatus {
@@ -182,7 +182,7 @@ rgba(0,0,0,1) 50%, rgba(0,0,0,0) calc(50% + 2px), rgba(0,0,0,0) 100%); */
 .root .location {
 	width: 100%;
 	padding: 0px;
-	margin-bottom: calc(var(--line) * -1);
+	margin-bottom: var(--minusLine);
 }
 .root .locationDetails {
 	width: calc(var(--w) - 120px)
@@ -218,7 +218,7 @@ rgba(0,0,0,1) 50%, rgba(0,0,0,0) calc(50% + 2px), rgba(0,0,0,0) 100%); */
 .contentWrapper {
 	--lt: calc(var(--line) + var(--pt));
 	background: linear-gradient(transparent var(--lt), var(--bg) var(--lt));
-	margin-bottom: calc(var(--line) * -1);
+	margin-bottom: var(--minusLine);
 	z-index: 9;
 }
 .rateWrapper {
@@ -266,7 +266,7 @@ rgba(0,0,0,1) 50%, rgba(0,0,0,0) calc(50% + 2px), rgba(0,0,0,0) 100%); */
 .captionWrapper { }
 .root .inLanguage {
 	padding-left: calc(var(--grid-base) * 3);
-	margin-bottom: calc(var(--line) * -1);
+	margin-bottom: var(--minusLine);
 }
 .imagesLoaded:checked + .imageWrapper,
 .imagesWrapper {

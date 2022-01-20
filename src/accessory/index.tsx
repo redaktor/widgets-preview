@@ -20,7 +20,7 @@ export const Accessory = factory(function accessory({ middleware: { theme }, pro
 		theme.uiColor()
 	]}>{
 		!items.length ? '' : items.map((o,i) => !o.name ? '' :
-		<li style={`--i: ${i+1};`}
+		<li style={`--i: ${i};`}
 			classes={[
 				themedCss[mode],
 				items.length > 3 ? themedCss.more3 : themedCss.max3,

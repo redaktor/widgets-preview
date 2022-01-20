@@ -276,7 +276,7 @@ export const Event = factory(function event({
 			<Icon type={isCancelled ? 'cancel' : 'bullhorn'} spaced="right" />
 			{isCancelled ? messages.cancelled : messages.postponed}
 		</h5> : <small classes={themedCss.eventMeta}>
-			<TimeRelative date={startTime||endTime||''} />
+			<TimeRelative hasTitle date={startTime||endTime||''} />
 		</small>);
 
 	const isWideDate = (!!jsDates.hasOwnProperty('start') && jsDates.start.getDate() > 9) ||

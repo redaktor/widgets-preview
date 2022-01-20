@@ -24,6 +24,7 @@ export const wellKnown: string;
 export const hasAvatar: string;
 export const actorName: string;
 export const petName: string;
+export const actorByline: string;
 export const has3: string;
 export const more3: string;
 export const petNameIcon: string;

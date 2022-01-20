@@ -2,13 +2,14 @@ import { tsx, create } from '@dojo/framework/core/vdom';
 import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import { AsActivity, AsObject, AsObjectNormalized } from '../common/interfaces';
-import { ldPartial } from '../_ld';
 import is from '../framework/is';
 import { isAP, clampStrings } from '../common/activityPubUtil';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
+import { stdDateFormat } from '../middleware/minute';
 import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
+import Reply, { getAggregateRating } from '../reply';
 import Chip from '../chip';
 import Accessory from '../accessory';
 import Details from '../details';
@@ -47,6 +48,8 @@ export interface QuestionProperties extends AsActivity {
 
 export interface QuestionIcache {
 	value: string;
+	closeColor: 'neutral' | 'warning' | 'error';
+	closingSoon: false | Date;
 	closed: boolean | Date;
 	canVote: boolean;
 	listens: boolean;
@@ -79,14 +82,18 @@ the questioner - "asking for a friend" :)
 TODO
 To support all implementations we somehow need to sync Like/Dislike ratio and aggregateRating
 see didVote - did already vote …
+ACCEPTS
+If anything NOT-`Question` arrives in result, it is considered accepted.
+Note, also authors can answer own questions (e.g. telling others, they figured out how) but this should
+not add any metrics like achievements to prevent abuse
 ---
 DUPLICATES
-If a `Question` arrives as answer it could mean a hint it is a duplicate (?)
+If a `Question` arrives in result it could mean a hint it is a duplicate (?)
 It is considered a duplicate if `result` is a different question
 
 The ACCEPTED answer (if no oneOf or anyOf) is another type than `Question` in `result`
 with `inReplyTo` the `Question` …
----
+
 image, icon
 map choices -> image, icon -> full
 instrument
@@ -100,7 +107,7 @@ AS oneOf | anyOf | closed
 schema
 https://schema.org/Answer
 acceptedAnswer	Answer | ItemList
-answerCount			Integer
+? answerCount			Integer
 eduQuestionType	Text
 
 For questions that are part of learning resources (e.g. Quiz), eduQuestionType indicates the format.
@@ -109,9 +116,9 @@ suggestedAnswer	Answer | ItemList
 An answer (possibly one of several, possibly incorrect) to a Question, e.g. on a Question/Answer site.
 /
 Properties from Comment
-downvoteCount	Integer	The number of downvotes this question, answer or comment has received from the community.
+downvoteCount, upvoteCount
 parentItem	Comment	The parent of a question, answer or item in general.
-upvoteCount	Integer
+
 */
 /* PS result …
  audience Entities for which the object can considered to be relevant.
@@ -124,7 +131,6 @@ const factory = create({ icache, id, i18nActivityPub, theme, breakpoints })
 	.properties<QuestionProperties>()
 	.children<QuestionChildren | RenderResult | undefined>();
 
-/* TODO osm and wikidata ID per API e.g. https://api.openstreetmap.org/api/0.6/node/6171146490.json */
 export const coveredLD = captionCoveredLD.concat([
 
 ]);
@@ -153,14 +159,10 @@ export const Question = factory(function question({
 	}
 
 	getOrSet('closed', false, false);
-	const checkClosed = () => {
+	getOrSet('closingSoon', false, false);
+	getOrSet('closeColor', 'neutral', false);
+	const checkClosing = () => {
 		const jsNow = new Date();
-		if (!!endTime && is(endTime, 'string')) {
-			const ends = Date.parse(endTime);
-			if (ends < jsNow.getTime()) {
-				set('closed', new Date(ends));
-			}
-		}
 		switch (is(anyClosed)) {
 			// TODO - it can be `Link`, what would it mean ???
 			// ... ???
@@ -180,19 +182,38 @@ export const Question = factory(function question({
 			break;
 			case 'string':
 				// it can be `xsd:dateTime`
-				const ends = Date.parse(anyClosed as string);
-				set('closed', ends < jsNow.getTime() && new Date(ends));
+				const closedTime = Date.parse(anyClosed as string);
+				set('closed', closedTime < jsNow.getTime() && new Date(closedTime));
 			break;
 			default:
 				getOrSet('closed', false)
 		}
+
+		if (!get('closed') || typeof get('closed') === 'boolean') {
+			if (!!endTime && is(endTime, 'string')) {
+				const ends = Date.parse(endTime);
+				if (is(ends, 'number')) {
+					if (ends < jsNow.getTime()) {
+						set('closed', new Date(ends));
+						return
+					} else if (ends-3600000 < jsNow.getTime()) {
+						console.log('ends',ends, (ends-300000 < jsNow.getTime()));
+						if (ends-60000 < jsNow.getTime()) {
+							set('closeColor', 'error', false)
+						} else if (ends-300000 < jsNow.getTime()) {
+							set('closeColor', 'warning', false)
+						}
+						set('closingSoon', new Date(ends))
+					}
+				}
+			}
+		}
 	}
-	checkClosed();
-	!get('listens') && window.addEventListener('redaktorMinute', checkClosed);
+	checkClosing();
+	!get('listens') && window.addEventListener('redaktorMinute', checkClosing);
 	getOrSet('listens', true, false);
 /* TODO did already vote + closed = canVote */
 const didVote = false;
-console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didVote))
 	set('canVote', !(get('closed')||false) && !didVote);
 	getOrSet('value','');
 
@@ -205,40 +226,6 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 	const { name, image = [], result = [], replies = {totalItems: 0, items: [] } } = (ld as AsObjectNormalized);
 	const isPoll = oneOf.length + anyOf.length > 0;
 	let replyCount = (typeof replies.totalItems === 'string' ? parseInt(replies.totalItems,10) : replies.totalItems) || 0;
-
-	/* Let us normalize the ratings in .result and .replies
-	- AS: .likes.totalItems are the preferred AS way
-	- schema: .downvoteCount and .upvoteCount
-	- schema can also have .aggregateRating
-	we need a value 1-5 and the total votes …
-	*/
-	const getAggregateRating = (o: AsObject) => {
-		const { aggregateRating: ar, upvoteCount = 0, downvoteCount = 0 } = ldPartial(o);
-		const aggregateRating = ldPartial(ar);
-		const toStarValue = (v: number, min: number = 1, max: number = 5) => {
-			return Math.max(1, ((v - min)/(max - min)) * 4 + 1)
-		}
-		const [up, down] = [
-			(Array.isArray(upvoteCount) ? upvoteCount[0] : upvoteCount) || 0,
-			(Array.isArray(downvoteCount) ? downvoteCount[0] : downvoteCount) || 0
-		];
-		const updown = !up+down ? [3, 0] : [toStarValue(up, 0-up+down, up+down), up+down];
-		let aRating = [3, 0];
-		let {
-			ratingValue: v = null, worstRating: w = 1, bestRating: b = 5, ratingCount = up+down || 1
-		} = (Array.isArray(aggregateRating) ? aggregateRating[0] : aggregateRating) || {};
-		const [ratingValue, worstRating, bestRating] = [v, w, b].map((nr) => typeof nr === 'string' ? parseInt(nr, 10) : nr);
-
-		if (([ratingValue, worstRating, bestRating].filter((nr) => (typeof nr === 'number' && !isNaN(nr)))).length === 3) {
-			aRating = [toStarValue(ratingValue, worstRating, bestRating), ratingCount]
-		}
-		return {
-			ratingValue: (updown[0]*updown[1] + aRating[0]*aRating[1]) / (updown[1]+aRating[1]),
-			ratingCount: (updown[1]+aRating[1]),
-			worstRating: 1,
-			bestRating: 5
-		}
-	}
 
 	// NOTE - if `result` contains another question, we consider it a duplicate …
 	// NOTE - if your implementation does use ratings with `Question` AND `replies` is paged,
@@ -265,7 +252,7 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 
 	const boldQmark = (s: RenderResult): RenderResult => Array.isArray(s) ? s.map(boldQmark) :
 		typeof s === 'string' ? s.split(/[?]/g).map((s,i,a) => !s ? '' :
-			(i === a.length-1 ? s : <span>{s}<b classes={themedCss.questionMark}>?</b></span>)) : (s as any);
+			(i === a.length-1 ? s : <span classes={viewCSS.typo}>{s}<b classes={themedCss.questionMark}>?</b></span>)) : (s as any);
 
 	const toOptions = (o: AsObjectNormalized) => {
 		let {name:n = [], summary:s = [], content:c} = o;
@@ -278,42 +265,74 @@ console.log(!(get('closed')||false), !didVote, (!(get('closed')||false) && !didV
 		}
 		return false;
 	}
-
 // TODO - own widget
+	const { answered } = messages;
 	const REPLY = ((o: AsObject|null|undefined, id: number|string) => {
 		// TODO isAccepted
 		if (!o) { return '' }
-		const { aggregateRating } = o;
+		const { isDuplicate = false, isAccepted = false, summary: s = [], content = [], replies = [] } = o;
+		const aggregateRating = getAggregateRating(o);
 		let overwrites = {};
-		if (!!o.isDuplicate) {
-			const {summary: s = [], content = []} = o;
-			const summary = `${!Array.isArray(s) ? s : s.join(' - ')}:
-${!Array.isArray(content) ? content : content.join(' - ')}`.replace(/\r?\n/g, ' ').substring(0, 250);
+		if (!!isDuplicate) {
+			const summary = `${!Array.isArray(s) ? s : s.join(' - ')}: ${!Array.isArray(content) ? content : content.join(' - ')}`
+				.replace(/\r?\n/g, ' ')
+				.substring(0, duplicates.length > 2 ? 56 : (duplicates.length > 1 ? 112 : 168) );
 			overwrites = {summary, content: ''};
 		}
-		return <virtual>
-			{!!o.isAccepted && <span classes={themedCss.accepted}><Icon color="success" size="xxl" type="check" /></span>}
-			{!!o.isDuplicate && <virtual>
-				<span classes={themedCss.duplicate}>
-					<Icon color={color} size="xxl" type="move" spaced="right" />
-				</span>
-				<span classes={themedCss.meta}>considered a duplicate of</span>
-			</virtual>}
-			{!!aggregateRating && <div key={`rateWrapper${id}`} classes={themedCss.rateWrapper}>
-				<Rate {...aggregateRating} />
-			</div>}
+		return <div classes={[themedCss.answer, !!isAccepted && themedCss.hasAccepted, !!isDuplicate && themedCss.hasDuplicate]}>
+			{!!isAccepted && <span classes={themedCss.accepted}><Icon color="success" size="xxl" type="check" /></span>}
+			{!!isDuplicate && <span classes={themedCss.duplicate}>
+				<Icon color={color} size="xxl" type="move" spaced="right" />
+			</span>}
+			<div key={`rateWrapper${id}`} classes={themedCss.rateWrapper}>
+				<div classes={themedCss.topCaption}>
+					{!!isAccepted && <span classes={[themedCss.meta, themedCss.success, theme.variant()]}>
+						{messages.accepted}
+					</span>}
+					{!!isDuplicate && <span classes={themedCss.meta}>{messages.duplicate}</span>}
+				</div>
+				{!!aggregateRating && <Rate {...aggregateRating} readOnly={isDuplicate} hasActions={!isDuplicate} />}
+			</div>
 			<Caption {...o} {...overwrites}
 				compact
+				attributionsByline={<virtual>{answered} <TimeRelative hasTitle date={o.published||''} /></virtual>}
+				colored={!isDuplicate}
 				summaryLines={3}
-				contentLines={5}
-				omitProperties={['date','locales','location','attributedTo']}
-				classes={{ '@redaktor/widgets/images': { pageCaption: [themedCss.replyCaption] } }}
+				contentLines={(duplicates.length > 1 && isAccepted) ? 3 : (!o.summary||!o.summary.length ? 10 : 5)}
+				omitProperties={['date','locales','location',isDuplicate && 'attributedTo']}
+				locale={i18nActivityPub.get().locale}
+				onLocale={(l) => i18nActivityPub.setLocale(l)}
+				classes={{
+					'@redaktor/widgets/images': {
+						pageCaption: [themedCss.replyCaption],
+						summary: [themedCss.replySummary],
+						attributions: [themedCss.replyAttributions]
+					}
+				}}
 			/>
-		</virtual>
+
+			{!!isDuplicate && !!replies.totalItems &&
+				<p classes={themedCss.duplicateReplyCount}>{replies.totalItems} {format('answers', {count: replies.totalItems})}</p>}
+
+			{!isDuplicate && <div classes={themedCss.replyButtons}>
+				<Button classes={{ '@redaktor/widgets/button': {root: [themedCss.replyButton, themedCss.openButton]} }} design="flat" color={color}>
+					<Icon spaced="right" type={["Note", "Place"]} />Open
+				</Button>
+				<Button classes={{ '@redaktor/widgets/button': {root: [themedCss.replyButton]} }} design="flat" color={color}>
+					<Icon spaced="right" type="bookmark" />Bookmark
+				</Button>
+				<Button classes={{ '@redaktor/widgets/button': {root: [themedCss.replyButton]} }} design="flat" color={color}>
+					<Icon spaced="right" type="announce" />Share
+				</Button>
+				<Button classes={{ '@redaktor/widgets/button': {root: [themedCss.replyButton]} }} design="flat" color={color}>
+					<Icon spaced="right" type="edit" />Edit
+				</Button>
+			</div>}
+		</div>
 	});
 // <--
 
-	const answerInput = get('closed') ? '' : !isPoll ?
+	const answerInput = !isPoll ?
 		<TextArea
 			required responsive color={color} design="flat" expandNoscriptRows={5}
 			onValue={(v) => set('value',v||'')}
@@ -333,6 +352,22 @@ ${!Array.isArray(content) ? content : content.join(' - ')}`.replace(/\r?\n/g, ' 
 		},
 		chip: { '@redaktor/widgets/chip': { root: [themedCss.answerChip] } }
 	}
+
+	const localizedDate = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en'], stdDateFormat);
+	const [isClosed, isClosingSoon] = [get('closed'), get('closingSoon')];
+	const getPrefixSuffix = (d: string|Date, tense = 'past') => {
+		const date = localizedDate.format(typeof d === 'string' ? Date.parse(d) : d);
+		return format('close', {tense, date}).split(date);
+	}
+	const getCloseNode = (d?: boolean|string|Date, tense?: string) => {
+		if (typeof d === 'boolean' || !d) { return '' }
+		const [prefix, suffix] = getPrefixSuffix(d, tense);
+		return <virtual>
+			{prefix} <TimeRelative hasTitle date={d} /> {suffix}
+		</virtual>
+	}
+	const [closedNode, closingSoonNode]: RenderResult[] = [getCloseNode(isClosed), getCloseNode(isClosingSoon, 'future')];
+	const closedAbs = typeof isClosed === 'boolean' ? '' : localizedDate.format(typeof isClosed === 'string' ? Date.parse(isClosed) : isClosed);
 
 	// icons: closed, comment, edit
 	return <div
@@ -361,11 +396,11 @@ ${!Array.isArray(content) ? content : content.join(' - ')}`.replace(/\r?\n/g, ' 
 				<div key="meta" classes={themedCss.metaWrapper}>
 					<p>
 						<Icon type="published" color="grey" size="s" spaced="right" />
-						<span classes={themedCss.meta}>{messages.asked} <TimeRelative date={published||''} /></span>
+						<span classes={themedCss.meta}>{`${messages.wasAsked} `}<TimeRelative hasTitle date={published||''} /></span>
 					</p>
-					<p classes={themedCss.meta}>
+					<p>
 						<Icon type="update" color="grey" size="s" spaced="right" />
-						<span classes={themedCss.meta}>{messages.active} <TimeRelative date={updated||''} /></span>
+						<span classes={themedCss.meta}>{`${messages.wasActive} `}<TimeRelative hasTitle date={updated||''} /></span>
 					</p>
 				</div>
 				<div key="nameWrapper" classes={[nameCss.root, themedCss.nameWrapper]}>
@@ -383,6 +418,7 @@ ${!Array.isArray(content) ? content : content.join(' - ')}`.replace(/\r?\n/g, ' 
 				<Caption {...(ld)} classes={classes.caption} colored contentPaginated
 					color={color} transformContent={boldQmark} contentLines={10}
 					omitProperties={['name','date','location','attributedTo']}
+					locale={i18nActivityPub.get().locale}
 					onLocale={(l) => i18nActivityPub.setLocale(l)}
 				/>
 			</div>
@@ -391,33 +427,49 @@ ${!Array.isArray(content) ? content : content.join(' - ')}`.replace(/\r?\n/g, ' 
 			<Images view={view} image={image} itemsPerPage={4} size={(vp as any)} />
 		</div>}
 
-		{!!get('canVote') && <form key="answerWrapper" classes={themedCss.answerWrapper}>
+		{<div key="answerWrapper" classes={themedCss.answerWrapper}>
 			{!isPoll && !!topReactions.length && <div classes={themedCss.topAnswers}>
-				{topReactions.map((o,i) => REPLY(o,`top${i}`))}
+				{topReactions.map((o: any) => <Reply {...o}
+					summaryLines={3}
+					contentLines={10}
+					summaryLength={duplicates.length > 2 ? 56 : (duplicates.length > 1 ? 112 : 168)}
+				/>)}
 			</div>}
 
 			{!isPoll &&
 				(!replyItems || !replyItems.length ? <span classes={themedCss.noAnswer}>
 					<Icon type="edit" color="grey" size="s" spaced="right" />
-					{format('readAnswers',{count: !!topReactions.length ? 1 : 0})}
+					{format('readAnswers', {count: !!topReactions.length ? 1 : 0})}
 				</span> :
-					<Details size="xl">{{
+					<Details size="l">{{
 						summary: <span>
 							<Chip size={replyCount < 10 ? 's' : 'm'} color={color} spaced="right" classes={classes.chip}>{replyCount}</Chip>
-							{format('readAnswers',{count: replyCount+1})}
+							{format('readAnswers', {count: replyCount+1})}
 						</span>,
-						content: replyItems.map(REPLY)
+						content: replyItems.map((o: any) => <Reply {...o}
+							summaryLines={3}
+							contentLines={10}
+							summaryLength={duplicates.length > 2 ? 56 : (duplicates.length > 1 ? 112 : 168)}
+						/>)
 					}}</Details>)
 			}
-			{answerInput}
-			<Button responsive type="submit" color={color}>
-				<span classes={themedCss.answerLabel}>{isPoll ? messages.doVote : messages.doAnswer}</span>
-			</Button>
-		</form>}
-		{!!get('closed') && <span classes={themedCss.noAnswer}>
-			<Icon type="closed" color="grey" size="s" spaced="right" />
-			{format('readAnswers',{count: 0})}
-		</span>}
+			{!isClosed && !!isClosingSoon && <p classes={[themedCss.alert, theme.uiSize('l')]}>
+				<Icon type="timing" color={get('closeColor')||"grey"} size="l" spaced="right" />
+				{closingSoonNode}
+			</p>}
+			{!!isClosed && <p title={closedAbs} classes={[themedCss.alert, theme.uiSize('l')]}>
+				<Icon type="closed" color={get('closeColor')||"grey"} size="l" spaced="right" />
+				{closedNode}
+			</p>}
+			{(isPoll && get('canVote')) || (!isPoll && !get('closed')) &&
+				<form classes={[themedCss.answerForm, !isClosed && get('closeColor') === 'error' && themedCss.closing]}>
+					{answerInput}
+					<Button responsive type="submit" color={color}>
+						<span classes={themedCss.answerLabel}>{isPoll ? messages.doVote : messages.doAnswer}</span>
+					</Button>
+				</form>
+			}
+		</div>}
 
 		<Structure omitProperties={coveredLD} value={ld}>
 			{{ detailsSummary: <span>{messages.moreInfo}</span> }}

@@ -83,7 +83,7 @@
 	width: 100%;
 	height: calc(var(--line) + var(--pt));
 	position: absolute;
-	top: calc(var(--line) * -1 + var(--pt));
+	top: calc(var(--minusLine) + var(--pt));
 	left: 0px;
 	z-index: 99;
 }
@@ -113,7 +113,7 @@
 }
 
 .root:not(:focus):not(:focus-within) .fold > .foldItem {
-	margin-top: calc(var(--line) * -1 - var(--pt));
+	margin-top: calc(var(--minusLine) - var(--pt));
 }
 .root:not(:focus):not(:focus-within) .fold > .foldItem:nth-child(odd) {
 	transform: perspective(600px) rotateX(-90deg);

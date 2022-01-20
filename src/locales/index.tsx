@@ -17,7 +17,7 @@ const factory = create({ theme }).properties<LocalesProperties>();
 
 export const Locales = factory(function Locales({ properties, middleware: { theme } }) {
 	const themedCss = theme.classes(css);
-	const { locales = [], locale = { locale: 'en' }, open = false, classes = {
+	const { locales = [], locale = { locale: 'en' }, open = false, size, classes = {
 		'@redaktor/widgets/details': { root: [themedCss.oneLine] }
 	}, onValue } = properties();
 	if (!locales || !locales.length) { return '' }
@@ -25,7 +25,7 @@ export const Locales = factory(function Locales({ properties, middleware: { them
 	const initialValue = !locale.locale ? locales[0].value : !!locales.filter((o) => o.value === locale.locale).length ?
 		locale.locale : locale.locale.split('-')[0];
 
-	return <Details classes={classes} serif open={open}>
+	return <Details serif classes={classes} size={size} open={open}>
 	{{
 		summary: <virtual>
 			<Icon type="globe" spaced />

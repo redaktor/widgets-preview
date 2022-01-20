@@ -1,4 +1,5 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
+import { RenderResult } from '@dojo/framework/core/interfaces';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
 import focus from '@dojo/framework/core/middleware/focus';
 import { RedaktorActor, AsActivity } from '../common/interfaces';
@@ -6,7 +7,7 @@ import i18nActivityPub from '../middleware/i18nActivityPub';
 import { getActorName } from '../common/activityPubUtil';
 import Img from '../image/image';
 import Button from '../button';
-import Chip from '../chip';
+// import Chip from '../chip';
 import Icon from '../icon';
 import Avatar from '../avatar';
 import Input from '../inputText';
@@ -21,7 +22,7 @@ export interface ActorProperties extends RedaktorActor {
 	allowFollow?: boolean; /* default true */
 	allowAnnounce?: boolean; /* default true */
 	ignore?: boolean; /* default false TODO */
-	byline?: string;
+	byline?: RenderResult;
 	activityType?: string;
 	onOpen?: (hasProfileImage: boolean) => any;
 	onClose?: () => any;
@@ -169,7 +170,7 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 						''
 					)
 				}
-				{byline && <span>{byline}</span>}
+				{byline && <small classes={themedCss.actorByline}>{byline}</small>}
 			</div>
 		</div>
 	</virtual>

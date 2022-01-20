@@ -2,7 +2,7 @@
 	z-index: 6;
 }
 .compact {
-	--m: calc(var(--line) * -1);
+	--m: var(--minusLine);
 	margin: var(--m) 0 var(--m) 0;
 }
 .column {
@@ -19,7 +19,7 @@
 	color: var(--kicker);
 }
 .byline {
-	margin-top: calc(var(--line) * -1);
+	margin-top: var(--minusLine);
 	color: var(--text-muted);
 }
 .kicker,

@@ -33,18 +33,19 @@
 .outlined { composes: outlined from './_ui.m.css'; }
 .shaped { composes: shaped from './_ui.m.css'; }
 .root.flat {
-	font-weight: var(--weight-semibold)
+	color: var(--text-flat);
+	font-weight: var(--weight-semibold);
 }
 
-@keyframes flat {
+@keyframes flatani {
 	0%   { color: inherit; }
 	50%  { color: var(--text); }
 	100%   { color: inherit; }
 }
 .flat.animated:not(.disabled):not(:active) {
-	animation: flat var(--ui-dpd-animation) var(--ui-easing);
+	animation: flatani var(--ui-dpd-animation) var(--ui-easing);
 }
-@keyframes pulse {
+@keyframes pulseani {
 	0%   { opacity: 0; box-shadow: 0 0 0 1px var(--pulse, #fff); }
 	40%  { opacity: var(--pulseAlpha, 0.64); }
 	80%	 { box-shadow: 0 0 0 var(--redaktor-btn-w) var(--pulse, #fff); }
@@ -69,7 +70,7 @@
 	outline: none;
 }
 .animated:not(.disabled):not(:active)::after {
-	animation: pulse var(--ui-dpd-animation) var(--ui-easing);
+	animation: pulseani var(--ui-dpd-animation) var(--ui-easing);
 	animation-play-state: running;
 }
 

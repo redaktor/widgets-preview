@@ -1,41 +1,112 @@
 .root, .half, .full {
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px;
 }
 .root {
-	padding-top: var(--pt);
+	display: flex;
+	--minw: calc(var(--size) + var(--grid-base,8px) / 2);
+}
+.fieldset {
+	padding: 0px;
 	min-height: var(--line);
   border: none;
   float: left;
 }
-.root > .input {
+.fieldset > .input {
 	display: none;
 }
 .label {
 	composes: icon star from './icon.m.css';
 }
-.root .half::before {
+
+.fieldset .half::before {
 	position: absolute;
 	display: inline-block;
 	width: calc(var(--size) / 2);
 	overflow: hidden;
 }
-.root > .label {
+.fieldset > .label {
+	position: relative;
+	top: 2px;
   color: var(--text-muted);
 	float: right;
 }
 /* color when clicked, hover current icon, hover previous icons in list */
-.root > .input:checked ~ .label,
-.root:not(:checked) > .label:hover,
-.root:not(:checked) > .label:hover ~ .label { color: var(--ui-text-muted);  }
+.fieldset > .input:checked ~ .label,
+.fieldset:not(:checked) > .label:hover,
+.fieldset:not(:checked) > .label:hover ~ .label { color: var(--ui-text-muted);  }
 /* hover colors */
 .readWrite > .input:checked + .label:hover,
 .readWrite > .input:checked ~ .label:hover,
 .readWrite > .label:hover ~ .input:checked ~ .label,
 .readWrite > .input:checked ~ .label:hover ~ .label { color: var(--ui-text);  }
 
-.root.readOnly > .input,
-.root.readOnly > .label {
+.fieldset.readOnly > .input,
+.fieldset.readOnly > .label {
 	color: var(--border);
 	pointer-events: none;
+}
+
+.fieldset.hasActions {
+	padding: 0px 0px 0px var(--minw);
+}
+.hasActions .label.flag::after,
+.hasActions .half.like::after {
+	position: absolute;
+	top: 0px;
+	color: var(--text-muted);
+	transition: opacity, transform var(--ui-dpd-2) var(--ui-easing);
+}
+.hasActions .half.like::after {
+	padding-left: 1px;
+}
+.hasActions .label.flag::after {
+	content: "g";
+	left: calc(var(--minw) * -1 - 2px);
+}
+.hasActions .half.like::after {
+	content: "l";
+	right: calc(var(--minw) * -2);
+}
+@media (any-hover: none) {
+	.hasActions .label.flag::after,
+	.hasActions .half.like::after {
+		opacity: 1;
+	}
+	.hasActions .half.like::after {
+		top: 2px;
+	}
+	.hasActions .label.flag::after {
+		top: 3px;
+	}
+}
+@media (any-hover: hover) {
+	.hasActions .label.flag::after,
+	.hasActions .half.like::after {
+		opacity: 0;
+		transform: scale(1);
+		color: var(--ui-text);
+	}
+	.hasActions .label.flag:hover::after,
+	.hasActions .half.like:hover::after,
+	.hasActions .full.like:hover + .input + .half.like::after { /* 4.5 and 5 is Like */
+		opacity: 1;
+		transform: scale(1.5);
+	}
+}
+.count {
+	composes: s from './_typo.css';
+	float: left;
+	color: var(--text-muted);
+}
+.root .count {
+	padding: 0px;
+	margin: 0px;
+	min-width: var(--minw);
+	text-align: right;
+}
+.root:hover .count {
+	opacity: 0;
+	pointer-events: none;
+	z-index: 0;
 }

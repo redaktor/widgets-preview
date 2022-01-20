@@ -84,7 +84,7 @@ export const AsCachingMiddleware = factory(({ properties, middleware: { i18n, ic
       const { id } = properties();
       if (!!id) {
         const o: any = icache.get(id);
-        return o[omitSymbol] || new Set(properties().omit||[])
+        return (o && omitSymbol && o[omitSymbol]) || new Set(properties().omit||[])
       }
       return new Set(properties().omit||[])
     },

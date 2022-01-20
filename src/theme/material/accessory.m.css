@@ -1,7 +1,9 @@
 .root {
 	composes: s italic serif from './_typo.css';
+	--top: 0px;
+	margin: 0px;
+	padding: 0px;
 	z-index: var(--zindex-alert, 999);
-	--top: var(--line);
 }
 .max3 {
 	--top: var(--line2);

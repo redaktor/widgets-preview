@@ -376,7 +376,7 @@ video:picture-in-picture {
 .row.fresh.xs .media {
 	width: 72px;
 	max-height: 72px;
-	margin-top: calc(var(--line) * -1);
+	margin-top: var(--minusLine);
 	margin-right: var(--grid-base);
 }
 .row.fresh.xs .summaryPaginated,

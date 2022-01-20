@@ -10,7 +10,10 @@ export type i18nFormat = [i18nKey, {n: number, type: string}];
 export interface TimeRelativeProperties {
 	/** Date */
 	date: number | Date | string;
+  /** subscribe to changes */
 	isLive?: boolean;
+  /** absolute date as title */
+  hasTitle?: boolean;
 }
 export interface TimeRelativeIcache {
 	isSubscribed: boolean;
@@ -103,4 +106,12 @@ export const timeagoMiddleware = factory(({ middleware: { icache, invalidator },
   };
 });
 
+export const stdDateFormat = {
+  weekday: 'short',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric'
+}
 export default timeagoMiddleware;

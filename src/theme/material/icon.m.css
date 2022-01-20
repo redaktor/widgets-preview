@@ -10,10 +10,11 @@
 .slide {
   overflow: hidden;
   position: relative;
-  --duration: 5s;
-  /* must be overwritten: */
-  --count: 5;
-  --ani: slide5;
+	min-width: calc(var(--size) + var(--ml, 4px));
+	min-height: var(--line);
+	margin: 0 !important;
+	padding: 0 !important;
+  --duration: 4s;
 }
 .img.root {
 	padding: 0;
@@ -23,7 +24,6 @@
 	position: relative;
 	/* use !important to prevent issues with browser extensions that change fonts */
 	font-family: 'redaktor' !important;
-	color: inherit;
 	speak: never;
 	font-style: normal;
 	font-weight: normal;
@@ -37,26 +37,37 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
-.colored.icon {
+i.icon {
+	color: inherit;
+}
+i.colored.icon {
 	color: var(--text-flat);
 }
-.slide > .root:nth-child(2) { --i: 1; }
-.slide > .root:nth-child(3) { --i: 2; }
-.slide > .root:nth-child(4) { --i: 3; }
-.slide > .root:nth-child(5) { --i: 4; }
-.slide > .root:nth-child(6) { --i: 5; }
-.slide > .root:nth-child(7) { --i: 6; }
-.slide > .root:nth-child(8) { --i: 7; }
-.slide > .root:nth-child(9) { --i: 8; }
+.slide > .root:first-child { animation-delay: var(--duration); }
+.slide > .root:nth-child(2) { animation-delay: calc(var(--duration) * 2); }
+.slide > .root:nth-child(3) { animation-delay: calc(var(--duration) * 3); }
+.slide > .root:nth-child(4) { animation-delay: calc(var(--duration) * 4); }
+.slide > .root:nth-child(5) { animation-delay: calc(var(--duration) * 5); }
+.slide > .root:nth-child(6) { animation-delay: calc(var(--duration) * 6); }
+.slide > .root:nth-child(7) { animation-delay: calc(var(--duration) * 7); }
+.slide > .root:nth-child(8) { animation-delay: calc(var(--duration) * 8); }
+.slide > .root:nth-child(9) { animation-delay: calc(var(--duration) * 9); }
 .slide > .root {
   width: 100%;
   height: 100%;
   background-size: cover;
   position: absolute;
-  animation: var(--ani) calc(var(--duration) * var(--count)) infinite;
-  animation-delay: calc(var(--duration) * var(--i));
+	left: 0px;
   opacity: 0;
 }
+.slide2 { animation: slide2 calc(var(--duration) * 2) infinite; }
+.slide3 { animation: slide3 calc(var(--duration) * 3) infinite; }
+.slide4 { animation: slide4 calc(var(--duration) * 4) infinite; }
+.slide5 { animation: slide5 calc(var(--duration) * 5) infinite; }
+.slide6 { animation: slide6 calc(var(--duration) * 6) infinite; }
+.slide7 { animation: slide7 calc(var(--duration) * 7) infinite; }
+.slide8 { animation: slide8 calc(var(--duration) * 8) infinite; }
+.slide9 { animation: slide9 calc(var(--duration) * 9) infinite; }
 @keyframes slide2 {
   25% { opacity: 1; }
   50% { opacity: 1; }

@@ -19,8 +19,13 @@ interface BaseIconProperties extends ThemeProperties {
 	aria?: { [key: string]: string | null };
 	/** html title attribute */
 	title?: string;
+	/** if multiple icons, make a slideshow if count >= value; default = 0 */
+	slideshowMin?: number;
+	/** maximum width */
 	maxWidth?: string | number;
+	/** maximum height */
 	maxHeight?: string | number;
+	/** half width */
 	half?: boolean;
 }
 export interface TypeIconProperties extends BaseIconProperties {
@@ -42,6 +47,7 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 		aria = { hidden: 'true' },
 		type: t,
 		half = false,
+		slideshowMin = 0,
 		title,
 		altText,
 		maxWidth,
@@ -62,61 +68,59 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 			return ''
 		}
 		const types: string[] = Array.isArray(t) ? t : [t];
-		type = types.map((_type) => {
+		type = [...(new Set(types.map((_type) => {
 			if (typeof _type !== 'string') { return 'object' as CssKey }
 			const lowT = _type.toLowerCase();
 			return themedCss.hasOwnProperty(_type) ? (_type as CssKey) :
 				(themedCss.hasOwnProperty(lowT) ? (lowT as CssKey) : 'object' as CssKey)
-		});
+		})))];
 	}
 
+	// TODO
+	const slide = true;
+
 	const titleO = !title ? {} : {title};
+	const getIconByType = (_type: CssKey, i: number, a: any = []) => {
+		const slideClass = slide && !!a.length && (themedCss as any)[`slide${a.length}`];
+		return <span {...titleO} classes={[themedCss.root, slideClass]} >
+				<i
+					classes={[
+						theme.variant(),
+						theme.sized(ui, 'l'),
+						theme.spaced(ui),
+						theme.colored(colors),
+						!!color && themedCss.colored,
+						!!half && themedCss.half,
+						themedCss.icon,
+						themedCss[_type]
+					]}
+					{...formatAriaProperties(aria)}
+				>
+				{_type === 'mapOSM' && [1,2,3,4,5,6,7,8,9,10].map(() => <span />)}
+				{_type === 'redaktorLogo' && [1,2,3].map(() => <span />)}
+			</i>
+			{altText ? <span classes={baseCss.visuallyHidden}>{altText}</span> : null}
+		</span>
+	}
 
-	const getIconByType = (_type: CssKey) => (<span {...titleO} classes={themedCss.root}>
-			<i
-				classes={[
-					theme.variant(),
-					theme.sized(ui, 'l'),
-					theme.spaced(ui),
-					theme.colored(colors),
-					!!color && themedCss.colored,
-					!!half && themedCss.half,
-					themedCss.icon,
-					themedCss[_type]
-				]}
-				{...formatAriaProperties(aria)}
-			>
-			{_type === 'mapOSM' && [1,2,3,4,5,6,7,8,9,10].map(() => <span />)}
-			{_type === 'redaktorLogo' && [1,2,3].map(() => <span />)}
-		</i>
-		{altText ? <span classes={baseCss.visuallyHidden}>{altText}</span> : null}
-	</span>);
-
-	const getIcon = (_icon: ApIconType) => (
-		<span {...titleO} classes={[themedCss.root, themedCss.img, theme.sized(ui, 'l')]}>
+	const getIcon = (_icon: ApIconType, i: number, a: any = []) => {
+		const slideClass = slide && !!a.length && (themedCss as any)[`slide${a.length}`];
+		return <span {...titleO} classes={[themedCss.root, slideClass, themedCss.img, theme.sized(ui, 'l')]}>
 			<Img
 				aspectRatio="square"
 				fit="contain"
 				{..._icon}
 				{..._img}
 			/>
-		</span>);
-
-
+		</span>
+	}
 
 	/* 1 icon||type OR up to 9 icon||type (animated = crossfading) OR more w. indicator */
-	return <virtual>
-		{(!!icon ? (icon.length === 1 || icon.length > 9 ? getIcon(icon[0]) :
-			<div classes={themedCss.slide}>
-				{icon.map(getIcon)}
-			</div>
-		) : (type.length === 1 || type.length > 9 ? getIconByType(type[0]) :
-			<div classes={themedCss.slide}>
-				{type.map(getIconByType)}
-			</div>
-		))}
-
-	</virtual>
+	return !!icon ? (icon.length === 1 || icon.length > 9 ? getIcon(icon[0], -1) :
+		<div classes={[themedCss.slide, theme.sized(ui, 'l')]}>{icon.map(getIcon)}</div>
+	) : (type.length === 1 || type.length > 9 ? getIconByType(type[0], -1) :
+		<div classes={[themedCss.slide, theme.sized(ui, 'l')]}>{type.map(getIconByType)}</div>
+	)
 });
 
 export default Icon;

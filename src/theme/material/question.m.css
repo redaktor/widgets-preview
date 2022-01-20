@@ -1,5 +1,6 @@
 .root {
 	padding-bottom: var(--line);
+	background-color: var(--bg);
 }
 .header {
 	position: relative;
@@ -17,20 +18,29 @@
 	z-index: 9;
 }
 .metaWrapper {
-	width:100%;
-	height: var(--line);
+	width: 100%;
+	height: var(--line2);
 	display: flex;
 	justify-content: space-between;
 	align-items: baseline;
 }
-.meta,
+.success {
+	composes: success from './_color.m.css';
+}
+
 .noAnswer {
 	composes: s italic serif from './_typo.css';
 	color: var(--ui-text);
 }
-.questionWrapper { }
-.questionStatus {
-	composes: l italic serif from './_typo.css';
+.meta {
+	composes: s from './_typo.css';
+	color: var(--ui-text);
+}
+.alert {
+	color: var(--text);
+	font-weight: var(--weight-semibold, 500);
+	padding-left: calc(var(--grid-base,8px) + var(--ui-border-width-emphasized));
+	margin-bottom: calc(var(--mb) - var(--line));
 }
 .questionMark {
 	display: inline-block;
@@ -39,17 +49,21 @@
 	padding: 0px;
 	line-height: 0px;
 }
+.questionStatus {
+	composes: l italic serif from './_typo.css';
+}
 .root .questionStatus {
 	color: var(--text-muted);
 	height: calc(var(--line) - var(--mb));
-}
-.root .questionStatus + .nameWrapper {
-	margin-top: calc(var(--line) * -1);
 }
 .nameWrapper {
 	flex: 0;
 	position: relative;
 	margin-right: 72px;
+}
+.questionWrapper {
+	margin-top: var(--minusLine);
+	z-index: 10;
 }
 .locales {
 	margin-right: 72px;
@@ -59,7 +73,7 @@
 }
 .root .teaserIcon {
 	position: absolute;
-	left: calc(var(--grid-base,8px) * -2);
+	left: calc(var(--grid-base,8px) * -1);
 	top: var(--line2);
 	font-size: var(--line2);
 	z-index: 0;
@@ -73,6 +87,13 @@
 .answerWrapper {
 	z-index: 9;
 }
+.answerForm {
+	opacity: 1;
+	transition: opacity 60s var(--ui-easing);
+}
+.answerForm.closing {
+	opacity: 0.32;
+}
 .answerLabel {
 	padding-left: var(--ui-border-width-emphasized);
 }
@@ -82,42 +103,103 @@
 	font-weight: var(--weight-bold);
 }
 .topAnswers {
-	margin: 0px 0px var(--line) var(--grid-base,8px);
-	padding: 0px var(--grid-base,8px) 0px var(--grid-base,8px);
-	background: var(--paper);
-	border-radius: var(--ui-border-radius-emphasized);
-	box-shadow: var(--ui-dp-1);
+
 }
+
 .noAnswer {
 	padding-left: calc(var(--grid-base,8px) + var(--ui-border-width-emphasized));
 }
 
 .rateWrapper {
-	min-height: var(--line);
-	position: relative;
-	top: 2px;
+	height: var(--line);
 }
-.topAnswers > .rateWrapper {
+.rateWrapper >:last-child {
+	position: relative;
+	top: 4px;
+}
+.answer > .rateWrapper {
 	display: flex;
-	justify-content: flex-end;
+	justify-content: space-between;
 	margin-bottom: var(--line);
+}
+.topCaption {
+	position: relative;
+	top: 4px;
+}
+.answer {
+	margin-bottom: calc(var(--ui-border-width-emphasized) * -2);
+	padding: 0px var(--grid-base,8px) 0px var(--grid-base,8px);
+	background: var(--paper);
+	border-radius: var(--ui-border-radius-emphasized);
+	border: var(--ui-border-width-emphasized) solid var(--bg);
+	box-shadow: var(--ui-dp-2);
+}
+.hasAccepted {
+	composes: success from './_color.m.css';
+}
+.hasDuplicate {
+	border-left-color: var(--ui-flat-empty);
+	cursor: pointer;
 }
 .accepted,
 .duplicate {
 	position: absolute;
 	transform: scale(2);
-	margin-top: -4px;
 }
 .accepted {
+	margin-left: -4px;
+}
+.hasAccepted:first-child .accepted {
 	text-shadow: -3px -3px 1px var(--base);
 }
-.duplicate + .meta {
-	position: relative;
-	top: var(--pt);
+.hasAccepted:first-child .accepted,
+.duplicate {
+	margin-top: -4px;
+}
+.duplicate {
+	margin-left: 1px;
+}
+.hasAccepted .meta {
+	padding-left: calc(var(--grid-base,8px) * 2);
+}
+.hasDuplicate .meta {
 	padding-left: calc(var(--grid-base,8px) * 4);
 }
 .meta + .replyCaption {
 	padding-top: var(--line);
 }
-
+.hasDuplicate .replySummary > :last-child::after {
+	content: " […]";
+	display: inline;
+	text-shadow: none;
+	color: var(--r-secondary,#c30c70);
+}
+.root .replyAttributions {
+	margin-top: 0px;
+	margin-bottom: var(--line);
+}
+.duplicateReplyCount {
+	composes: s from './_typo.css';
+	font-weight: var(--weight-bold);
+	padding-left: var(--grid-base,8px);
+}
 .captionWrapper { }
+.replyButtons {
+	display: flex;
+	justify-content: center;
+}
+.root .replyButton:hover {
+	--text-flat-hover: var(--text);
+	color: var(--text);
+}
+.openButton {
+	flex: 1;
+}
+.iconSlide,
+.openIcon {
+	composes: h3 from './_typo.css';
+}
+.root .iconSlide {
+	height: 100%;
+	margin: 0px var(--grid-base,8px) 0px 0px;
+}

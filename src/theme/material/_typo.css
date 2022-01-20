@@ -135,6 +135,7 @@
   --line4: calc(var(--line) * 4);
   --line5: calc(var(--line) * 5);
   --lineHalf: calc(var(--line) / 2);
+  --minusLine: calc(var(--line) * -1);
   /*---   debug  ---*/
   --color-baseline-dark: rgba(255, 175, 0, 0.4);
   --color-baseline-light: rgba(255, 122, 0, 0.32);
@@ -474,7 +475,7 @@ p > em {
 pre {
   text-shadow: none;
 }
-*:not(pre) > code { /* TODO inline code */
+*:not(pre):not(.inline) > code { /* TODO inline code */
   background: var(--ui-bg);
   color: var(--text);
   border-radius: var(--ui-border-radius-emphasized);

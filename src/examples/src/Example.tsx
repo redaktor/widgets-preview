@@ -15,7 +15,7 @@ const factory = create({ theme, i18n, icache }).properties<ExampleProperties>();
 
 export default factory(function({ children, properties, middleware: { theme, i18n, icache } }) {
 	icache.getOrSet('variant', 'dark', false);
-	icache.getOrSet('bg', 'var(--bg)', false);
+	icache.getOrSet('bg', 'var(--base)', false);
 	icache.getOrSet('viewSize', 'minimize', false);
 	theme.set(myTheme, icache.get('variant'));
 	const altVariant = icache.get('variant') === 'light' ? 'dark' : 'light';
@@ -37,8 +37,9 @@ export default factory(function({ children, properties, middleware: { theme, i18
 				<button onclick={() => { icache.set('variant', altVariant) } }>
 					{altVariant}
 				</button>
+				<label><input type="radio" name="bg" value="base" onclick={() => { icache.set('bg', 'var(--base)') } } checked /> base</label>
 				<label><input type="radio" name="bg" value="surface" onclick={() => { icache.set('bg', 'var(--surface)') } } /> surface</label>
-				<label><input type="radio" name="bg" value="bg" onclick={() => { icache.set('bg', 'var(--bg)') } } checked /> bg</label>
+				<label><input type="radio" name="bg" value="bg" onclick={() => { icache.set('bg', 'var(--bg)') } } /> bg</label>
 				<label><input type="radio" name="bg" value="paper" onclick={() => { icache.set('bg', 'var(--paper)') } } /> paper</label>
 				<label><input type="radio" name="bg" value="uibg" onclick={() => { icache.set('bg', 'var(--ui-bg)') } } /> ui</label>
 

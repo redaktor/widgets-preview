@@ -1,6 +1,6 @@
 import { create, tsx } from '@dojo/framework/core/vdom';
 import { uuid } from '@dojo/framework/core/util';
-import { AsObject, AsImage, AsActivity } from '../../../../common/interfaces';
+import { AsObject, AsImage, AsActor, AsActivity } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Image, { ImageProperties } from '@redaktor/widgets/image';
 import Event from '@redaktor/widgets/event';
@@ -74,7 +74,7 @@ const exampleText = `20 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #C
 10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For 10 Easy Ways To Make
 Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For 10 Easy Ways To Make Tin Foil #Hats Stronger.
 Proof That #Cats Are Exactly What You Are Looking For. 10 Easy Ways To Make Tin Foil #Hats Stronger. Proof That #Cats Are Exactly What You Are Looking For`;
-const attributedTo = [{
+const attributedTo: AsActor[] = [{
   id: "https://alyssa.example.com/",
   handle: "@alyssa@example.com",
   name: "Alyssa Lorem Ipsum dolor sunt Alyssa Lorem Ipsum dolor sunt Lorem Ipsum dolor sunt",
@@ -293,6 +293,8 @@ const exampleSchemaO = {
 */
 const acceptedReply: AsObject = {
   id: "acceptedAnswer",
+  "published": "2022-01-05T09:22:00+01:00",
+  attributedTo: attributedTo[0],
   type:'Note',
   name:'I have no idea',
   summary: `just wanted to check out the distribution of text here …
@@ -324,8 +326,14 @@ const exampleQuestion: AsActivity = {
   ],*/
   "published": "2022-01-04T09:22:00+01:00",
   "updated": "2022-01-05T20:00:00-08:00",
+  "endTime": "2022-01-19T12:58:00-00:00",
 
-  "result": {...acceptedReply, type:'Question', name:'Q'},
+  "result": [
+    acceptedReply,
+    /*{...acceptedReply, type:'Question', name:'Dup Q1', id:'dup1'},*/
+    {...acceptedReply, type:'Question', name:'Dup Q2', id:'dup2', replies: {"type": "Collection","totalItems":1,items:[
+      {...acceptedReply, name:'Dup Q3', id:'dup3'}
+    ] }}],
 
   "replies": {
     "type": "Collection",
@@ -350,7 +358,6 @@ const exampleQuestion: AsActivity = {
 
 const factory = create();
 export default factory(function Basic() {
-console.log('Event example',exampleEvent)
 /* tableRow is meant to be 100vw */
 	return (
 		<Example spaced={true}>

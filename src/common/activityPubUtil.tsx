@@ -608,7 +608,6 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 			target: {Add:1,Remove:1}
 		}
 		const intransitive: any = {Question:1,Travel:1,Arrive:1};
-
 		for (let key in _Aap) {
 			if (!_Aap.hasOwnProperty(key)) { continue }
 			if (key === 'oneOf' && Array.isArray(_Aap.oneOf) && !!_Aap.oneOf.length) {
@@ -632,14 +631,14 @@ export function normalizeAs(as: APall, language?: string, includeBcc: boolean = 
 					continue;
 				}
 			}
-			if (typeof _Aap[key] === 'object' || typeof _Aap[key] === 'string') {
+			if (key === 'actor' && isLink(_Aap[key])) {
+				(o as AsActivity).actor = toArray(_Aap[key]);
+			} else if (key === 'closed' && (typeof _Aap[key] === 'boolean' || isDatetime(_Aap[key]))) {
+				(o as AsActivity).closed = _Aap[key];
+			} else if (typeof _Aap[key] === 'object' || typeof _Aap[key] === 'string') {
 				o[key] = Array.isArray(_Aap[key]) ?
 					_Aap[key].map((_o:any) => normalizeAs(_o, language)) :
 					toArray(normalizeAs(_Aap[key], language));
-			} else if (key === 'actor' && isLink(_Aap[key])) {
-				(o as AsActivity).actor = toArray(_Aap[key]);
-			} else if (key === 'closed' && (typeof _Aap[key] === 'boolean' || isDatetime(_Aap[key]))) {
-				(o as AsActivity).closed = _Aap[key]
 			}
 		}
 		// console.log('ACTIVITY o', o);

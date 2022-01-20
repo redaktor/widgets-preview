@@ -60,8 +60,6 @@ const Location = factory(function Location({ properties, middleware: { theme, fo
 		...ld
 	} = i18nActivityPub.normalized<LocationProperties>();
 
-console.log(asLoc, ld, schemaToAsLocation(asLoc[0], type))
-
 	const { messages, format } = i18nActivityPub.localize(bundle);
 	const {get, getOrSet, set} = icache;
 	hasMap && set('locationOpenIndex', locationOpenIndex, false);
@@ -109,7 +107,7 @@ console.log(asLoc, ld, schemaToAsLocation(asLoc[0], type))
 	}
 	const handleClick = (i: number) => () => {
 		if (!!hasMap) {
-			console.log(get('locationOpenIndex'))
+			// console.log(get('locationOpenIndex'))
 			if (get('locationOpenIndex') === i) {
 				set('locationOpenIndex', false);
 				onLocation && onLocation(false, false);

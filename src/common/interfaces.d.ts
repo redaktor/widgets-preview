@@ -391,10 +391,10 @@ export interface AsActivityNormalized extends AsBaseNormalized {
 }
 
 interface AsCore extends AsBase {
-	type?: AsObjectTypes | (AsObjectTypes | string)[];
+	type?: AsObjectTypes | (AsObjectTypes | anyURI)[];
 }
 export interface AsObject extends AsBase {
-	type?: AsObjectTypes | (AsObjectTypes | string)[];
+	type?: AsObjectTypes | (AsObjectTypes | anyURI)[];
 	/* Collection */
 	current?: AsCollectionPage | AsLink; /* Functional */
 	first?: AsCollectionPage | AsLink; /* Functional */

@@ -13,7 +13,7 @@
 	z-index: 1;
 }
 .images:not(:empty) {
-	margin-bottom: calc(var(--line) * -1);
+	margin-bottom: var(--minusLine);
 }
 .mapWrapper.closed {
 	display: none;
@@ -48,7 +48,7 @@
 	height: calc(var(--line2) - var(--mb));
 }
 .root .placeStatus + .nameWrapper {
-	margin-top: calc(var(--line) * -1);
+	margin-top: var(--minusLine);
 }
 .root .attendanceCount {
 	color: var(--text-muted);
@@ -113,7 +113,7 @@
 	display: none;
 }
 .topContact {
-	margin-top: calc(var(--line) * -1);
+	margin-top: var(--minusLine);
 }
 .geoCoordinates {
 	padding-left: var(--grid-base,8px);

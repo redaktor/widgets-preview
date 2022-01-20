@@ -26,10 +26,12 @@ export interface RateProperties {
 	value?: number;
 	/* The form name for this rate widget */
 	name?: string;
-	/* Flag to indicate if half stars should be used */
+	/* To indicate if half stars should be used */
 	allowHalf?: boolean;
-	/* Flag to set the readonly state */
+	/* To set the readonly state */
 	readOnly?: boolean;
+	/* Flag and Like actions alongside stars */
+	hasActions?: boolean;
 }
 
 export interface RateChildren {
@@ -53,17 +55,12 @@ const factory = create({ focus, theme, icache: createICacheMiddleware<RateIcache
 	.properties<RateProperties>()
 	.children<RateChildren | undefined>();
 
-export const Rate = factory(function Rate({
-	properties,
-	id,
-	children,
-	middleware: { theme, icache }
-}) {
+export const Rate = factory(function Rate({properties, id, children, middleware: { theme, icache } }) {
 	const idBase = `rate-${id}`;
 
 	const {
-		onValue, ratingValue = 0, bestRating = 5, worstRating = 1, ratingCount = 0, reviewCount = 0,
-		allowHalf = true, readOnly = false, name = idBase, theme: themeProp, classes, variant
+		onValue, ratingCount, ratingValue = 0, bestRating = 5, worstRating = 1, reviewCount = 0,
+		allowHalf = true, readOnly = false, hasActions = false, name = idBase, theme: themeProp, classes, variant
 	} = properties();
 	// TODO controlled:
 	// let { value } = properties();
@@ -82,22 +79,29 @@ export const Rate = factory(function Rate({
 	].reverse();
 	let hasChecked = false;
 
-	return <fieldset name={name} classes={[
-		themedCss.root,
-		readOnly ? themedCss.readOnly : themedCss.readWrite,
-		theme.uiSize('l')
-	]}>
-		{values.map((v, i) => {
-			const vId = `${name}-${i}`;
-			const cl = is(v, 'integer') ? themedCss.full : themedCss.half;
-			const checked = typeof value === 'number' && value >= v && !hasChecked;
-			if (!!checked) { hasChecked = true }
-			return <virtual>
-				<input classes={[themedCss.input]} type="radio" id={vId} name={idBase} value={`${v}`} checked={checked} />
-				<label classes={[themedCss.label, cl]} for={vId} title={`${v}/${best}`}></label>
-			</virtual>
-		})}
-	</fieldset>
+	return <div key="root" classes={[themedCss.root, theme.uiSize('l')]}>
+		<fieldset key="fieldset" classes={[
+			themedCss.fieldset,
+			hasActions && themedCss.hasActions,
+			readOnly ? themedCss.readOnly : themedCss.readWrite
+		]} name={name}>
+			{values.map((v, i) => {
+				const vId = `${name}-${i}`;
+				const cl = is(v, 'integer') ? themedCss.full : themedCss.half;
+				const checked = typeof value === 'number' && value >= v && !hasChecked;
+				if (!!checked) { hasChecked = true }
+				return <virtual>
+					<input key={`input${i}`} classes={[themedCss.input]} type="radio" id={vId} name={idBase} value={`${v}`} checked={checked} />
+					<label key={`label${i}`} classes={[
+						themedCss.label,
+						cl,
+						i < 2 ? themedCss.like : i === values.length-1 && themedCss.flag
+					]} for={vId} title={`${v}/${best}`} />
+				</virtual>
+			})}
+		</fieldset>
+		<div key="count" classes={themedCss.count}>{is(ratingCount, 'number') ? ratingCount : ''}</div>
+	</div>
 });
 
 export default Rate;

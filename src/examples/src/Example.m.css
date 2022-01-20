@@ -2,6 +2,11 @@
 	background: var(--example-bg, var(--surface, #000));
 	min-height: var(--line2);
 }
+.root,
+.root code,
+.root label {
+	color: var(--text, #000);
+}
 .spaced {
 	padding: var(--line);
 }

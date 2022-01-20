@@ -106,7 +106,7 @@ export function schemaToAsLocation(schemaLocation: any/*WithContext<Place>*/, ty
 		event Upcoming or past event associated with this place, organization, or action. [-> OrderedCollection]
 		? for additional icons ? publicAccess, smokingAllowed,
 	*/
-	console.log(ldPartial(schemaLocation, 'schema', true))
+	// console.log(ldPartial(schemaLocation, 'schema', true))
 	const {
 		'@id': _id, id, '@type': _type = [], type: t = [], geo = [], latitude = [], longitude = [],
 		name, disambiguatingDescription, description, address, telephone, url, logo, photo
