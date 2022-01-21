@@ -12,7 +12,8 @@
 	--surface: #121212;
 
 	--bg: var(--r-dark, #1c191b);
-	--paper: #303030;
+	--paper: #252525;
+	--sticker: #303030;
 
 	--text: var(--full-white, #fff);
 	--text-flat: var(--m-400);

@@ -19,6 +19,9 @@ import * as css from '../theme/material/actors.m.css';
 import theme from '../middleware/theme';
 
 export interface ActorProperties extends RedaktorActor {
+/* small typo, inline */
+	compact?: boolean;
+
 	allowFollow?: boolean; /* default true */
 	allowAnnounce?: boolean; /* default true */
 	ignore?: boolean; /* default false TODO */
@@ -80,8 +83,7 @@ const Actor = factory(function Actor({ /*children,*/ properties, middleware: { i
 	const normalized = i18nActivityPub.normalized<ActorProperties>();
 	const {
 		onFocus, onBlur, onOpen, onClose,
-		focus: focused = false,
-		open = false
+		focus: focused = false, compact = false, open = false
 	} = properties();
 	const {
 		handle = '?',
@@ -158,15 +160,15 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 			</div>
 		})}
 		<div classes={themedCss.summaryContent}>
-			<span classes={themedCss.avatar}>{avatar}</span>
+			{!compact && <span classes={themedCss.avatar}>{avatar}</span>}
 			<div classes={themedCss.metaWrapper}>
-				{petName ?
+				{petName ? (compact ? <span>{petName.substr(0,36)}</span> :
 					<virtual>
 						<h5 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.closed, themedCss.petName]}>{petName}</h5>
 						<h3 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.petName]}>{petName}</h3>
-					</virtual> :
-					(get('preferredUsername') ?
-						<h5 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.noPetName]}>{get('preferredUsername')}</h5> :
+					</virtual>) :
+					(get('preferredUsername') ? (compact ? <span>{(get('preferredUsername')||'').substr(0,36)}</span> :
+						<h5 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.noPetName]}>{get('preferredUsername')}</h5>) :
 						''
 					)
 				}
@@ -228,20 +230,15 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 			</p>}
 	</div>
 
-	const detailsClasses = [
-		themedCss.attributions,
-		avatar ? themedCss.hasAvatar : null,
-		petName ? themedCss.wellKnown : null
-	];
-	const summaryClasses = [
-		detailsCss.animated, detailsCss.summary, themedCss.summary,
-		!!profileImage && !!profileImage.length && themedCss.hasProfileImage
-	];
-
 // console.log('Actor',open)
 	return <details
 		key="details"
-		classes={detailsClasses}
+		classes={[
+			themedCss.attributions,
+			compact ? themedCss.compact : themedCss.headline,
+			avatar && themedCss.hasAvatar,
+			petName && themedCss.wellKnown
+		]}
 		open={open}
 		ontoggle={(evt: Event) => {
 			evt.preventDefault();
@@ -259,7 +256,10 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 		onfocus={() => { onFocus && onFocus() }}
 		onblur={() => { onBlur && onBlur() }}
 	>
-		<summary key="summary" classes={summaryClasses}>
+		<summary key="summary" classes={[
+			detailsCss.animated, detailsCss.summary, themedCss.summary,
+			!!profileImage && !!profileImage.length && themedCss.hasProfileImage
+		]}>
 			{summaryContent}
 		</summary>
 		{detailsContent}

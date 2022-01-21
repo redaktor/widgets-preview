@@ -15,7 +15,9 @@ export interface ActorsProperties extends ThemedAsObject {
 	/* Show a maximum Avatars */
 	max?: number;
 	/* If more than max, show a count, default true */
-	moreCount?: boolean;
+	more?: boolean;
+	/* small typo, inline */
+	compact?: boolean;
 	byline?: RenderResult;
 }
 export interface ActorsIcache {
@@ -32,6 +34,7 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 		byline,
 		max = 99,
 		more = true,
+		compact = false,
 		spaced: _spaced = true,
 		size = 's',
 		color = 'primary'
@@ -56,7 +59,7 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 	return <div classes={[themedCss.root, spaceClass]}>
 	{
 		(attributedTo.length === 1) &&
-			<Actor {...{...attributedTo[0], byline}} focus={focus.shouldFocus} />
+			<Actor {...{...attributedTo[0], byline}} focus={focus.shouldFocus} compact={compact} />
 	}
 	{
 		(attributedTo.length > 1) &&
@@ -70,6 +73,7 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 				const name = attrO.name ? attrO.name[0] : '';
 				return <Actor
 					{...{...attrO}}
+					compact={compact}
 					open={get('openIndex') === i}
 					classes={attributedTo.length > 2 ? {
 						'@redaktor/widgets/actors': {
@@ -87,7 +91,7 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 				/>
 			})}
 			{
-				!!remainingCount && <div classes={themedCss.moreWrapper}>
+				!!remainingCount && !!more && <div classes={themedCss.moreWrapper}>
 					<Avatar {...{size, spaced, color, name }}
 					classes={{
 						'@redaktor/widgets/avatar': {

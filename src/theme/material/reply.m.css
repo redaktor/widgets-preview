@@ -1,0 +1,121 @@
+.root {
+	/*
+	margin-top: calc(var(--ui-border-width-emphasized) * -1);
+	margin-bottom: calc(var(--ui-border-width-emphasized) * -1);
+	border: var(--ui-border-width-emphasized) solid var(--bg);
+	*/
+	padding: 0px var(--grid-base,8px) 0px var(--grid-base,8px);
+	border-radius: var(--ui-border-radius-emphasized);
+	box-shadow: var(--ui-dp-2);
+}
+.reply, .answer {
+	background: var(--paper);
+}
+.comment {
+	background: var(--sticker);
+}
+.success {
+	composes: success from './_color.m.css';
+}
+.meta {
+	composes: s from './_typo.css';
+	color: var(--ui-text);
+}
+.rateWrapper {
+	height: var(--line);
+}
+.rateWrapper >:last-child {
+	position: relative;
+	top: 4px;
+}
+.root > .rateWrapper {
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: var(--line);
+}
+.topCaption {
+	position: relative;
+	top: 4px;
+}
+.hasAccepted {
+	composes: success from './_color.m.css';
+}
+.hasDuplicate {
+	border-left-color: var(--ui-flat-empty);
+	cursor: pointer;
+}
+.accepted,
+.duplicate {
+	position: absolute;
+}
+.answer .accepted,
+.answer .duplicate {
+	transform: scale(2);
+}
+.accepted {
+	margin-left: -4px;
+}
+.hasAccepted:first-child .accepted {
+	text-shadow: -3px -3px 1px var(--base);
+}
+.answer.hasAccepted:first-child .accepted,
+.answer .duplicate {
+	margin-top: -4px;
+}
+.answer .duplicate {
+	margin-left: 1px;
+}
+.comment .accepted,
+.comment .duplicate {
+	margin-top: 2px;
+}
+
+.hasAccepted .meta {
+	padding-left: calc(var(--grid-base,8px) * 2);
+}
+.hasDuplicate .meta {
+	padding-left: calc(var(--grid-base,8px) * 4);
+}
+.meta + .replyCaption {
+	padding-top: var(--line);
+}
+.hasDuplicate .replySummary > :last-child::after {
+	content: " […]";
+	display: inline;
+	text-shadow: none;
+	color: var(--r-secondary,#c30c70);
+}
+.reply .replyAttributions
+.answer .replyAttributions {
+	margin-top: 0px;
+	margin-bottom: var(--line);
+}
+.comment .replyAttributions {
+	display: flex;
+	margin-top: calc(var(--line) * -1);
+}
+
+.duplicateReplyCount {
+	composes: s from './_typo.css';
+	font-weight: var(--weight-bold);
+	padding-left: var(--grid-base,8px);
+}
+.replyButtons {
+	display: flex;
+	justify-content: center;
+}
+.root .replyButton:hover {
+	--text-flat-hover: var(--text);
+	color: var(--text);
+}
+.openButton {
+	flex: 1;
+}
+.iconSlide,
+.openIcon {
+	composes: h3 from './_typo.css';
+}
+.root .iconSlide {
+	height: 100%;
+	margin: 0px var(--grid-base,8px) 0px 0px;
+}

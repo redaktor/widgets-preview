@@ -363,7 +363,13 @@ export default factory(function Basic() {
 		<Example spaced={true}>
       <virtual>
         <div><h5>Image ActivityPub Object</h5><p>column</p></div>
-
+        <div style="width:100%;height:var(--line2);background:var(--base);" />
+        <div style="width:100%;height:var(--line2);background:var(--surface);" />
+        <div style="width:100%;height:var(--line2);background:var(--bg);" />
+        <div style="width:100%;height:var(--line2);background:var(--paper);" />
+        <div style="width:100%;height:var(--line2);background:var(--sticker);" />
+        <div style="width:100%;height:var(--line2);background:var(--ui-bg);" />
+        <div style="width:100%;height:var(--line2);background:var(--ui-bg-muted);" />
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
             <Question {...exampleQuestion} />

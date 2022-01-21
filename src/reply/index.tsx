@@ -8,17 +8,18 @@ import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import TimeRelative from '../timeRelative';
 import Caption, { coveredLD as captionCoveredLD } from '../caption';
+import AttributedTo from '../attributedTo';
 import Rate from '../rate';
 import Button from '../button';
 import Icon from '../icon';
 // import * as ui from '../theme/material/_ui.m.css';
 import bundle from './nls/Question';
-import * as css from '../theme/material/question.m.css';
+import * as css from '../theme/material/reply.m.css';
 
 export interface ReplyProperties extends AsActivity {
 	widgetId?: string;
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
-	mode?: 'reply' | 'answer' | 'comment';
+	mode?: keyof typeof css & ('reply' | 'answer' | 'comment');
 	replyLevel?: number;
 	summaryLength?: number;
 	contentLines?: number;
@@ -70,7 +71,7 @@ reply can have replyLevel
 selecting comment or reply could highlight mentioned people posts
 Emphasize Author Comments -
 Answers by the author of the question should be marked as author comment …
-Comments of accepted authors should be marked 
+Comments of accepted authors should be marked
 */
 const factory = create({ id, i18nActivityPub, theme, breakpoints })
 	.properties<ReplyProperties>()
@@ -108,27 +109,28 @@ export const Reply = factory(function reply({
 		overwrites = {summary, content: ''};
 	}
 	const { answered } = messages;
-	return <div classes={[themedCss.answer, !!isAccepted && themedCss.hasAccepted, !!isDuplicate && themedCss.hasDuplicate]}>
+	const attributionsByline = <virtual>{mode === 'comment' ? '' : answered} <TimeRelative hasTitle date={ld.published||''} /></virtual>;
+
+	return <div classes={[themedCss.root, themedCss[mode], !!isAccepted && themedCss.hasAccepted, !!isDuplicate && themedCss.hasDuplicate]}>
 		{!!isAccepted && <span classes={themedCss.accepted}><Icon color="success" size="xxl" type="check" /></span>}
-		{!!isDuplicate && <span classes={themedCss.duplicate}>
-			<Icon color={color} size="xxl" type="move" spaced="right" />
-		</span>}
+		{!!isDuplicate && <span classes={themedCss.duplicate}><Icon color={color} size="xxl" type="move" spaced="right" /></span>}
 		<div key={`rateWrapper${widgetId}`} classes={themedCss.rateWrapper}>
 			<div classes={themedCss.topCaption}>
-				{!!isAccepted && <span classes={[themedCss.meta, themedCss.success, theme.variant()]}>
+				{!!isAccepted && mode !== 'comment' && <span classes={[themedCss.meta, themedCss.success, theme.variant()]}>
 					{messages.accepted}
 				</span>}
-				{!!isDuplicate && <span classes={themedCss.meta}>{messages.duplicate}</span>}
+				{!!isDuplicate && mode !== 'comment' && <span classes={themedCss.meta}>{messages.duplicate}</span>}
 			</div>
 			{!!aggregateRating && <Rate {...aggregateRating} readOnly={isDuplicate} hasActions={!isDuplicate} />}
 		</div>
 		<Caption {...{summary: s, content, ...ld}} {...overwrites}
 			compact
-			attributionsByline={<virtual>{answered} <TimeRelative hasTitle date={ld.published||''} /></virtual>}
+			key="caption"
+			attributionsByline={attributionsByline}
 			colored={!isDuplicate && mode !== 'comment'}
 			summaryLines={summaryLines}
 			contentLines={contentLines}
-			omitProperties={['date','locales','location',isDuplicate && 'attributedTo']}
+			omitProperties={['date','locales','location',(isDuplicate||mode === 'comment') && 'attributedTo']}
 			locale={i18nActivityPub.get().locale}
 			onLocale={(l) => i18nActivityPub.setLocale(l)}
 			classes={{
@@ -139,8 +141,14 @@ export const Reply = factory(function reply({
 				}
 			}}
 		/>
+		{mode === 'comment' && <small classes={themedCss.replyAttributions}>
+			<AttributedTo compact key="attributions" {...ld}
+				byline={<virtual><Icon size="xs" type="published" spaced="left" />{attributionsByline}</virtual>}
+				max={9}
+			/>
+		</small>}
 
-		{!!isDuplicate && !!replies.totalItems &&
+		{mode !== 'comment' && !!isDuplicate && !!replies.totalItems &&
 			<p classes={themedCss.duplicateReplyCount}>{replies.totalItems} {format('answers', {count: replies.totalItems})}</p>}
 
 		{!isDuplicate && mode !== 'comment' && <div classes={themedCss.replyButtons}>

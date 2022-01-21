@@ -27,11 +27,6 @@
 .success {
 	composes: success from './_color.m.css';
 }
-
-.noAnswer {
-	composes: s italic serif from './_typo.css';
-	color: var(--ui-text);
-}
 .meta {
 	composes: s from './_typo.css';
 	color: var(--ui-text);
@@ -105,8 +100,9 @@
 .topAnswers {
 
 }
-
 .noAnswer {
+	composes: s italic serif from './_typo.css';
+	color: var(--ui-text);
 	padding-left: calc(var(--grid-base,8px) + var(--ui-border-width-emphasized));
 }
 
@@ -116,90 +112,4 @@
 .rateWrapper >:last-child {
 	position: relative;
 	top: 4px;
-}
-.answer > .rateWrapper {
-	display: flex;
-	justify-content: space-between;
-	margin-bottom: var(--line);
-}
-.topCaption {
-	position: relative;
-	top: 4px;
-}
-.answer {
-	margin-bottom: calc(var(--ui-border-width-emphasized) * -2);
-	padding: 0px var(--grid-base,8px) 0px var(--grid-base,8px);
-	background: var(--paper);
-	border-radius: var(--ui-border-radius-emphasized);
-	border: var(--ui-border-width-emphasized) solid var(--bg);
-	box-shadow: var(--ui-dp-2);
-}
-.hasAccepted {
-	composes: success from './_color.m.css';
-}
-.hasDuplicate {
-	border-left-color: var(--ui-flat-empty);
-	cursor: pointer;
-}
-.accepted,
-.duplicate {
-	position: absolute;
-	transform: scale(2);
-}
-.accepted {
-	margin-left: -4px;
-}
-.hasAccepted:first-child .accepted {
-	text-shadow: -3px -3px 1px var(--base);
-}
-.hasAccepted:first-child .accepted,
-.duplicate {
-	margin-top: -4px;
-}
-.duplicate {
-	margin-left: 1px;
-}
-.hasAccepted .meta {
-	padding-left: calc(var(--grid-base,8px) * 2);
-}
-.hasDuplicate .meta {
-	padding-left: calc(var(--grid-base,8px) * 4);
-}
-.meta + .replyCaption {
-	padding-top: var(--line);
-}
-.hasDuplicate .replySummary > :last-child::after {
-	content: " […]";
-	display: inline;
-	text-shadow: none;
-	color: var(--r-secondary,#c30c70);
-}
-.root .replyAttributions {
-	margin-top: 0px;
-	margin-bottom: var(--line);
-}
-.duplicateReplyCount {
-	composes: s from './_typo.css';
-	font-weight: var(--weight-bold);
-	padding-left: var(--grid-base,8px);
-}
-.captionWrapper { }
-.replyButtons {
-	display: flex;
-	justify-content: center;
-}
-.root .replyButton:hover {
-	--text-flat-hover: var(--text);
-	color: var(--text);
-}
-.openButton {
-	flex: 1;
-}
-.iconSlide,
-.openIcon {
-	composes: h3 from './_typo.css';
-}
-.root .iconSlide {
-	height: 100%;
-	margin: 0px var(--grid-base,8px) 0px 0px;
 }

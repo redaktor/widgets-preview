@@ -1,10 +1,16 @@
 
 .root {
-	--base: #FFF;
+	--base: #fff;
+
 	--mutedAlpha: 0.84;
 	--disabledAlpha: 0.72;
 	--pulseAlpha: 0.64;
 	--surface: #d6d6d6;
+
+	--bg: var(--m-50);
+	--paper: #faf8f7;
+	--sticker: #f8f4f3;
+
 	--m-h: 0;
 	--m-s: 0%;
   --ui-dp-l-1: 89%;
@@ -16,8 +22,6 @@
   --ui-dp-l-12: 98%;
   --ui-dp-l-16: 99%;
   --ui-dp-l-24: 100%;
-	--bg: var(--m-50);
-	--paper: #faf8f7;
 
 	--text: rgba(0, 0, 0, 0.92);
 	--text-flat: var(--m-400);

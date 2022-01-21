@@ -265,72 +265,6 @@ const didVote = false;
 		}
 		return false;
 	}
-// TODO - own widget
-	const { answered } = messages;
-	const REPLY = ((o: AsObject|null|undefined, id: number|string) => {
-		// TODO isAccepted
-		if (!o) { return '' }
-		const { isDuplicate = false, isAccepted = false, summary: s = [], content = [], replies = [] } = o;
-		const aggregateRating = getAggregateRating(o);
-		let overwrites = {};
-		if (!!isDuplicate) {
-			const summary = `${!Array.isArray(s) ? s : s.join(' - ')}: ${!Array.isArray(content) ? content : content.join(' - ')}`
-				.replace(/\r?\n/g, ' ')
-				.substring(0, duplicates.length > 2 ? 56 : (duplicates.length > 1 ? 112 : 168) );
-			overwrites = {summary, content: ''};
-		}
-		return <div classes={[themedCss.answer, !!isAccepted && themedCss.hasAccepted, !!isDuplicate && themedCss.hasDuplicate]}>
-			{!!isAccepted && <span classes={themedCss.accepted}><Icon color="success" size="xxl" type="check" /></span>}
-			{!!isDuplicate && <span classes={themedCss.duplicate}>
-				<Icon color={color} size="xxl" type="move" spaced="right" />
-			</span>}
-			<div key={`rateWrapper${id}`} classes={themedCss.rateWrapper}>
-				<div classes={themedCss.topCaption}>
-					{!!isAccepted && <span classes={[themedCss.meta, themedCss.success, theme.variant()]}>
-						{messages.accepted}
-					</span>}
-					{!!isDuplicate && <span classes={themedCss.meta}>{messages.duplicate}</span>}
-				</div>
-				{!!aggregateRating && <Rate {...aggregateRating} readOnly={isDuplicate} hasActions={!isDuplicate} />}
-			</div>
-			<Caption {...o} {...overwrites}
-				compact
-				attributionsByline={<virtual>{answered} <TimeRelative hasTitle date={o.published||''} /></virtual>}
-				colored={!isDuplicate}
-				summaryLines={3}
-				contentLines={(duplicates.length > 1 && isAccepted) ? 3 : (!o.summary||!o.summary.length ? 10 : 5)}
-				omitProperties={['date','locales','location',isDuplicate && 'attributedTo']}
-				locale={i18nActivityPub.get().locale}
-				onLocale={(l) => i18nActivityPub.setLocale(l)}
-				classes={{
-					'@redaktor/widgets/images': {
-						pageCaption: [themedCss.replyCaption],
-						summary: [themedCss.replySummary],
-						attributions: [themedCss.replyAttributions]
-					}
-				}}
-			/>
-
-			{!!isDuplicate && !!replies.totalItems &&
-				<p classes={themedCss.duplicateReplyCount}>{replies.totalItems} {format('answers', {count: replies.totalItems})}</p>}
-
-			{!isDuplicate && <div classes={themedCss.replyButtons}>
-				<Button classes={{ '@redaktor/widgets/button': {root: [themedCss.replyButton, themedCss.openButton]} }} design="flat" color={color}>
-					<Icon spaced="right" type={["Note", "Place"]} />Open
-				</Button>
-				<Button classes={{ '@redaktor/widgets/button': {root: [themedCss.replyButton]} }} design="flat" color={color}>
-					<Icon spaced="right" type="bookmark" />Bookmark
-				</Button>
-				<Button classes={{ '@redaktor/widgets/button': {root: [themedCss.replyButton]} }} design="flat" color={color}>
-					<Icon spaced="right" type="announce" />Share
-				</Button>
-				<Button classes={{ '@redaktor/widgets/button': {root: [themedCss.replyButton]} }} design="flat" color={color}>
-					<Icon spaced="right" type="edit" />Edit
-				</Button>
-			</div>}
-		</div>
-	});
-// <--
 
 	const answerInput = !isPoll ?
 		<TextArea
@@ -429,7 +363,7 @@ const didVote = false;
 
 		{<div key="answerWrapper" classes={themedCss.answerWrapper}>
 			{!isPoll && !!topReactions.length && <div classes={themedCss.topAnswers}>
-				{topReactions.map((o: any) => <Reply {...o}
+				{topReactions.map((o: any) => <Reply {...o} mode="comment"
 					summaryLines={3}
 					contentLines={10}
 					summaryLength={duplicates.length > 2 ? 56 : (duplicates.length > 1 ? 112 : 168)}

@@ -2,7 +2,7 @@
 .hasFocus { }
 .active { }
 .spaced { }
-.dense { }
+.compact { }
 .actors {
 	display: flex;
 	flex-wrap: wrap;
@@ -12,11 +12,6 @@
 .actors.active {
 	justify-content: flex-end;
 }
-/*
-.dense .actors > .actor {
-	margin: 0 -2px 0 0;
-}
-*/
 .moreWrapper {
 	order: 9999;
 	padding-top: var(--pt);
@@ -28,8 +23,8 @@
 	letter-spacing: -1px;
 }
 
-.attributions {
-	composes: h3 from './_typo.css';
+.attributions,
+.headline {
 	--toColor: var(--ui-border, gray);
 	--btnColor: var(--ui-bg, black);
 	display: flex;
@@ -40,6 +35,7 @@
 	order: 3;
 	z-index: 3;
 }
+.headline { composes: h3 from './_typo.css'; }
 
 .hasFocus > * {
 	background: none !important;
@@ -115,10 +111,11 @@
 .summaryContent {
 	display: flex;
 	height: var(--line2);
-	margin-right: var(--line);
 	z-index: 9;
 }
-
+.attributions:not(.compact) .summaryContent {
+	margin-right: var(--line);
+}
 .detailsContent {
 	max-width: 540px;
 }
@@ -224,6 +221,11 @@
 .attributions[open] .actorName,
 .attributions:not([open]) .closed.petName {
 	color: var(--text);
+}
+
+.compact:not([open]) .metaWrapper,
+.compact:not([open]) .actorByline {
+	display: inline;
 }
 
 .actorName {
