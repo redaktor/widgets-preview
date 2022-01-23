@@ -79,12 +79,13 @@ export const Rate = factory(function Rate({properties, id, children, middleware:
 	].reverse();
 	let hasChecked = false;
 
-	return <div key="root" classes={[themedCss.root, theme.uiSize('l')]}>
-		<fieldset key="fieldset" classes={[
-			themedCss.fieldset,
-			hasActions && themedCss.hasActions,
-			readOnly ? themedCss.readOnly : themedCss.readWrite
-		]} name={name}>
+	return <div key="root" classes={[
+		themedCss.root,
+		theme.uiSize('l'),
+		hasActions && themedCss.hasActions,
+		readOnly ? themedCss.readOnly : themedCss.readWrite
+	]}>
+		<fieldset key="fieldset" classes={themedCss.fieldset} name={name}>
 			{values.map((v, i) => {
 				const vId = `${name}-${i}`;
 				const cl = is(v, 'integer') ? themedCss.full : themedCss.half;

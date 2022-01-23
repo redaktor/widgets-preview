@@ -331,18 +331,28 @@ const exampleQuestion: AsActivity = {
   "result": [
     acceptedReply,
     /*{...acceptedReply, type:'Question', name:'Dup Q1', id:'dup1'},*/
-    {...acceptedReply, type:'Question', name:'Dup Q2', id:'dup2', replies: {"type": "Collection","totalItems":1,items:[
-      {...acceptedReply, name:'Dup Q3', id:'dup3'}
+    {...acceptedReply, type:'Question', name:'Dup Q2', id:'dup2', replies: {"type": "Collection","totalItems":2,items:[
+      {...acceptedReply, name:'Dup Q3', id:'dup3'}, {...acceptedReply, name:'Dup Q4', id:'dup4'}
     ] }}],
 
   "replies": {
+    "id": "topCollection",
     "type": "Collection",
     "totalItems": 3,
     "items": [
       acceptedReply,
       {
         ...acceptedReply,
-        id: "justDupAnswer"
+        id: "justDupAnswer",
+        "replies": {
+          "id": "replyCollection",
+          "type": "Collection",
+          "totalItems": 2,
+          "items": [
+            {...acceptedReply, id: "justDupComment"},
+            {...acceptedReply, id: "justDupComment2"}
+          ]
+        }
       },
       {
         ...acceptedReply,
@@ -363,13 +373,6 @@ export default factory(function Basic() {
 		<Example spaced={true}>
       <virtual>
         <div><h5>Image ActivityPub Object</h5><p>column</p></div>
-        <div style="width:100%;height:var(--line2);background:var(--base);" />
-        <div style="width:100%;height:var(--line2);background:var(--surface);" />
-        <div style="width:100%;height:var(--line2);background:var(--bg);" />
-        <div style="width:100%;height:var(--line2);background:var(--paper);" />
-        <div style="width:100%;height:var(--line2);background:var(--sticker);" />
-        <div style="width:100%;height:var(--line2);background:var(--ui-bg);" />
-        <div style="width:100%;height:var(--line2);background:var(--ui-bg-muted);" />
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
             <Question {...exampleQuestion} />

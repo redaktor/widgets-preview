@@ -26,6 +26,8 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 	/* small typo, media captions */
 	compact?: boolean;
+	/* small typo, no avatar attributedTo */
+	compactAttributedTo?: boolean;
 	/* content is paginated, not collapsed */
 	contentPaginated?: boolean;
 	/* if not compact, visible lines of collapsed content */
@@ -101,8 +103,8 @@ export const Caption = factory(function Caption({
 	const viewDesktopCSS = theme.viewDesktopCSS();
 
 	const {
-		attributionsByline, locale: currentLocale, compact = false, hasDetails = false, isOpen = false,
-		dateOpenIndex = false, locationOpenIndex = false, size = 'm', view = 'column', colored = false,
+		attributionsByline, locale: currentLocale, compact = false, compactAttributedTo = false, hasDetails = false,
+		isOpen = false, dateOpenIndex = false, locationOpenIndex = false, size = 'm', view = 'column', colored = false,
 		largeLocation = false, locationIsDetails = false, locationHasOnline = false, locationHasMap = true,
 		largeDate = false, isImageCaption = false, contentPaginated = false, color, contentLines: cl, summaryLines: sl,
 		moreLabel, transformContent, onToggle, onFocusPrevious, onDate, onLocation, onLocale
@@ -221,6 +223,7 @@ export const Caption = factory(function Caption({
 		</span>
 
 		{!omit.has('attributedTo') && <AttributedTo key="attributions" {...ld}
+			compact={compactAttributedTo}
 			byline={attributionsByline}
 			classes={{ '@redaktor/widgets/actors': { root: attributionsClasses } }}
 			max={39}

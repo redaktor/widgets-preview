@@ -13,10 +13,10 @@ import Rate from '../rate';
 import Button from '../button';
 import Icon from '../icon';
 // import * as ui from '../theme/material/_ui.m.css';
-import bundle from './nls/Question';
+import bundle from './nls/Reply';
 import * as css from '../theme/material/reply.m.css';
 
-export interface ReplyProperties extends AsActivity {
+export interface ReplyProperties extends AsObject {
 	widgetId?: string;
 	view?: 'responsive' | 'column' | 'row' | 'tableRow';
 	mode?: keyof typeof css & ('reply' | 'answer' | 'comment');
@@ -72,6 +72,9 @@ selecting comment or reply could highlight mentioned people posts
 Emphasize Author Comments -
 Answers by the author of the question should be marked as author comment …
 Comments of accepted authors should be marked
+
+For Q&A logic having `answer` and `comments`, the comments should be flattened
+but point to the parent
 */
 const factory = create({ id, i18nActivityPub, theme, breakpoints })
 	.properties<ReplyProperties>()
@@ -88,7 +91,7 @@ export const Reply = factory(function reply({
 	const { messages, format } = i18nActivityPub.localize(bundle);
 	const {
 		fullscreen, onMouseEnter, onMouseLeave, onLoad, onFullscreen, widgetId = id.getId(),
-		summaryLength = 168, contentLines = 5, summaryLines = 3, color = 'pink', view = 'column', mode = 'reply'
+		summaryLength: sLength = 168, contentLines = 5, summaryLines = 3, color: c, view = 'column', mode = 'reply'
 	} = properties();
 	const themedCss = theme.classes(css);
 
@@ -97,10 +100,15 @@ export const Reply = factory(function reply({
 	if (view === 'tableRow') {
 		return 'TODO'
 	}
-
+	const color = !c ? (mode === 'answer' ? 'pink' : 'primary') : c;
+	const summaryLength = mode === 'comment' ? 220 : 168;
 	// TODO isAccepted
-	const { isDuplicate = false, isAccepted = false, summary: s = [], content = [], replies = [], ...ld } = i18nActivityPub.normalized<ReplyProperties>();
+	const {
+		isDuplicate = false, isAccepted = false,
+		summary: s = [], content = [], replies = {totalItems: 0, items: []}, ...ld
+	} = i18nActivityPub.normalized<ReplyProperties>();
 	const aggregateRating = getAggregateRating(ld);
+	const replyItems = [...(new Set(replies.items||[]))];
 	let overwrites = {};
 	if (!!isDuplicate || mode === 'comment') {
 		const summary = `${!Array.isArray(s) ? s : s.join(' - ')}: ${!Array.isArray(content) ? content : content.join(' - ')}`
@@ -109,9 +117,31 @@ export const Reply = factory(function reply({
 		overwrites = {summary, content: ''};
 	}
 	const { answered } = messages;
-	const attributionsByline = <virtual>{mode === 'comment' ? '' : answered} <TimeRelative hasTitle date={ld.published||''} /></virtual>;
+	const attributionsByline = <span classes={[theme.uiColor('primary'), themedCss.meta]}>
+		{mode === 'comment' ? '' : answered} <TimeRelative short={mode === 'comment'} hasTitle date={ld.published||''} />
+	</span>;
 
-	return <div classes={[themedCss.root, themedCss[mode], !!isAccepted && themedCss.hasAccepted, !!isDuplicate && themedCss.hasDuplicate]}>
+	// TODO
+	const authorOfQuestion = true;
+	const authorOfAccepted = false;
+	// empty span for flex behaviour
+	const attributionsHint = !authorOfQuestion && !authorOfAccepted ? <span /> :
+		<span classes={[themedCss.muted, themedCss.hintIcon]}>
+			<Icon
+				spaced={true}
+				type="bullhorn"
+				color={authorOfQuestion ? color : 'neutral'}
+				title={`${(mode === 'comment' ? messages.comment : messages.answer)} ${authorOfQuestion ? messages.ofQuestioner : messages.ofAccepted}`}
+			/>
+		</span>;
+
+	return <div classes={[
+		themedCss.root,
+		themedCss[mode],
+		theme.variant(),
+		theme.uiColor(color),
+		!!isAccepted && themedCss.hasAccepted, !!isDuplicate && themedCss.hasDuplicate
+	]}>
 		{!!isAccepted && <span classes={themedCss.accepted}><Icon color="success" size="xxl" type="check" /></span>}
 		{!!isDuplicate && <span classes={themedCss.duplicate}><Icon color={color} size="xxl" type="move" spaced="right" /></span>}
 		<div key={`rateWrapper${widgetId}`} classes={themedCss.rateWrapper}>
@@ -119,9 +149,12 @@ export const Reply = factory(function reply({
 				{!!isAccepted && mode !== 'comment' && <span classes={[themedCss.meta, themedCss.success, theme.variant()]}>
 					{messages.accepted}
 				</span>}
-				{!!isDuplicate && mode !== 'comment' && <span classes={themedCss.meta}>{messages.duplicate}</span>}
+				{!!isDuplicate && mode !== 'comment' && <span classes={themedCss.meta}>
+					{messages.duplicate}
+				</span>}
+				{mode !== 'comment' && attributionsHint}
 			</div>
-			{!!aggregateRating && <Rate {...aggregateRating} readOnly={isDuplicate} hasActions={!isDuplicate} />}
+			{!!aggregateRating && <Rate {...aggregateRating} color={color} readOnly={isDuplicate} hasActions={!isDuplicate} />}
 		</div>
 		<Caption {...{summary: s, content, ...ld}} {...overwrites}
 			compact
@@ -142,14 +175,17 @@ export const Reply = factory(function reply({
 			}}
 		/>
 		{mode === 'comment' && <small classes={themedCss.replyAttributions}>
+			{attributionsHint}
 			<AttributedTo compact key="attributions" {...ld}
-				byline={<virtual><Icon size="xs" type="published" spaced="left" />{attributionsByline}</virtual>}
+				byline={<virtual><Icon color="primary" size="xs" type="comment" spaced="left" />{attributionsByline}</virtual>}
 				max={9}
 			/>
 		</small>}
 
 		{mode !== 'comment' && !!isDuplicate && !!replies.totalItems &&
 			<p classes={themedCss.duplicateReplyCount}>{replies.totalItems} {format('answers', {count: replies.totalItems})}</p>}
+
+		{mode !== 'comment' && !isDuplicate && replyItems.map((o: any) => <Reply {...o} mode="comment" />)}
 
 		{!isDuplicate && mode !== 'comment' && <div classes={themedCss.replyButtons}>
 			<Button classes={{ '@redaktor/widgets/button': {root: [themedCss.replyButton, themedCss.openButton]} }} design="flat" color={color}>

@@ -46,10 +46,10 @@ const messages = {
 		other {# minutes ago}}}
 	agoShort {{${PL}
 		=0 {just now}
-		other {#m ago}}}
+		other {# m ago}}}
 	aheadShort {{${PL}
 		=0 {right now}
-		other {in #m}}}
+		other {in # m}}}
 	other {{${PL}
 		=0 {right now}
 		=1 {in 1 minute}
@@ -59,9 +59,9 @@ const messages = {
 		=1 {One hour ago}
 		other {# hours ago}}}
 	agoShort {{${PL}
-		other {#h ago}}}
+		other {# h ago}}}
 	aheadShort {{${PL}
-		other {in #h}}}
+		other {in # h}}}
 	other {{${PL}
 		=1 {in 1 hour}
 		other {in # hours}}}}`,
@@ -70,9 +70,9 @@ const messages = {
 		=1 {One day ago}
 		other {# days ago}}}
 	agoShort {{${PL}
-		other {#d ago}}}
+		other {# d ago}}}
 	aheadShort {{${PL}
-		other {in #d}}}
+		other {in # d}}}
 	other {{${PL}
 		=1 {in 1 day}
 		other {in # days}}}}`,
@@ -81,9 +81,9 @@ const messages = {
 		=1 {One week ago}
 		other {# weeks ago}}}
 	agoShort {{${PL}
-		other {#w ago}}}
+		other {# w ago}}}
 	aheadShort {{${PL}
-		other {in #w}}}
+		other {in # w}}}
 	other {{${PL}
 		=1 {in 1 week}
 		other {in # weeks}}}}`,
@@ -92,9 +92,9 @@ const messages = {
 		=1 {One month ago}
 		other {# months ago}}}
 	agoShort {{${PL}
-		other {#mo ago}}}
+		other {# mo ago}}}
 	aheadShort {{${PL}
-		other {in #mo}}}
+		other {in # mo}}}
 	other {{${PL}
 		=1 {in 1 month}
 		other {in # months}}}}`,
@@ -103,9 +103,9 @@ const messages = {
 		=1 {One year ago}
 		other {# years ago}}}
 	agoShort {{${PL}
-		other {#yr ago}}}
+		other {# yr ago}}}
 	aheadShort {{${PL}
-		other {in #yr}}}
+		other {in # yr}}}
 	other {{${PL}
 		=1 {in 1 year}
 		other {in # years}}}}`

@@ -8,10 +8,10 @@ export default {
 		other {vor # Minuten}}}
 	agoShort {{${PL}
 		=0 {eben}
-		other {vor #Min.}}}
+		other {vor # Min.}}}
 	aheadShort {{${PL}
 		=0 {gleich}
-		other {in #Min.}}}
+		other {in # Min.}}}
 	other {{${PL}
 		=0 {jetzt gleich}
 		=1 {in einer Minute}
@@ -21,9 +21,9 @@ export default {
 		=1 {vor einer Stunde}
 		other {vor # Stunden}}}
 	agoShort {{${PL}
-		other {vor #Std.}}}
+		other {vor # Std.}}}
 	aheadShort {{${PL}
-		other {in #Std.}}}
+		other {in # Std.}}}
 	other {{${PL}
 		=1 {in einer Stunde}
 		other {in # Stunden}}}}`,
@@ -32,9 +32,9 @@ export default {
 		=1 {vor einem Tag}
 		other {vor # Tagen}}}
 	agoShort {{${PL}
-		other {vor #T.}}}
+		other {vor # T.}}}
 	aheadShort {{${PL}
-		other {in #T.}}}
+		other {in # T.}}}
 	other {{${PL}
 		=1 {in einem Tag}
 		other {in # Tagen}}}}`,
@@ -43,9 +43,9 @@ export default {
 		=1 {vor einer Woche}
 		other {vor # Wochen}}}
 	agoShort {{${PL}
-		other {vor #W.}}}
+		other {vor # W.}}}
 	aheadShort {{${PL}
-		other {in #W.}}}
+		other {in # W.}}}
 	other {{${PL}
 		=1 {in einer Woche}
 		other {in # Wochen}}}}`,
@@ -54,9 +54,9 @@ export default {
 		=1 {vor einem Monat}
 		other {vor # Monaten}}}
 	agoShort {{${PL}
-		other {vor #M.}}}
+		other {vor # M.}}}
 	aheadShort {{${PL}
-		other {in #M.}}}
+		other {in # M.}}}
 	other {{${PL}
 		=1 {in einem Monat}
 		other {in # Monaten}}}}`,
@@ -65,9 +65,9 @@ export default {
 		=1 {vor einem Jahr}
 		other {vor # Jahren}}}
 	agoShort {{${PL}
-		other {vor #J.}}}
+		other {vor # J.}}}
 	aheadShort {{${PL}
-		other {in #J.}}}
+		other {in # J.}}}
 	other {{${PL}
 		=1 {in 1 Jahr}
 		other {in # Jahren}}}}`

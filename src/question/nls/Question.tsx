@@ -2,10 +2,14 @@ const locales = {
 	de: () => import('./de/Question')
 };
 const messages = {
+	questionShort: 'Q',
+	answerShort: 'A',
 	question: 'Question',
 	poll: 'Poll',
 	answer: 'Answer',
-	questionShort: 'Q',
+	comment: 'Comment',
+	ofQuestioner: 'of the questioner',
+	ofAccepted: 'of the accepted author',
 	wasAsked: 'asked',
 	wasActive: 'active',
 	answered: 'answered',

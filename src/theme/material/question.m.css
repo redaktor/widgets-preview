@@ -34,7 +34,7 @@
 .alert {
 	color: var(--text);
 	font-weight: var(--weight-semibold, 500);
-	padding-left: calc(var(--grid-base,8px) + var(--ui-border-width-emphasized));
+	padding-left: calc(var(--grid-base,8px) + 0.66em - var(--ui-border-width-emphasized));
 	margin-bottom: calc(var(--mb) - var(--line));
 }
 .questionMark {

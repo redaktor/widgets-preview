@@ -59,7 +59,7 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 	return <div classes={[themedCss.root, spaceClass]}>
 	{
 		(attributedTo.length === 1) &&
-			<Actor {...{...attributedTo[0], byline}} focus={focus.shouldFocus} compact={compact} />
+			<Actor {...{...attributedTo[0], byline, compact}} focus={focus.shouldFocus} />
 	}
 	{
 		(attributedTo.length > 1) &&
@@ -72,8 +72,7 @@ const AttributedTo = factory(function AttributedTo({ properties, middleware: { t
 				// TODO src for label -> image Avatar
 				const name = attrO.name ? attrO.name[0] : '';
 				return <Actor
-					{...{...attrO}}
-					compact={compact}
+					{...{...attrO, compact}}
 					open={get('openIndex') === i}
 					classes={attributedTo.length > 2 ? {
 						'@redaktor/widgets/actors': {

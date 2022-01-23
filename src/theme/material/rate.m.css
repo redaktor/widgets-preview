@@ -4,6 +4,7 @@
 }
 .root {
 	display: flex;
+	padding-top: var(--pt);
 	--minw: calc(var(--size) + var(--grid-base,8px) / 2);
 }
 .fieldset {
@@ -41,13 +42,13 @@
 .readWrite > .label:hover ~ .input:checked ~ .label,
 .readWrite > .input:checked ~ .label:hover ~ .label { color: var(--ui-text);  }
 
-.fieldset.readOnly > .input,
-.fieldset.readOnly > .label {
+.readOnly .fieldset > .input,
+.readOnly .fieldset > .label {
 	color: var(--border);
 	pointer-events: none;
 }
 
-.fieldset.hasActions {
+.hasActions .fieldset {
 	padding: 0px 0px 0px var(--minw);
 }
 .hasActions .label.flag::after,
@@ -105,7 +106,7 @@
 	min-width: var(--minw);
 	text-align: right;
 }
-.root:hover .count {
+.root:not(.readOnly):hover .count {
 	opacity: 0;
 	pointer-events: none;
 	z-index: 0;

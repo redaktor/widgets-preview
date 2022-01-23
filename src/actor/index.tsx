@@ -82,7 +82,7 @@ const Actor = factory(function Actor({ /*children,*/ properties, middleware: { i
 	const viewDesktopCSS = theme.viewDesktopCSS();
 	const normalized = i18nActivityPub.normalized<ActorProperties>();
 	const {
-		onFocus, onBlur, onOpen, onClose,
+		byline, onFocus, onBlur, onOpen, onClose,
 		focus: focused = false, compact = false, open = false
 	} = properties();
 	const {
@@ -90,7 +90,6 @@ const Actor = factory(function Actor({ /*children,*/ properties, middleware: { i
 		edgeNames = [],
 		icon,
 		image,
-		byline,
 		summary,
 		follow: f,
 		petName: p
@@ -143,39 +142,6 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 		(follow === true ? 'followed' : (follow === 'follower' ? 'follows you' : 'mutual')) ||
 		'';
 
-	const summaryContent = <virtual>
-		{!!profileImage && !!profileImage.length && profileImage.map((img: any) => {
-			return <div aria-hidden="true" classes={[
-				themedCss.profileImage,
-				viewCSS.m16by5,
-				viewDesktopCSS && viewDesktopCSS.m16by5
-			]}>
-				<Img
-					{...img}
-					key="profileImage"
-					fit="cover"
-					focalPoint={void 0}
-					aspectRatio="16/5"
-				/>
-			</div>
-		})}
-		<div classes={themedCss.summaryContent}>
-			{!compact && <span classes={themedCss.avatar}>{avatar}</span>}
-			<div classes={themedCss.metaWrapper}>
-				{petName ? (compact ? <span>{petName.substr(0,36)}</span> :
-					<virtual>
-						<h5 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.closed, themedCss.petName]}>{petName}</h5>
-						<h3 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.petName]}>{petName}</h3>
-					</virtual>) :
-					(get('preferredUsername') ? (compact ? <span>{(get('preferredUsername')||'').substr(0,36)}</span> :
-						<h5 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.noPetName]}>{get('preferredUsername')}</h5>) :
-						''
-					)
-				}
-				{byline && <small classes={themedCss.actorByline}>{byline}</small>}
-			</div>
-		</div>
-	</virtual>
 	const detailsContent = <div classes={themedCss.detailsContent}>
 		{handle ? <i classes={themedCss.handle}>{handle}</i> : ''}
 		{summary && !get('edgeNamesVisible') &&
@@ -230,7 +196,6 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 			</p>}
 	</div>
 
-// console.log('Actor',open)
 	return <details
 		key="details"
 		classes={[
@@ -260,7 +225,38 @@ ${eCount < 2 ? '' : (eCount === 2 ? ' and 1' : `& ${eCount-1} others`)}`;
 			detailsCss.animated, detailsCss.summary, themedCss.summary,
 			!!profileImage && !!profileImage.length && themedCss.hasProfileImage
 		]}>
-			{summaryContent}
+
+			{!!profileImage && !!profileImage.length && profileImage.map((img: any) => {
+				return <div aria-hidden="true" classes={[
+					themedCss.profileImage,
+					viewCSS.m16by5,
+					viewDesktopCSS && viewDesktopCSS.m16by5
+				]}>
+					<Img
+						{...img}
+						key="profileImage"
+						fit="cover"
+						focalPoint={void 0}
+						aspectRatio="16/5"
+					/>
+				</div>
+			})}
+			<div classes={themedCss.summaryContent}>
+				{!compact && <span classes={themedCss.avatar}>{avatar}</span>}
+				<div classes={themedCss.metaWrapper}>
+					{petName ? (compact ? <span>{petName.substr(0,36)}</span> :
+						<virtual>
+							<h5 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.closed, themedCss.petName]}>{petName}</h5>
+							<h3 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.petName]}>{petName}</h3>
+						</virtual>) :
+						(get('preferredUsername') ? (compact ? <span>{(get('preferredUsername')||'').substr(0,36)}</span> :
+							<h5 classes={[detailsCss.summaryContent, themedCss.actorName, themedCss.noPetName]}>{get('preferredUsername')}</h5>) :
+							''
+						)
+					}
+					{byline && <small classes={themedCss.byline}>{byline}</small>}
+				</div>
+			</div>
 		</summary>
 		{detailsContent}
 	</details>

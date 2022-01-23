@@ -223,7 +223,7 @@ const didVote = false;
 		const {breakpoint = 's'} = breakpoints.get('measure')||{};
 		vp = breakpoint;
 	}
-	const { name, image = [], result = [], replies = {totalItems: 0, items: [] } } = (ld as AsObjectNormalized);
+	const { name, image = [], result = [], replies = {totalItems: 0, items: []} } = (ld as AsObjectNormalized);
 	const isPoll = oneOf.length + anyOf.length > 0;
 	let replyCount = (typeof replies.totalItems === 'string' ? parseInt(replies.totalItems,10) : replies.totalItems) || 0;
 
@@ -239,7 +239,7 @@ const didVote = false;
 	const results: AsObject[] = result.filter((o:any) => !isAP(o, 'Question'))
 		.map(normRating).map((o: AsObject) => { o.isAccepted = true; return o }).sort(sortRating);
 	const [dupIDs, resIDs] = [new Set(duplicates.map(mapId)), new Set(results.map(mapId))];
-	let replyItems = [...(new Set(replies.items))].filter((o) => {
+	let replyItems = [...(new Set(replies.items||[]))].filter((o) => {
 		if (dupIDs.has(o.id) || resIDs.has(o.id)) { replyCount-- }
 		return !dupIDs.has(o.id) && !resIDs.has(o.id)
 	})
@@ -278,12 +278,7 @@ const didVote = false;
 
 	const aggregateRating = getAggregateRating(ld);
 	const classes = {
-		caption: {
-			'@redaktor/widgets/images': {
-				captionWrapper: [themedCss.captionWrapper],
-				locales: [themedCss.locales]
-			}
-		},
+		caption: { '@redaktor/widgets/images': { locales: [themedCss.locales] } },
 		chip: { '@redaktor/widgets/chip': { root: [themedCss.answerChip] } }
 	}
 
@@ -363,9 +358,9 @@ const didVote = false;
 
 		{<div key="answerWrapper" classes={themedCss.answerWrapper}>
 			{!isPoll && !!topReactions.length && <div classes={themedCss.topAnswers}>
-				{topReactions.map((o: any) => <Reply {...o} mode="comment"
-					summaryLines={3}
-					contentLines={10}
+				{topReactions.map((o: any) => <Reply {...o} mode="answer"
+					summaryLines={topReactions.length === 1 ? 4 : 3}
+					contentLines={topReactions.length === 1 ? (!duplicates.length ? 8 : 5) : (!duplicates.length ? 5 : 3)}
 					summaryLength={duplicates.length > 2 ? 56 : (duplicates.length > 1 ? 112 : 168)}
 				/>)}
 			</div>}
@@ -375,24 +370,25 @@ const didVote = false;
 					<Icon type="edit" color="grey" size="s" spaced="right" />
 					{format('readAnswers', {count: !!topReactions.length ? 1 : 0})}
 				</span> :
-					<Details size="l">{{
+					<Details size="l" color={color}>{{
 						summary: <span>
 							<Chip size={replyCount < 10 ? 's' : 'm'} color={color} spaced="right" classes={classes.chip}>{replyCount}</Chip>
 							{format('readAnswers', {count: replyCount+1})}
 						</span>,
 						content: replyItems.map((o: any) => <Reply {...o}
+							mode="answer"
 							summaryLines={3}
-							contentLines={10}
-							summaryLength={duplicates.length > 2 ? 56 : (duplicates.length > 1 ? 112 : 168)}
+							contentLines={!o.summary.length ? 15 : 10}
+							summaryLength={280}
 						/>)
 					}}</Details>)
 			}
 			{!isClosed && !!isClosingSoon && <p classes={[themedCss.alert, theme.uiSize('l')]}>
-				<Icon type="timing" color={get('closeColor')||"grey"} size="l" spaced="right" />
+				<Icon type="timing" color={get('closeColor')||"grey"} spaced="right" />
 				{closingSoonNode}
 			</p>}
 			{!!isClosed && <p title={closedAbs} classes={[themedCss.alert, theme.uiSize('l')]}>
-				<Icon type="closed" color={get('closeColor')||"grey"} size="l" spaced="right" />
+				<Icon type="closed" color={get('closeColor')||"grey"} spaced="right" />
 				{closedNode}
 			</p>}
 			{(isPoll && get('canVote')) || (!isPoll && !get('closed')) &&

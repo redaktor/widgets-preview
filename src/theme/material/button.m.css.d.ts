@@ -8,5 +8,6 @@ export const raised: string;
 export const outlined: string;
 export const shaped: string;
 export const animated: string;
-export const pulse: string;
+export const flatani: string;
+export const pulseani: string;
 export const pressed: string;

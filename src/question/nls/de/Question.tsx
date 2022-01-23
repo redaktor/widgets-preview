@@ -1,8 +1,12 @@
 export default {
+	questionShort: 'F',
+	answerShort: 'A',
 	question: 'Frage',
 	poll: 'Abstimmung',
 	answer: 'Antwort',
-	questionShort: 'F',
+	comment: 'Kommentar',
+	ofQuestioner: 'der fragestellenden Person',
+	ofAccepted: 'der akzeptierten Person',
 	wasAsked: 'gefragt',
 	wasActive: 'aktiv',
 	answered: 'antwortete',

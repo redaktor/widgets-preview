@@ -2,7 +2,7 @@
 .hasFocus { }
 .active { }
 .spaced { }
-.compact { }
+.dense { }
 .actors {
 	display: flex;
 	flex-wrap: wrap;
@@ -116,6 +116,9 @@
 .attributions:not(.compact) .summaryContent {
 	margin-right: var(--line);
 }
+.compact .summaryContent {
+	height: calc(var(--line) + var(--mb));
+}
 .detailsContent {
 	max-width: 540px;
 }
@@ -207,7 +210,7 @@
 .root .actorName {
 	padding-bottom: calc(var(--ui-border-width-emphasized) * 2);
 }
-.actorByline {
+.byline {
 	margin-top: calc(var(--mb) - var(--line) - (var(--ui-border-width-emphasized) * 2));
 	display: block;
 	white-space: nowrap;
@@ -224,7 +227,7 @@
 }
 
 .compact:not([open]) .metaWrapper,
-.compact:not([open]) .actorByline {
+.compact:not([open]) .byline {
 	display: inline;
 }
 

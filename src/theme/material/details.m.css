@@ -19,24 +19,24 @@
   background-repeat: no-repeat;
 	list-style: none;
 }
-.colored .summary {
+.colored > .summary {
 	color: var(--ui-text-muted);
 }
 .summary:focus {
 	outline: none;
 }
-.root:hover .summary,
-.root[open] .summary {
+.root > .summary:hover,
+.root[open] > .summary {
 	color: var(--text);
 }
-.colored[open] .summary {
+.colored[open] > .summary {
 	color: var(--ui-text);
 }
-.root[open] .summary:hover {
+.root[open] > .summary:hover {
 	color: var(--text-muted);
 }
-.colored:hover .summary,
-.colored[open] .summary:hover {
+.colored > .summary:hover,
+.colored[open] > .summary:hover {
 	color: var(--text);
 }
 .root:not([open]).oneLine {

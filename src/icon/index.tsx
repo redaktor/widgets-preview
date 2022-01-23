@@ -86,7 +86,7 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 				<i
 					classes={[
 						theme.variant(),
-						theme.sized(ui, 'l'),
+						theme.sized(ui),
 						theme.spaced(ui),
 						theme.colored(colors),
 						!!color && themedCss.colored,
