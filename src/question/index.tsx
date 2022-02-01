@@ -61,25 +61,12 @@ export interface QuestionChildren {
 	footer?: RenderResult;
 }
 
-/* Problems:
-In https://www.w3.org/TR/activitystreams-vocabulary/#dfn-question `name` is the Question
-but In https://www.w3.org/TR/activitystreams-vocabulary/#questions `content` is the Question …
+/* TODO
+custom icon? / image / location
+map choices -> image, icon -> full
+instrument
 
-Note - Client :
-USE `result`
-Describes the result of the activity.
-For instance, if a particular action results in the creation of a new resource,
-the result property can be used to describe that new resource.
 ---
-`endTime` answers "when will this question close"
-while
-`close` answers "did and/or when did this question close"
-(so if a question will close 2 seconds after user opened page, the onMinute SHOULD be attached)
-UI :
-Question has NO visual attributedTo cause it is an IntransitiveActivity and so the author is
-the questioner - "asking for a friend" :)
-
-TODO
 To support all implementations we somehow need to sync Like/Dislike ratio and aggregateRating
 see didVote - did already vote …
 ACCEPTS
@@ -93,14 +80,6 @@ It is considered a duplicate if `result` is a different question
 
 The ACCEPTED answer (if no oneOf or anyOf) is another type than `Question` in `result`
 with `inReplyTo` the `Question` …
-
-image, icon
-map choices -> image, icon -> full
-instrument
-tag
-startTime / endTime VS closed Object | Link | xsd:dateTime | xsd:boolean
-result
-
 
 AS oneOf | anyOf | closed
 
@@ -120,7 +99,26 @@ downvoteCount, upvoteCount
 parentItem	Comment	The parent of a question, answer or item in general.
 
 */
-/* PS result …
+
+/* Problems:
+In https://www.w3.org/TR/activitystreams-vocabulary/#dfn-question `name` is the Question
+but In https://www.w3.org/TR/activitystreams-vocabulary/#questions `content` is the Question …
+
+Note - Client :
+USE `result`
+Describes the result of the activity.
+For instance, if a particular action results in the creation of a new resource,
+the result property can be used to describe that new resource.
+---
+`endTime` answers "when will this question close"
+while
+`close` answers "did and/or when did this question close"
+(so if a question will close 2 seconds after user opened page, the onMinute SHOULD be attached)
+UI :
+Question has NO visual attributedTo cause it is an IntransitiveActivity and so the author is
+the questioner - "asking for a friend" :)
+
+PS result …
  audience Entities for which the object can considered to be relevant.
  context context within which the object exists or an activity was performed.
  relationship
@@ -212,6 +210,7 @@ export const Question = factory(function question({
 	checkClosing();
 	!get('listens') && window.addEventListener('redaktorMinute', checkClosing);
 	getOrSet('listens', true, false);
+
 /* TODO did already vote + closed = canVote */
 const didVote = false;
 	set('canVote', !(get('closed')||false) && !didVote);
@@ -242,8 +241,7 @@ const didVote = false;
 	let replyItems = [...(new Set(replies.items||[]))].filter((o) => {
 		if (dupIDs.has(o.id) || resIDs.has(o.id)) { replyCount-- }
 		return !dupIDs.has(o.id) && !resIDs.has(o.id)
-	})
-		.map(normRating).sort(sortRating);
+	}).map(normRating).sort(sortRating);
 
 	const topReplies = !results.length ? (!duplicates.length ? [replyItems.shift()] : []) : [results.shift()];
 	const topReactions: AsObject[] = duplicates.concat(topReplies);
@@ -359,21 +357,22 @@ const didVote = false;
 		{<div key="answerWrapper" classes={themedCss.answerWrapper}>
 			{!isPoll && !!topReactions.length && <div classes={themedCss.topAnswers}>
 				{topReactions.map((o: any) => <Reply {...o} mode="answer"
-					summaryLines={topReactions.length === 1 ? 4 : 3}
-					contentLines={topReactions.length === 1 ? (!duplicates.length ? 8 : 5) : (!duplicates.length ? 5 : 3)}
-					summaryLength={duplicates.length > 2 ? 56 : (duplicates.length > 1 ? 112 : 168)}
+					summaryLines={topReactions.length < 2 && !image.length ? 4 : 3}
+					contentLines={topReactions.length < 2 && !image.length ?
+						(!duplicates.length && !image.length ? 8 : 5) : (!duplicates.length ? 5 : 3)}
+					summaryLength={duplicates.length > 2 || !!image.length ? 56 : (duplicates.length > 1 ? 112 : 168)}
 				/>)}
 			</div>}
 
 			{!isPoll &&
 				(!replyItems || !replyItems.length ? <span classes={themedCss.noAnswer}>
 					<Icon type="edit" color="grey" size="s" spaced="right" />
-					{format('readAnswers', {count: !!topReactions.length ? 1 : 0})}
+					{format('readAnswers', {hasAccepted: !!topReactions.length ? 'yes' : 'no', count: 0})}
 				</span> :
 					<Details size="l" color={color}>{{
 						summary: <span>
 							<Chip size={replyCount < 10 ? 's' : 'm'} color={color} spaced="right" classes={classes.chip}>{replyCount}</Chip>
-							{format('readAnswers', {count: replyCount+1})}
+							{format('readAnswers', {hasAccepted: !!topReactions.length ? 'yes' : 'no', count: replyCount})}
 						</span>,
 						content: replyItems.map((o: any) => <Reply {...o}
 							mode="answer"

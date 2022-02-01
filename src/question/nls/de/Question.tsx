@@ -12,17 +12,18 @@ export default {
 	answered: 'antwortete',
 	doVote: 'abstimmen',
 	doAnswer: 'antworten',
-	answers: `{count, plural, offset:0
-		=1 {Antwort}
-		other {Antworten}}`,
-	comments: `{count, plural, offset:0
-		=1 {Kommentar}
-		other {Kommentare}}`,
-	readAnswers: `{count, plural, offset:0
-		=0 {Noch keine Antworten}
-		=1 {Noch keine weiteren Antworten}
-		=2 {Antwort lesen}
-		other {Antworten lesen}}`,
+	readAnswers: `{hasAccepted, select,
+		yes {
+			{count, plural, offset:0
+				=0 {Keine weiteren Antworten}
+				=1 {weitere Antwort lesen}
+				other {weitere Antworten lesen}}}
+		other {
+			{count, plural, offset:0
+				=0 {Noch keine Antworten}
+				=1 {Antwort lesen}
+				other {Antworten lesen}}}
+	}`,
 	moreInfo: 'Weiterführende Informationen',
 	duplicate: 'Duplikat von',
 	tentativeaccept: 'Akzeptabel',

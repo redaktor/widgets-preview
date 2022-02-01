@@ -8,7 +8,7 @@ import theme, { ViewportProperties } from '../middleware/theme';
 import { clampStrings } from '../common/activityPubUtil';
 import Locales from '../locales';
 import MD from '../MD/';
-import Dates from '../date';
+import Dates, { getLdDates } from '../date';
 import Location from '../location';
 import Paginated from '../paginated';
 import Collapsed from '../collapsed';
@@ -38,8 +38,8 @@ export interface CaptionProperties extends AsObject, ViewportProperties {
 	hasDetails?: boolean;
 	/* details are opened */
 	isOpen?: boolean;
-	/* navigation position, top or bottom, default top */
-	navPosition?: 'top' | 'bottom';
+	/* attributions position, top or bottom, default top */
+	attributedToPosition?: 'top' | 'bottom';
 	/* maximum number of items, default 1000 */
 	max?: number;
 	/* max. manual items per “page”, normally calculated */
@@ -106,13 +106,15 @@ export const Caption = factory(function Caption({
 		attributionsByline, locale: currentLocale, compact = false, compactAttributedTo = false, hasDetails = false,
 		isOpen = false, dateOpenIndex = false, locationOpenIndex = false, size = 'm', view = 'column', colored = false,
 		largeLocation = false, locationIsDetails = false, locationHasOnline = false, locationHasMap = true,
-		largeDate = false, isImageCaption = false, contentPaginated = false, color, contentLines: cl, summaryLines: sl,
-		moreLabel, transformContent, onToggle, onFocusPrevious, onDate, onLocation, onLocale
+		largeDate = false, isImageCaption = false, contentPaginated = false, color,
+		moreLabel, transformContent, attributedToPosition = 'top', contentLines: cl, summaryLines: sl,
+		onToggle, onFocusPrevious, onDate, onLocation, onLocale
 	} = properties();
 	const {
 		href = '', name: n = ([] as string[]), summary: s = ([] as string[]), content, sensitive, attachment, ...ld
 	} = i18nActivityPub.normalized();
 	const omit = i18nActivityPub.omit();
+console.log(omit);
 	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
 	getOrSet('currentLocale', currentLocale ? {locale: currentLocale} : locale);
 	const name = n || [href];
@@ -172,11 +174,17 @@ export const Caption = factory(function Caption({
 		<div key="contentWrapper" classes={[themedCss.contentWrapper, viewCss.content, !!viewDesktopCSS && viewDesktopCSS.content]}>
 			{!omit.has('name') && <div classes={themedCss.rowName}>{nameNode}</div>}
 
-			{summary && !omit.has('summary') && !sensitive &&
+			{summary && !omit.has('summary') && !sensitive && <div classes={themedCss.summary}>
 				<Paginated key="paginatedsummary" colored={colored} compact={compact} property="summary" spaced={summary.length>1 ? 'left' : true}>
 					{summary.map((s, i) => <span><MD classes={[themedCss.summary, typoClass]} key={`summary${i}`} content={s} /></span>)}
-				</Paginated>}
-
+				</Paginated>
+			</div>}
+			{!omit.has('attributedTo') && attributedToPosition === 'bottom' && <AttributedTo key="attributions" {...ld}
+				compact={compactAttributedTo}
+				byline={attributionsByline}
+				classes={{ '@redaktor/widgets/actors': { root: attributionsClasses } }}
+				max={39}
+			/>}
 			{!!content && !omit.has('content') && !contentPaginated &&
 				<Collapsed color={color} responsive={!isRow} lines={contentLines} label={moreLabel} classes={
 					{ '@redaktor/widgets/collapsed': { root: [themedCss.contentCollapsed] } }
@@ -222,7 +230,7 @@ export const Caption = factory(function Caption({
 			/>}
 		</span>
 
-		{!omit.has('attributedTo') && <AttributedTo key="attributions" {...ld}
+		{!omit.has('attributedTo') && attributedToPosition === 'top' && <AttributedTo key="attributions" {...ld}
 			compact={compactAttributedTo}
 			byline={attributionsByline}
 			classes={{ '@redaktor/widgets/actors': { root: attributionsClasses } }}
@@ -249,7 +257,7 @@ export const Caption = factory(function Caption({
 		</virtual>}
 	</virtual>
 
-	const rootClasses = [themedCss.pageCaption, viewCss.pageCaption];
+	const rootClasses = [themedCss.pageCaption, viewCss.pageCaption, attributedToPosition === 'bottom' && themedCss.attributedToBottom];
 	return isImageCaption ? <figcaption key="root" classes={rootClasses}>
 		{allNodes}
 	</figcaption> : <div key="divroot" classes={rootClasses}>

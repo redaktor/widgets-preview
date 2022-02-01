@@ -2,7 +2,7 @@ import { tsx, create } from '@dojo/framework/core/vdom';
 import { focus } from '@dojo/framework/core/middleware/focus';
 import { formatAriaProperties } from '../common/util';
 import { createICacheMiddleware } from '@dojo/framework/core/middleware/icache';
-import { getLdDates } from './util';
+import { getLdDates as getLD } from './util';
 import { AsObjectNormalized } from '../common/interfaces';
 import i18nActivityPub from '../middleware/i18nActivityPub';
 import id from '../middleware/id';
@@ -12,6 +12,7 @@ import ldBundle from '../_ld/redaktor/nls/redaktor';
 import * as detailsCss from '../theme/material/details.m.css';
 import * as css from '../theme/material/locationsDates.m.css';
 
+export const getLdDates = getLD;
 // type DateDescription = [string, string, string, any];
 export interface DateProperties extends AsObjectNormalized {
 	/** Is a calendar is connected? Date w. close icon */
@@ -51,7 +52,7 @@ const Dates = factory(function Date({ properties, middleware: { focus, theme, ic
 		hour: 'numeric',
 		minute: 'numeric'
 	});
-	const dates = getLdDates(ld, i18nActivityPub.localize(ldBundle).messages);
+	const dates = getLD(ld, i18nActivityPub.localize(ldBundle).messages);
 	/* TODO @type icon */
 	if (!dates.length || !dates[0]) {
 		return ''

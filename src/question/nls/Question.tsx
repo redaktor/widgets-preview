@@ -15,17 +15,18 @@ const messages = {
 	answered: 'answered',
 	doVote: 'vote',
 	doAnswer: 'answer',
-	answers: `{count, plural, offset:0
-		=1 {answer}
-		other {answers}}`,
-	comments: `{count, plural, offset:0
-		=1 {comment}
-		other {comments}}`,
-	readAnswers: `{count, plural, offset:0
-		=0 {no answers yet}
-		=1 {no further answers yet}
-		=2 {answer}
-		other {read answers}}`,
+	readAnswers: `{hasAccepted, select,
+		yes {
+			{count, plural, offset:0
+				=0 {no further answers yet}
+				=1 {further answer}
+				other {read further answers}}}
+		other {
+			{count, plural, offset:0
+				=0 {no answers yet}
+				=1 {answer}
+				other {read answers}}}
+	}`,
 	moreInfo: 'further information',
 	duplicate: 'duplicate of',
 	tentativeaccept: 'reasonable',

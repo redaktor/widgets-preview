@@ -3,6 +3,7 @@ import { uuid } from '@dojo/framework/core/util';
 import { AsObject, AsImage, AsActor, AsActivity } from '../../../../common/interfaces';
 import Example from '../../Example';
 import Image, { ImageProperties } from '@redaktor/widgets/image';
+import Note from '@redaktor/widgets/note';
 import Event from '@redaktor/widgets/event';
 import Place from '@redaktor/widgets/place';
 import Question from '@redaktor/widgets/question';
@@ -320,6 +321,11 @@ const exampleQuestion: AsActivity = {
   "id": "http://help.example.org/question/1",
   "type": "Question",
   "content": "I'd like to build a robot to feed my cat. Should I use Arduino or Raspberry Pi?",
+  image: [
+    {..._1_1, summary: exampleText, updated: "2018-09-12T12:12:12Z"},
+    {..._3_2, name: "test", updated: "2018-10-11T12:12:12Z"},
+    _2_3, _4_1, _2_3, _3_2, _1_1, _4_1, _3_2
+  ],
   /*"anyOf": [
    {"name": "arduino", "summary": "Lorem Ipsum"},
    {"name": "raspberry pi", "summary": "Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum"}
@@ -368,13 +374,27 @@ const exampleQuestion: AsActivity = {
 
 const factory = create();
 export default factory(function Basic() {
-/* tableRow is meant to be 100vw */
+/* tableRow is meant to be 100vw
+
+<div style="width:100%;height:var(--line2);background:var(--base);" />
+<div style="width:100%;height:var(--line2);background:var(--surface);" />
+<div style="width:100%;height:var(--line2);background:var(--bg);" />
+<div style="width:100%;height:var(--line2);background:var(--paper);" />
+<div style="width:100%;height:var(--line2);background:var(--sticker);" />
+<div style="width:100%;height:var(--line2);background:var(--ui-bg);" />
+<div style="width:100%;height:var(--line2);background:var(--ui-bg-muted);" />
+*/
 	return (
 		<Example spaced={true}>
       <virtual>
         <div><h5>Image ActivityPub Object</h5><p>column</p></div>
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
+            <Note {...{...exampleImage, type: 'Note', /*summary: [],*/ image: [
+              {..._3_2, name: "test", updated: "2018-10-11T12:12:12Z"} /*,
+              {..._1_1, summary: exampleText, updated: "2018-09-12T12:12:12Z"},
+              {..._4_1, name: "test", updated: "2018-10-11T12:12:12Z"}*/
+            ]}} />
             <Question {...exampleQuestion} />
             <Place key="place1" {...examplePlace} addressExpanded={false} />
             <Event id="event1" key="event1"

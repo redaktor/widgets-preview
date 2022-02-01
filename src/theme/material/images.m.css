@@ -5,6 +5,7 @@
 	grid-template: "top" "media";
 	width: 100%;
 	padding: 0px;
+	margin: 0px;
 	position: relative;
 }
 .root.multiItem {
@@ -21,8 +22,8 @@
 .hasPagination.multiItem .figure {
 	position: static;
 }
-.singleImage .figure,
-.hasPagination {
+.singleImage .hasMeta,
+.hasPagination:not(.hasCounter) {
 	padding-top: var(--line2);
 }
 .pageRadio[data-i="1"] { --i: 0; } .pageRadio[data-i="2"] { --i: 1; } .pageRadio[data-i="3"] { --i: 2; }
@@ -289,6 +290,7 @@ TODO above
 }
 .meta {
 	composes: s sans from './_typo.css';
+	display: flex;
 	padding-left: var(--grid-base);
 	place-self: start;
 }
@@ -547,6 +549,7 @@ TODO above
 	/* composes: serif from './_typo.css'; */
 	padding: 0px;
 }
+.summaryWrapper,
 .summary {
 	padding: 0px;
 	margin-bottom: 0px;
@@ -570,8 +573,7 @@ TODO above
 	background: var(--bg);
 }
 .attributions {
-	order: 2;
-	margin-top: -1px; /* TODO */
+	/* margin-top: -1px; /* TODO */
 	transition: margin-left var(--ui-dpd-4,320ms) var(--ui-easing);
 }
 .singleAttributions {
@@ -583,6 +585,22 @@ TODO above
 }
 .contentDetails[open] + .attributions {
 	margin-left: var(--line);
+}
+
+.contentWrapper > .attributions,
+.contentWrapper > .rowName {
+	order: 1;
+}
+.contentWrapper > .locales,
+.contentWrapper > .summaryWrapper {
+	order: 2;
+}
+.attributedToBottom .contentWrapper > .attributions {
+	order: 3;
+}
+.contentWrapper > .contentCollapsed,
+.contentWrapper > .contentCollapsed + * {
+	order: 4;
 }
 
 .contentDetailsSummary {
@@ -608,7 +626,7 @@ TODO above
 	margin-top: calc(var(--line) * (var(--l, 0) + 9) * -1);
 }
 
-.root .contentWrapper > .summary {
+.root .contentWrapper > .summaryWrapper {
 	margin-bottom: calc(var(--mb) - var(--line));
 }
 

@@ -476,9 +476,7 @@ export const Event = factory(function event({
 					</small>}
 				</Caption>
 			</div>
-			{!!aggregateRating && <div classes={themedCss.rateWrapper}>
-				<Rate readOnly {...ldPartial(aggregateRating)} />
-			</div>}
+			{!!aggregateRating && <Rate readOnly {...ldPartial(aggregateRating)} />}
 			<Structure omitProperties={coveredLD} value={ld}>
 				{{ detailsSummary: <span>{messages.moreInfo}</span> }}
 			</Structure>

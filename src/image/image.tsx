@@ -34,6 +34,8 @@ export interface ImgProperties extends AsObject {
 	/* blurhash to render as background or as CW-onclick */
 	blurhash?: string;
 	hasSensitiveSwitch?: boolean;
+	/* force figure element, default false */
+	isFigure?: boolean;
 	/* load 'lazy' / when intersecting or 'eager' / directly, default 'lazy' */
 	loading?: 'lazy' | 'eager';
 
@@ -97,7 +99,7 @@ export const Img = factory(function Img({
 		sensitive, alt, title, onMouseEnter, onMouseLeave, onLoad, onFullscreen,
 		onBrightness, blurhash, focalPoint, mediaType, align,
 		loading = 'lazy', crossorigin = 'anonymous', baselined = false, fit = false,
-		scaleOnHover = false, hasSensitiveSwitch = true
+		isFigure = false, scaleOnHover = false, hasSensitiveSwitch = true
 	} = properties();
 	const {aspectRatio: ratio, maxWidth, maxHeight, ...APo} = i18nActivityPub.normalized();
 
@@ -197,26 +199,24 @@ export const Img = factory(function Img({
 			</Paginated>
 		</figcaption>);
 
-	const img = <figure
-		key="media"
-		classes={[
-			themedCss.media,
-			!!scaleOnHover && themedCss.scale,
-			!!sensitive && themedCss.sensitive,
-			!!get('loaded') && themedCss.loaded,
-			!!get('faded') && themedCss.faded,
-			!!fit && fit === 'cover' && themedCss.cover,
-			!!fit && fit === 'contain' && themedCss.contain,
-			!!fit && fit === 'fit' && themedCss.fit,
-			align === 'left' && themedCss.left,
-			align === 'right' && themedCss.right,
-			!!aspectRatio && themedCss.ratio,
-			!!hasFocalPoint && themedCss.hasFocalPoint,
-			!!aspectRatio && aspectRatio in AspectRatioNamed && (themedCss as any)[`_${aspectRatio.replace('/','_')}`]
-		]}
-		style={`${mml}${apt}${ar}`}
-	>
-		{(!get('faded') || sensitive) && !!blurhash && <Blurhash
+	const imgClasses = [
+		themedCss.media,
+		!!scaleOnHover && themedCss.scale,
+		!!sensitive && themedCss.sensitive,
+		!!get('loaded') && themedCss.loaded,
+		!!get('faded') && themedCss.faded,
+		!!fit && fit === 'cover' && themedCss.cover,
+		!!fit && fit === 'contain' && themedCss.contain,
+		!!fit && fit === 'fit' && themedCss.fit,
+		align === 'left' && themedCss.left,
+		align === 'right' && themedCss.right,
+		!!aspectRatio && themedCss.ratio,
+		!!hasFocalPoint && themedCss.hasFocalPoint,
+		!!aspectRatio && aspectRatio in AspectRatioNamed && (themedCss as any)[`_${aspectRatio.replace('/','_')}`]
+	];
+
+	const img = isFigure || sensitive ? <figure key="media" classes={imgClasses} style={`${mml}${apt}${ar}`}>
+		{!!blurhash && <Blurhash
 			key="blurhash"
 			blurhash={blurhash}
 			width={blurWidth}
@@ -234,7 +234,24 @@ export const Img = factory(function Img({
 		</picture>
 		{sensitive && <label classes={themedCss.sensitiveLabel} for={cwId} />}
 		{summaryNode}
-	</figure>
+	</figure> : <span key="media" classes={imgClasses} style={`${mml}${apt}${ar}`}>
+		{(!get('faded')) && !!blurhash && <Blurhash
+			key="blurhash"
+			blurhash={blurhash}
+			width={blurWidth}
+			height={blurHeight}
+			styles={styles}
+			onBrightness={(o) => {
+				onBrightness && onBrightness(o)
+			}}
+		/>}
+		<noscript><i /></noscript>
+
+		<picture classes={themedCss.picture}>
+			{!!APo.url && <Srcset url={APo.url} isPicture={true} />}
+			{<img {...imgProps} key="image" />}
+		</picture>
+	</span>;
 
 	return !sensitive ? img : <virtual>
 		<input

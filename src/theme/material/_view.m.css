@@ -182,7 +182,6 @@ screen and (min-width: 1312px) and (max-width: 1648px) {
   width: var(--w);
 	min-height: var(--line);
 	background-size: cover;
-  padding: 0px;
 	margin-bottom: 0px;
 }
 .fullscreen .item {

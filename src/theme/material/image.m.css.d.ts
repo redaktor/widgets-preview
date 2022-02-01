@@ -71,6 +71,8 @@ export const caption: string;
 export const header: string;
 export const download: string;
 export const footer: string;
+export const nomargin: string;
+export const negativemargin: string;
 export const metaTop: string;
 export const images: string;
 export const contentWrapper: string;

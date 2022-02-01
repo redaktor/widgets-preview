@@ -1,10 +1,5 @@
-.root, .half, .full {
-	margin: 0px;
-	padding: 0px;
-}
 .root {
 	display: flex;
-	padding-top: var(--pt);
 	--minw: calc(var(--size) + var(--grid-base,8px) / 2);
 }
 .fieldset {
@@ -19,7 +14,10 @@
 .label {
 	composes: icon star from './icon.m.css';
 }
-
+.half, .full {
+	margin: 0px;
+	padding: 0px;
+}
 .fieldset .half::before {
 	position: absolute;
 	display: inline-block;

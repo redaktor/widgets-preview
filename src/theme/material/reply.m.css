@@ -1,5 +1,5 @@
 .root {
-	margin-bottom: var(--line);
+	/* margin-bottom: var(--line); */
 	padding: 0px var(--grid-base,8px) 0px var(--grid-base,8px);
 	border-radius: var(--ui-border-radius-emphasized);
 	box-shadow: var(--ui-dp-2);

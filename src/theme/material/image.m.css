@@ -1,13 +1,12 @@
 .root {
-	display: flex;
-	flex-direction: column;
 	flex-basis: 100%;
 	flex-wrap: nowrap;
 	position: relative;
 	width: 100%;
 	background-size: cover;
-	margin: 0;
-	padding: 0;
+	margin: 0px;
+	padding: 0px 0px var(--line) 0px;
+	background-color: var(--bg);
 }
 .row { }
 .column { }
@@ -37,7 +36,6 @@
 	z-index: 4;
 	cursor: pointer;
 }
-
 /* not used here, when the blurhash faded to the main image */
 .faded { }
 .measure {
@@ -379,6 +377,16 @@
 .footer {
 	z-index: 6;
 }
+
+.root .nomargin {
+	margin: 0px;
+	margin-bottom: 0px;
+}
+.root .negativemargin {
+	margin: 0px;
+	margin-top: calc(var(--line) * -1);
+}
+
 
 .row .media {
 	--h: var(--line5);

@@ -92,11 +92,13 @@ export const Images = factory(function Images({
 	const {
 		itemsPerPage: ipp, view = 'column', size = 'm', navPosition = 'top',
 		desaturateScroll = 'column', max = 1000, hasContent = true, hasAttachment = true,
-		captionsOpen = false, onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen
+		captionsOpen = false, onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen,
+		omitProperties
 		// fit = false, width = 80, height = 80
 	} = properties();
 	const { image = [], ...ld } = i18nActivityPub.normalized<ImagesProperties>();
 	const omit = i18nActivityPub.omit();
+	
 	const itemsPerPage = image.length === 1 ? 1 : ipp;
 
 	if (!image.length) {
@@ -227,9 +229,10 @@ export const Images = factory(function Images({
 		const lights = get('lightImages');
 		return !!lights && !!lights[i] ? themedCss.lightImage : themedCss.darkImage;
 	}
-// {!omit.has('date') &&
+
 	const dates = getLdDates(ld, i18nActivityPub.localize(ldBundle).messages);
 	const localizedDateShort = new Intl.DateTimeFormat([i18nActivityPub.get().locale, 'en']);
+
 	return <virtual>
 		{itemsPerPage === 1 && !omit.has('date') && <div
 			role="region"
@@ -363,8 +366,12 @@ export const Images = factory(function Images({
 			const count = paginated.length && paginated[i].length || 0;
 			const wasLoaded = count === (get('loaded') as any)[i];
 			const {width, height} = getWH(imagePage[0]);
+			const hasMeta = itemCount === 1 && hasContent && !(omit.has('date') && omit.has('location'));
+
 			return <figure classes={[
 				themedCss.figure,
+				hasMeta && themedCss.hasMeta,
+				navPosition === 'bottom' && themedCss.hasMeta,
 				itemCount === 1 && viewCSS.gridItem
 			]}>
 				{(maxImages.length > itemCount) &&
@@ -453,6 +460,7 @@ export const Images = factory(function Images({
 
 					{ itemCount === 1 && hasContent && <Caption isImageCaption {...(imagePage[0])}
 						compact
+						omitProperties={omitProperties}
 						key={`imageCaption${i}`}
 						isOpen={ get('captionsOpen') }
 						onFocusPrevious={() => { set('focusKey', `next_${current}`); focus.focus(); }}

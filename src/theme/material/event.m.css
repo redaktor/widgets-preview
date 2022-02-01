@@ -1,5 +1,6 @@
 .root {
 	padding-bottom: var(--line);
+	background-color: var(--bg);
 }
 .header {
 	display: flex;
@@ -11,6 +12,8 @@
 	z-index: 2;
 }
 .content {
+	display: flex;
+	flex-direction: column;
 	z-index: 1;
 }
 .calendarWrapper {
@@ -218,8 +221,8 @@ rgba(0,0,0,1) 50%, rgba(0,0,0,0) calc(50% + 2px), rgba(0,0,0,0) 100%); */
 .contentWrapper {
 	--lt: calc(var(--line) + var(--pt));
 	background: linear-gradient(transparent var(--lt), var(--bg) var(--lt));
-	margin-bottom: var(--minusLine);
 	z-index: 9;
+	/* margin-bottom: var(--minusLine); */
 }
 .rateWrapper {
 	min-height: var(--line);
@@ -265,8 +268,9 @@ rgba(0,0,0,1) 50%, rgba(0,0,0,0) calc(50% + 2px), rgba(0,0,0,0) 100%); */
 }
 .captionWrapper { }
 .root .inLanguage {
+	display: flex;
 	padding-left: calc(var(--grid-base) * 3);
-	margin-bottom: var(--minusLine);
+	margin-bottom: calc(var(--mb) - var(--line));
 }
 .imagesLoaded:checked + .imageWrapper,
 .imagesWrapper {
