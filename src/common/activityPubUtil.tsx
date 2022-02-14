@@ -338,7 +338,7 @@ export function getActorName({ petName: pet, preferredUsername: p, name: n, id }
 }
 
 function toArray(v: any) {
-	return Array.isArray(v) ? JSON.parse(JSON.stringify(v)) : [v];
+	return Array.isArray(v) ? JSON.parse(JSON.stringify(v.filter((o) => typeof o !== 'undefined'))) : [v];
 }
 
 export function clampStrings(s: string | string[], length: number, isWordLike = true) {

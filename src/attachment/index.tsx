@@ -1,7 +1,8 @@
 import { tsx, create } from '@dojo/framework/core/vdom';
 import theme, { ViewportProperties} from '../middleware/theme';
-import { AsObject } from '../common/interfaces';
+import { AsObject, AsObjectNormalized } from '../common/interfaces';
 import i18nActivityPub from '../middleware/i18nActivityPub';
+import Details from '../details';
 import Icon from '../icon';
 import Table, { Row, Cell } from '../table';
 import bundle from './nls/Attachment';
@@ -31,38 +32,41 @@ export const Attachment = factory(function Attachment({
 
 
 	const {
-		attachment = [], isRow = false, lines = 7
+		attachment: a = [], isRow = false, lines = 8
 	} = i18nActivityPub.normalized();
-
+	const attachment = a.filter((o) => !!o);
 	if (!attachment.length) { return '' }
 	const themedCss = theme.classes(css);
 	const { localize } = i18nActivityPub;
 	const { messages } = localize(bundle);
-
-	return <details key="attachment" classes={[
-		themedCss.root,
-		isRow ? themedCss.row : themedCss.column
-	]}>
-		<summary classes={themedCss.summary}>
+	return <Details key="attachment" classes={{ '@redaktor/widgets/details': {
+		root: [themedCss.root, isRow ? themedCss.row : themedCss.column]
+	}}}>{{
+		summary: <span classes={themedCss.detailsSummary}>
 			<Icon spaced={'right'} type="pin" color="neutral" />
-			{attachment.length} {attachment.length === 1 ? messages.singular : messages.plural}
-		</summary>
-		<Table lines={lines} columns={[{type:'flexible', width:'40px'},'flexible']}>
-			{ attachment && attachment.map((o) => <Row onClick={(i) => {!i && console.log('row click',i)}}>
+			<strong>{attachment.length} {attachment.length === 1 ? messages.singular : messages.plural}</strong>
+		</span>,
+		content: <Table lines={lines} columns={[{type:'flexible', width:'40px'},'flexible']}
+			classes={{ '@redaktor/widgets/table': { scrollTable: [themedCss.table] }}}
+			>
+			{ attachment && attachment.map((o: AsObjectNormalized, j) => <Row bordered="horizontal"
+				classes={{ '@redaktor/widgets/table': { item: [themedCss.tableItem] }}}
+				onClick={() => {console.log('row click',j,o)}} /* TODO emit onStack */
+			>
 					<Cell align="center">
 						<Icon type={(o.type[0].toLowerCase() as any)} />
 					</Cell>
 					<Cell>
-						{o.name && o.name.map((n) => <span>{n} </span>).concat(
+						{o.name && o.name.map((n) => <strong classes={themedCss.name}>{n} </strong>).concat(
 							<div classes={[themedCss.nowrap]}>
-								{o.summary ? o.summary.map((n) => <span>{n} </span>) : []}
+								{o.summary ? o.summary.map((n) => <span classes={themedCss.summary}>{n} </span>) : []}
 							</div>
 						)}
 					</Cell>
 				</Row>
 			)}
 		</Table>
-	</details>
+	}}</Details>
 });
 
 export default Attachment;

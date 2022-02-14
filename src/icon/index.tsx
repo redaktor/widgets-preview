@@ -117,9 +117,13 @@ export const Icon = factory(function Icon({ properties, middleware: { theme } })
 
 	/* 1 icon||type OR up to 9 icon||type (animated = crossfading) OR more w. indicator */
 	return !!icon ? (icon.length === 1 || icon.length > 9 ? getIcon(icon[0], -1) :
-		<div classes={[themedCss.slide, theme.sized(ui, 'l')]}>{icon.map(getIcon)}</div>
+		<div classes={[icon.length < slideshowMin ? themedCss.fixed : themedCss.slide, theme.sized(ui, 'l')]}>
+			{icon.map(getIcon)}
+		</div>
 	) : (type.length === 1 || type.length > 9 ? getIconByType(type[0], -1) :
-		<div classes={[themedCss.slide, theme.sized(ui, 'l')]}>{type.map(getIconByType)}</div>
+		<div classes={[type.length < slideshowMin ? themedCss.fixed : themedCss.slide, theme.sized(ui, 'l')]}>
+			{type.map(getIconByType)}
+		</div>
 	)
 });
 

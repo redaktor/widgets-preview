@@ -49,6 +49,8 @@ export interface ImagesProperties extends AsObject, ViewportProperties {
 	onLoad?: () => any;
 	/* when clicking an image */
 	onClick?: (img: AsObjectNormalized) => any;
+	/* elevated, default false */
+	isAProot?: boolean;
 }
 
 export interface ImagesIcache {
@@ -92,13 +94,13 @@ export const Images = factory(function Images({
 	const {
 		itemsPerPage: ipp, view = 'column', size = 'm', navPosition = 'top',
 		desaturateScroll = 'column', max = 1000, hasContent = true, hasAttachment = true,
-		captionsOpen = false, onLoad, onClick, onMouseEnter, onMouseLeave, onFullscreen,
-		omitProperties
+		captionsOpen = false, isAProot = false, onLoad, onClick,
+		onMouseEnter, onMouseLeave, onFullscreen, omitProperties
 		// fit = false, width = 80, height = 80
 	} = properties();
 	const { image = [], ...ld } = i18nActivityPub.normalized<ImagesProperties>();
 	const omit = i18nActivityPub.omit();
-	
+
 	const itemsPerPage = image.length === 1 ? 1 : ipp;
 
 	if (!image.length) {
@@ -305,8 +307,8 @@ export const Images = factory(function Images({
 			classes={[
 				themedCss.root,
 				theme.uiColor(),
-				theme.uiElevation(),
 				theme.uiSize(),
+				isAProot && theme.uiElevation(),
 				// isColumn ? themedCss.column : themedCss.row,
 				navPosition === 'bottom' && themedCss.navBottom,
 				(itemCount === 1 || paginated.length > 6 || !paginationInputsVisible) && themedCss.hasCounter,

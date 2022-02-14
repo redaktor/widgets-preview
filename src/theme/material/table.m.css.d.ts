@@ -14,6 +14,8 @@ export const cell: string;
 export const center: string;
 export const right: string;
 export const bordered: string;
+export const borderedHorizontal: string;
+export const borderedVertical: string;
 export const fixedCell: string;
 export const responsive: string;
 export const hasResize: string;

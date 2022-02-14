@@ -132,15 +132,19 @@
 		object-fit: contain;
 	}
 	/* img.image overwrites browser defaults … */
-	.media.cover .canvas,
 	.media.cover .image,
 	.media.cover img.image,
-	.media.contain .canvas,
 	.media.contain .image,
 	.media.contain img.image {
 		width: auto;
 		height: auto;
 	}
+	.media.cover .canvas,
+	.media.contain .canvas {
+		width: 100%;
+		height: auto;
+	}
+
 	.root.fit,
 	.media.fit,
 	.media.ratio,

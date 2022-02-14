@@ -24,7 +24,7 @@ export interface TableProperties {
 }
 export interface RowProperties extends ThemeProperties {
 	/* borders, default true */
-	bordered?: boolean;
+	bordered?: boolean | 'horizontal' | 'vertical';
 	/* row index */
 	index?: number;
 	/* when clicking a row */
@@ -135,7 +135,7 @@ export const Row = rowFactory(function Table({
 	children
 }) {
 	const themedCss = theme.classes(css);
-	const { index = 0, bordered = true, onClick } = properties();
+	const { index = 0, bordered = false, onClick } = properties();
 
 	const _c: RenderResult[] = Array.isArray(children()) ? children() : [children()];
 	const indexedChildren = _c.map((c, i) => {
@@ -152,7 +152,9 @@ export const Row = rowFactory(function Table({
 			theme.sized(ui, 's'),
 			theme.variant(),
 			theme.colored(color, 'neutral'),
-			bordered && themedCss.bordered
+			bordered === true && themedCss.bordered,
+			bordered === 'horizontal' && themedCss.borderedHorizontal,
+			bordered === 'vertical' && themedCss.borderedVertical
 		]}
 		onclick={() => {onClick && onClick(index)}}
 	>

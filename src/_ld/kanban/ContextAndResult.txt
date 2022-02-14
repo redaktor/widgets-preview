@@ -1,0 +1,23 @@
+
+instrument / A
+Identifies one or more objects used (or to be used) in the completion of an Activity.
+
+
+
+result / A
+Describes the result of the activity.
+For instance, if a particular action results in the creation of a new resource,
+the result property can be used to describe that new resource.
+
+
+
+preview / L O
+Identifies an entity that provides a preview of this object.
+
+
+
+context / L O
+Identifies the context within which the object exists or an activity was performed.
+The notion of "context" used is intentionally vague. The intended function is to serve as a means
+of grouping objects and activities that share a common originating context or purpose.
+An example could be all activities relating to a common project or event.

@@ -235,7 +235,7 @@ export const Img = factory(function Img({
 		{sensitive && <label classes={themedCss.sensitiveLabel} for={cwId} />}
 		{summaryNode}
 	</figure> : <span key="media" classes={imgClasses} style={`${mml}${apt}${ar}`}>
-		{(!get('faded')) && !!blurhash && <Blurhash
+		{/*(!get('faded')) &&*/ !!blurhash && <Blurhash
 			key="blurhash"
 			blurhash={blurhash}
 			width={blurWidth}

@@ -27,8 +27,8 @@
   white-space: nowrap;
   border-collapse: separate;
   border-spacing: 0px;
-	margin-top: calc(var(--pt) - var(--line) + var(--mb) - 1px);
-	margin-bottom: calc(var(--pt) + 1px);
+	margin-top: calc(var(--pt) - var(--line) + var(--mb));
+	margin-bottom: calc(var(--pt));
 }
 .table.isResizing {
 	-webkit-touch-callout: none; /* iOS Safari */
@@ -38,9 +38,9 @@
 
 .scrollTable {
   overflow: auto;
-  height: calc(var(--line) * var(--l,20) - var(--pt,4px) - 2px);
-  margin-bottom: calc(var(--pt,4px) + 2px);
-  padding: 2px 0px;
+  height: calc(var(--line) * var(--l,20) - var(--pt,4px));
+  margin-bottom: calc(var(--pt,4px));
+  padding: 0px;
 }
 .scrollTable .th {
   position: sticky; top: 0; z-index: 1;
@@ -86,6 +86,7 @@
 	height: var(--fullH, var(--line2));
 	white-space: nowrap;
 	overflow: hidden;
+  background-color: var(--paper);
 }
 .cell, .th {
 	position: relative;
@@ -123,6 +124,23 @@
 }
 .item.bordered:hover > .cell {
   border-color: var(--ui-border-hover);
+}
+
+.item.borderedHorizontal > .cell {
+  border-top-color: var(--ui-border);
+  border-bottom-color: var(--ui-border);
+}
+.item.borderedHorizontal:hover > .cell {
+  border-top-color: var(--ui-border-hover);
+  border-bottom-color: var(--ui-border-hover);
+}
+.item.borderedVertical > .cell {
+  border-top-color: var(--ui-border);
+  border-bottom-color: var(--ui-border);
+}
+.item.borderedVertical:hover > .cell {
+  border-top-color: var(--ui-border-hover);
+  border-bottom-color: var(--ui-border-hover);
 }
 
 .first { }

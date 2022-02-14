@@ -7,7 +7,9 @@ import theme from '../middleware/theme';
 import breakpoints from '../middleware/breakpoint';
 import Caption, { coveredLD as captionCoveredLD } from '../caption';
 import Images from '../images';
-// import * as ui from '../theme/material/_ui.m.css';
+import block from '@dojo/framework/core/middleware/block';
+import parse from './parse.block';
+
 import * as viewCSS from '../theme/material/_view.m.css';
 import * as css from '../theme/material/image.m.css';
 
@@ -42,7 +44,7 @@ export interface NoteChildren {
 	footer?: RenderResult;
 }
 
-/* TODO 
+/* TODO
 ? location, date, generator, icon,
 url -> to full
 context within which the object exists - e.g. all activities relating to a common project or event // stack
@@ -53,12 +55,12 @@ schema further
 */
 
 const icache = createICacheMiddleware<NoteIcache>();
-const factory = create({ icache, i18nActivityPub, theme, breakpoints })
+const factory = create({ block, icache, i18nActivityPub, theme, breakpoints })
 	.properties<NoteProperties>()
 	.children<NoteChildren | RenderResult | undefined>();
 
 export const Note = factory(function note({
-	middleware: { icache, i18nActivityPub, theme, breakpoints /*, resource */ },
+	middleware: { block, icache, i18nActivityPub, theme, breakpoints /*, resource */ },
 	properties
 }) {
 	const themedCss = theme.classes(css);
@@ -85,7 +87,8 @@ export const Note = factory(function note({
 		vp = breakpoint;
 	}
 
-console.log('NOTE render');
+const message = block(parse)('https://www.spiegel.de/ausland/republikaner-mitch-mcconell-kritisiert-eigene-partei-fuer-umgang-mit-kapitol-attacke-a-6cd2b361-aa97-4f42-9e67-4df3397f5036');
+console.log('PAGE render', message);
 	return <div
 		key="root"
 		classes={[

@@ -14,10 +14,12 @@
 	outline: none;
 	text-decoration: none;
 	color: var(--text-muted);
-	padding-top: var(--pt);
-	margin-bottom: calc(var(--mb, 16px) - var(--ui-border-width-emphasized) - 1px);
   background-repeat: no-repeat;
 	list-style: none;
+}
+.root .summary {
+	margin-bottom: 0px;
+	padding-bottom: var(--mb);
 }
 .colored > .summary {
 	color: var(--ui-text-muted);
@@ -47,6 +49,7 @@
 	padding-bottom: calc(var(--ui-border-width-emphasized) * 2);
 	margin-bottom: calc(var(--ui-border-width-emphasized) * -2);
 	max-width: calc(100% - (var(--grid-base,8px) * 2));
+	width: 100%;
 }
 .responsive .summaryContent {
 	width: calc(100% - (var(--grid-base,8px) * 2));

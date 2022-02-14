@@ -2,8 +2,10 @@ import { create, tsx } from '@dojo/framework/core/vdom';
 import { uuid } from '@dojo/framework/core/util';
 import { AsObject, AsImage, AsActor, AsActivity } from '../../../../common/interfaces';
 import Example from '../../Example';
+import Icon from '@redaktor/widgets/icon';
 import Image, { ImageProperties } from '@redaktor/widgets/image';
-import Note from '@redaktor/widgets/note';
+// import Note from '@redaktor/widgets/note';
+import Page from '@redaktor/widgets/page';
 import Event from '@redaktor/widgets/event';
 import Place from '@redaktor/widgets/place';
 import Question from '@redaktor/widgets/question';
@@ -22,6 +24,7 @@ import Table from '@redaktor/widgets/table';
 </div>
 */
 import * as viewCSS from '@redaktor/widgets/theme/material/_view.m.css';
+import * as attachCSS from '@redaktor/widgets/theme/material/attachment.m.css';
 import * as columnsDesktop from '@redaktor/widgets/theme/material/_columnsDesktop.m.css';
 const locations: [number,number][] = [
   [7.475748821884049, 51.49455016726148], [7.47267, 51.49518], [7.47756, 51.49446],
@@ -388,15 +391,26 @@ export default factory(function Basic() {
 		<Example spaced={true}>
       <virtual>
         <div><h5>Image ActivityPub Object</h5><p>column</p></div>
+
+        <div style="max-width:130px;" classes={[attachCSS.root, attachCSS.tile]}>
+          <Icon size="h3" spaced={true} slideshowMin={5} type={['Note','Event','Place','Document']}
+            classes={{ '@redaktor/widgets/icon': { slide: [attachCSS.icon], fixed: [attachCSS.icon] } }}
+          />
+          <small classes={attachCSS.name}>Dies ist ein sehr langer Text mit Silbentrennung</small>
+        </div>
+
         <div classes={[viewCSS.root, columnsDesktop.root]}>
           <ul classes={viewCSS.items}>
-            <Note {...{...exampleImage, type: 'Note', /*summary: [],*/ image: [
-              {..._3_2, name: "test", updated: "2018-10-11T12:12:12Z"} /*,
+            <Page {...{...exampleImage, type: 'Note', /*summary: [],*/ image: [
+              {..._3_2, name: "test", updated: "2018-10-11T12:12:12Z"},
               {..._1_1, summary: exampleText, updated: "2018-09-12T12:12:12Z"},
-              {..._4_1, name: "test", updated: "2018-10-11T12:12:12Z"}*/
+              {..._4_1, name: "test", updated: "2018-10-11T12:12:12Z"}
             ]}} />
+            <br /><br />
             <Question {...exampleQuestion} />
+            <br /><br />
             <Place key="place1" {...examplePlace} addressExpanded={false} />
+            <br /><br />
             <Event id="event1" key="event1"
               {...exampleEvent}
               type="Event" hasAttachment={false}

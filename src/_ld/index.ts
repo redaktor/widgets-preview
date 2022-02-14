@@ -11,6 +11,7 @@ export const wellKnownVocab = {
 	eli: 'http://data.europa.eu/eli/ontology#',
 	foaf: 'http://xmlns.com/foaf/0.1/',
 	ldp: 'http://www.w3.org/ns/ldp#',
+	og: 'http://ogp.me/ns#',
 	org: 'http://www.w3.org/ns/org#',
 	owl: 'http://www.w3.org/2002/07/owl#',
 	rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
@@ -21,6 +22,7 @@ export const wellKnownVocab = {
 	skos: 'http://www.w3.org/2004/02/skos/core#',
 	snomed: 'http://purl.bioontology.org/ontology/SNOMEDCT/',
 	vcard: 'http://www.w3.org/2006/vcard/ns#',
+	vf: 'https://w3id.org/valueflows#',
 	void: 'http://rdfs.org/ns/void#',
 	xml: 'http://www.w3.org/XML/1998/namespace',
 	xsd: 'http://www.w3.org/2001/XMLSchema#'

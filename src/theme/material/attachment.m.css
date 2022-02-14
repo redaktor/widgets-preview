@@ -6,13 +6,32 @@
 	flex: 1;
 	order: 8;
 	max-width: 100%;
-	/* margin-top: var(--line); */
-	margin-bottom: var(--mb);
+	margin-bottom: var(--line);
+	background: var(--paper);
+}
+
+.root.tile {
+	align-items: flex-end;
+	min-height: var(--line4);
+	padding: 0px 4px 0px 4px; /* TODO responsive var in view */
+	text-align: justify;
+	-webkit-hyphens: auto;
+	word-break: break-all;
+	background: #666;
+}
+.root.tile .text {
+	line-height: calc(var(--lh) * 0.5);
+	padding: 0px;
+	margin-bottom: var(--line);
+}
+.root.tile .icon {
+
 }
 .root:not([open]) {
 	height: var(--line2);
 	margin: 0px;
 }
+
 .micro {
 	min-width: 224px;
 }
@@ -22,6 +41,7 @@
 	padding-right: var(--line);
 	min-width: 240px;
 }
+
 .column {
 	min-width: 320px;
 }
@@ -32,9 +52,41 @@
   text-overflow: ellipsis;
 	color: var(--text-muted);
 }
+
+.detailsSummary {
+	composes: m from './_typo.css';
+	z-index: 2;
+	border-bottom: 1px solid var(--border);
+	margin-top: -1px;
+}
+.name {
+	display: flex;
+	margin-bottom: calc(var(--lineHalf) * -1);
+}
 .summary {
-	padding-top: var(--pt);
-	padding-left: 4px;
+	composes: xs from './_typo.css';
+}
+.root .summary {
+	margin: 0px;
+}
+
+@keyframes tableheight {
+	0%   { height: var(--line); }
+	100%   { height: calc(var(--line) * var(--l, 8)); }
+}
+.table {
+	border-top: 1px solid var(--border);
+	margin-top: -1px;
+}
+details[open] .table {
+	animation: tableheight var(--ui-dpd-4) var(--ui-easing);
+}
+.tableItem {
+	transition: background-color var(--ui-dpd-1) var(--ui-easing);
+	cursor: pointer;
+}
+.tableItem:hover {
+	background-color: var(--sticker);
 }
 
 .attachmentControl {

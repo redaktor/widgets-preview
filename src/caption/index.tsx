@@ -114,7 +114,6 @@ export const Caption = factory(function Caption({
 		href = '', name: n = ([] as string[]), summary: s = ([] as string[]), content, sensitive, attachment, ...ld
 	} = i18nActivityPub.normalized();
 	const omit = i18nActivityPub.omit();
-console.log(omit);
 	const [locale, locales] = [i18nActivityPub.get(), i18nActivityPub.getLocales()];
 	getOrSet('currentLocale', currentLocale ? {locale: currentLocale} : locale);
 	const name = n || [href];
@@ -132,6 +131,12 @@ console.log(omit);
 	const contentLines = compact || isRow ? cl||2 : cl||12;
 	const nameNode = <Name compact={compact} name={name} isRow={isRow} size={!vp || (vp as any) === 'micro' ? 'xs' : (vp as any)} />;
 	const hasContent = (s && s.length) || (content && content.length);
+
+	const dates = getLdDates(ld);
+	const hasDate = (!omit.has('date') && !!dates.length && !!dates[0]);
+	const hasLocation = (!omit.has('location') && !!ld.location && !!ld.location.length);
+	const has1Meta = hasDate !== hasLocation;
+
 	const summaryLength = (!!n && !!n.length && !!n[0].length && !!content && !!content.length && !!content[0].length) ? 500 :
 		((!!n && !!n.length && !!n[0].length) || (!!content && !!content.length && !!content[0].length) ? 750 : 1000);
 
@@ -162,7 +167,7 @@ console.log(omit);
 
 	const nodes = <div classes={[themedCss.captionWrapper, !!(children().length) && themedCss.hasChildren]}>
 		{children()}
-		{!!locales && locales.length > 1 && !omit.has('locales') &&
+		{!!locales && locales.length > 1 && !omit.has('locales') && !has1Meta &&
 			<div classes={themedCss.locales}>
 				<Locales size="s" key="locales" locale={get('currentLocale')||{locale:'en'}} locales={locales} onValue={(l) => {
 					i18nActivityPub.setLocale(l);
@@ -205,8 +210,22 @@ console.log(omit);
 		</div>
 	</div>
 // location -> 	() => { set('focusKey', 'date'); focus.focus(); } / date focus={get('focusKey') === 'date' ? focus.shouldFocus : void 0}
+	const localesClasses = !has1Meta ? void 0 : { '@redaktor/widgets/details': { summary: [themedCss.dense] } };
 	const allNodes = <virtual>
-		<span key="meta" classes={[themedCss.meta]}>
+		<span key="meta" classes={[themedCss.meta, !!has1Meta && themedCss.meta1]}>
+			{!!locales && locales.length > 1 && !omit.has('locales') && !!has1Meta &&
+				<div classes={themedCss.locales}>
+					<Locales key="locales"
+						size="s"
+						classes={localesClasses}
+						locale={get('currentLocale')||{locale:'en'}}
+						locales={locales} onValue={(l) => {
+							i18nActivityPub.setLocale(l);
+							onLocale && onLocale(l)
+						}}
+					/>
+				</div>
+			}
 			{!omit.has('date') && <Dates key="date" {...ld}
 				classes={{ '@redaktor/widgets/locationsDates': { root: [themedCss.dates] } }}
 				large={largeDate}
@@ -252,7 +271,6 @@ console.log(omit);
 		)}
 
 		{attachment && !omit.has('attachment') && <virtual>
-			<hr classes={viewCss.hrAttachment} />
 			<Attachment attachment={attachment} isRow={isRow} />
 		</virtual>}
 	</virtual>

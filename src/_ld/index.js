@@ -15,6 +15,7 @@ exports.wellKnownVocab = {
     eli: 'http://data.europa.eu/eli/ontology#',
     foaf: 'http://xmlns.com/foaf/0.1/',
     ldp: 'http://www.w3.org/ns/ldp#',
+  	og: 'http://ogp.me/ns#',
     org: 'http://www.w3.org/ns/org#',
     owl: 'http://www.w3.org/2002/07/owl#',
     rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',

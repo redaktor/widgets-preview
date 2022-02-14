@@ -22,10 +22,7 @@
 .hasPagination.multiItem .figure {
 	position: static;
 }
-.singleImage .hasMeta,
-.hasPagination:not(.hasCounter) {
-	padding-top: var(--line2);
-}
+
 .pageRadio[data-i="1"] { --i: 0; } .pageRadio[data-i="2"] { --i: 1; } .pageRadio[data-i="3"] { --i: 2; }
 .pageRadio[data-i="4"] { --i: 3; } .pageRadio[data-i="5"] { --i: 4; } .pageRadio[data-i="6"] { --i: 5; }
 .pageRadio[data-i="7"] { --i: 6; } .pageRadio[data-i="8"] { --i: 7; } .pageRadio[data-i="9"] { --i: 8; }
@@ -105,6 +102,11 @@
 .sensitiveSummary { }
 .isRow:checked + * .root .sensitiveSummary {
 	display: none;
+}
+.singleImage .hasMeta,
+.singleImage .figure:not(.hasMeta) .pageCaption,
+.hasPagination:not(.hasCounter) {
+	padding-top: var(--line2);
 }
 
 /* The snap-scrolling selection of images */
@@ -297,6 +299,10 @@ TODO above
 .meta:empty {
 	display: none;
 }
+.meta1 {
+	justify-content: space-between;
+	width: 100%;
+}
 
 .calendarWrapper {
 	display: flex;
@@ -327,6 +333,13 @@ TODO above
 	margin-left: var(--grid-base);
 	width: 65%;
 	width: calc(var(--w) - var(--navw) - 10ch - var(--touch-target-min) - var(--grid-base) * 2.5);
+}
+.meta1 .locales {
+	padding-top: 0px;
+}
+.meta1 .locales + .date,
+.meta1 .locales + .location {
+	width: auto;
 }
 .firstControl { }
 .lastControl { }
@@ -435,6 +448,7 @@ TODO above
 	align-items: center;
 	justify-content: center;
 	text-align: center;
+	line-height: 1;
 }
 .multiItem:not(.hasCounter) .pageRadio {
 	height: var(--touch-target-min);
@@ -557,6 +571,12 @@ TODO above
 .captionWrapper {
 	margin-top: var(--line);
 	order: 3;
+}
+.locales {
+	flex: 1;
+}
+.locales .dense {
+	padding-top: 0px;
 }
 .root .hasChildren.captionWrapper .locales {
 	margin-bottom: var(--minusLine);
