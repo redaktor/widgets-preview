@@ -156,7 +156,7 @@ function getAttributions(doc) {
     ].forEach((a) => {
         const [attributions, rel] = a;
         if (!!attributions.length) {
-            attributions.forEach((name) => attributedTo.push({ "type": "Object", name, rel }));
+            attributions.forEach((name) => attributedTo.push({ "type": ["Object"], name, rel }));
         }
     });
     return attributedTo;
@@ -352,7 +352,7 @@ function parseTextResponse(body, url, options = {}, contentType) {
     }
     const type = ['Page'].concat(getTypes(doc) || ['og:website']);
     const { published, updated } = getPublishedUpdated(doc);
-    const asUrl = [{ type: "Link", href: url, mediaType: contentType }]
+    const asUrl = [{ type: ["Link"], href: url, mediaType: contentType }]
         .concat((getUrls(doc) || []).map((l) => !l.rel || l.rel[0] !== 'canonical' ? l : Object.assign(Object.assign({}, l), { mediaType: contentType })));
     return {
         ld,

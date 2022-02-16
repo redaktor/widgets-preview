@@ -4,11 +4,11 @@ Copyright (c) 2019 Oscar Franco
 */
 import { AsObjectNormalized } from '../common/interfaces';
 import { defaultContext } from '../_ld/as';
-import { fetch } from "cross-fetch";
-import AbortController from "abort-controller";
+import { fetch } from 'cross-fetch';
+import AbortController from 'abort-controller';
 const cheerio = require('cheerio');
-const urlObj = require("url");
-const jsonld = require("jsonld");
+const urlObj = require('url');
+const jsonld = require('jsonld');
 
 interface BaseResponse {
   url: string;
@@ -48,7 +48,7 @@ profile:username - string - A short unique string to identify them.
 // printEdition, printPage OR pageStart pageEnd OR pagination     wordCount
 // TODO backstory in sub can be CreativeWork or Text !
 
-// rel="author" and crawl rel="me"s
+// rel='author" and crawl rel="me"s
 // mediaType https://ogp.me :
 // image, audio, video, application, music, article, book, profile, website
 */
@@ -195,7 +195,7 @@ function getAttributions(doc: any) {
   ].forEach((a) => {
     const [attributions, rel] = a;
     if (!!attributions.length) {
-      attributions.forEach((name: string) => attributedTo.push({"type":"Object",name,rel}))
+      attributions.forEach((name: string) => attributedTo.push({type:['Object'],name,rel}))
     }
   });
   return attributedTo
@@ -232,7 +232,7 @@ function getUrls(doc: any, relSelectors = ['canonical', 'alternate', 'manifest']
     // collect all images from icon tags
     if (nodes.length) {
       nodes.each((_: any, node: any) => {
-        if (node.type === "tag") {
+        if (node.type === 'tag') {
           href = node.attribs.href;
         }
         if (href) {
@@ -278,15 +278,15 @@ function getVideos(doc: any, vocab: string = 'og', type = 'video') {
     ];
     for (index = 0; index < nodes.length; index += 1) {
       const node = nodes[index];
-      if (node.type === "tag") {
+      if (node.type === 'tag') {
         video = node.attribs.content;
       }
       nodeType = nodeTypes[index];
-      if (!!nodeType && nodeType.type === "tag") {
+      if (!!nodeType && nodeType.type === 'tag') {
         mediaType = nodeType ? nodeType.attribs.content : null;
       }
       nodeSecureUrl = nodeSecureUrls[index];
-      if (!!nodeSecureUrl && nodeSecureUrl.type === "tag") {
+      if (!!nodeSecureUrl && nodeSecureUrl.type === 'tag') {
         videoSecureUrl = nodeSecureUrl ? nodeSecureUrl.attribs.content : null;
       }
       const hrefs = [videoSecureUrl, video].filter((v) => !!v);
@@ -329,7 +329,7 @@ function getImages(doc: any, rootUrl: string, imagesPropertyType?: string) {
       if (!!nodes && !!nodes.length) {
         dic = {};
         nodes.each((_: any, node: any) => {
-          if (node.type === "tag") {
+          if (node.type === 'tag') {
             href = node.attribs.src;
           }
           if (href && !dic[href]) {
@@ -396,7 +396,7 @@ function parseTextResponse(
 
   const type = ['Page'].concat(getTypes(doc) || ['og:website']);
   const { published, updated } = getPublishedUpdated(doc);
-  const asUrl = [{type: "Link", href: url, mediaType: contentType}]
+  const asUrl = [{type: ['Link'], href: url, mediaType: contentType}]
     .concat((getUrls(doc) || []).map((l) => !l.rel || l.rel[0] !== 'canonical' ? l : {...l, mediaType: contentType}) as any);
   return {
       ld,
@@ -463,8 +463,8 @@ async function handleFetch(text: string, options?: LinkPreviewOptions) {
   };
   const fetchUrl = (!!options && options.proxyUrl) ? options.proxyUrl.concat(detectedUrl) : detectedUrl;
   const response = await fetch(fetchUrl, fetchOptions).catch((e) => {
-      if (e.name === "AbortError") {
-          throw new Error("Request timeout");
+      if (e.name === 'AbortError') {
+          throw new Error('Request timeout');
       }
       throw e;
   });
@@ -559,35 +559,28 @@ async function parseLD(
     if (Array.isArray(_('keywords'))) {
       parsed.tag = (parsed.tag || []).concat(_('keywords')).filter((v) => !!v && typeof v === 'string')
     }
+    // well known, functional corresponding as:
+    const toAP = (asProperty: keyof AsObjectNormalized, schemaProperty: string) => {
+      const schemaValue = _(schemaProperty);
+      if (!item[asProperty] && !schemaValue) { return }
+      parsed[asProperty] = !!item[asProperty] ? item[asProperty] : _(schemaProperty)
+    }
+    const convert: [(keyof AsObjectNormalized), string][] = [
+      ['published','datePublished'], ['updated','dateModified'],
+      ['startTime','startDate'], ['endTime','endDate'], ['duration','duration']
+    ];
+    convert.forEach((a) => toAP(...a));
 
-    if (!!item.published) {
-      parsed.published = item.published
-    } else if (!!_('datePublished')) {
-      parsed.published = _('datePublished')
-    }
-    if (!!item.updated) {
-      parsed.updated = item.updated
-    } else if (!!_('dateModified')) {
-      parsed.updated = _('dateModified')
-    }
-    if (!!item.startTime) {
-      parsed.startTime = item.startTime
-    } else if (!!_('startDate')) {
-      parsed.startTime = _('startDate')
-    }
-    if (!!item.endTime) {
-      parsed.endTime = item.endTime
-    } else if (!!_('endDate')) {
-      parsed.endTime = _('endDate')
-    }
-    if (!!item.duration) {
-      parsed.duration = item.duration
-    } else if (!!_('duration')) {
-      parsed.duration = _('duration')
-    }
+
+    ['latitude','longitude'].forEach((key) => {
+      if (!item[key] && !(!parsed[key] && !!_(key as string))) { return }
+      parsed[key] = !!item[key] ? toArray(item[key]) :_(key as string);
+    });
+
 
     const lastUrl = !!parsed.url && !!parsed.url.length && parsed.url[parsed.url.length-1];
-    const manifest = !!lastUrl && typeof lastUrl === 'object' && lastUrl.rel && lastUrl.rel.length && lastUrl.rel[0] === 'manifest' && lastUrl.href;
+    const manifest = !!lastUrl && typeof lastUrl === 'object' && lastUrl.rel &&
+      lastUrl.rel.length && lastUrl.rel[0] === 'manifest' && lastUrl.href;
     if (!parsed.siteName && !!manifest) {
       const manifestRes = await handleFetch(manifest, options);
       const manifestO = await manifestRes.json();
