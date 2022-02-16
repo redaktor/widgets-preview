@@ -165,7 +165,6 @@ function getTags(doc) {
     const keywords = (toArray(metaTagContent(doc, `keywords`, `name`)) || []).concat(toArray(metaTagContent(doc, `news_keywords`, `name`)) || []);
     return keywords;
 }
-
 function flat(a) {
     return !!Array.prototype.flat ?
         a.flat() :
@@ -181,14 +180,13 @@ function getTypes(doc) {
     const value = metaTagContent(doc, `og:type`, `property`) || metaTagContent(doc, `og:type`, `name`);
     return (!value ? [] : flat(toArray(value).map((v) => mapped.hasOwnProperty(v) ? mapped[v] : `og:${v}`))) || ['Object'];
 }
-function getUrls(doc) {
+function getUrls(doc, relSelectors = ['canonical', 'alternate', 'manifest']) {
     const url = [];
     let nodes = [];
     let href;
-    const relSelectors = ['canonical', 'alternate', 'manifest'];
     relSelectors.forEach((rel) => {
         // look for all icon tags
-        nodes = doc(`link[rel=${rel}]`);
+        nodes = doc(`link[rel="${rel}"]`);
         // collect all images from icon tags
         if (nodes.length) {
             nodes.each((_, node) => {
@@ -196,7 +194,7 @@ function getUrls(doc) {
                     href = node.attribs.href;
                 }
                 if (href) {
-                    const o = { type: "Link", href, rel };
+                    const o = { type: ['Link'], href, rel: [rel] };
                     const type = node.attribs.type;
                     if (type) {
                         o.mediaType = type;
@@ -217,104 +215,53 @@ function getMediaType(doc) {
     return (metaTagContent(doc, `og:type`, `property`) ||
         metaTagContent(doc, `og:type`, `name`));
 }
-function getImages(doc, rootUrl, imagesPropertyType) {
-    let images = [];
-    let nodes;
-    let src;
-    let dic = {};
-    const imagePropertyType = imagesPropertyType || `og`;
-    nodes =
-        metaTag(doc, `${imagePropertyType}:image`, `property`) ||
-            metaTag(doc, `${imagePropertyType}:image`, `name`);
-    if (nodes) {
-        nodes.each((_, node) => {
-            if (node.type === "tag") {
-                src = node.attribs.content;
-                if (src) {
-                    src = urlObj.resolve(rootUrl, src);
-                    !!src && images.push(src);
-                }
-            }
-        });
-    }
-    if (images.length <= 0 && !imagesPropertyType) {
-        src = doc(`link[rel=image_src]`).attr(`href`);
-        if (src) {
-            src = urlObj.resolve(rootUrl, src);
-            if (!!src) {
-                images = [src];
-            }
-            ;
-        }
-        else {
-            nodes = doc(`img`);
-            if (!!nodes && !!nodes.length) {
-                dic = {};
-                images = [];
-                nodes.each((_, node) => {
-                    if (node.type === "tag") {
-                        src = node.attribs.src;
-                    }
-                    if (src && !dic[src]) {
-                        dic[src] = true;
-                        // width = node.attribs.width;
-                        // height = node.attribs.height;
-                        images.push(urlObj.resolve(rootUrl, src));
-                    }
-                });
-            }
-        }
-    }
-    return images;
-}
-function getVideos(doc) {
+function getVideos(doc, vocab = 'og', type = 'video') {
     const videos = [];
-    let nodeTypes;
-    let nodeSecureUrls;
     let nodeType;
     let nodeSecureUrl;
     let video;
-    let videoType;
+    let mediaType;
     let videoSecureUrl;
-    let width;
-    let height;
     let videoObj;
     let index;
-    const nodes = metaTag(doc, `og:video`, `property`) || metaTag(doc, `og:video`, `name`);
+    let nodes = metaTag(doc, `${vocab}:${type}`, `property`) || metaTag(doc, `${vocab}:${type}`, `name`);
+    const getTag = (key) => metaTag(doc, `${vocab}:${type}:${key}`, `property`) ||
+        metaTag(doc, `${vocab}:${type}:${key}`, `name`) || [];
     if (!!nodes && !!nodes.length) {
-        nodeTypes =
-            metaTag(doc, `og:video:type`, `property`) ||
-                metaTag(doc, `og:video:type`, `name`);
-        nodeSecureUrls =
-            metaTag(doc, `og:video:secure_url`, `property`) ||
-                metaTag(doc, `og:video:secure_url`, `name`);
-        width =
-            metaTagContent(doc, `og:video:width`, `property`) ||
-                metaTagContent(doc, `og:video:width`, `name`);
-        height =
-            metaTagContent(doc, `og:video:height`, `property`) ||
-                metaTagContent(doc, `og:video:height`, `name`);
+        const [nodeTypes, nodeSecureUrls, width, height] = [
+            getTag('type'), getTag('secure_url'), getTag('width'), getTag('height')
+        ];
         for (index = 0; index < nodes.length; index += 1) {
             const node = nodes[index];
             if (node.type === "tag") {
                 video = node.attribs.content;
             }
             nodeType = nodeTypes[index];
-            if (nodeType.type === "tag") {
-                videoType = nodeType ? nodeType.attribs.content : null;
+            if (!!nodeType && nodeType.type === "tag") {
+                mediaType = nodeType ? nodeType.attribs.content : null;
             }
             nodeSecureUrl = nodeSecureUrls[index];
-            if (nodeSecureUrl.type === "tag") {
+            if (!!nodeSecureUrl && nodeSecureUrl.type === "tag") {
                 videoSecureUrl = nodeSecureUrl ? nodeSecureUrl.attribs.content : null;
             }
+            const hrefs = [videoSecureUrl, video].filter((v) => !!v);
+            if (!hrefs.length) {
+                continue;
+            }
             videoObj = {
-                url: video,
-                secureUrl: videoSecureUrl,
-                type: videoType,
-                width,
-                height,
+                type: ['Link'],
+                href: hrefs[0]
             };
-            if (videoType && videoType.indexOf(`video/`) === 0) {
+            if (!!mediaType && mediaType.length) {
+                videoObj.mediaType = mediaType;
+            }
+            if (!!width && width.length) {
+                videoObj.width = width[0];
+            }
+            if (!!height && height.length) {
+                videoObj.height = height[0];
+            }
+            if (mediaType && mediaType.indexOf(`video/`) === 0) {
                 videos.splice(0, 0, videoObj);
             }
             else {
@@ -324,36 +271,54 @@ function getVideos(doc) {
     }
     return videos;
 }
+function getImages(doc, rootUrl, imagesPropertyType) {
+    let images = getVideos(doc, 'og', 'image');
+    let nodes;
+    let href;
+    let dic = {};
+    if (images.length <= 0 && !imagesPropertyType) {
+        href = urlObj.resolve(rootUrl, doc(`link[rel=image_src]`).attr(`href`));
+        if (!!href) {
+            images.push({ type: ['Link'], href });
+        }
+        else {
+            nodes = doc(`img`);
+            if (!!nodes && !!nodes.length) {
+                dic = {};
+                nodes.each((_, node) => {
+                    if (node.type === "tag") {
+                        href = node.attribs.src;
+                    }
+                    if (href && !dic[href]) {
+                        dic[href] = true;
+                        const o = { type: ['Link'], href };
+                        if (!!node.attribs.width) {
+                            o.width = node.attribs.width;
+                        }
+                        if (!!node.attribs.height) {
+                            o.height = node.attribs.height;
+                        }
+                        images.push(urlObj.resolve(rootUrl, href));
+                    }
+                });
+            }
+        }
+    }
+    return images;
+}
 // returns default favicon (//hostname/favicon.ico) for a url
 function getDefaultFavicon(rootUrl) {
-    return urlObj.resolve(rootUrl, `/favicon.ico`);
+    return {
+        type: ['Link'],
+        href: urlObj.resolve(rootUrl, `/favicon.ico`),
+        rel: ['favicon'],
+        mediaType: 'image/x-icon'
+    };
 }
 // returns an array of URLs to favicon images
 function getFavicons(doc, rootUrl) {
-    const images = [];
-    let nodes = [];
-    let src;
-    const relSelectors = [
-        `rel=icon`,
-        `rel="shortcut icon"`,
-        `rel=apple-touch-icon`,
-    ];
-    relSelectors.forEach((relSelector) => {
-        // look for all icon tags
-        nodes = doc(`link[${relSelector}]`);
-        // collect all images from icon tags
-        if (nodes.length) {
-            nodes.each((_, node) => {
-                if (node.type === "tag") {
-                    src = node.attribs.href;
-                }
-                if (src) {
-                    src = urlObj.resolve(rootUrl, src);
-                    images.push(src);
-                }
-            });
-        }
-    });
+    const relSelectors = ['icon', 'shortcut icon', 'apple-touch-icon'];
+    const images = getUrls(doc, relSelectors).map((o) => (Object.assign(Object.assign({}, o), { mediaType: 'image/png' })));
     // if no icon images, use default favicon location
     if (images.length <= 0) {
         images.push(getDefaultFavicon(rootUrl));
@@ -388,7 +353,7 @@ function parseTextResponse(body, url, options = {}, contentType) {
     const type = ['Page'].concat(getTypes(doc) || ['og:website']);
     const { published, updated } = getPublishedUpdated(doc);
     const asUrl = [{ type: "Link", href: url, mediaType: contentType }]
-        .concat((getUrls(doc) || []).map((l) => l.rel !== 'canonical' ? l : Object.assign(Object.assign({}, l), { mediaType: contentType })));
+        .concat((getUrls(doc) || []).map((l) => !l.rel || l.rel[0] !== 'canonical' ? l : Object.assign(Object.assign({}, l), { mediaType: contentType })));
     return {
         ld,
         contentType,
@@ -403,9 +368,9 @@ function parseTextResponse(body, url, options = {}, contentType) {
         tag: getTags(doc),
         icon: getFavicons(doc, url),
         image: getImages(doc, url, options.imagesPropertyType),
-        videos: getVideos(doc),
+        attachment: getVideos(doc),
         'og:type': getMediaType(doc) || `website`,
-        'twitter:card': getTwitterCard(doc), /*'summary'|'summary_large_image'|'app'|'player'*/
+        'twitter:card': getTwitterCard(doc)
     };
 }
 function parseMediaResponse(url, contentType, type) {
@@ -441,8 +406,6 @@ function parseResponse(response, options) {
     }
     catch (e) {
         return null;
-        // mediaType https://ogp.me
-        // image, audio, video, application, music, article, book, profile, website
     }
 }
 async function handleFetch(text, options) {
@@ -469,7 +432,6 @@ async function handleFetch(text, options) {
     clearTimeout(timeoutCounter);
     return response;
 }
-
 async function parseLD(parsed, response, options) {
     const { ld } = parsed;
     const ldMain = [];
@@ -496,26 +458,37 @@ async function parseLD(parsed, response, options) {
         if (typeof item !== 'object') {
             continue;
         }
-        const _ = (key) => {
-            if (item.hasOwnProperty(`schema:${key}`)) {
-                const o = item[`schema:${key}`];
-                if (typeof o === 'string' || o.hasOwnProperty('@type')) {
-                    return o;
-                }
-                return o.hasOwnProperty('@value') ?
-                    item[`schema:${key}`]['@value'] : (item[`schema:${key}`].hasOwnProperty('id') ?
-                    item[`schema:${key}`]['id'] : item[`schema:${key}`]);
+        const _ = (key, cur = item) => {
+          if (cur.hasOwnProperty(`schema:${key}`)) {
+            const o = cur[`schema:${key}`];
+            if (typeof o === 'string' || o.hasOwnProperty('@type')) {
+              return o
             }
-        };
+            return o.hasOwnProperty('@value') ?
+              cur[`schema:${key}`]['@value'] : (cur[`schema:${key}`].hasOwnProperty('id') ?
+                cur[`schema:${key}`]['id'] : cur[`schema:${key}`])
+          }
+        }
         const types = toArray(item.type);
         parsed.type = Array.from(new Set(parsed.type.concat(types).filter((v) => !!v)));
         if (!!item.image) {
-            parsed.image = toArray(item.image);
-        }
-        else {
-            const [img, thumb] = [_('image'), _('thumbnailUrl')];
-            const images = (!!img && !!img.length ? img : []).concat(!!thumb && !!thumb.length ? thumb : []).map((image) => image.id);
-            parsed.image = Array.from(new Set((parsed.image || []).concat(images)));
+          parsed.image = toArray(item.image)
+        } else {
+          const toLink = (type) => ((image) => {
+            if (typeof image === 'string') {
+              return {type: ['Link'], href: image, rel: [`schema:${type}`] }
+            } else if (typeof image === 'object') {
+              const href = _('contentUrl', image) || _('url', image) || image.href;
+              const o = !!href && {type: ['Link'], href: image, rel: [`schema:${type}`] }
+              if (!!o && _('width', image)) { o.height = _('width', image) }
+              if (!!o && _('height', image)) { o.height = _('height', image) }
+              if (!!o && _('encodingFormat', image)) { o.mediaType = _('encodingFormat', image) }
+              return {...image, ...o}
+            }
+          });
+          const [img, thumb] = [_('image').map(toLink('image')), _('thumbnailUrl').map(toLink('thumbnailUrl'))];
+          const images = (!!img && !!img.length ? img : []).concat(!!thumb && !!thumb.length ? thumb : []);
+          parsed.image = Array.from(new Set((parsed.image || []).concat(images)));
         }
         if (!!item.name) {
             parsed.name = toArray(item.name);
@@ -562,65 +535,16 @@ async function parseLD(parsed, response, options) {
         else if (!!_('dateModified')) {
             parsed.updated = _('dateModified');
         }
-        // printEdition, printPage OR pageStart pageEnd OR pagination     wordCount
-        // rel="author" and crawl rel="me"s
-        /* Offer, attributedTo -
-        LD [Organization or Person]
-        author, creator, publisher, contributor, copyrightHolder, sponsor, funder, maintainer, producer, provider, publisher, sdPublisher, translator
-        OG [Profile]
-        profile:first_name - string - A name normally given to an individual by a parent or self-chosen.
-        profile:last_name - string - A name inherited from a family or marriage and by which the individual is commonly known.
-        profile:username - string - A short unique string to identify them.
-
-        BreadcrumbList
-        */
-        const lastUrl = !!parsed.url && !!parsed.url.length && parsed.url[parsed.url.length - 1];
-        const manifest = !!lastUrl && typeof lastUrl === 'object' && lastUrl.hasOwnProperty('rel') && lastUrl.rel === 'manifest' && lastUrl.href;
+        const lastUrl = !!parsed.url && !!parsed.url.length && parsed.url[parsed.url.length-1];
+        const manifest = !!lastUrl && typeof lastUrl === 'object' && lastUrl.rel && lastUrl.rel.length && lastUrl.rel[0] === 'manifest' && lastUrl.href;
         if (!parsed.siteName && !!manifest) {
             const manifestRes = await handleFetch(manifest, options);
             const manifestO = await manifestRes.json();
-            parsed.siteName = manifestO.name || manifestO.short_name || '';
+            parsed.siteName = (manifestO.name || manifestO.short_name).trim() || '';
         }
     }
     return parsed;
 }
-/*
-const detectedUrl = text.replace(/\n/g, ` `).split(` `)
-  .find((token) => CONSTANTS.REGEX_VALID_URL.test(token));
-if (!detectedUrl) { return null }
-
-const timeout = (!!options && options.timeout) || 3000; // 3 second timeout default
-const controller = new AbortController();
-const timeoutCounter = setTimeout(() => controller.abort(), timeout);
-
-const fetchOptions = {
-  headers: (!!options && options.headers) || {},
-  redirect: (!!options && options.followRedirects) ? (`follow` as `follow`) : (`error` as `error`),
-  signal: controller.signal,
-};
-
-const fetchUrl = (!!options && options.proxyUrl) ? options.proxyUrl.concat(detectedUrl) : detectedUrl;
-try {
-  const response = await fetch(fetchUrl, fetchOptions).catch((e) => {
-    if (e.name === "AbortError") { throw new Error("Request timeout") }
-    throw e;
-  });
-  clearTimeout(timeoutCounter);
-  const headers: Record<string, string> = {};
-  response.headers.forEach((header, key) => {
-    headers[key] = header;
-  });
-  const normalizedResponse: PreFetchedResource = {
-    url: (!!options && options.proxyUrl) ? response.url.replace(options.proxyUrl, ``) : response.url,
-    headers,
-    data: await response.text(),
-  };
-
-  return parseResponse(normalizedResponse, options);
-
-} catch(e) {}
-return null
-*/
 function toArray(x) { return !Array.isArray(x) ? [x] : x; }
 /**
  * Parses the text, extracts the first link it finds and does a HTTP request
@@ -666,6 +590,8 @@ async function getPreviewFromResponse(response, options) {
     const parsed = await parseLD(parsedResponse, response, options);
     return parsed;
 }
+
+
 
 
 

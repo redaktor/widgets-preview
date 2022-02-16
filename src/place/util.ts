@@ -396,10 +396,8 @@ export function osmWheelchairAndAmenities(locationFeatures: LocationFeatureSpeci
   }
 
 
-  const withFullIcon = (_a: [string, string], external = false) => {
-    const base = external === true ? 'https://wiki.openstreetmap.org/w/images/' : '/assets/osm/';
-    const file = external === true ? _a[1] : _a[1].split('/').reverse()[0];
-    _a[1] = `${base}${file}.svg`;
+  const withFullIcon = (_a: [string, string]) => {
+    _a[1] = `/assets/osm/${_a[1].split('/').reverse()[0]}.svg`;
     return _a
   }
 

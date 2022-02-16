@@ -35,6 +35,9 @@
          ]
       }
    ],
+
+
+   
    "contentType":"text/html",
    "type":[
       "Page",
@@ -50,27 +53,43 @@
          "mediaType":"text/html"
       },
       {
-         "type":"Link",
+         "type":[
+            "Link"
+         ],
          "href":"https://www.spiegel.de/ausland/republikaner-mitch-mcconell-kritisiert-eigene-partei-fuer-umgang-mit-kapitol-attacke-a-6cd2b361-aa97-4f42-9e67-4df3397f5036",
-         "rel":"canonical",
+         "rel":[
+            "canonical"
+         ],
          "mediaType":"text/html"
       },
       {
-         "type":"Link",
+         "type":[
+            "Link"
+         ],
          "href":"https://www.spiegel.de/schlagzeilen/index.rss",
-         "rel":"alternate",
+         "rel":[
+            "alternate"
+         ],
          "mediaType":"application/rss+xml"
       },
       {
-         "type":"Link",
+         "type":[
+            "Link"
+         ],
          "href":"https://www.spiegel.de/ausland/index.rss",
-         "rel":"alternate",
+         "rel":[
+            "alternate"
+         ],
          "mediaType":"application/rss+xml"
       },
       {
-         "type":"Link",
+         "type":[
+            "Link"
+         ],
          "href":"https://www.spiegel.de/public/spon/json/manifest.json",
-         "rel":"manifest"
+         "rel":[
+            "manifest"
+         ]
       }
    ],
    "attributedTo":[
@@ -85,7 +104,7 @@
          "rel":"http://purl.org/dc/terms/rightsHolder"
       }
    ],
-   "siteName":"DER SPIEGEL",
+   "siteName":"",
    "name":[
       "»Gewaltsamer Aufstand«: Republikaner McConnell kritisiert eigene Partei für Umgang mit Kapitol-Attacke"
    ],
@@ -96,18 +115,104 @@
       "Ausland"
    ],
    "icon":[
-      "https://cdn.prod.www.spiegel.de/public/spon/images/icons/favicon.ico",
-      "https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon.png",
-      "https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon72.png",
-      "https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon76.png",
-      "https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon114.png",
-      "https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon120.png",
-      "https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon144.png",
-      "https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon152.png",
-      "https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon180.png"
+      {
+         "type":[
+            "Link"
+         ],
+         "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/favicon.ico",
+         "rel":[
+            "shortcut icon"
+         ],
+         "mediaType":"image/x-icon"
+      },
+      {
+         "type":[
+            "Link"
+         ],
+         "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon.png",
+         "rel":[
+            "apple-touch-icon"
+         ],
+         "mediaType":"image/x-icon"
+      },
+      {
+         "type":[
+            "Link"
+         ],
+         "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon72.png",
+         "rel":[
+            "apple-touch-icon"
+         ],
+         "mediaType":"image/x-icon"
+      },
+      {
+         "type":[
+            "Link"
+         ],
+         "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon76.png",
+         "rel":[
+            "apple-touch-icon"
+         ],
+         "mediaType":"image/x-icon"
+      },
+      {
+         "type":[
+            "Link"
+         ],
+         "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon114.png",
+         "rel":[
+            "apple-touch-icon"
+         ],
+         "mediaType":"image/x-icon"
+      },
+      {
+         "type":[
+            "Link"
+         ],
+         "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon120.png",
+         "rel":[
+            "apple-touch-icon"
+         ],
+         "mediaType":"image/x-icon"
+      },
+      {
+         "type":[
+            "Link"
+         ],
+         "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon144.png",
+         "rel":[
+            "apple-touch-icon"
+         ],
+         "mediaType":"image/x-icon"
+      },
+      {
+         "type":[
+            "Link"
+         ],
+         "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon152.png",
+         "rel":[
+            "apple-touch-icon"
+         ],
+         "mediaType":"image/x-icon"
+      },
+      {
+         "type":[
+            "Link"
+         ],
+         "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon180.png",
+         "rel":[
+            "apple-touch-icon"
+         ],
+         "mediaType":"image/x-icon"
+      }
    ],
    "image":[
-      "https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1280_r1.77_fpx48_fpy29.jpg",
+      {
+         "type":[
+            "Link"
+         ],
+         "href":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1280_r1.77_fpx48_fpy29.jpg"
+      },
       "https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1200_r1.77_fpx48_fpy29.jpg",
       "https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1200_r1.33_fpx48_fpy29.jpg",
       "https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1200_r1_fpx48_fpy29.jpg",
@@ -115,7 +220,7 @@
       "https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w180_r1.33_fpx48_fpy29.jpg",
       "https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w180_r1_fpx48_fpy29.jpg"
    ],
-   "videos":[
+   "attachment":[
 
    ],
    "og:type":[

@@ -1,36 +1,14 @@
-/* functions derive from https://github.com/ospfranco/link-preview-js
-
+/*  some functions derive from https://github.com/ospfranco/link-preview-js
 MIT License
-
 Copyright (c) 2019 Oscar Franco
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 */
-import { AsObjectNormalized, AsLink } from '../common/interfaces';
+import { AsObjectNormalized } from '../common/interfaces';
 import { defaultContext } from '../_ld/as';
 import { fetch } from "cross-fetch";
 import AbortController from "abort-controller";
 const cheerio = require('cheerio');
 const urlObj = require("url");
 const jsonld = require("jsonld");
-
-// console.log(fetch,AbortController,cheerio,urlObj)
 
 interface BaseResponse {
   url: string;
@@ -50,21 +28,29 @@ export interface TextResponse extends AsObjectNormalized {
   'og:type': string;
   'twitter:card': 'summary'|'summary_large_image'|'app'|'player';
 };
-/*
-{
-    ld,
+/* TODO
 
-    published,
-    updated,
-    attributedTo: getAttributions(doc),
-    name: getTitles(doc),
-    summary: getDescriptions(doc),
-    tag: getTags(doc),
-    icon: getFavicons(doc, url),
-    image: getImages(doc, url, options.imagesPropertyType),
-    videos: getVideos(doc),
-    'twitter:card': getTwitterCard(doc), // 'summary'|'summary_large_image'|'app'|'player'
-}
+LINKS href | rel | mediaType | name | hreflang | height | width | preview
+PLACE location: accuracy | altitude | latitude | longitude | radius | units
+EVENT startTime | endTime | duration
+
+attachment :
+e.g. plus BreadcrumbList
+
+attributedTo :
+LD [Organization or Person]
+author, creator, publisher, contributor, copyrightHolder, sponsor, funder, maintainer, producer, director, provider, publisher, sdPublisher, translator
+OG [Profile]
+profile:first_name - string - A name normally given to an individual by a parent or self-chosen.
+profile:last_name - string - A name inherited from a family or marriage and by which the individual is commonly known.
+profile:username - string - A short unique string to identify them.
+
+// printEdition, printPage OR pageStart pageEnd OR pagination     wordCount
+// TODO backstory in sub can be CreativeWork or Text !
+
+// rel="author" and crawl rel="me"s
+// mediaType https://ogp.me :
+// image, audio, video, application, music, article, book, profile, website
 */
 interface LinkPreviewOptions {
   headers?: Record<string, string>;
@@ -236,30 +222,31 @@ function getTypes(doc: any) {
   return (!value ? [] : flat(toArray(value).map((v: string) => mapped.hasOwnProperty(v) ? mapped[v] : `og:${v}`))) || ['Object'];
 }
 
-function getUrls(doc: any) {
-  const url: AsLink[] = [];
+function getUrls(doc: any, relSelectors = ['canonical', 'alternate', 'manifest']): AsObjectNormalized[] {
+  const url: AsObjectNormalized[] = [];
   let nodes = [];
   let href: string;
-  const relSelectors = ['canonical', 'alternate', 'manifest'];
   relSelectors.forEach((rel) => {
     // look for all icon tags
-    nodes = doc(`link[rel=${rel}]`);
+    nodes = doc(`link[rel="${rel}"]`);
     // collect all images from icon tags
     if (nodes.length) {
-      nodes.each((_:any, node: any) => {
+      nodes.each((_: any, node: any) => {
         if (node.type === "tag") {
           href = node.attribs.href;
         }
         if (href) {
-          const o: AsLink = {type: "Link", href, rel};
+          const o: AsObjectNormalized = { type: ['Link'], href, rel: [rel] };
           const type = node.attribs.type;
-          if (type) { o.mediaType = type }
+          if (type) {
+            o.mediaType = type;
+          }
           url.push(o);
         }
       });
     }
   });
-  return url
+  return url;
 }
 
 function getMediaType(doc: any) {
@@ -268,157 +255,109 @@ function getMediaType(doc: any) {
     const content = node.attr(`content`);
     return content === `image` ? `photo` : content;
   }
-  return (
-    metaTagContent(doc, `og:type`, `property`) ||
-    metaTagContent(doc, `og:type`, `name`)
-  );
+  return (metaTagContent(doc, `og:type`, `property`) ||
+    metaTagContent(doc, `og:type`, `name`));
 }
 
-function getImages(
-  doc: any,
-  rootUrl: string,
-  imagesPropertyType?: string
-) {
-  let images: string[] = [];
-  let nodes: any | null;
-  let src: string | undefined;
-  let dic: Record<string, boolean> = {};
 
-  const imagePropertyType = imagesPropertyType || `og`;
-  nodes =
-    metaTag(doc, `${imagePropertyType}:image`, `property`) ||
-    metaTag(doc, `${imagePropertyType}:image`, `name`);
-
-  if (nodes) {
-    nodes.each((_: number, node: any) => {
-      if (node.type === "tag") {
-        src = node.attribs.content;
-        if (src) {
-          src = urlObj.resolve(rootUrl, src);
-          !!src && images.push(src);
-        }
-      }
-    });
-  }
-
-  if (images.length <= 0 && !imagesPropertyType) {
-    src = doc(`link[rel=image_src]`).attr(`href`);
-    if (src) {
-      src = urlObj.resolve(rootUrl, src);
-      if (!!src) { images = [src] }
-    } else {
-      nodes = doc(`img`);
-
-      if (!!nodes && !!nodes.length) {
-        dic = {};
-        images = [];
-        nodes.each((_: number, node: any) => {
-          if (node.type === "tag") { src = node.attribs.src }
-          if (src && !dic[src]) {
-            dic[src] = true;
-            // width = node.attribs.width;
-            // height = node.attribs.height;
-            images.push(urlObj.resolve(rootUrl, src));
-          }
-        });
-      }
-    }
-  }
-
-  return images;
-}
-
-function getVideos(doc: any) {
+function getVideos(doc: any, vocab: string = 'og', type = 'video') {
   const videos = [];
-  let nodeTypes;
-  let nodeSecureUrls;
   let nodeType;
   let nodeSecureUrl;
   let video;
-  let videoType;
+  let mediaType;
   let videoSecureUrl;
-  let width;
-  let height;
-  let videoObj;
+  let videoObj: AsObjectNormalized;
   let index;
-
-  const nodes = metaTag(doc, `og:video`, `property`) || metaTag(doc, `og:video`, `name`);
-
+  let nodes = metaTag(doc, `${vocab}:${type}`, `property`) || metaTag(doc, `${vocab}:${type}`, `name`);
+  const getTag = (key: string) => metaTag(doc, `${vocab}:${type}:${key}`, `property`) ||
+  metaTag(doc, `${vocab}:${type}:${key}`, `name`) || [];
   if (!!nodes && !!nodes.length) {
-    nodeTypes =
-      metaTag(doc, `og:video:type`, `property`) ||
-      metaTag(doc, `og:video:type`, `name`);
-    nodeSecureUrls =
-      metaTag(doc, `og:video:secure_url`, `property`) ||
-      metaTag(doc, `og:video:secure_url`, `name`);
-    width =
-      metaTagContent(doc, `og:video:width`, `property`) ||
-      metaTagContent(doc, `og:video:width`, `name`);
-    height =
-      metaTagContent(doc, `og:video:height`, `property`) ||
-      metaTagContent(doc, `og:video:height`, `name`);
-
+    const [nodeTypes, nodeSecureUrls, width, height] = [
+      getTag('type'), getTag('secure_url'), getTag('width'), getTag('height')
+    ];
     for (index = 0; index < nodes.length; index += 1) {
       const node = nodes[index];
-      if (node.type === "tag") { video = node.attribs.content }
-
-      nodeType = nodeTypes![index];
-      if (nodeType.type === "tag") {
-        videoType = nodeType ? nodeType.attribs.content : null;
+      if (node.type === "tag") {
+        video = node.attribs.content;
       }
-      nodeSecureUrl = nodeSecureUrls![index];
-      if (nodeSecureUrl.type === "tag") {
+      nodeType = nodeTypes[index];
+      if (!!nodeType && nodeType.type === "tag") {
+        mediaType = nodeType ? nodeType.attribs.content : null;
+      }
+      nodeSecureUrl = nodeSecureUrls[index];
+      if (!!nodeSecureUrl && nodeSecureUrl.type === "tag") {
         videoSecureUrl = nodeSecureUrl ? nodeSecureUrl.attribs.content : null;
       }
+      const hrefs = [videoSecureUrl, video].filter((v) => !!v);
+      if (!hrefs.length) { continue }
       videoObj = {
-        url: video,
-        secureUrl: videoSecureUrl,
-        type: videoType,
-        width,
-        height,
+        type: ['Link'],
+        href: hrefs[0]
       };
-      if (videoType && videoType.indexOf(`video/`) === 0) {
+
+      if (!!mediaType && mediaType.length) {
+        videoObj.mediaType = mediaType;
+      }
+      if (!!width && width.length) {
+        videoObj.width = width[0];
+      }
+      if (!!height && height.length) {
+        videoObj.height = height[0];
+      }
+      if (mediaType && mediaType.indexOf(`video/`) === 0) {
         videos.splice(0, 0, videoObj);
       } else {
         videos.push(videoObj);
       }
     }
   }
-
   return videos;
 }
+function getImages(doc: any, rootUrl: string, imagesPropertyType?: string) {
+  let images = getVideos(doc, 'og', 'image');
+  let nodes: any | null;
+  let href: string | undefined;
+  let dic: Record<string, boolean> = {};
 
-// returns default favicon (//hostname/favicon.ico) for a url
-function getDefaultFavicon(rootUrl: string) {
-  return urlObj.resolve(rootUrl, `/favicon.ico`);
+  if (images.length <= 0 && !imagesPropertyType) {
+    href = urlObj.resolve(rootUrl, doc(`link[rel=image_src]`).attr(`href`));
+    if (!!href) {
+      images.push({ type: ['Link'], href });
+    } else {
+      nodes = doc(`img`);
+      if (!!nodes && !!nodes.length) {
+        dic = {};
+        nodes.each((_: any, node: any) => {
+          if (node.type === "tag") {
+            href = node.attribs.src;
+          }
+          if (href && !dic[href]) {
+            dic[href] = true;
+            const o: AsObjectNormalized = { type: ['Link'], href }
+            if (!!node.attribs.width) { o.width = node.attribs.width }
+            if (!!node.attribs.height) { o.height = node.attribs.height }
+            images.push(urlObj.resolve(rootUrl, href));
+          }
+        });
+      }
+    }
+  }
+  return images;
 }
-
+// returns default favicon (//hostname/favicon.ico) for a url
+function getDefaultFavicon(rootUrl: string): AsObjectNormalized {
+  return {
+    type: ['Link'],
+    href: urlObj.resolve(rootUrl, `/favicon.ico`),
+    rel: ['favicon'],
+    mediaType: 'image/x-icon'
+  };
+}
 // returns an array of URLs to favicon images
 function getFavicons(doc: any, rootUrl: string) {
-  const images = [];
-  let nodes: any | never[] = [];
-  let src: string | undefined;
-
-  const relSelectors = [
-    `rel=icon`,
-    `rel="shortcut icon"`,
-    `rel=apple-touch-icon`,
-  ];
-
-  relSelectors.forEach((relSelector) => {
-    // look for all icon tags
-    nodes = doc(`link[${relSelector}]`);
-    // collect all images from icon tags
-    if (nodes.length) {
-      nodes.each((_: number, node: any) => {
-        if (node.type === "tag") { src = node.attribs.href }
-        if (src) {
-          src = urlObj.resolve(rootUrl, src);
-          images.push(src);
-        }
-      });
-    }
-  });
+  const relSelectors = ['icon', 'shortcut icon', 'apple-touch-icon'];
+  const images: AsObjectNormalized[] = getUrls(doc, relSelectors).map((o) => ({...o, mediaType: 'image/png'}));
   // if no icon images, use default favicon location
   if (images.length <= 0) {
     images.push(getDefaultFavicon(rootUrl));
@@ -458,7 +397,7 @@ function parseTextResponse(
   const type = ['Page'].concat(getTypes(doc) || ['og:website']);
   const { published, updated } = getPublishedUpdated(doc);
   const asUrl = [{type: "Link", href: url, mediaType: contentType}]
-    .concat((getUrls(doc) || []).map((l) => l.rel !== 'canonical' ? l : {...l, mediaType: contentType}) as any);
+    .concat((getUrls(doc) || []).map((l) => !l.rel || l.rel[0] !== 'canonical' ? l : {...l, mediaType: contentType}) as any);
   return {
       ld,
       contentType,
@@ -473,9 +412,9 @@ function parseTextResponse(
       tag: getTags(doc),
       icon: getFavicons(doc, url),
       image: getImages(doc, url, options.imagesPropertyType),
-      videos: getVideos(doc),
+      attachment: getVideos(doc),
       'og:type': getMediaType(doc) || `website`,
-      'twitter:card': getTwitterCard(doc), /*'summary'|'summary_large_image'|'app'|'player'*/
+      'twitter:card': getTwitterCard(doc)
   };
 }
 
@@ -505,10 +444,6 @@ function parseResponse(response: PreFetchedResource, options?: LinkPreviewOption
     }
   } catch (e) {
     return null
-
-    // mediaType https://ogp.me
-    // image, audio, video, application, music, article, book, profile, website
-
   }
 }
 
@@ -536,6 +471,7 @@ async function handleFetch(text: string, options?: LinkPreviewOptions) {
   clearTimeout(timeoutCounter);
   return response
 }
+
 async function parseLD(
   parsed: TextResponse,
   response: PreFetchedResource,
@@ -554,23 +490,23 @@ async function parseLD(
     target.push(item);
   }
   (parsed as TextResponse).ld = ldAdditional;
-
+/*
   console.log(JSON.stringify(ldMain));
   console.log('//');
   console.log(ldAdditional);
-
+*/
   parsed = {...parsed, ...(!!ldMain.length ? (ldMain[0]||{}) : {}), type: parsed.type}
   for (const item of ldMain) {
     if (typeof item !== 'object') { continue }
-    const _ = (key: string) => {
-      if (item.hasOwnProperty(`schema:${key}`)) {
-        const o = item[`schema:${key}`];
+    const _ = (key: string, cur = item) => {
+      if (cur.hasOwnProperty(`schema:${key}`)) {
+        const o = cur[`schema:${key}`];
         if (typeof o === 'string' || o.hasOwnProperty('@type')) {
           return o
         }
         return o.hasOwnProperty('@value') ?
-          item[`schema:${key}`]['@value'] : (item[`schema:${key}`].hasOwnProperty('id') ?
-            item[`schema:${key}`]['id'] : item[`schema:${key}`])
+          cur[`schema:${key}`]['@value'] : (cur[`schema:${key}`].hasOwnProperty('id') ?
+            cur[`schema:${key}`]['id'] : cur[`schema:${key}`])
       }
     }
     const types = toArray(item.type);
@@ -579,8 +515,20 @@ async function parseLD(
     if (!!item.image) {
       parsed.image = toArray(item.image)
     } else {
-      const [img, thumb] = [_('image'), _('thumbnailUrl')];
-      const images = (!!img && !!img.length ? img : []).concat(!!thumb && !!thumb.length ? thumb : []).map((image: any) => image.id);
+      const toLink = (type: string) => ((image: any) => {
+        if (typeof image === 'string') {
+          return {type: ['Link'], href: image, rel: [`schema:${type}`] }
+        } else if (typeof image === 'object') {
+          const href = _('contentUrl', image) || _('url', image) || image.href;
+          const o: AsObjectNormalized | false = !!href && {type: ['Link'], href: image, rel: [`schema:${type}`] }
+          if (!!o && _('width', image)) { o.height = _('width', image) }
+          if (!!o && _('height', image)) { o.height = _('height', image) }
+          if (!!o && _('encodingFormat', image)) { o.mediaType = _('encodingFormat', image) }
+          return {...image, ...o}
+        }
+      });
+      const [img, thumb] = [_('image').map(toLink('image')), _('thumbnailUrl').map(toLink('thumbnailUrl'))];
+      const images = (!!img && !!img.length ? img : []).concat(!!thumb && !!thumb.length ? thumb : []);
       parsed.image = Array.from(new Set((parsed.image || []).concat(images)));
     }
 
@@ -611,6 +559,7 @@ async function parseLD(
     if (Array.isArray(_('keywords'))) {
       parsed.tag = (parsed.tag || []).concat(_('keywords')).filter((v) => !!v && typeof v === 'string')
     }
+
     if (!!item.published) {
       parsed.published = item.published
     } else if (!!_('datePublished')) {
@@ -621,69 +570,34 @@ async function parseLD(
     } else if (!!_('dateModified')) {
       parsed.updated = _('dateModified')
     }
+    if (!!item.startTime) {
+      parsed.startTime = item.startTime
+    } else if (!!_('startDate')) {
+      parsed.startTime = _('startDate')
+    }
+    if (!!item.endTime) {
+      parsed.endTime = item.endTime
+    } else if (!!_('endDate')) {
+      parsed.endTime = _('endDate')
+    }
+    if (!!item.duration) {
+      parsed.duration = item.duration
+    } else if (!!_('duration')) {
+      parsed.duration = _('duration')
+    }
 
-    // printEdition, printPage OR pageStart pageEnd OR pagination     wordCount
-
-    // rel="author" and crawl rel="me"s
-
-    /* Offer, attributedTo -
-    LD [Organization or Person]
-    author, creator, publisher, contributor, copyrightHolder, sponsor, funder, maintainer, producer, provider, publisher, sdPublisher, translator
-    OG [Profile]
-    profile:first_name - string - A name normally given to an individual by a parent or self-chosen.
-    profile:last_name - string - A name inherited from a family or marriage and by which the individual is commonly known.
-    profile:username - string - A short unique string to identify them.
-
-    BreadcrumbList
-    */
     const lastUrl = !!parsed.url && !!parsed.url.length && parsed.url[parsed.url.length-1];
-    const manifest = !!lastUrl && typeof lastUrl === 'object' && lastUrl.hasOwnProperty('rel') && lastUrl.rel === 'manifest' && lastUrl.href;
+    const manifest = !!lastUrl && typeof lastUrl === 'object' && lastUrl.rel && lastUrl.rel.length && lastUrl.rel[0] === 'manifest' && lastUrl.href;
     if (!parsed.siteName && !!manifest) {
       const manifestRes = await handleFetch(manifest, options);
       const manifestO = await manifestRes.json();
-      parsed.siteName = manifestO.name || manifestO.short_name || '';
+      parsed.siteName = (manifestO.name || manifestO.short_name).trim() || '';
     }
   }
 
   return parsed;
 }
-/*
-const detectedUrl = text.replace(/\n/g, ` `).split(` `)
-  .find((token) => CONSTANTS.REGEX_VALID_URL.test(token));
-if (!detectedUrl) { return null }
 
-const timeout = (!!options && options.timeout) || 3000; // 3 second timeout default
-const controller = new AbortController();
-const timeoutCounter = setTimeout(() => controller.abort(), timeout);
-
-const fetchOptions = {
-  headers: (!!options && options.headers) || {},
-  redirect: (!!options && options.followRedirects) ? (`follow` as `follow`) : (`error` as `error`),
-  signal: controller.signal,
-};
-
-const fetchUrl = (!!options && options.proxyUrl) ? options.proxyUrl.concat(detectedUrl) : detectedUrl;
-try {
-  const response = await fetch(fetchUrl, fetchOptions).catch((e) => {
-    if (e.name === "AbortError") { throw new Error("Request timeout") }
-    throw e;
-  });
-  clearTimeout(timeoutCounter);
-  const headers: Record<string, string> = {};
-  response.headers.forEach((header, key) => {
-    headers[key] = header;
-  });
-  const normalizedResponse: PreFetchedResource = {
-    url: (!!options && options.proxyUrl) ? response.url.replace(options.proxyUrl, ``) : response.url,
-    headers,
-    data: await response.text(),
-  };
-
-  return parseResponse(normalizedResponse, options);
-
-} catch(e) {}
-return null
-*/
 function toArray(x: any) { return !Array.isArray(x) ? [x] : x }
 /**
  * Parses the text, extracts the first link it finds and does a HTTP request
