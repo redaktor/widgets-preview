@@ -450,45 +450,55 @@ async function parseLD(parsed, response, options) {
         target.push(item);
     }
     parsed.ld = ldAdditional;
-    console.log(JSON.stringify(ldMain));
-    console.log('//');
-    console.log(ldAdditional);
+    /*
+      console.log(JSON.stringify(ldMain));
+      console.log('//');
+      console.log(ldAdditional);
+    */
     parsed = Object.assign(Object.assign(Object.assign({}, parsed), (!!ldMain.length ? (ldMain[0] || {}) : {})), { type: parsed.type });
     for (const item of ldMain) {
         if (typeof item !== 'object') {
             continue;
         }
         const _ = (key, cur = item) => {
-          if (cur.hasOwnProperty(`schema:${key}`)) {
-            const o = cur[`schema:${key}`];
-            if (typeof o === 'string' || o.hasOwnProperty('@type')) {
-              return o
+            if (cur.hasOwnProperty(`schema:${key}`)) {
+                const o = cur[`schema:${key}`];
+                if (typeof o === 'string' || o.hasOwnProperty('@type')) {
+                    return o;
+                }
+                return o.hasOwnProperty('@value') ?
+                    cur[`schema:${key}`]['@value'] : (cur[`schema:${key}`].hasOwnProperty('id') ?
+                    cur[`schema:${key}`]['id'] : cur[`schema:${key}`]);
             }
-            return o.hasOwnProperty('@value') ?
-              cur[`schema:${key}`]['@value'] : (cur[`schema:${key}`].hasOwnProperty('id') ?
-                cur[`schema:${key}`]['id'] : cur[`schema:${key}`])
-          }
-        }
+        };
         const types = toArray(item.type);
         parsed.type = Array.from(new Set(parsed.type.concat(types).filter((v) => !!v)));
         if (!!item.image) {
-          parsed.image = toArray(item.image)
-        } else {
-          const toLink = (type) => ((image) => {
-            if (typeof image === 'string') {
-              return {type: ['Link'], href: image, rel: [`schema:${type}`] }
-            } else if (typeof image === 'object') {
-              const href = _('contentUrl', image) || _('url', image) || image.href;
-              const o = !!href && {type: ['Link'], href: image, rel: [`schema:${type}`] }
-              if (!!o && _('width', image)) { o.height = _('width', image) }
-              if (!!o && _('height', image)) { o.height = _('height', image) }
-              if (!!o && _('encodingFormat', image)) { o.mediaType = _('encodingFormat', image) }
-              return {...image, ...o}
-            }
-          });
-          const [img, thumb] = [_('image').map(toLink('image')), _('thumbnailUrl').map(toLink('thumbnailUrl'))];
-          const images = (!!img && !!img.length ? img : []).concat(!!thumb && !!thumb.length ? thumb : []);
-          parsed.image = Array.from(new Set((parsed.image || []).concat(images)));
+            parsed.image = toArray(item.image);
+        }
+        else {
+            const toLink = (type) => ((image) => {
+                if (typeof image === 'string') {
+                    return { type: ['Link'], href: image, rel: [`schema:${type}`] };
+                }
+                else if (typeof image === 'object') {
+                    const href = _('contentUrl', image) || _('url', image) || image.href;
+                    const o = !!href && { type: ['Link'], href: image, rel: [`schema:${type}`] };
+                    if (!!o && _('width', image)) {
+                        o.height = _('width', image);
+                    }
+                    if (!!o && _('height', image)) {
+                        o.height = _('height', image);
+                    }
+                    if (!!o && _('encodingFormat', image)) {
+                        o.mediaType = _('encodingFormat', image);
+                    }
+                    return Object.assign(Object.assign({}, image), o);
+                }
+            });
+            const [img, thumb] = [_('image').map(toLink('image')), _('thumbnailUrl').map(toLink('thumbnailUrl'))];
+            const images = (!!img && !!img.length ? img : []).concat(!!thumb && !!thumb.length ? thumb : []);
+            parsed.image = Array.from(new Set((parsed.image || []).concat(images)));
         }
         if (!!item.name) {
             parsed.name = toArray(item.name);
@@ -523,20 +533,38 @@ async function parseLD(parsed, response, options) {
         if (Array.isArray(_('keywords'))) {
             parsed.tag = (parsed.tag || []).concat(_('keywords')).filter((v) => !!v && typeof v === 'string');
         }
-        if (!!item.published) {
-            parsed.published = item.published;
-        }
-        else if (!!_('datePublished')) {
-            parsed.published = _('datePublished');
-        }
-        if (!!item.updated) {
-            parsed.updated = item.updated;
-        }
-        else if (!!_('dateModified')) {
-            parsed.updated = _('dateModified');
-        }
-        const lastUrl = !!parsed.url && !!parsed.url.length && parsed.url[parsed.url.length-1];
-        const manifest = !!lastUrl && typeof lastUrl === 'object' && lastUrl.rel && lastUrl.rel.length && lastUrl.rel[0] === 'manifest' && lastUrl.href;
+        // as: well known, functional corresponding
+        const toAP = (asProperty, schemaProperty) => {
+            const schemaValue = _(schemaProperty);
+            if (!item[asProperty] && !schemaValue) {
+                return;
+            }
+            parsed[asProperty] = !!item[asProperty] ? item[asProperty] : _(schemaProperty);
+        };
+        const convert = [
+            ['published', 'datePublished'], ['updated', 'dateModified'],
+            ['startTime', 'startDate'], ['endTime', 'endDate'], ['duration', 'duration']
+        ];
+        convert.forEach((a) => toAP(...a));
+        const geo = _('geo');
+        ['latitude', 'longitude', ['elevation', 'altitude']].forEach((key) => {
+            const [schemaKey, asKey] = typeof key === 'string' ? [key, key] : key;
+            if (!!item[asKey]) {
+                parsed[asKey] = toArray(item[asKey]);
+            }
+            else if (!!geo) {
+                const geoValue = _(schemaKey, geo);
+                if (!!geoValue) {
+                    parsed[asKey] = toArray(geoValue);
+                }
+            }
+            if (!parsed[asKey] && !!_(schemaKey)) {
+                parsed[asKey] = _(schemaKey);
+            }
+        });
+        const lastUrl = !!parsed.url && !!parsed.url.length && parsed.url[parsed.url.length - 1];
+        const manifest = !!lastUrl && typeof lastUrl === 'object' && lastUrl.rel &&
+            lastUrl.rel.length && lastUrl.rel[0] === 'manifest' && lastUrl.href;
         if (!parsed.siteName && !!manifest) {
             const manifestRes = await handleFetch(manifest, options);
             const manifestO = await manifestRes.json();

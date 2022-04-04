@@ -30,10 +30,6 @@ export interface TextResponse extends AsObjectNormalized {
 };
 /* TODO
 
-LINKS href | rel | mediaType | name | hreflang | height | width | preview
-PLACE location: accuracy | altitude | latitude | longitude | radius | units
-EVENT startTime | endTime | duration
-
 attachment :
 e.g. plus BreadcrumbList
 
@@ -399,22 +395,22 @@ function parseTextResponse(
   const asUrl = [{type: ['Link'], href: url, mediaType: contentType}]
     .concat((getUrls(doc) || []).map((l) => !l.rel || l.rel[0] !== 'canonical' ? l : {...l, mediaType: contentType}) as any);
   return {
-      ld,
-      contentType,
-      type,
-      published,
-      updated,
-      url: asUrl,
-      attributedTo: getAttributions(doc),
-      siteName: getSiteName(doc),
-      name: getTitles(doc),
-      summary: getDescriptions(doc),
-      tag: getTags(doc),
-      icon: getFavicons(doc, url),
-      image: getImages(doc, url, options.imagesPropertyType),
-      attachment: getVideos(doc),
-      'og:type': getMediaType(doc) || `website`,
-      'twitter:card': getTwitterCard(doc)
+    ld,
+    contentType,
+    type,
+    published,
+    updated,
+    url: asUrl,
+    attributedTo: getAttributions(doc),
+    siteName: getSiteName(doc),
+    name: getTitles(doc),
+    summary: getDescriptions(doc),
+    tag: getTags(doc),
+    icon: getFavicons(doc, url),
+    image: getImages(doc, url, options.imagesPropertyType),
+    attachment: getVideos(doc),
+    'og:type': getMediaType(doc) || `website`,
+    'twitter:card': getTwitterCard(doc)
   };
 }
 
@@ -449,24 +445,24 @@ function parseResponse(response: PreFetchedResource, options?: LinkPreviewOption
 
 async function handleFetch(text: string, options?: LinkPreviewOptions) {
   const detectedUrl = text.replace(/\n/g, ` `).split(` `)
-      .find((token) => REGEX_VALID_URL.test(token));
+    .find((token) => REGEX_VALID_URL.test(token));
   if (!detectedUrl) {
-      throw new Error(`link-preview-js did not receive a valid a url or text`);
+    throw new Error(`link-preview-js did not receive a valid a url or text`);
   }
   const timeout = (!!options && options.timeout) || 3000; // 3 second timeout default
   const controller = new AbortController();
   const timeoutCounter = setTimeout(() => controller.abort(), timeout);
   const fetchOptions: any = {
-      headers: (!!options && options.headers) || {},
-      redirect: (!!options && options.followRedirects) ? `follow` : `error`,
-      signal: controller.signal,
+    headers: (!!options && options.headers) || {},
+    redirect: (!!options && options.followRedirects) ? `follow` : `error`,
+    signal: controller.signal,
   };
   const fetchUrl = (!!options && options.proxyUrl) ? options.proxyUrl.concat(detectedUrl) : detectedUrl;
   const response = await fetch(fetchUrl, fetchOptions).catch((e) => {
-      if (e.name === 'AbortError') {
-          throw new Error('Request timeout');
-      }
-      throw e;
+    if (e.name === 'AbortError') {
+      throw new Error('Request timeout');
+    }
+    throw e;
   });
   clearTimeout(timeoutCounter);
   return response
@@ -559,7 +555,7 @@ async function parseLD(
     if (Array.isArray(_('keywords'))) {
       parsed.tag = (parsed.tag || []).concat(_('keywords')).filter((v) => !!v && typeof v === 'string')
     }
-    // well known, functional corresponding as:
+    // as: well known, functional corresponding
     const toAP = (asProperty: keyof AsObjectNormalized, schemaProperty: string) => {
       const schemaValue = _(schemaProperty);
       if (!item[asProperty] && !schemaValue) { return }
@@ -570,11 +566,18 @@ async function parseLD(
       ['startTime','startDate'], ['endTime','endDate'], ['duration','duration']
     ];
     convert.forEach((a) => toAP(...a));
-
-
-    ['latitude','longitude'].forEach((key) => {
-      if (!item[key] && !(!parsed[key] && !!_(key as string))) { return }
-      parsed[key] = !!item[key] ? toArray(item[key]) :_(key as string);
+    const geo = _('geo');
+    ['latitude','longitude',['elevation', 'altitude']].forEach((key) => {
+      const [schemaKey, asKey] = typeof key === 'string' ? [key,key] : key;
+      if (!!item[asKey]) {
+        parsed[asKey] = toArray(item[asKey]);
+      } else if (!!geo) {
+        const geoValue = _(schemaKey as string, geo);
+        if (!!geoValue) { parsed[asKey] = toArray(geoValue) }
+      }
+      if (!parsed[asKey] && !!_(schemaKey as string)) {
+        parsed[asKey] = _(schemaKey as string)
+      }
     });
 
 

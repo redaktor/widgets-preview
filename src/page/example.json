@@ -35,6 +35,9 @@
          ]
       }
    ],
+
+
+   
    "contentType":"text/html",
    "type":[
       "Page",
@@ -45,12 +48,16 @@
    "updated":"2022-02-09T00:13:17+01:00",
    "url":[
       {
-         "type":"Link",
+         "type":[
+            "Link"
+         ],
          "href":"https://www.spiegel.de/ausland/republikaner-mitch-mcconell-kritisiert-eigene-partei-fuer-umgang-mit-kapitol-attacke-a-6cd2b361-aa97-4f42-9e67-4df3397f5036",
          "mediaType":"text/html"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://www.spiegel.de/ausland/republikaner-mitch-mcconell-kritisiert-eigene-partei-fuer-umgang-mit-kapitol-attacke-a-6cd2b361-aa97-4f42-9e67-4df3397f5036",
          "rel":[
             "canonical"
@@ -58,7 +65,9 @@
          "mediaType":"text/html"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://www.spiegel.de/schlagzeilen/index.rss",
          "rel":[
             "alternate"
@@ -66,7 +75,9 @@
          "mediaType":"application/rss+xml"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://www.spiegel.de/ausland/index.rss",
          "rel":[
             "alternate"
@@ -74,7 +85,9 @@
          "mediaType":"application/rss+xml"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://www.spiegel.de/public/spon/json/manifest.json",
          "rel":[
             "manifest"
@@ -83,12 +96,16 @@
    ],
    "attributedTo":[
       {
-         "type":["Object"],
+         "type":[
+            "Object"
+         ],
          "name":"DER SPIEGEL",
          "rel":"http://purl.org/dc/elements/1.1/creator"
       },
       {
-         "type":["Object"],
+         "type":[
+            "Object"
+         ],
          "name":"DER SPIEGEL, Hamburg, Germany",
          "rel":"http://purl.org/dc/terms/rightsHolder"
       }
@@ -105,136 +122,120 @@
    ],
    "icon":[
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/favicon.ico",
          "rel":[
             "shortcut icon"
          ],
-         "mediaType":"image/x-icon"
+         "mediaType":"image/png"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon.png",
          "rel":[
             "apple-touch-icon"
          ],
-         "mediaType":"image/x-icon"
+         "mediaType":"image/png"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon72.png",
          "rel":[
             "apple-touch-icon"
          ],
-         "mediaType":"image/x-icon"
+         "mediaType":"image/png"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon76.png",
          "rel":[
             "apple-touch-icon"
          ],
-         "mediaType":"image/x-icon"
+         "mediaType":"image/png"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon114.png",
          "rel":[
             "apple-touch-icon"
          ],
-         "mediaType":"image/x-icon"
+         "mediaType":"image/png"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon120.png",
          "rel":[
             "apple-touch-icon"
          ],
-         "mediaType":"image/x-icon"
+         "mediaType":"image/png"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon144.png",
          "rel":[
             "apple-touch-icon"
          ],
-         "mediaType":"image/x-icon"
+         "mediaType":"image/png"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon152.png",
          "rel":[
             "apple-touch-icon"
          ],
-         "mediaType":"image/x-icon"
+         "mediaType":"image/png"
       },
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://cdn.prod.www.spiegel.de/public/spon/images/icons/touch-icon180.png",
          "rel":[
             "apple-touch-icon"
          ],
-         "mediaType":"image/x-icon"
+         "mediaType":"image/png"
       }
    ],
    "image":[
       {
-         "type":["Link"],
+         "type":[
+            "Link"
+         ],
          "href":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1280_r1.77_fpx48_fpy29.jpg"
       },
       {
-         "type":["Link"],
-         "href":{
-            "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1200_r1.77_fpx48_fpy29.jpg"
-         },
-         "rel":[
-            "schema:image"
-         ]
+         "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1200_r1.77_fpx48_fpy29.jpg"
       },
       {
-         "type":["Link"],
-         "href":{
-            "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1200_r1.33_fpx48_fpy29.jpg"
-         },
-         "rel":[
-            "schema:image"
-         ]
+         "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1200_r1.33_fpx48_fpy29.jpg"
       },
       {
-         "type":["Link"],
-         "href":{
-            "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1200_r1_fpx48_fpy29.jpg"
-         },
-         "rel":[
-            "schema:image"
-         ]
+         "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w1200_r1_fpx48_fpy29.jpg"
       },
       {
-         "type":["Link"],
-         "href":{
-            "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w180_r1.77_fpx48_fpy29.jpg"
-         },
-         "rel":[
-            "schema:thumbnailUrl"
-         ]
+         "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w180_r1.77_fpx48_fpy29.jpg"
       },
       {
-         "type":["Link"],
-         "href":{
-            "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w180_r1.33_fpx48_fpy29.jpg"
-         },
-         "rel":[
-            "schema:thumbnailUrl"
-         ]
+         "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w180_r1.33_fpx48_fpy29.jpg"
       },
       {
-         "type":["Link"],
-         "href":{
-            "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w180_r1_fpx48_fpy29.jpg"
-         },
-         "rel":[
-            "schema:thumbnailUrl"
-         ]
+         "id":"https://cdn.prod.www.spiegel.de/images/5b331ed0-b57a-4235-976b-1165d8937922_w180_r1_fpx48_fpy29.jpg"
       }
    ],
    "attachment":[
@@ -244,6 +245,8 @@
       "article"
    ],
    "twitter:card":"summary_large_image",
+
+
    "schema:articleSection":"Ausland",
    "schema:author":{
       "type":"schema:Organization",

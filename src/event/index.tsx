@@ -63,6 +63,10 @@ const factory = create({ icache, id, i18nActivityPub, theme, breakpoints })
 	.children<EventChildren | RenderResult | undefined>();
 
 /* TODO
+mobilizon
+mz:timezone
+mz:participationMessage
+
 duration // schema: dateCreated, contentReferenceTime, expires
 
 [AP similar] duration, startDate, endDate, location + Thing
