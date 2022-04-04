@@ -1,20 +1,4 @@
 /*
-{
-  "@context": "https://www.w3.org/ns/activitystreams",
-  "summary": "Daniel Craig plays James Bond",
-  "type": ["Relationship","Person"],
-  "subject": {
-    "type": "Person",
-    "name": "Daniel"
-  },
-  "relationship": "redaktor.me/performs",
-  "object": {
-    "type": "Profession",
-    "name": "Actor"
-  }
-}
-
-
 Relations from attributedTo to CreativeWork
 maps:
 IPTC
@@ -25,12 +9,6 @@ id3
 https://schema.org
 https://developers.themoviedb.org/3/configuration/get-jobs
 
-
-
-Document
-Note
-Page
-Profile
 
 skos:prefLabel "animals"@en ;
 skos:altLabel "fauna"@en ;
@@ -66,21 +44,10 @@ const as = [
   ['Article',{pref:{en:'Article',de:'Artikel'}},false],
 ];
 
-
 // https://redaktor.me/relation
 
 // actor is Actor
 // actor contributes characters or work
-
-/* Relations from location to Location Type */
-const locationRoles = [
-  'ContentLocation', 'SpatialCoverage', 'LocationCreated'
-];
-// loc:
-// ["pup","Publication place"],["prp","Production place"],
-// ["evp","Event place"],["uvp","University place"],["dbp","Distribution place"]
-// ["mfp","Manufacture place"],
-
 const relation = [
   ['isRemixOf', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
 
@@ -93,6 +60,36 @@ const relation = [
   ['worksWith' false, {pref:{en:'Colleague',de:''}, alt:{en:'',de:''}}, false],
   ['speaksFor', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
   ['actsFor', false, {pref:{en:'Actor',de:''}, alt:{en:'',de:''}}, false]
+];
+
+// id, labels pref/alt/hidden/loc/ note [--> map pref to as:summaryMap !]
+const locationRoles = [
+  ['LocationContent', {
+    loc: 'evp', pref:{en:'',de:''}, alt:{en:'Event place',de:''},
+    note: 'The location where the CreativeWork was created, which may not be the same as the location depicted in the Work.'
+  }], // https://schema.org/contentLocation
+  ['LocationCreated', {
+    loc: 'prp', pref:{en:'',de:''}, alt:{en:'Production place',de:''},
+    note: 'The location depicted or described in the content. For example, the location shown in a photograph or painting.'
+  }], // https://schema.org/locationCreated
+  ['LocationPublication', {
+    loc: 'pub', pref:{en:'',de:''}, alt:{en:'Publication place',de:''},
+    note: 'The place where a resource is published.'
+  }],
+  ['LocationManufacture', {
+    loc: 'mfp', pref:{en:'',de:''}, alt:{en:'Manufacture place',de:''},
+    note: 'The place of manufacture (e.g., printing, duplicating, casting, etc.) of a resource in a published form.'
+  }],
+  ['LocationUniOrLibrary', {
+    loc: 'uvp', pref:{en:'',de:''}, alt:{en:'University place',de:''},
+    note: 'A place where a university that is associated with a resource is located.'+
+    'E.g., a university where an academic dissertation or thesis was presented or a library where it is available.'
+  }],
+  ['LocationDistribution', {
+    loc: 'dbp', pref:{en:'',de:''}, alt:{en:'Distribution place',de:''},
+    note: 'A place from which a resource, e.g., a serial, is distributed.'
+  }],
+  ['SpatialCoverage', {pref:{en:'',de:''}, alt:{en:'',de:''}}]
 ];
 
 // https://redaktor.me/profession
