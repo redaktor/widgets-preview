@@ -1,4 +1,109 @@
 /*
+graph TD
+
+    A[sioc:System] -->|hasMember| B(sioc:Usergroup<br>redaktor:Instance)
+    C[sioc:UserAccount] -->|hasMember| E{as:Actor}
+    B --> |hasMember| C
+    D((sioc:Role)) -->|hasScope| B
+    E -->|hasFunction| D
+    D --> |hasFunction| F[redaktor:PublicAppendable]
+    D --> |hasFunction| I
+    E -->|hasMember| F
+    E -->|is| B
+    E -->|is| H[fa:fa-user as:Person]
+    E -->|is| I[fa:fa-users as:Group]
+    E -->|is| J[fa:fa-code as:Application]
+    E -->|is| K[fa:fa-user-secret as:Service]
+    E -->|is| L[fa:fa-university as:Organization]
+    F -->|subClassOf| N
+    A -->|servesClient| J
+    I -->|hasMember| E
+    H -->|hasClient| J
+
+    M[(sioc:Space)]
+    N[sioc:Container<br>as:Collection]
+    O[sioc:Site<br>as:Page<br>redaktor:Channel]
+    O -->|subClassOf| N
+    P>sioc:Item/Post<br>as:Object]-->|hasAuthor| E
+    P-->|inReplyTo| P
+    P-->|hasGenerator| J
+    P-->|hasContainer| N
+    Q(as:Tag<br>redaktor:Topic)
+    P-->|hasTag/hasTopic| Q
+    Q-->|isActor| K
+    A -->|cache| M
+    B -->|json| M
+    B -->|media| M
+    B -->|cache| M
+
+    K -->|is| X[Character]
+    H -->|worksWith<br>speaksFor<br>actsFor| H
+    H -->|leadPerforms<br>performs<br>speaks<br>doubles| X
+
+    R[schema:CreativeWork<br>as:Article<br>as:Image<br>as:Audio<br>as:Video] -->|Author<br>Contributor<br>PersonInImage etc.| H
+    R -->|OrganisationInImageName| L
+    R -->|isRemixOf| R
+
+    R -->|LocationContent<br>LocationCreated<br>LocationUniOrLibrary etc.| S[as:Place]
+
+
+
+
+
+Relations (Properties)
+  Instance <-> Actor
+  Actor <-> Actor (e.g. Group)
+    Owner
+    TechAdmin
+    ContentModerator
+
+
+  Actor <-> Actor (e.g. Character)
+    leadPerforms
+    performs
+    speaks
+    doubles
+
+  Actor <-> CreativeWork/Article
+    Author, Contributor, Artist / ROLES as relation
+
+  Actor <-> Event
+  Actor <-> Place
+
+  CreativeWork <-> CreativeWork
+    isRemixOf
+  CreativeWork <-> Event
+  CreativeWork <-> Place
+
+Relators (Classes)
+
+Named Individuals
+
+
+['', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
+['', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
+['', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
+['', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
+['', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
+['worksWith' false, {pref:{en:'Colleague',de:''}, alt:{en:'',de:''}}, false],
+['speaksFor', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
+['actsFor', false, {pref:{en:'Actor',de:''}, alt:{en:'',de:''}}, false]
+*/
+
+
+
+
+// id, labels, narrowerIds
+const as = [
+  ['Video',{pref:{en:'Video',de:'Video'}, alt:{en:'Movie',de:'Film'}},false],
+  ['Audio',{pref:{en:'Audio',de:'Audio'}, alt:{en:'Sound',de:'Sound'}},false],
+  ['Image',{pref:{en:'Image',de:'Bild'}, alt:{en:'Photo',de:'Foto'}},false],
+  ['Event',{pref:{en:'Event',de:'Veranstaltung'}, alt:{en:'Happening',de:'Ereignis'}},false],
+  ['Place',{pref:{en:'Place',de:'Ort'}, alt:{en:'Location',de:'Örtlichkeit'}},false],
+  ['Article',{pref:{en:'Article',de:'Artikel'}},false],
+];
+
+/*
 Relations from attributedTo to CreativeWork
 maps:
 IPTC
@@ -8,7 +113,9 @@ EBML Official Matroska (and webm) Tags
 id3
 https://schema.org
 https://developers.themoviedb.org/3/configuration/get-jobs
-
+https://id.loc.gov/vocabulary/relators.html
+https://d-nb.info/standards/elementset/gnd
+https://opensource.creativecommons.org/ccrel-guide/
 
 skos:prefLabel "animals"@en ;
 skos:altLabel "fauna"@en ;
@@ -34,15 +141,6 @@ skos:altLabel "Fauna"@de .
 // photoshop:TextLayers [{LayerName, LayerText}, ]
 // CLASS Character, Musical Instrument?
 
-// id, labels, narrowerIds
-const as = [
-  ['Video',{pref:{en:'Video',de:'Video'}, alt:{en:'Movie',de:'Film'}},false],
-  ['Audio',{pref:{en:'Audio',de:'Audio'}, alt:{en:'Sound',de:'Sound'}},false],
-  ['Image',{pref:{en:'Image',de:'Bild'}, alt:{en:'Photo',de:'Foto'}},false],
-  ['Event',{pref:{en:'Event',de:'Veranstaltung'}, alt:{en:'Happening',de:'Ereignis'}},false],
-  ['Place',{pref:{en:'Place',de:'Ort'}, alt:{en:'Location',de:'Örtlichkeit'}},false],
-  ['Article',{pref:{en:'Article',de:'Artikel'}},false],
-];
 
 // https://redaktor.me/relation
 
@@ -50,12 +148,11 @@ const as = [
 // actor contributes characters or work
 const relation = [
   ['isRemixOf', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-
+  /*['hasRole', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],*/
   ['leadPerforms', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
   ['performs', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
   ['speaks', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
   ['doubles', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-  ['hasRole', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
   ['contributes', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
   ['worksWith' false, {pref:{en:'Colleague',de:''}, alt:{en:'',de:''}}, false],
   ['speaksFor', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
@@ -97,10 +194,24 @@ const locationRoles = [
 const orgRoles = [ ['OrganisationInImageName', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}] ];
 const productRoles = [ ['ProductInImage', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}] ];
 const roles = [
+  {
+    "department":"#",
+    "jobs":[
+
+    ]
+  },
+  {
+    "department":"System",
+    "jobs":[
+
+    ]
+  }
+
+
   ['Artist', {loc: 'art', pref:{en:'',de:''}, alt:{en:'',de:''}}], // "primary artist"
   ['Author', {loc: 'aut', pref:{en:'',de:''}, alt:{en:'',de:''}}],
-  ['Contributor', {tmdb: false, loc: 'ctb', pref:{en:'Copyright holder',de:''}, alt:{en:'Copyright claimant',de:''}}],
-  ['Copyright', {tmdb: false, loc: ['cph','cpc'], pref:{en:'',de:''}, alt:{en:'',de:''}}],
+  ['Contributor', {tmdb: false, loc: 'ctb', pref:{en:'',de:''}, alt:{en:'',de:''}}],
+  ['Copyright', {tmdb: false, loc: ['cph','cpc'], pref:{en:'Copyright holder',de:''}, alt:{en:'Copyright claimant',de:''}}],
   ['PersonInImage', {tmdb: false, loc: 'dpc', pref:{en:'',de:''}, alt:{en:'',de:''}}],
   ['Character', 'Character', {pref:{en:'',de:''}, alt:{en:'',de:''}}],
 
@@ -122,26 +233,31 @@ const roles = [
   ['Maintainer',{pref:{en:'Maintainance',de:''}, alt:{en:'',de:''}}],
   ['sdPublisher',{loc: ['ann','mrk'], pref:{en:'Annotator or Markup editor',de:''}, alt:{en:'metadata',de:''}}],
 ]; // "dst"
+
 const categories = [
-  [1000,"CostumeStyling","Costume & Make-Up","",false],
-  [2000,"Lighting",false,"",false],
-  [3000,"Production",false,"",false],
-  [4000,"Camera","Camera","",false],
-  [5000,"VisualEffects","Visual Effects","",false],
-  [6000,"Sound","Sound","",false],
-  [7000,"Actors","Actors","",false],
-  [8000,"Directing","Directing","",false],
-  [9000,"Art","Art","",false],
-  [10000,"Writing","Writing","",false],
-  [11000,"Crew","Crew","",false],
-  [12000,"Editing","Editing","",false],
-  [13000,"Comic","Comic","",false]
+  [1000,"Coverage","Reporting","",false],
+  [2000,"Writing","Writing","",false],
+  [3000,"Camera","Camera","",false],
+  [4000,"Sound","Sound","",false],
+  [5000,"Actors","Actors","",false],
+  [6000,"Music","Music","",false],
+  [7000,"Art","Art","",false],
+  [8000,"Lighting",false,"",false],
+  [9000,"Directing","Directing","",false],
+  [10000,"Production",false,"",false],
+  [11000,"Editing","Editing","",false],
+  [12000,"CostumeStyling","Costume & Make-Up","",false],
+  [13000,"VisualEffects","Visual Effects","",false],
+  [14000,"Crew","Crew","",false],
+  [15000,"Comic","Comic","",false],
+  [16000,"Manufacturing","","Herstellung",false],
+  [19000,"Legal","Legal","",false],
 ]
 
 // job can be [key, locKey, TMDBmapToKey?, altLabel?]
 const creativeRoles = [
   {
-    "department":"Costume & Make-Up",
+    "department":12000,
     "jobs":[
       "Costume Design",
       "Makeup Artist",
@@ -229,7 +345,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Lighting",
+    "department":8000,
     "jobs":[
       "Lighting Technician",
       "Best Boy Electric",
@@ -266,7 +382,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Production",
+    "department":10000,
     "jobs":[
       ["Production Studio","prn",false,"Production company"],
       ["Producer","pro"],
@@ -394,7 +510,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Camera",
+    "department":3000,
     "jobs":[
       ["Director of Photography","cng"],
       "Still Photographer",
@@ -482,7 +598,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Visual Effects",
+    "department":13000,
     "jobs":[
       ["Animation","anm"],
       "Visual Effects",
@@ -592,7 +708,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Music",
+    "department":6000,
     "jobs": [
       ["Music Director","msd",false,"Musical director"],
       ["Musician",["mus","itr"]],
@@ -618,7 +734,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Sound",
+    "department":4000,
     "jobs":[
       "Sound",
       "Sound Engineer",
@@ -698,7 +814,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Actors",
+    "department":5000,
     "jobs":[
       "LeadPerformer",
       "Actor",
@@ -709,7 +825,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Directing",
+    "department":9000,
     "jobs":[
       ["Director",["drt","fmd"]],
       "Assistant Director",
@@ -743,7 +859,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Art",
+    "department":7000,
     "jobs":[
       ["Art Direction","adi"],
       ["Photographer","pht"],
@@ -857,7 +973,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Writing",
+    "department":2000,
     "jobs":[
       "Author",
       ["Lyricist","lyr"],
@@ -907,7 +1023,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Crew",
+    "department":14000,
     "jobs":[
       ["Choreographer","chr"],
       ["Translator","trl"],
@@ -1104,7 +1220,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Editing",
+    "department":11000,
     "jobs":[
       ["Editor","edt"],
       ["Colorist","clr"],
@@ -1158,7 +1274,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":"Comic",
+    "department":15000,
     "jobs":[
       "Colorist",
       "Inker",
@@ -1186,16 +1302,16 @@ const locRoles = [
       ["tch","Teacher"],["dgs","Degree supervisor"],["ctr","Contractor"]
     ]
   }, {
-    "department":"Directing",
+    "department":9000,
     "jobs":[["tld","Television director"],["rdd","Radio director"],["pbd","Publishing director"]]
   }, {
-    "department":"Production",
+    "department":10000,
     "jobs":[
       ["tlp","Television producer"],["rpc","Radio producer"],["bkp","Book producer"],
       ["ldr","Laboratory director"],["lbr","Laboratory"],["mtk","Minute taker"],["eng","Engineer"]
     ]
   }, {
-    "department":"Writing",
+    "department":2000,
     "jobs":[
       ["aui","Author of introduction, etc."],["aft","Author of afterword, colophon, etc."],
       ["win","Writer of introduction"],["wpr","Writer of preface"],["wat","Writer of added text"],
@@ -1207,14 +1323,14 @@ const locRoles = [
 
     ]
   }, {
-    "department":"Editing",
+    "department":11000,
     "jobs":[
       ["edc","Editor of compilation"],["red","Redaktor"],
       ["gis","Geographic information specialist"],["ctg","Cartographer"],["ins","Inscriber"],
       ["rev","Reviewer"],["abr","Abridger"],["rbr","Rubricator"],["crr","Corrector"]
     ]
   }, {
-    "department":"Art",
+    "department":7000,
     "jobs":[
       ["tyd","Type designer"],["tyg","Typographer"],["cll","Calligrapher"],["str","Stereotyper"],
       ["bkd","Book designer"],["bjd","Bookjacket designer"],["bdd","Binding designer"],
@@ -1222,13 +1338,13 @@ const locRoles = [
       ["acp","Art copyist"]
     ]
   }, {
-    "department":"Reporting",
+    "department":1000,
     "jobs":[
       ["rpt","Reporter"],["crt","Court reporter"],["crp","Correspondent"],["wit","Witness"],
       ["ive","Interviewee"],["vdg","Videographer"],["pht","Photojournalist"]
     ]
   }, {
-    "department":"Manufacturing", /*Herstellung*/
+    "department":16000, /*Herstellung*/
     "jobs":[
       ["bpd","Bookplate designer"],["egr","Engraver"],["ltg","Lithographer"],["clt","Collotyper"],
       ["elt","Electrotyper"],["prt","Printer"],["prm","Printmaker"],["bnd","Binder"],
@@ -1237,16 +1353,16 @@ const locRoles = [
       ["pop","Printer of plates"],["plt","Platemaker"],["mrb","Marbler"]
     ]
   }, {
-    "department":"Crew",
+    "department":14000,
     "jobs":[
       ["prg","Programmer"],["com","Compiler"],["arc","Architect"],
       ["lsa","Landscape architect"]
     ]
   }, {
-    "department":"Music",
+    "department":6000,
     "jobs":[["dnc","Dancer"],["lbt","Librettist"]]
   }, {
-    "department":"Legal",
+    "department":19000,
     "jobs":[
       ["stn","Standards body"],["isb","Issuing body"],
       ["orm","Organizer"],["dtc","Data contributor"],["rps","Repository"],["asn","Associated name"],
@@ -1284,7 +1400,8 @@ EBML
   "Director","AssistantDirector",
   "DirectorOfPhotography",
   "ArtDirector" --> "Art Direction"
-  "Composer", --> "Original Music Composer", "MasteredBy" --> "Sound Post Supervisor", "Arranger" --> "Music Arranger",  "Sound Engineer", "Conductor", "MixedBy", "Accompaniment" --> "Music",
+  "Composer", --> "Original Music Composer", "MasteredBy" --> "Sound Post Supervisor", "Arranger" --> "Music Arranger",
+   "Sound Engineer", "Conductor", "MixedBy", "Accompaniment" --> "Music",
   "ScreenplayBy", --> "Screenplay", "WrittenBy" --> "Author",   "Lyricist",
   "ProductionStudio","Producer","CoProducer" --> "Co-Producer","ExecutiveProducer","Publisher" --> "Publicist","ProductionDesigner",
   "EditedBy" --> "Editor",
