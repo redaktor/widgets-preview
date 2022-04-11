@@ -48,30 +48,38 @@ graph TD
 
 
 
+Roles in GROUP
+    An R&D open value network:
+    Representative (member)
+    Sponsor
+    Donor
+    Affiliate (member)
+    TechShop User (member)
+    FabLab Member (member)
+    Exchange Firm (sub-organization)
+    Supplier/Customer (trading partner)
+    Project (sub-organization)
+    Custodian (sub-organization)
+
+    A local herbal exchange network:
+    Grower (member)
+    Harvester (member)
+    Drying Site (member)
+    Seller (member)
+    Administrator (member)
+
+    A high school fablab network:
+    Customer/Supplier (trading partner)
+    District School (member)
+    Drop-off Point (member)
+    Employee
+    Donor
+    Member
+
 
 
 Relations (Properties)
-  Instance <-> Actor
-  Actor <-> Actor (e.g. Group)
-    Owner
-    TechAdmin
-    ContentModerator
 
-
-  Actor <-> Actor (e.g. Character)
-    leadPerforms
-    performs
-    speaks
-    doubles
-
-  Actor <-> CreativeWork/Article
-    Author, Contributor, Artist / ROLES as relation
-
-  Actor <-> Event
-  Actor <-> Place
-
-  CreativeWork <-> CreativeWork
-    isRemixOf
   CreativeWork <-> Event
   CreativeWork <-> Place
 
@@ -141,64 +149,148 @@ skos:altLabel "Fauna"@de .
 // photoshop:TextLayers [{LayerName, LayerText}, ]
 // CLASS Character, Musical Instrument?
 
+// id, en pref, en alt, de pref, de alt
+const topCategories = [
+  ["MajorRole","Major Roles","General",false],
+  ["Attribution","Attribution","Profession",false],
+  ["Cast","Cast","Character Relators",false],
+  ["ActorRelator","Actor Relators","",false],
+  ["MutualAid","Mutual Aid","",false],
+  ["EmergencyManaging","Emergency Managing","",false],
+  ["System","","",false],
+  ["EventRelator","Actors in Events","Event Relators",false],
+  ["PlaceRelator","Actors in Places","Place Relators",false],
+  ["LocationRole","Location Roles","Location Concept",false],
+  ["CreativeWorkRole","Creative Work Roles","Creative Concept",false],
+
+]
+const categories = {
+  Attribution: [ /* Actor <-> CreativeWork-Object */
+  ['contributes', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
+    [1000,"Coverage","Reporting","",false],
+    [2000,"Writing","Writing","",false],
+    [3000,"Camera","Camera","",false],
+    [4000,"Sound","Sound","",false],
+    [5000,"Actors","Actors","",false],
+    [6000,"Music","Music","",false],
+    [7000,"Art","Art","",false],
+    [8000,"Lighting",false,"",false],
+    [9000,"Directing","Directing","",false],
+    [10000,"Production",false,"",false],
+    [11000,"Editing","Editing","",false],
+    [12000,"CostumeStyling","Costume & Make-Up","",false],
+    [13000,"VisualEffects","Visual Effects","",false],
+    [14000,"Crew","Crew","",false],
+    [15000,"Comic","Comic","",false],
+    [16000,"Manufacturing","","Herstellung",false],
+    [19000,"Legal","Legal","",false],
+  ],
+  Cast: [ /* Actor <-> Character */
+    ['leadPerforms', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
+    ['performs', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
+    ['speaks', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
+    ['doubles', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false]
+  ],
+  ActorRelator: [ /* Actor <-> Actor */
+    ['worksWith' false, {pref:{en:'Colleague',de:''}, alt:{en:'',de:''}}, false],
+    ['speaksFor', false, {pref:{en:'Speaker',de:''}, alt:{en:'',de:''}}, false],
+    ['actsFor', false, {pref:{en:'Representative',de:''}, alt:{en:'Agent',de:''}}, false]
+  ],
+  MutualAid: [ /* Actor <-> Actor */
+
+  ],
+  EmergencyManaging: [ /* Actor <-> Actor */
+    // empathi
+  ],
+  System: [ /* Actor <-> System/Instance */
+      Owner
+      TechAdmin
+      ContentModerator
+  ],
+  EventRelator: [ /* Actor <-> Event */
+      Organizer
+      Attendee
+      Sponsor
+      Donor
+      Project (sub-group)
+  ],
+  PlaceRelator: [ /* Actor <-> Place */
+
+  ],
+  LocationRole: [ /* Actor <-> CreativeWork-Object */
+    /*
+      id TODO OSM, www-geonames-org -> http://www.geonames.org/
+    */
+    // id, labels pref/alt/hidden/loc/ note [--> map pref to as:summaryMap !]
+    ['LocationCreated', {
+      loc: 'evp', pref:{en:'',de:''}, alt:{en:'Event place',de:''},
+      note: 'The location where the CreativeWork was created, which may not be the same as the location depicted in the Work.'
+    }], // https://schema.org/contentLocation
+    ['LocationContent', {
+      loc: 'prp', pref:{en:'',de:''}, alt:{en:'Production place',de:''},
+      note: 'The location depicted or described in the content. For example, the location shown in a photograph or painting.'
+    }], // https://schema.org/locationCreated
+    ['LocationPublication', {
+      loc: 'pub', pref:{en:'',de:''}, alt:{en:'Publication place',de:''},
+      note: 'The location where a resource is published.'
+    }],
+    ['LocationManufacture', {
+      loc: 'mfp', pref:{en:'',de:''}, alt:{en:'Manufacture place',de:''},
+      note: 'The place of manufacture (e.g., printing, duplicating, casting, etc.) of a resource in a published form.'
+    }],
+    ['LocationUniOrLibrary', {
+      loc: 'uvp', pref:{en:'',de:''}, alt:{en:'University place',de:''},
+      note: 'A place where a university that is associated with a resource is located.'+
+      'E.g., a university where an academic dissertation or thesis was presented or a library where it is available.'
+    }],
+    ['LocationDistribution', {
+      loc: 'dbp', pref:{en:'',de:''}, alt:{en:'Distribution place',de:''},
+      note: 'A location from which a resource, e.g., a serial, is distributed.'
+    }],
+    ['SpatialCoverage', {pref:{en:'',de:''}, alt:{en:'',de:''}}]
+  ],
+  CreativeWorkRole: [ /* CreativeWork-Object <-> CreativeWork-Object */
+    /*
+      id TODO www-themoviedb-org, www-wikidata-org
+    */
+    ['isRemixOf', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false]
+  ]
+};
 
 // https://redaktor.me/relation
+/*['hasRole', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],*/
 
-// actor is Actor
-// actor contributes characters or work
-const relation = [
-  ['isRemixOf', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-  /*['hasRole', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],*/
-  ['leadPerforms', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-  ['performs', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-  ['speaks', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-  ['doubles', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-  ['contributes', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-  ['worksWith' false, {pref:{en:'Colleague',de:''}, alt:{en:'',de:''}}, false],
-  ['speaksFor', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-  ['actsFor', false, {pref:{en:'Actor',de:''}, alt:{en:'',de:''}}, false]
-];
-
-// id, labels pref/alt/hidden/loc/ note [--> map pref to as:summaryMap !]
-const locationRoles = [
-  ['LocationContent', {
-    loc: 'evp', pref:{en:'',de:''}, alt:{en:'Event place',de:''},
-    note: 'The location where the CreativeWork was created, which may not be the same as the location depicted in the Work.'
-  }], // https://schema.org/contentLocation
-  ['LocationCreated', {
-    loc: 'prp', pref:{en:'',de:''}, alt:{en:'Production place',de:''},
-    note: 'The location depicted or described in the content. For example, the location shown in a photograph or painting.'
-  }], // https://schema.org/locationCreated
-  ['LocationPublication', {
-    loc: 'pub', pref:{en:'',de:''}, alt:{en:'Publication place',de:''},
-    note: 'The place where a resource is published.'
-  }],
-  ['LocationManufacture', {
-    loc: 'mfp', pref:{en:'',de:''}, alt:{en:'Manufacture place',de:''},
-    note: 'The place of manufacture (e.g., printing, duplicating, casting, etc.) of a resource in a published form.'
-  }],
-  ['LocationUniOrLibrary', {
-    loc: 'uvp', pref:{en:'',de:''}, alt:{en:'University place',de:''},
-    note: 'A place where a university that is associated with a resource is located.'+
-    'E.g., a university where an academic dissertation or thesis was presented or a library where it is available.'
-  }],
-  ['LocationDistribution', {
-    loc: 'dbp', pref:{en:'',de:''}, alt:{en:'Distribution place',de:''},
-    note: 'A place from which a resource, e.g., a serial, is distributed.'
-  }],
-  ['SpatialCoverage', {pref:{en:'',de:''}, alt:{en:'',de:''}}]
-];
 
 // https://redaktor.me/profession
 // id and TMDB (replace()), labels pref/alt/hidden/tmdb/loc [--> map pref to as:summaryMap ! --> loc can be [exact near]]
-const orgRoles = [ ['OrganisationInImageName', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}] ];
-const productRoles = [ ['ProductInImage', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}] ];
 const roles = [
   {
-    "department":"#",
+    "department":"MajorRole",
     "jobs":[
+      ['Author', {loc: 'aut', pref:{en:'',de:''}, alt:{en:'',de:''}}], // html rel author
+      ['Artist', {loc: 'art', pref:{en:'',de:''}, alt:{en:'',de:''}}], // "primary artist"
+      ['AccountablePerson', {tmdb: 'Accountable person', loc: 'rpy', pref:{en: 'Accountable Person', de: 'V.i.S.d.P.'}}],
+      ['Owner', {tmdb: false, loc: 'own', pref:{en: 'Former owner', de: 'Eigentümer'}}],
+      ['FormerOwner', {tmdb: false, loc: 'fmo', pref:{en: 'Former owner', de: 'Vorheriger Eigentümer'}}],
+      ['Contributor', {tmdb: false, loc: 'ctb', pref:{en:'',de:''}, alt:{en:'',de:''}}],
+      ['Copyright', {tmdb: false, loc: ['cph','cpc'], pref:{en:'Copyright holder',de:''}, alt:{en:'Copyright claimant',de:''}}],
+      ['Maintainer',{pref:{en:'Maintainance',de:''}, alt:{en:'',de:''}}],
+      ['sdPublisher',{loc: ['ann','mrk'], pref:{en:'Annotator or Markup editor',de:''}, alt:{en:'metadata',de:''}}],
+      ['Distributor',{tmdb: false, loc: ['dst','fds'], pref:{en: 'distributed by', de: ''}, alt: {en: 'Film distributor', de: ''}}],
+      ['Funder',{loc: 'fnd', pref:{en:'',de:''}, alt:{en:'Funding',de:''}}],
+      ['Sponsor',{loc: 'spn', pref:{en:'',de:''}, alt:{en:'Sponsoring',de:''}}],
+      ['Donor',{loc: 'dnr', pref:{en:'',de:''}, alt:{en:'',de:''}}],
 
     ]
+  },
+  {
+    "department":"PicturedNamedCited",
+    "jobs":[
+      ['PersonInImage', {tmdb: false, loc: 'dpc', pref:{en:'',de:''}, alt:{en:'',de:''}}],
+      ['PersonInImageWDetails', {tmdb: false, loc: 'dpc', pref:{en:'',de:''}, alt:{en:'',de:''}}],
+      ['OrganisationInImageName', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}],
+      ['ProductInImage', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}],
+    }
   },
   {
     "department":"System",
@@ -208,52 +300,138 @@ const roles = [
   }
 
 
-  ['Artist', {loc: 'art', pref:{en:'',de:''}, alt:{en:'',de:''}}], // "primary artist"
-  ['Author', {loc: 'aut', pref:{en:'',de:''}, alt:{en:'',de:''}}],
-  ['Contributor', {tmdb: false, loc: 'ctb', pref:{en:'',de:''}, alt:{en:'',de:''}}],
-  ['Copyright', {tmdb: false, loc: ['cph','cpc'], pref:{en:'Copyright holder',de:''}, alt:{en:'Copyright claimant',de:''}}],
-  ['PersonInImage', {tmdb: false, loc: 'dpc', pref:{en:'',de:''}, alt:{en:'',de:''}}],
-  ['Character', 'Character', {pref:{en:'',de:''}, alt:{en:'',de:''}}],
 
-  ['LeadPerformer', {tmdb: 'Actor', loc: 'prf', pref:{en:'Lead performer',de:''}, alt:{en:'LeadPerformer',de:''}, hidden:{en:'Starring',de:''}}],
-  ['Actor', {loc: 'act', pref:{en:'Actor',de:''}, alt:{en:'Performer',de:''}}],
-  ['Double', {tmdb: 'Stunt Double', pref:{en:'Double',de:''}, alt:{en:'',de:''}}],
-  ['Voice', {loc: ['vac','spk'], pref:{en:'Voice actor',de:''}, alt:{en:'Speaker',de:''}}],
-  ['Cameo', {pref:{en:'',de:''}, alt:{en:'',de:''}}],
+  ['Character', 'Character', {pref:{en:'',de:''}, alt:{en:'',de:''}}],
+    ['Actor', {loc: 'act', pref:{en:'Actor',de:''}, alt:{en:'Performer',de:''}}],
+    ['LeadPerformer', {tmdb: 'Actor', loc: 'prf', pref:{en:'Lead performer',de:''}, alt:{en:'LeadPerformer',de:''}, hidden:{en:'Starring',de:''}}],
+    ['Double', {tmdb: 'Stunt Double', pref:{en:'Double',de:''}, alt:{en:'',de:''}}],
+    ['Voice', {loc: ['vac','spk'], pref:{en:'Voice actor',de:''}, alt:{en:'Speaker',de:''}}],
+    ['Cameo', {pref:{en:'',de:''}, alt:{en:'',de:''}}],
   ['SpecialGuest', {tmdb: 'Special Guest', pref:{en:'',de:''}, alt:{en:'',de:''}}],
 
-  ['AccountablePerson', {tmdb: 'Accountable person', loc: 'rpy', pref:{en: 'Accountable Person', de: 'V.i.S.d.P.'}}],
-  ['Owner', {tmdb: false, loc: 'own', pref:{en: 'Former owner', de: 'Eigentümer'}}],
-  ['FormerOwner', {tmdb: false, loc: 'fmo', pref:{en: 'Former owner', de: 'Vorheriger Eigentümer'}}],
-  ['DistributedBy',{tmdb: false, loc: ['dst','fds'], pref:{en: 'distributed by', de: ''}, alt: {en: 'Film distributor', de: ''}}],
+
+
+
   ['RemixedBy',{pref:{en:'remixed by',de:''}, alt:{en:'',de:''}}],
   ['ThanksTo',{pref:{en:'Thanks to',de:''}, alt:{en:'',de:''}}],
   ['Funder',{loc: 'fnd', pref:{en:'',de:''}, alt:{en:'Funding',de:''}}],
-  ['Sponsor',{loc: ['spn','dnr'], pref:{en:'',de:''}, alt:{en:'Sponsoring',de:''}}],
-  ['Maintainer',{pref:{en:'Maintainance',de:''}, alt:{en:'',de:''}}],
-  ['sdPublisher',{loc: ['ann','mrk'], pref:{en:'Annotator or Markup editor',de:''}, alt:{en:'metadata',de:''}}],
-]; // "dst"
+  ['Sponsor',{loc: 'spn', pref:{en:'',de:''}, alt:{en:'Sponsoring',de:''}}],
+  ['Donor',{loc: 'dnr', pref:{en:'',de:''}, alt:{en:'',de:''}}],
+];
 
-const categories = [
-  [1000,"Coverage","Reporting","",false],
-  [2000,"Writing","Writing","",false],
-  [3000,"Camera","Camera","",false],
-  [4000,"Sound","Sound","",false],
-  [5000,"Actors","Actors","",false],
-  [6000,"Music","Music","",false],
-  [7000,"Art","Art","",false],
-  [8000,"Lighting",false,"",false],
-  [9000,"Directing","Directing","",false],
-  [10000,"Production",false,"",false],
-  [11000,"Editing","Editing","",false],
-  [12000,"CostumeStyling","Costume & Make-Up","",false],
-  [13000,"VisualEffects","Visual Effects","",false],
-  [14000,"Crew","Crew","",false],
-  [15000,"Comic","Comic","",false],
-  [16000,"Manufacturing","","Herstellung",false],
-  [19000,"Legal","Legal","",false],
-]
 
+
+/*
+Attendee/Grantee/Customer - Actor accepted Offer
+Supporter - = Actor of "Likes", Actor of "Shares", Actor supports
+GenericMember - e.g. Actor joins Group
+Supplier - Actor contributes to Actor
+*/
+const locOnlyRoles = [
+  // TODO
+  // ["stg","Setting"], ["ant","Bibliographic antecedent"],
+  // ["mdc","Metadata contact"],["rcp","Addressee"],["att","Attributed name"],
+
+  // Accountable ["led","Lead"],
+  // (music,writing)["adp","Adapter"],
+  // (curator)["cor","Collection registrar"],
+  // (honoredByWork)["hnr","Honoree"], (dedicatedTo)["dte","Dedicatee"],
+  // ["app","Applicant"],["dis","Dissertant"]["pra","Praeses"],
+  // Aufsicht ["stn","Standards body"],["isb","Issuing body"],["orm","Organizer"],["dtc","Data contributor"],["rsr","Restorationist"],
+  // ["rps","Repository"],["asn","Associated name"],["lse","Licensee"],["asg","Assignee"],
+  {
+    "department":"#",
+    "jobs":[
+      ["prv","Provider"],["cli","Client"],["med","Medium"],["dpt","Depositor"],
+      ["dto","Dedicator"],["len","Lender"],["inv","Inventor"],["pth","Patent holder"],
+      ["brd","Broadcaster"],["hst","Host"],["his","Host institution"],["sht","Supporting host"],
+      ["cur","Curator"],["ard","Artistic director"],["sll","Seller"],["bsl","Bookseller"],
+      ["fmk","Filmmaker"],["ivr","Interviewer"],["ppt","Puppeteer"],
+      ["dsr","Designer"],["lso","Licensor"],["exp","Expert"],["col","Collector"],
+      ["pat","Patron"],["pan","Panelist"],
+      ["tch","Teacher"],["dgs","Degree supervisor"],["ctr","Contractor"]
+    ]
+  }, {
+    "department":9000,
+    "jobs":[["tld","Television director"],["rdd","Radio director"],["pbd","Publishing director"]]
+  }, {
+    "department":10000,
+    "jobs":[
+      ["tlp","Television producer"],["rpc","Radio producer"],["bkp","Book producer"],
+      ["ldr","Laboratory director"],["lbr","Laboratory"],["mtk","Minute taker"],["eng","Engineer"]
+    ]
+  }, {
+    "department":2000,
+    "jobs":[
+      ["aui","Author of introduction, etc."],["aft","Author of afterword, colophon, etc."],
+      ["win","Writer of introduction"],["wpr","Writer of preface"],["wat","Writer of added text"],
+      ["wst","Writer of supplementary textual content"],["wac","Writer of added commentary"],
+      ["stl","Storyteller"],["nrt","Narrator"],["ths","Thesis advisor"],["pfr","Proofreader"],
+      ["cwt","Commentator for written text"],["aqt","Author in quotations or text abstracts"],
+      ["ato","Autographer"],["cmm","Commentator"],["fac","Facsimilist"],["blw","Blurb writer"],
+      ["anl","Analyst"],["trc","Transcriber"],["scr","Scribe"]
+
+    ]
+  }, {
+    "department":11000,
+    "jobs":[
+      ["edc","Editor of compilation"],["red","Redaktor"],
+      ["gis","Geographic information specialist"],["ctg","Cartographer"],["ins","Inscriber"],
+      ["rev","Reviewer"],["abr","Abridger"],["rbr","Rubricator"],["crr","Corrector"]
+    ]
+  }, {
+    "department":7000,
+    "jobs":[
+      ["tyd","Type designer"],["tyg","Typographer"],["cll","Calligrapher"],["str","Stereotyper"],
+      ["bkd","Book designer"],["bjd","Bookjacket designer"],["bdd","Binding designer"],
+      ["drm","Draftsman"],["etr","Etcher"],["rsg","Restager"],["con","Conservator"],
+      ["acp","Art copyist"]
+    ]
+  }, {
+    "department":1000,
+    "jobs":[
+      ["rpt","Reporter"],["crt","Court reporter"],["crp","Correspondent"],["wit","Witness"],
+      ["ive","Interviewee"],["vdg","Videographer"],["pht","Photojournalist"]
+    ]
+  }, {
+    "department":16000, /*Herstellung*/
+    "jobs":[
+      ["bpd","Bookplate designer"],["egr","Engraver"],["ltg","Lithographer"],["clt","Collotyper"],
+      ["elt","Electrotyper"],["prt","Printer"],["prm","Printmaker"],["bnd","Binder"],
+      ["brl","Braille embosser"],["mfr","Manufacturer"],["wde","Wood engraver"],
+      ["mte","Metal-engraver"],["ppm","Papermaker"],["wdc","Woodcutter"],
+      ["pop","Printer of plates"],["plt","Platemaker"],["mrb","Marbler"]
+    ]
+  }, {
+    "department":14000,
+    "jobs":[
+      ["prg","Programmer"],["com","Compiler"],["arc","Architect"],
+      ["lsa","Landscape architect"]
+    ]
+  }, {
+    "department":6000,
+    "jobs":[["dnc","Dancer"],["lbt","Librettist"]]
+  }, {
+    "department":19000,
+    "jobs":[
+      ["cns","Censor"],["srv","Surveyor"],
+      ["lil","Libelant"],
+      ["rse","Respondent-appellee"],["ptf","Plaintiff"],["ape","Appellee"],
+      ["cpt","Complainant-appellant"],["org","Originator"],["prc","Process contact"],
+      ["cos","Contestant"],["dln","Delineator"],["lel","Libelee"],["enj","Enacting jurisdiction"],
+      ["lee","Libelee-appellee"],["cts","Contestee"],
+      ["auc","Auctioneer"],["sgn","Signer"],["ctt","Contestee-appellant"],
+      ["jud","Judge"],["dfe","Defendant-appellee"],["lit","Libelant-appellant"],["cou","Court governed"],
+      ["coe","Contestant-appellee"],["dgg","Degree granting institution"],
+      ["jug","Jurisdiction governed"],["cte","Contestee-appellee"],["opn","Opponent"],["pma","Permitting agency"],
+      ["pta","Patent applicant"],["fpy","First party"],["spy","Second party"],["rsp","Respondent"],["apl","Appellant"],
+      ["rst","Respondent-appellant"],["let","Libelee-appellant"],["ptt","Plaintiff-appellant"],["dft","Defendant-appellant"],
+      ["lie","Libelant-appellee"],["cot","Contestant-appellant"],["cpl","Complainant"],
+      ["pte","Plaintiff-appellee"],["cpe","Complainant-appellee"],["dfd","Defendant"],["dub","Dubious author"],
+      ["frg","Forger"]
+    ]
+  }
+];
 // job can be [key, locKey, TMDBmapToKey?, altLabel?]
 const creativeRoles = [
   {
@@ -1284,105 +1462,6 @@ const creativeRoles = [
   }
 ];
 
-const locRoles = [
-  // TODO
-  // ["stg","Setting"], ["ant","Bibliographic antecedent"],
-  // ["mdc","Metadata contact"],["rcp","Addressee"],["att","Attributed name"],
-
-  {
-    "department":"#",
-    "jobs":[
-      ["prv","Provider"],["cli","Client"],["med","Medium"],["dpt","Depositor"],
-      ["dto","Dedicator"],["len","Lender"],["inv","Inventor"],["pth","Patent holder"],
-      ["brd","Broadcaster"],["hst","Host"],["his","Host institution"],["sht","Supporting host"],
-      ["cur","Curator"],["ard","Artistic director"],["sll","Seller"],["bsl","Bookseller"],
-      ["fmk","Filmmaker"],["ivr","Interviewer"],["ppt","Puppeteer"],
-      ["dsr","Designer"],["lso","Licensor"],["exp","Expert"],["col","Collector"],
-      ["pat","Patron"],["pan","Panelist"],
-      ["tch","Teacher"],["dgs","Degree supervisor"],["ctr","Contractor"]
-    ]
-  }, {
-    "department":9000,
-    "jobs":[["tld","Television director"],["rdd","Radio director"],["pbd","Publishing director"]]
-  }, {
-    "department":10000,
-    "jobs":[
-      ["tlp","Television producer"],["rpc","Radio producer"],["bkp","Book producer"],
-      ["ldr","Laboratory director"],["lbr","Laboratory"],["mtk","Minute taker"],["eng","Engineer"]
-    ]
-  }, {
-    "department":2000,
-    "jobs":[
-      ["aui","Author of introduction, etc."],["aft","Author of afterword, colophon, etc."],
-      ["win","Writer of introduction"],["wpr","Writer of preface"],["wat","Writer of added text"],
-      ["wst","Writer of supplementary textual content"],["wac","Writer of added commentary"],
-      ["stl","Storyteller"],["nrt","Narrator"],["ths","Thesis advisor"],["pfr","Proofreader"],
-      ["cwt","Commentator for written text"],["aqt","Author in quotations or text abstracts"],
-      ["ato","Autographer"],["cmm","Commentator"],["fac","Facsimilist"],["blw","Blurb writer"],
-      ["anl","Analyst"],["trc","Transcriber"],["scr","Scribe"]
-
-    ]
-  }, {
-    "department":11000,
-    "jobs":[
-      ["edc","Editor of compilation"],["red","Redaktor"],
-      ["gis","Geographic information specialist"],["ctg","Cartographer"],["ins","Inscriber"],
-      ["rev","Reviewer"],["abr","Abridger"],["rbr","Rubricator"],["crr","Corrector"]
-    ]
-  }, {
-    "department":7000,
-    "jobs":[
-      ["tyd","Type designer"],["tyg","Typographer"],["cll","Calligrapher"],["str","Stereotyper"],
-      ["bkd","Book designer"],["bjd","Bookjacket designer"],["bdd","Binding designer"],
-      ["drm","Draftsman"],["etr","Etcher"],["rsg","Restager"],["con","Conservator"],
-      ["acp","Art copyist"]
-    ]
-  }, {
-    "department":1000,
-    "jobs":[
-      ["rpt","Reporter"],["crt","Court reporter"],["crp","Correspondent"],["wit","Witness"],
-      ["ive","Interviewee"],["vdg","Videographer"],["pht","Photojournalist"]
-    ]
-  }, {
-    "department":16000, /*Herstellung*/
-    "jobs":[
-      ["bpd","Bookplate designer"],["egr","Engraver"],["ltg","Lithographer"],["clt","Collotyper"],
-      ["elt","Electrotyper"],["prt","Printer"],["prm","Printmaker"],["bnd","Binder"],
-      ["brl","Braille embosser"],["mfr","Manufacturer"],["wde","Wood engraver"],
-      ["mte","Metal-engraver"],["ppm","Papermaker"],["wdc","Woodcutter"],
-      ["pop","Printer of plates"],["plt","Platemaker"],["mrb","Marbler"]
-    ]
-  }, {
-    "department":14000,
-    "jobs":[
-      ["prg","Programmer"],["com","Compiler"],["arc","Architect"],
-      ["lsa","Landscape architect"]
-    ]
-  }, {
-    "department":6000,
-    "jobs":[["dnc","Dancer"],["lbt","Librettist"]]
-  }, {
-    "department":19000,
-    "jobs":[
-      ["stn","Standards body"],["isb","Issuing body"],
-      ["orm","Organizer"],["dtc","Data contributor"],["rps","Repository"],["asn","Associated name"],
-      ["dis","Dissertant"],["cor","Collection registrar"],["app","Applicant"],["lil","Libelant"],
-      ["rse","Respondent-appellee"],["ptf","Plaintiff"],["ape","Appellee"],["hnr","Honoree"],
-      ["cpt","Complainant-appellant"],["adp","Adapter"],["org","Originator"],["prc","Process contact"],
-      ["cos","Contestant"],["dln","Delineator"],["lel","Libelee"],["enj","Enacting jurisdiction"],
-      ["lse","Licensee"],["lee","Libelee-appellee"],["cts","Contestee"],
-      ["cns","Censor"],["srv","Surveyor"],["auc","Auctioneer"],["sgn","Signer"],["ctt","Contestee-appellant"],
-      ["jud","Judge"],["led","Lead"],["dfe","Defendant-appellee"],["lit","Libelant-appellant"],["cou","Court governed"],
-      ["coe","Contestant-appellee"],["dgg","Degree granting institution"],["dte","Dedicatee"],["pra","Praeses"],
-      ["jug","Jurisdiction governed"],["cte","Contestee-appellee"],["opn","Opponent"],["pma","Permitting agency"],
-      ["pta","Patent applicant"],["fpy","First party"],["spy","Second party"],["rsp","Respondent"],["apl","Appellant"],
-      ["rst","Respondent-appellant"],["let","Libelee-appellant"],["ptt","Plaintiff-appellant"],["dft","Defendant-appellant"],
-      ["lie","Libelant-appellee"],["cot","Contestant-appellant"],["cpl","Complainant"],["asg","Assignee"],
-      ["pte","Plaintiff-appellee"],["cpe","Complainant-appellee"],["dfd","Defendant"],["dub","Dubious author"],
-      ["rsr","Restorationist"],["frg","Forger"]
-    ]
-  }
-];
 
 /*
 ---
