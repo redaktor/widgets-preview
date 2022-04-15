@@ -1,3 +1,4 @@
+// https://jsfiddle.net/mnza6gyh/
 /*
 graph TD
 
@@ -78,21 +79,6 @@ Roles in GROUP
 
 
 
-Relations (Properties)
-
-  CreativeWork <-> Event
-  CreativeWork <-> Place
-
-Relators (Classes)
-
-Named Individuals
-
-
-['', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-['', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-['', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-['', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-['', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
 ['worksWith' false, {pref:{en:'Colleague',de:''}, alt:{en:'',de:''}}, false],
 ['speaksFor', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
 ['actsFor', false, {pref:{en:'Actor',de:''}, alt:{en:'',de:''}}, false]
@@ -151,9 +137,13 @@ skos:altLabel "Fauna"@de .
 
 // id, en pref, en alt, de pref, de alt
 const topCategories = [
+
+
+
   ["MajorRole","Major Roles","General",false],
   ["Attribution","Attribution","Profession",false],
   ["Cast","Cast","Character Relators",false],
+
   ["ActorRelator","Actor Relators","",false],
   ["MutualAid","Mutual Aid","",false],
   ["EmergencyManaging","Emergency Managing","",false],
@@ -163,27 +153,64 @@ const topCategories = [
   ["LocationRole","Location Roles","Location Concept",false],
   ["CreativeWorkRole","Creative Work Roles","Creative Concept",false],
 
-]
+];
+const idMap = {
+  1000: "n0111",
+  2000: "n0112",
+  3000: "n0113",
+  4000: "n0114",
+  5000: "n0115",
+  6000: "n0116",
+  7000: "n0117",
+  8000: "n0118",
+  9000: "n0119",
+  10000: "n0120",
+  11000: "n0121",
+  12000: "n0122",
+  13000: "n0123",
+  14000: "n0124",
+  15000: "n0125",
+  16000: "n0126",
+  17000: "n0127",
+  19000: "n0129"
+};
+
 const categories = {
+  MajorRole :[
+    ['Author', {loc: 'aut'}], // html rel author
+    ['Artist', {loc: 'art'}], // "primary artist"
+    ['AccountablePerson', {tmdb: 'Accountable person', loc: 'rpy', alt:{en: 'Accountable Person', de: 'V.i.S.d.P.'}}],
+    ['Owner', {tmdb: false, loc: 'own'}],
+    ['FormerOwner', {tmdb: false, loc: 'fmo'}],
+    ['Lead', {tmdb: false, loc: 'led'}],
+    ['Copyright', {tmdb: false, loc: ['cph','cpc'], pref:{en:'Copyright holder',de:''}, alt:{en:'Copyright claimant',de:''}}],
+    ['Maintainer',{pref:{en:'Maintainance',de:''}, alt:{en:'',de:''}}],
+    ['sdPublisher',{loc: ['ann','mrk'], pref:{en:'Annotator or Markup editor',de:''}, alt:{en:'metadata',de:''}}],
+    ['Distributor',{tmdb: false, loc: ['dst','fds'], pref:{en: 'distributed by', de: ''}, alt: {en: 'Film distributor', de: ''}}],
+    ['Funder',{loc: 'fnd', pref:{en:'',de:''}, alt:{en:'Funding',de:''}}],
+    ['Sponsor',{loc: 'spn', pref:{en:'',de:''}, alt:{en:'Sponsoring',de:''}}],
+    ['Donor',{loc: 'dnr', pref:{en:'',de:''}, alt:{en:'',de:''}}],
+    ['Patron',{tmdb: false, loc: 'pat'}],
+  ],
   Attribution: [ /* Actor <-> CreativeWork-Object */
-  ['contributes', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
-    [1000,"Coverage","Reporting","",false],
-    [2000,"Writing","Writing","",false],
-    [3000,"Camera","Camera","",false],
-    [4000,"Sound","Sound","",false],
-    [5000,"Actors","Actors","",false],
-    [6000,"Music","Music","",false],
-    [7000,"Art","Art","",false],
-    [8000,"Lighting",false,"",false],
-    [9000,"Directing","Directing","",false],
-    [10000,"Production",false,"",false],
-    [11000,"Editing","Editing","",false],
-    [12000,"CostumeStyling","Costume & Make-Up","",false],
-    [13000,"VisualEffects","Visual Effects","",false],
-    [14000,"Crew","Crew","",false],
-    [15000,"Comic","Comic","",false],
-    [16000,"Manufacturing","","Herstellung",false],
-    [19000,"Legal","Legal","",false],
+    ["n0111","Coverage","Reporting","",false],
+    ["n0112","Writing","Writing","",false],
+    ["n0113","Camera","Camera","",false],
+    ["n0114","Sound","Sound","",false],
+    ["n0115","Actors","Actors","",false],
+    ["n0116","Music","Music","",false],
+    ["n0117","Art","Art","",false],
+    ["n0118","Lighting",false,"",false],
+    ["n0119","Directing","Directing","",false],
+    ["n0120","Production",false,"",false],
+    ["n0121","Editing","Editing","",false],
+    ["n0122","CostumeStyling","Costume & Make-Up","",false],
+    ["n0123","VisualEffects","Visual Effects","",false],
+    ["n0124","Crew","Crew","",false],
+    ["n0125","Comic","Comic","",false],
+    ["n0126","Manufacturing","","Herstellung",false],
+    ["n0127","Distribution","","Vertrieb",false],
+    ["n0129","Legal","Legal","",false]
   ],
   Cast: [ /* Actor <-> Character */
     ['leadPerforms', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
@@ -192,7 +219,9 @@ const categories = {
     ['doubles', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false]
   ],
   ActorRelator: [ /* Actor <-> Actor */
-    ['worksWith' false, {pref:{en:'Colleague',de:''}, alt:{en:'',de:''}}, false],
+    ['contributes'],
+    ['is'],
+    ['worksWith', false, {pref:{en:'Colleague',de:''}, alt:{en:'',de:''}}, false],
     ['speaksFor', false, {pref:{en:'Speaker',de:''}, alt:{en:'',de:''}}, false],
     ['actsFor', false, {pref:{en:'Representative',de:''}, alt:{en:'Agent',de:''}}, false]
   ],
@@ -210,8 +239,7 @@ const categories = {
   EventRelator: [ /* Actor <-> Event */
       Organizer
       Attendee
-      Sponsor
-      Donor
+
       Project (sub-group)
   ],
   PlaceRelator: [ /* Actor <-> Place */
@@ -263,26 +291,8 @@ const categories = {
 
 // https://redaktor.me/profession
 // id and TMDB (replace()), labels pref/alt/hidden/tmdb/loc [--> map pref to as:summaryMap ! --> loc can be [exact near]]
+// TMDB department "Acting" == "Actors"
 const roles = [
-  {
-    "department":"MajorRole",
-    "jobs":[
-      ['Author', {loc: 'aut', pref:{en:'',de:''}, alt:{en:'',de:''}}], // html rel author
-      ['Artist', {loc: 'art', pref:{en:'',de:''}, alt:{en:'',de:''}}], // "primary artist"
-      ['AccountablePerson', {tmdb: 'Accountable person', loc: 'rpy', pref:{en: 'Accountable Person', de: 'V.i.S.d.P.'}}],
-      ['Owner', {tmdb: false, loc: 'own', pref:{en: 'Former owner', de: 'Eigentümer'}}],
-      ['FormerOwner', {tmdb: false, loc: 'fmo', pref:{en: 'Former owner', de: 'Vorheriger Eigentümer'}}],
-      ['Contributor', {tmdb: false, loc: 'ctb', pref:{en:'',de:''}, alt:{en:'',de:''}}],
-      ['Copyright', {tmdb: false, loc: ['cph','cpc'], pref:{en:'Copyright holder',de:''}, alt:{en:'Copyright claimant',de:''}}],
-      ['Maintainer',{pref:{en:'Maintainance',de:''}, alt:{en:'',de:''}}],
-      ['sdPublisher',{loc: ['ann','mrk'], pref:{en:'Annotator or Markup editor',de:''}, alt:{en:'metadata',de:''}}],
-      ['Distributor',{tmdb: false, loc: ['dst','fds'], pref:{en: 'distributed by', de: ''}, alt: {en: 'Film distributor', de: ''}}],
-      ['Funder',{loc: 'fnd', pref:{en:'',de:''}, alt:{en:'Funding',de:''}}],
-      ['Sponsor',{loc: 'spn', pref:{en:'',de:''}, alt:{en:'Sponsoring',de:''}}],
-      ['Donor',{loc: 'dnr', pref:{en:'',de:''}, alt:{en:'',de:''}}],
-
-    ]
-  },
   {
     "department":"PicturedNamedCited",
     "jobs":[
@@ -313,45 +323,69 @@ const roles = [
 
 
   ['RemixedBy',{pref:{en:'remixed by',de:''}, alt:{en:'',de:''}}],
-  ['ThanksTo',{pref:{en:'Thanks to',de:''}, alt:{en:'',de:''}}],
-  ['Funder',{loc: 'fnd', pref:{en:'',de:''}, alt:{en:'Funding',de:''}}],
-  ['Sponsor',{loc: 'spn', pref:{en:'',de:''}, alt:{en:'Sponsoring',de:''}}],
-  ['Donor',{loc: 'dnr', pref:{en:'',de:''}, alt:{en:'',de:''}}],
+
 ];
 
 
-
+/* TODO MAIN !!! !!! !!! */
 /*
 Attendee/Grantee/Customer - Actor accepted Offer
 Supporter - = Actor of "Likes", Actor of "Shares", Actor supports
 GenericMember - e.g. Actor joins Group
 Supplier - Actor contributes to Actor
 */
-const locOnlyRoles = [
-  // TODO
+
+  // TODO http://xmlns.com/foaf/spec/#term_interest
   // ["stg","Setting"], ["ant","Bibliographic antecedent"],
   // ["mdc","Metadata contact"],["rcp","Addressee"],["att","Attributed name"],
 
-  // Accountable ["led","Lead"],
+
   // (music,writing)["adp","Adapter"],
   // (curator)["cor","Collection registrar"],
   // (honoredByWork)["hnr","Honoree"], (dedicatedTo)["dte","Dedicatee"],
   // ["app","Applicant"],["dis","Dissertant"]["pra","Praeses"],
   // Aufsicht ["stn","Standards body"],["isb","Issuing body"],["orm","Organizer"],["dtc","Data contributor"],["rsr","Restorationist"],
   // ["rps","Repository"],["asn","Associated name"],["lse","Licensee"],["asg","Assignee"],
+
+  // ['ThanksTo',{pref:{en:'Thanks to',de:''}, alt:{en:'',de:''}}]
+/*
   {
-    "department":"#",
-    "jobs":[
-      ["prv","Provider"],["cli","Client"],["med","Medium"],["dpt","Depositor"],
-      ["dto","Dedicator"],["len","Lender"],["inv","Inventor"],["pth","Patent holder"],
-      ["brd","Broadcaster"],["hst","Host"],["his","Host institution"],["sht","Supporting host"],
-      ["cur","Curator"],["ard","Artistic director"],["sll","Seller"],["bsl","Bookseller"],
-      ["fmk","Filmmaker"],["ivr","Interviewer"],["ppt","Puppeteer"],
-      ["dsr","Designer"],["lso","Licensor"],["exp","Expert"],["col","Collector"],
-      ["pat","Patron"],["pan","Panelist"],
-      ["tch","Teacher"],["dgs","Degree supervisor"],["ctr","Contractor"]
+    "department": "#",
+    "jobs": [
+      { "key": "Provider", "loc": "prv" },
+      { "key": "Client", "loc": "cli" },
+      { "key": "Medium", "loc": "med" },
+      { "key": "Depositor", "loc": "dpt" },
+      { "key": "Dedicator", "loc": "dto" },
+      { "key": "Lender", "loc": "len" },
+      { "key": "Inventor", "loc": "inv" },
+      { "key": "Broadcaster", "loc": "brd" },
+      { "key": "Host", "loc": "hst" },
+      { "key": "Host institution", "loc": "his" },
+      { "key": "Supporting host", "loc": "sht" },
+      { "key": "Curator", "loc": "cur" },
+      { "key": "Artistic director", "loc": "ard" },
+      { "key": "Seller", "loc": "sll" },
+      { "key": "Bookseller", "loc": "bsl" },
+      { "key": "Filmmaker", "loc": "fmk" },
+      { "key": "Interviewer", "loc": "ivr" },
+      { "key": "Puppeteer", "loc": "ppt" },
+      { "key": "Designer", "loc": "dsr" },
+      { "key": "Licensor", "loc": "lso" },
+      { "key": "Expert", "loc": "exp" },
+      { "key": "Collector", "loc": "col" },
+      { "key": "Panelist", "loc": "pan" },
+      { "key": "Teacher", "loc": "tch" },
+      { "key": "Degree supervisor", "loc": "dgs" },
+      { "key": "Contractor", "loc": "ctr" }
     ]
-  }, {
+  },
+*/
+
+
+const locOnlyRoles = [
+
+  {
     "department":9000,
     "jobs":[["tld","Television director"],["rdd","Radio director"],["pbd","Publishing director"]]
   }, {
@@ -414,8 +448,7 @@ const locOnlyRoles = [
   }, {
     "department":19000,
     "jobs":[
-      ["cns","Censor"],["srv","Surveyor"],
-      ["lil","Libelant"],
+      ["cns","Censor"],["srv","Surveyor"],["pth","Patent holder"],["lil","Libelant"],
       ["rse","Respondent-appellee"],["ptf","Plaintiff"],["ape","Appellee"],
       ["cpt","Complainant-appellant"],["org","Originator"],["prc","Process contact"],
       ["cos","Contestant"],["dln","Delineator"],["lel","Libelee"],["enj","Enacting jurisdiction"],
@@ -432,11 +465,48 @@ const locOnlyRoles = [
     ]
   }
 ];
-// job can be [key, locKey, TMDBmapToKey?, altLabel?]
+
+
+// job can be [key, locKey, TMDBmapToOtherKey?, altLabel?]
+// ["Directing Lighting Artist","lgd",false,"Lighting designer"],
+// or {key: key, loc: locKey}
 const creativeRoles = [
   {
-    "department":12000,
+    "department":"n0111", // Coverage
     "jobs":[
+      { "key": "Reporter", "loc": "rpt" },
+      { "key": "Court reporter", "loc": "crt" },
+      { "key": "Correspondent", "loc": "crp" },
+      { "key": "Witness", "loc": "wit" },
+      { "key": "Interviewee", "loc": "ive" },
+      { "key": "Videographer", "loc": "vdg" },
+      { "key": "Photojournalist", "loc": "pht" }
+    ]
+  }, {
+    "department":"n0126", // Manufacturing
+    "jobs":[
+      { "key": "Bookplate designer", "loc": "bpd" },
+      { "key": "Engraver", "loc": "egr" },
+      { "key": "Lithographer", "loc": "ltg" },
+      { "key": "Collotyper", "loc": "clt" },
+      { "key": "Electrotyper", "loc": "elt" },
+      { "key": "Printer", "loc": "prt" },
+      { "key": "Printmaker", "loc": "prm" },
+      { "key": "Binder", "loc": "bnd" },
+      { "key": "Braille embosser", "loc": "brl" },
+      { "key": "Manufacturer", "loc": "mfr" },
+      { "key": "Wood engraver", "loc": "wde" },
+      { "key": "Metal-engraver", "loc": "mte" },
+      { "key": "Papermaker", "loc": "ppm" },
+      { "key": "Woodcutter", "loc": "wdc" },
+      { "key": "Printer of plates", "loc": "pop" },
+      { "key": "Platemaker", "loc": "plt" },
+      { "key": "Marbler", "loc": "mrb" }
+    ]
+  }, {
+    "department":"n0122", // Costume
+    "jobs":[
+      ["Costume Designer","cst"],
       "Costume Design",
       "Makeup Artist",
       "Hairstylist",
@@ -486,7 +556,6 @@ const creativeRoles = [
       "Contact Lens Technician",
       "Costume Assistant",
       "Costume Mistress",
-      ["Costume Designer","cst"],
       "Costume Set Supervisor",
       "Costume Standby",
       "Costumer",
@@ -523,7 +592,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":8000,
+    "department":"n0118", // Light
     "jobs":[
       "Lighting Technician",
       "Best Boy Electric",
@@ -560,7 +629,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":10000,
+    "department":"n0120", // Production
     "jobs":[
       ["Production Studio","prn",false,"Production company"],
       ["Producer","pro"],
@@ -570,6 +639,13 @@ const creativeRoles = [
       ["Production Designer","prs"],
       ["Casting","cas"],
       ["Production Manager","pmn"],
+      { "key": "Television producer", "loc": "tlp" },
+      { "key": "Radio producer", "loc": "rpc" },
+      { "key": "Book producer", "loc": "bkp" },
+      { "key": "Laboratory director", "loc": "ldr" },
+      { "key": "Laboratory", "loc": "lbr" },
+      { "key": "Minute taker", "loc": "mtk" },
+      { "key": "Engineer", "loc": "eng" },
       "Unit Production Manager",
       "Line Producer",
       "Location Manager",
@@ -688,7 +764,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":3000,
+    "department":"n0113", // Camera
     "jobs":[
       ["Director of Photography","cng"],
       "Still Photographer",
@@ -776,7 +852,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":13000,
+    "department":"n0123", // VisualEffects
     "jobs":[
       ["Animation","anm"],
       "Visual Effects",
@@ -886,11 +962,12 @@ const creativeRoles = [
     ]
   },
   {
-    "department":6000,
+    "department":"n0116", // Music
     "jobs": [
       ["Music Director","msd",false,"Musical director"],
-      ["Musician",["mus","itr"]],
+      ["Musician","mus"],
       ["Singer","sng",false,"Musician"],
+      { "key": "Instrumentalist", "loc": "itr" },
       "Songs",
       "Music",
       ["Original Music Composer","cmp"],
@@ -908,11 +985,13 @@ const creativeRoles = [
       "Music Programmer",
       "Music Score Producer",
       "Playback Singer",
-      "Vocals"
+      "Vocals",
+      { "key": "Dancer", "loc": "dnc" },
+      { "key": "Librettist", "loc": "lbt" }
     ]
   },
   {
-    "department":4000,
+    "department":"n0114", // Sound
     "jobs":[
       "Sound",
       "Sound Engineer",
@@ -992,7 +1071,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":5000,
+    "department":"n0115", // Actors
     "jobs":[
       "LeadPerformer",
       "Actor",
@@ -1003,9 +1082,14 @@ const creativeRoles = [
     ]
   },
   {
-    "department":9000,
+    "department":"n0119", // Directing
     "jobs":[
-      ["Director",["drt","fmd"]],
+      ["Director", "drt"],
+      { "key": "Film director", "loc": "fmd" },
+      { "key": "Television director", "loc": "tld" },
+      { "key": "Radio director", "loc": "rdd" },
+      { "key": "Publishing director", "loc": "pbd" },
+
       "Assistant Director",
       "Script Supervisor",
       "Other",
@@ -1037,7 +1121,7 @@ const creativeRoles = [
     ]
   },
   {
-    "department":7000,
+    "department":"n0117", // Art
     "jobs":[
       ["Art Direction","adi"],
       ["Photographer","pht"],
@@ -1147,11 +1231,24 @@ const creativeRoles = [
       "Swing",
       "Textile Artist",
       "Title Illustration",
-      "Web Designer"
+      "Web Designer",
+
+      { "key": "Type designer", "loc": "tyd" },
+      { "key": "Typographer", "loc": "tyg" },
+      { "key": "Calligrapher", "loc": "cll" },
+      { "key": "Stereotyper", "loc": "str" },
+      { "key": "Book designer", "loc": "bkd" },
+      { "key": "Bookjacket designer", "loc": "bjd" },
+      { "key": "Binding designer", "loc": "bdd" },
+      { "key": "Draftsman", "loc": "drm" },
+      { "key": "Etcher", "loc": "etr" },
+      { "key": "Restager", "loc": "rsg" },
+      { "key": "Conservator", "loc": "con" },
+      { "key": "Art copyist", "loc": "acp" }
     ]
   },
   {
-    "department":2000,
+    "department":"n0112", // Writing
     "jobs":[
       "Author",
       ["Lyricist","lyr"],
@@ -1197,11 +1294,32 @@ const creativeRoles = [
       "Story Manager",
       "Story Supervisor",
       "Writers' Assistant",
-      "Writers' Production"
+      "Writers' Production",
+
+      { "key": "Author of introduction, etc.", "loc": "aui" },
+      { "key": "Author of afterword, colophon, etc.", "loc": "aft" },
+      { "key": "Writer of introduction", "loc": "win" },
+      { "key": "Writer of preface", "loc": "wpr" },
+      { "key": "Writer of added text", "loc": "wat" },
+      { "key": "Writer of supplementary textual content", "loc": "wst" },
+      { "key": "Writer of added commentary", "loc": "wac" },
+      { "key": "Storyteller", "loc": "stl" },
+      { "key": "Narrator", "loc": "nrt" },
+      { "key": "Thesis advisor", "loc": "ths" },
+      { "key": "Proofreader", "loc": "pfr" },
+      { "key": "Commentator for written text", "loc": "cwt" },
+      { "key": "Author in quotations or text abstracts", "loc": "aqt" },
+      { "key": "Autographer", "loc": "ato" },
+      { "key": "Commentator", "loc": "cmm" },
+      { "key": "Facsimilist", "loc": "fac" },
+      { "key": "Blurb writer", "loc": "blw" },
+      { "key": "Analyst", "loc": "anl" },
+      { "key": "Transcriber", "loc": "trc" },
+      { "key": "Scribe", "loc": "scr" }
     ]
   },
   {
-    "department":14000,
+    "department":"n0124", // Crew
     "jobs":[
       ["Choreographer","chr"],
       ["Translator","trl"],
@@ -1323,7 +1441,7 @@ const creativeRoles = [
       "Drone Operator",
       "In Memory Of",
       "Pilot",
-      ["Moderator","mod","Presenter"]
+      ["Moderator","mod","Presenter"],
       ["Onscreen presenter","osp","Presenter"],
       ["Presenter","pre"],
       "Animatronics Supervisor",
@@ -1394,11 +1512,15 @@ const creativeRoles = [
       "Vehicles Coordinator",
       "Vehicles Wrangler",
       "Weapons Master",
-      "Weapons Wrangler"
+      "Weapons Wrangler",
+      { "key": "Programmer", "loc": "prg" },
+      { "key": "Compiler", "loc": "com" },
+      { "key": "Architect", "loc": "arc" },
+      { "key": "Landscape architect", "loc": "lsa" }
     ]
   },
   {
-    "department":11000,
+    "department":"n0121", // Editing
     "jobs":[
       ["Editor","edt"],
       ["Colorist","clr"],
@@ -1448,20 +1570,140 @@ const creativeRoles = [
       "Senior Colorist",
       "Senior Digital Intermediate Colorist",
       "Stereoscopic Editor",
-      "Supervising Editor"
+      "Supervising Editor",
+      { "key": "Editor of compilation", "loc": "edc" },
+      { "key": "Redaktor", "loc": "red" },
+      { "key": "Geographic information specialist", "loc": "gis" },
+      { "key": "Cartographer", "loc": "ctg" },
+      { "key": "Inscriber", "loc": "ins" },
+      { "key": "Reviewer", "loc": "rev" },
+      { "key": "Abridger", "loc": "abr" },
+      { "key": "Rubricator", "loc": "rbr" },
+      { "key": "Corrector", "loc": "crr" }
     ]
   },
   {
-    "department":15000,
+    "department":"n0125", // Comic
     "jobs":[
-      "Colorist",
       "Inker",
       "Letterer",
       "Penciler"
     ]
+  },
+  {
+    "department":"n0129", // Legal
+    "jobs":[
+      { "key": "Censor", "loc": "cns" },
+      { "key": "Surveyor", "loc": "srv" },
+      { "key": "Patent holder", "loc": "pth" },
+      { "key": "Libelant", "loc": "lil" },
+      { "key": "Respondent-appellee", "loc": "rse" },
+      { "key": "Plaintiff", "loc": "ptf" },
+      { "key": "Appellee", "loc": "ape" },
+      { "key": "Complainant-appellant", "loc": "cpt" },
+      { "key": "Originator", "loc": "org" },
+      { "key": "Process contact", "loc": "prc" },
+      { "key": "Contestant", "loc": "cos" },
+      { "key": "Delineator", "loc": "dln" },
+      { "key": "Libelee", "loc": "lel" },
+      { "key": "Enacting jurisdiction", "loc": "enj" },
+      { "key": "Libelee-appellee", "loc": "lee" },
+      { "key": "Contestee", "loc": "cts" },
+      { "key": "Auctioneer", "loc": "auc" },
+      { "key": "Signer", "loc": "sgn" },
+      { "key": "Contestee-appellant", "loc": "ctt" },
+      { "key": "Judge", "loc": "jud" },
+      { "key": "Defendant-appellee", "loc": "dfe" },
+      { "key": "Libelant-appellant", "loc": "lit" },
+      { "key": "Court governed", "loc": "cou" },
+      { "key": "Contestant-appellee", "loc": "coe" },
+      { "key": "Degree granting institution", "loc": "dgg" },
+      { "key": "Jurisdiction governed", "loc": "jug" },
+      { "key": "Contestee-appellee", "loc": "cte" },
+      { "key": "Opponent", "loc": "opn" },
+      { "key": "Permitting agency", "loc": "pma" },
+      { "key": "Patent applicant", "loc": "pta" },
+      { "key": "First party", "loc": "fpy" },
+      { "key": "Second party", "loc": "spy" },
+      { "key": "Respondent", "loc": "rsp" },
+      { "key": "Appellant", "loc": "apl" },
+      { "key": "Respondent-appellant", "loc": "rst" },
+      { "key": "Libelee-appellant", "loc": "let" },
+      { "key": "Plaintiff-appellant", "loc": "ptt" },
+      { "key": "Defendant-appellant", "loc": "dft" },
+      { "key": "Libelant-appellee", "loc": "lie" },
+      { "key": "Contestant-appellant", "loc": "cot" },
+      { "key": "Complainant", "loc": "cpl" },
+      { "key": "Plaintiff-appellee", "loc": "pte" },
+      { "key": "Complainant-appellee", "loc": "cpe" },
+      { "key": "Defendant", "loc": "dfd" },
+      { "key": "Dubious author", "loc": "dub" },
+      { "key": "Forger", "loc": "frg" }
+    ]
   }
 ];
+/*
+const tplNoMatchNoNote = `:{id} a skos:Concept ;
+    skos:inScheme :scheme ;
+    skos:broader :{department} ;
+    skos:notation "{id}" ;
+    skos:prefLabel "{de}"@de,
+        "{en}"@en ;
+    skos:scopeNote "themoviedb.org#{tmdb}"@en .`;
+const tpl = `:{id} a skos:Concept ;
+    skos:inScheme :scheme ;
+    skos:broader :{department} ;
+    {match}
+    skos:notation "{id}" ;
+    skos:prefLabel "{de}"@de,
+        "{en}"@en ;
+    skos:definition "{note}"@en ;
+    skos:scopeNote "themoviedb.org#{tmdb}"@en .`;
 
+
+let a = []
+creativeRoles.map((o) => {
+  const {department, jobs} = o;
+
+  jobs.forEach((item, i) => {
+    const id = `n${department}${i+11}`;
+    let note = '';
+    if (typeof item === 'string') {
+      a.push(tplNoMatchNoNote.replace(/\{id\}/g,id).replace('{department}',department)
+        .replace('{de}',item).replace('{en}',item).replace('{tmdb}',item));
+      return
+    } else if (!Array.isArray(item)) {
+      const {key, loc} = item;
+      let res = tpl.replace(/\{id\}/g,id).replace('{department}',department)
+        .replace('{match}',`skos:exactMatch <http://id.loc.gov/vocabulary/relators/${loc}> ;`)
+        .replace('{de}',key).replace('{en}',key).replace('{tmdb}',key);
+      json.forEach((o) => {
+        if (o['@id'] === 'http://id.loc.gov/vocabulary/relators/'+loc && !!o['http://www.loc.gov/mads/rdf/v1#definitionNote']) {
+          res = res.replace('{note}', o['http://www.loc.gov/mads/rdf/v1#definitionNote'][0]['@value']);
+        }
+      });
+      a.push(res);
+      return
+    }
+
+    // ["Directing Lighting Artist","lgd",false,"Lighting designer"],
+    const [key, loc, TMDBmapToOtherKey = false, altLabel = void 0] = item;
+    if (!!altLabel) {console.log(key, loc, altLabel)}
+    let res = tpl.replace(/\{id\}/g,id).replace('{department}',department)
+      .replace('{de}',key).replace('{en}',key).replace('{tmdb}', !!TMDBmapToOtherKey ? TMDBmapToOtherKey : key);
+    if (!!loc) { res = res.replace('{match}',`skos:exactMatch <http://id.loc.gov/vocabulary/relators/${loc}> ;`) }
+    json.forEach((o) => {
+      if (!!loc && o['@id'] === 'http://id.loc.gov/vocabulary/relators/'+loc && !!o['http://www.loc.gov/mads/rdf/v1#definitionNote']) {
+        res = res.replace('{note}', o['http://www.loc.gov/mads/rdf/v1#definitionNote'][0]['@value']);
+      }
+    });
+    a.push(res);
+    return
+  });
+});
+console.log('---');console.log(' ');
+console.log(_a.join('\n'));
+*/
 
 /*
 ---
