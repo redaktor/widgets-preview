@@ -137,68 +137,31 @@ skos:altLabel "Fauna"@de .
 
 // id, en pref, en alt, de pref, de alt
 const topCategories = [
+  [':n00','Generic or major role'], // Document, Object, Note
+  [':n01','Creative Work Role'], // Article, Audio, Image, Video
+  // 2 :n07 // Place
+  // 3 :n08 // Event
+  // 4 :n09 // Page
 
-
-
-  ["MajorRole","Major Roles","General",false],
-  ["Attribution","Attribution","Profession",false],
-  ["Cast","Cast","Character Relators",false],
-
-  ["ActorRelator","Actor Relators","",false],
-  ["MutualAid","Mutual Aid","",false],
-  ["EmergencyManaging","Emergency Managing","",false],
-  ["System","","",false],
-  ["EventRelator","Actors in Events","Event Relators",false],
-  ["PlaceRelator","Actors in Places","Place Relators",false],
-  ["LocationRole","Location Roles","Location Concept",false],
-  ["CreativeWorkRole","Creative Work Roles","Creative Concept",false],
-
+  5[':n02','Character Relator, Cast'], // ACTION, Audio, Image, Video
+  6[':n03','Relations amongst Actors'],
+  7[':n04','Mutual Aid'],
+  8[':n06','Emergency Managing'],
+  9[':n06','Location Type or Concept'],
+  // [':n07','Place Role'], // Describes Roles of Actors in Place based Projects
+  // [':n08','Event Role'], // Describes Roles of Actors in Event based Projects
+  // [':n09','Instance or System Role'],
+  [':n10','CreativeWork Concept']
 ];
-const idMap = {
-  1000: "n0111",
-  2000: "n0112",
-  3000: "n0113",
-  4000: "n0114",
-  5000: "n0115",
-  6000: "n0116",
-  7000: "n0117",
-  8000: "n0118",
-  9000: "n0119",
-  10000: "n0120",
-  11000: "n0121",
-  12000: "n0122",
-  13000: "n0123",
-  14000: "n0124",
-  15000: "n0125",
-  16000: "n0126",
-  17000: "n0127",
-  19000: "n0129"
-};
 
 const categories = {
-  MajorRole :[
-    ['Author', {loc: 'aut'}], // html rel author
-    ['Artist', {loc: 'art'}], // "primary artist"
-    ['AccountablePerson', {tmdb: 'Accountable person', loc: 'rpy', alt:{en: 'Accountable Person', de: 'V.i.S.d.P.'}}],
-    ['Owner', {tmdb: false, loc: 'own'}],
-    ['FormerOwner', {tmdb: false, loc: 'fmo'}],
-    ['Lead', {tmdb: false, loc: 'led'}],
-    ['Copyright', {tmdb: false, loc: ['cph','cpc'], pref:{en:'Copyright holder',de:''}, alt:{en:'Copyright claimant',de:''}}],
-    ['Maintainer',{pref:{en:'Maintainance',de:''}, alt:{en:'',de:''}}],
-    ['sdPublisher',{loc: ['ann','mrk'], pref:{en:'Annotator or Markup editor',de:''}, alt:{en:'metadata',de:''}}],
-    ['Distributor',{tmdb: false, loc: ['dst','fds'], pref:{en: 'distributed by', de: ''}, alt: {en: 'Film distributor', de: ''}}],
-    ['Funder',{loc: 'fnd', pref:{en:'',de:''}, alt:{en:'Funding',de:''}}],
-    ['Sponsor',{loc: 'spn', pref:{en:'',de:''}, alt:{en:'Sponsoring',de:''}}],
-    ['Donor',{loc: 'dnr', pref:{en:'',de:''}, alt:{en:'',de:''}}],
-    ['Patron',{tmdb: false, loc: 'pat'}],
-  ],
-  Attribution: [ /* Actor <-> CreativeWork-Object */
+  n01: [ /* Actor <-> CreativeWork-Object */
     ["n0111","Coverage","Reporting","",false],
     ["n0112","Writing","Writing","",false],
     ["n0113","Camera","Camera","",false],
     ["n0114","Sound","Sound","",false],
-    ["n0115","Actors","Actors","",false],
-    ["n0116","Music","Music","",false],
+    ["n0115","Music","Music","",false],
+    ["n0116","Actors","Actors","",false],
     ["n0117","Art","Art","",false],
     ["n0118","Lighting",false,"",false],
     ["n0119","Directing","Directing","",false],
@@ -212,6 +175,7 @@ const categories = {
     ["n0127","Distribution","","Vertrieb",false],
     ["n0129","Legal","Legal","",false]
   ],
+
   Cast: [ /* Actor <-> Character */
     ['leadPerforms', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
     ['performs', false, {pref:{en:'',de:''}, alt:{en:'',de:''}}, false],
@@ -225,6 +189,9 @@ const categories = {
     ['speaksFor', false, {pref:{en:'Speaker',de:''}, alt:{en:'',de:''}}, false],
     ['actsFor', false, {pref:{en:'Representative',de:''}, alt:{en:'Agent',de:''}}, false]
   ],
+
+  //
+
   MutualAid: [ /* Actor <-> Actor */
 
   ],
@@ -250,21 +217,23 @@ const categories = {
       id TODO OSM, www-geonames-org -> http://www.geonames.org/
     */
     // id, labels pref/alt/hidden/loc/ note [--> map pref to as:summaryMap !]
+    // https://schema.org/locationCreated
     ['LocationCreated', {
       loc: 'evp', pref:{en:'',de:''}, alt:{en:'Event place',de:''},
       note: 'The location where the CreativeWork was created, which may not be the same as the location depicted in the Work.'
-    }], // https://schema.org/contentLocation
+    }],
+    // https://schema.org/contentLocation
     ['LocationContent', {
       loc: 'prp', pref:{en:'',de:''}, alt:{en:'Production place',de:''},
       note: 'The location depicted or described in the content. For example, the location shown in a photograph or painting.'
-    }], // https://schema.org/locationCreated
-    ['LocationPublication', {
-      loc: 'pub', pref:{en:'',de:''}, alt:{en:'Publication place',de:''},
-      note: 'The location where a resource is published.'
     }],
     ['LocationManufacture', {
       loc: 'mfp', pref:{en:'',de:''}, alt:{en:'Manufacture place',de:''},
-      note: 'The place of manufacture (e.g., printing, duplicating, casting, etc.) of a resource in a published form.'
+      note: 'The place of manufacture (e.g., ActivityPub `Create`, printing, duplicating, casting, etc.) of a resource in a published form.'
+    }],
+    ['LocationPublication', {
+      loc: 'pub', pref:{en:'',de:''}, alt:{en:'Publication place',de:''},
+      note: 'The location where a resource is published.'
     }],
     ['LocationUniOrLibrary', {
       loc: 'uvp', pref:{en:'',de:''}, alt:{en:'University place',de:''},
@@ -326,60 +295,106 @@ const roles = [
 
 ];
 
-
-/* TODO MAIN !!! !!! !!! */
 /*
-Attendee/Grantee/Customer - Actor accepted Offer
-Supporter - = Actor of "Likes", Actor of "Shares", Actor supports
-GenericMember - e.g. Actor joins Group
-Supplier - Actor contributes to Actor
-*/
+Supporter - = Actor of "Likes", Actor of "Shares", Actor supports {sht}
 
-  // TODO http://xmlns.com/foaf/spec/#term_interest
-  // ["stg","Setting"], ["ant","Bibliographic antecedent"],
-  // ["mdc","Metadata contact"],["rcp","Addressee"],["att","Attributed name"],
+TODO http://xmlns.com/foaf/spec/#term_interest
+  + Character Mapping
+  + Musical Instruments Mapping
+
+  EBML
+  [
+    "Artist"
+    COPYRIGHT
+    "LeadPerformer","Actor",
+    "Director","AssistantDirector",
+    "DirectorOfPhotography",
+    "ArtDirector" --> "Art Direction"
+    "Composer", --> "Original Music Composer", "MasteredBy" --> "Sound Post Supervisor", "Arranger" --> "Music Arranger",
+     "Sound Engineer", "Conductor", "MixedBy", "Accompaniment" --> "Music",
+    "ScreenplayBy", --> "Screenplay", "WrittenBy" --> "Author",   "Lyricist",
+    "ProductionStudio","Producer","CoProducer" --> "Co-Producer","ExecutiveProducer","Publisher" --> "Publicist","ProductionDesigner",
+    "EditedBy" --> "Editor",
+    "Choreographer"
+    "CostumeDesigner" --> "Costume Design",
+  ]
+  MP4
+  '©ART' [Artist]
+  'cprt' [Copyright]
+  '©wrt' --> "Original Music Composer"
+  'aART' [AlbumArtist]
+  'xid' [Owner]
 
 
-  // (music,writing)["adp","Adapter"],
-  // (curator)["cor","Collection registrar"],
-  // (honoredByWork)["hnr","Honoree"], (dedicatedTo)["dte","Dedicatee"],
-  // ["app","Applicant"],["dis","Dissertant"]["pra","Praeses"],
-  // Aufsicht ["stn","Standards body"],["isb","Issuing body"],["orm","Organizer"],["dtc","Data contributor"],["rsr","Restorationist"],
-  // ["rps","Repository"],["asn","Associated name"],["lse","Licensee"],["asg","Assignee"],
+  https://schema.org/CreativeWork
+    accountablePerson
+    Specifies the Person that is legally accountable for the CreativeWork.
+    -author
+    The author of this content.
+    character
+    Fictional person connected with a creative work.
+    -contributor
+    A secondary contributor to the CreativeWork or Event.
+    -copyrightHolder --> Copyright
+    The party holding the legal copyright to the CreativeWork.
+    -editor
+    Specifies the Person who edited the CreativeWork.
+    funder
+    A person or organization that supports (sponsors) something through some kind of financial contribution.
+    sponsor
+    A person or organization that supports a thing through a pledge, promise, or financial contribution.
+    maintainer
+    A maintainer is a Person or Organization that manages contributions to, and/or publication of, some (typically complex) artifact.
+    -producer
+    The person or organization who produced the work (e.g. music album, movie, tv/radio series etc.).
+    -provider --> DistributedBy
+    The service provider, service operator, or service performer; the goods producer.
+    Another party (a seller) may offer those services or goods on behalf of the provider. A provider may also serve as the seller.
+    -publisher --> "Publicist"
+    The publisher of the creative work.
+    sdPublisher
+    Indicates the party responsible for generating and publishing the current structured data markup.
+    -translator
+    Organization or person who adapts a creative work to different languages.
 
-  // ['ThanksTo',{pref:{en:'Thanks to',de:''}, alt:{en:'',de:''}}]
-/*
-  {
-    "department": "#",
-    "jobs": [
-      { "key": "Provider", "loc": "prv" },
-      { "key": "Client", "loc": "cli" },
-      { "key": "Medium", "loc": "med" },
-      { "key": "Depositor", "loc": "dpt" },
-      { "key": "Dedicator", "loc": "dto" },
-      { "key": "Lender", "loc": "len" },
-      { "key": "Inventor", "loc": "inv" },
-      { "key": "Broadcaster", "loc": "brd" },
-      { "key": "Host", "loc": "hst" },
-      { "key": "Host institution", "loc": "his" },
-      { "key": "Supporting host", "loc": "sht" },
-      { "key": "Curator", "loc": "cur" },
-      { "key": "Artistic director", "loc": "ard" },
-      { "key": "Seller", "loc": "sll" },
-      { "key": "Bookseller", "loc": "bsl" },
-      { "key": "Filmmaker", "loc": "fmk" },
-      { "key": "Interviewer", "loc": "ivr" },
-      { "key": "Puppeteer", "loc": "ppt" },
-      { "key": "Designer", "loc": "dsr" },
-      { "key": "Licensor", "loc": "lso" },
-      { "key": "Expert", "loc": "exp" },
-      { "key": "Collector", "loc": "col" },
-      { "key": "Panelist", "loc": "pan" },
-      { "key": "Teacher", "loc": "tch" },
-      { "key": "Degree supervisor", "loc": "dgs" },
-      { "key": "Contractor", "loc": "ctr" }
-    ]
-  },
+
+  https://schema.org/VisualArtwork
+  https://schema.org/ComicStory
+    -artist
+    The primary artist for a work in a medium other than pencils or digital line art--for example, if the primary artwork is done in watercolors or digital paints.
+    -colorist
+    The individual who adds color to inked drawings.
+    -inker
+    The individual who traces over the pencil drawings in ink after pencils are complete.
+    -letterer
+    The individual who adds lettering, including speech balloons and sound effects, to artwork.
+    -penciler
+    The individual who draws the primary narrative artwork.
+
+  https://schema.org/MusicComposition
+    -composer --> "Original Music Composer"
+    The person or organization who wrote a composition, or who is the composer of a work performed at some event.
+    -lyricist
+    The person who wrote the words.
+
+  https://schema.org/Book
+    -illustrator
+    The illustrator of the book.
+
+  https://schema.org/Clip
+  https://schema.org/Movie
+    -director
+    A director of e.g. tv, radio, movie, video gaming etc. content, or of an event.
+    -musicBy --> "Original Music Composer"
+    The composer of the soundtrack.
+  https://schema.org/Movie
+  https://schema.org/Episode
+    -actor
+    An actor, e.g. in tv, radio, movie, video games etc., or in an event.
+    -productionCompany --> "ProductionStudio"
+    The production company or studio responsible for the item e.g. series, video game, episode etc.
+
+
 */
 
 
@@ -1709,101 +1724,5 @@ console.log(_a.join('\n'));
 ---
 TMDB categories
 ["Costume & Make-Up","Lighting","Production","Camera","Visual Effects","Sound","Actors","Directing","Art","Writing","Crew","Editing"]
-
-+ Character Mapping
-+ Musical Instruments Mapping
-
-EBML
-[
-  "Artist"
-  COPYRIGHT
-  "LeadPerformer","Actor",
-  "Director","AssistantDirector",
-  "DirectorOfPhotography",
-  "ArtDirector" --> "Art Direction"
-  "Composer", --> "Original Music Composer", "MasteredBy" --> "Sound Post Supervisor", "Arranger" --> "Music Arranger",
-   "Sound Engineer", "Conductor", "MixedBy", "Accompaniment" --> "Music",
-  "ScreenplayBy", --> "Screenplay", "WrittenBy" --> "Author",   "Lyricist",
-  "ProductionStudio","Producer","CoProducer" --> "Co-Producer","ExecutiveProducer","Publisher" --> "Publicist","ProductionDesigner",
-  "EditedBy" --> "Editor",
-  "Choreographer"
-  "CostumeDesigner" --> "Costume Design",
-]
-MP4
-'©ART' [Artist]
-'cprt' [Copyright]
-'©wrt' --> "Original Music Composer"
-'aART' [AlbumArtist]
-'xid' [Owner]
-
-
-https://schema.org/CreativeWork
-  accountablePerson
-  Specifies the Person that is legally accountable for the CreativeWork.
-  -author
-  The author of this content.
-  character
-  Fictional person connected with a creative work.
-  -contributor
-  A secondary contributor to the CreativeWork or Event.
-  -copyrightHolder --> Copyright
-  The party holding the legal copyright to the CreativeWork.
-  -editor
-  Specifies the Person who edited the CreativeWork.
-  funder
-  A person or organization that supports (sponsors) something through some kind of financial contribution.
-  sponsor
-  A person or organization that supports a thing through a pledge, promise, or financial contribution.
-  maintainer
-  A maintainer is a Person or Organization that manages contributions to, and/or publication of, some (typically complex) artifact.
-  -producer
-  The person or organization who produced the work (e.g. music album, movie, tv/radio series etc.).
-  -provider --> DistributedBy
-  The service provider, service operator, or service performer; the goods producer.
-  Another party (a seller) may offer those services or goods on behalf of the provider. A provider may also serve as the seller.
-  -publisher --> "Publicist"
-  The publisher of the creative work.
-  sdPublisher
-  Indicates the party responsible for generating and publishing the current structured data markup.
-  -translator
-  Organization or person who adapts a creative work to different languages.
-
-
-https://schema.org/VisualArtwork
-https://schema.org/ComicStory
-  -artist
-  The primary artist for a work in a medium other than pencils or digital line art--for example, if the primary artwork is done in watercolors or digital paints.
-  -colorist
-  The individual who adds color to inked drawings.
-  -inker
-  The individual who traces over the pencil drawings in ink after pencils are complete.
-  -letterer
-  The individual who adds lettering, including speech balloons and sound effects, to artwork.
-  -penciler
-  The individual who draws the primary narrative artwork.
-
-https://schema.org/MusicComposition
-  -composer --> "Original Music Composer"
-  The person or organization who wrote a composition, or who is the composer of a work performed at some event.
-  -lyricist
-  The person who wrote the words.
-
-https://schema.org/Book
-  -illustrator
-  The illustrator of the book.
-
-https://schema.org/Clip
-https://schema.org/Movie
-  -director
-  A director of e.g. tv, radio, movie, video gaming etc. content, or of an event.
-  -musicBy --> "Original Music Composer"
-  The composer of the soundtrack.
-https://schema.org/Movie
-https://schema.org/Episode
-  -actor
-  An actor, e.g. in tv, radio, movie, video games etc., or in an event.
-  -productionCompany --> "ProductionStudio"
-  The production company or studio responsible for the item e.g. series, video game, episode etc.
-
 
 */
