@@ -27,7 +27,7 @@
     "@babel/core": "7.4.3",
     "@babel/preset-env": "7.4.3",
     "amble": "0.0.7",
-    "shelljs": "0.8.3",
+    "shelljs": "0.8.5",
     "tap-dancer": "0.2.0",
     "tape": "4.10.1",
     "terser": "3.17.0"
